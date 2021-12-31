@@ -6,6 +6,9 @@ const client = new Client({
   partials: ["CHANNEL"],
 });
 
+// ****************************
+// ***** Command Handling *****
+// ****************************
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'));
 
@@ -15,37 +18,28 @@ for (const file of commandFiles) {
 	// With the key as the command name and the value as the exported module
 	client.commands.set(command.data.name, command);
 }
+// **************************
+// ***** Event Handling *****
+// **************************
+const eventFiles = fs.readdirSync('./src/events').filter(file => file.endsWith('.js'));
 
-client.on('ready', () => {
-  console.log(`bot ready as ${client.user.tag}`);
-});
-
-client.once('ready', () => {
-  console.log(`bot ready as ${client.user.tag}`);
-})
-
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-  
-	const command = client.commands.get(interaction.commandName);
-  
-	if (!command) return;
-  console.log(`${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`);
-
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+for (const file of eventFiles) {
+	const event = require(`./events/${file}`);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
 	}
-});
+}
+// *****************************
+// *****************************
 
 client.on("messageCreate", (message) => {
   if (message.author.bot) {
     return;
   }
-  if (message.content === "hello") {
-    message.channel.send("I AM ALIVE");
+  if (message.content === "I love Anna") {
+    message.channel.send("ANNA IS SO BEAUTIFUL!!! SHE IS SUPER SMART AND KIND. I LOVE YOU ANNA <3");
   }
 });
 
