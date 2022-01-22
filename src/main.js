@@ -2,7 +2,7 @@ require("dotenv").config();
 const fs = require("fs");
 const { Client, Collection } = require("discord.js");
 const client = new Client({
-  intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"],
+  intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES", "GUILD_MEMBERS"],
   partials: ["CHANNEL"],
 });
 
