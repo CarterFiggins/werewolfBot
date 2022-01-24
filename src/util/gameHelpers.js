@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const { createUsers } = require("../werewolf_db");
 
 const roleNames = {
   PLAYING: "Playing",
@@ -110,20 +111,42 @@ async function giveUserRoles(interaction, users) {
   // This could be done better fetching for roles twice
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   const playerRole = await getRole(interaction, roleNames.PLAYING);
+  const dbUsers = [];
 
   users.forEach((user) => {
     // add alive role and remove playing role
     const member = interaction.guild.members.cache.get(user.id);
-    // TESTING WITHOUT ADDING ROLES
-    // member.roles.add(aliveRole);
-    // member.roles.remove(playerRole);
+    member.roles.add(aliveRole);
+    member.roles.remove(playerRole);
     // add character
-    if (_.isEmpty(currentCharacters)) {
-      user.character = characters.VILLAGER;
-    } else {
-      user.character = currentCharacters.pop();
+    const newCharacter = _.isEmpty(currentCharacters)
+      ? characters.VILLAGER
+      : currentCharacters.pop();
+    user.character = newCharacter;
+    const userInfo = {
+      user_id: user.id,
+      name: user.username,
+      nickname: member.nickname,
+      character: newCharacter,
+    };
+    switch (newCharacter) {
+      case characters.SEER:
+        userInfo.see = true;
+        break;
+      case characters.BODY_GUARD:
+        userInfo.guard = true;
+        break;
+      case characters.FOOL:
+        userInfo.see = true;
+        break;
+      case characters.PRIEST:
+        userInfo.protect = true;
+        userInfo.holyWater = true;
+        break;
     }
+    dbUsers.push(userInfo);
   });
+  await createUsers(dbUsers);
   return users;
 }
 
@@ -140,19 +163,24 @@ async function getRole(interaction, roleName) {
   return foundRole;
 }
 
-async function createChannels(interaction, users) {
-  const currentChannels = await interaction.guild.channels.fetch();
-  // remove old channels
-  currentChannels.forEach((channel) => {
+async function removeAllGameChannels(channels) {
+  channels.forEach((channel) => {
     switch (channel.name) {
       case channelNames.TOWN_SQUARE:
       case channelNames.WEREWOLVES:
       case channelNames.SEER:
+      case channelNames.MASON:
       case channelNames.AFTER_LIFE:
       case channelNames.THE_TOWN:
         channel.delete();
     }
   });
+}
+
+async function createChannels(interaction, users) {
+  const currentChannels = await interaction.guild.channels.fetch();
+  // remove old channels
+  removeAllGameChannels(currentChannels);
 
   aliveRole = await getRole(interaction, roleNames.ALIVE);
   deadRole = await getRole(interaction, roleNames.DEAD);
@@ -164,29 +192,51 @@ async function createChannels(interaction, users) {
     (user) => user.character !== characters.WEREWOLF
   );
 
-  defaultPermissions = {
+  nonPlayersPermissions = {
     id: interaction.guild.id,
     deny: ["SEND_MESSAGES"],
     allow: ["VIEW_CHANNEL"],
   };
 
+  deadPermissions = {
+    id: deadRole.id,
+    deny: ["SEND_MESSAGES"],
+    allow: ["VIEW_CHANNEL"],
+  };
+
+  denyAlivePermissions = {
+    id: aliveRole.id,
+    deny: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+  };
+
   townSquarePermissions = [
-    defaultPermissions,
+    nonPlayersPermissions,
+    deadPermissions,
     {
       id: aliveRole.id,
       allow: ["SEND_MESSAGES", "VIEW_CHANNEL"],
     },
   ];
 
-  const werewolvesPermissions = createPermissions(users, characters.WEREWOLF);
-  werewolvesPermissions.push(defaultPermissions);
-  const seerPermissions = createPermissions(users, characters.SEER);
-  seerPermissions.push(defaultPermissions);
-  const masonPermissions = createPermissions(users, characters.MASON);
-  masonPermissions.push(defaultPermissions);
+  defaultPermissions = [
+    deadPermissions,
+    denyAlivePermissions,
+    nonPlayersPermissions,
+  ];
+
+  const werewolvesPermissions = createPermissions(
+    users,
+    characters.WEREWOLF
+  ).concat(defaultPermissions);
+  const seerPermissions = createPermissions(users, characters.SEER).concat(
+    defaultPermissions
+  );
+  const masonPermissions = createPermissions(users, characters.MASON).concat(
+    defaultPermissions
+  );
 
   afterLifePermissions = [
-    defaultPermissions,
+    nonPlayersPermissions,
     {
       id: aliveRole.id,
       deny: ["SEND_MESSAGES", "VIEW_CHANNEL"],
@@ -228,13 +278,6 @@ async function createChannels(interaction, users) {
     masonPermissions,
     category
   );
-
-  // We might not have to make these channels but commands that only they see?
-  // hunter
-  // Mason
-  // Baker
-  // Bodyguard
-  // Love birds?
 }
 
 async function createChannel(interaction, name, permissionOverwrites, parent) {
@@ -252,23 +295,21 @@ async function createCategory(interaction, name) {
 }
 
 function createPermissions(users, character) {
-  return users.map((user) => {
-    if (user.character === character) {
-      return {
-        id: user.id,
-        allow: ["SEND_MESSAGES", "VIEW_CHANNEL"],
-      };
-    } else {
-      return {
-        id: user.id,
-        deny: ["SEND_MESSAGES", "VIEW_CHANNEL"],
-      };
-    }
-  });
+  return users
+    .map((user) => {
+      if (user.character === character) {
+        return {
+          id: user.id,
+          allow: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+        };
+      }
+    })
+    .filter((u) => u);
 }
 
 module.exports = {
   startGame,
+  removeAllGameChannels,
   getPlayingUsers,
   giveUserRoles,
   getRole,
