@@ -9,15 +9,10 @@ async function findUser(user_id) {
 }
 
 async function updateUser(user_id, updatedUser) {
-  const result = await db
-    .collection("user")
-    .updateOne({ user_id }, { $set: updatedUser });
-  console.log(`${result.matchedCount} document(s) matched the query criteria`);
-  console.log(`${result.modifiedCount} documents was/were updated`);
+  await db.collection("user").updateOne({ user_id }, { $set: updatedUser });
 }
 
 async function createUsers(newUsers) {
-  console.log(newUsers);
   await db.collection("user").insertMany(newUsers);
 }
 
