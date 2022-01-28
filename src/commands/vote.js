@@ -1,8 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { commandNames } = require("../util/commandHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("vote")
+    .setName(commandNames.VOTE)
     .setDescription("vote for a user")
     .addUserOption((option) =>
       option

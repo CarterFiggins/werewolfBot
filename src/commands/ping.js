@@ -1,8 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { commandNames } = require("../util/commandHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("ping")
+    .setName(commandNames.PING)
     .setDescription("Replies with Pong!"),
   async execute(interaction) {
     // await interaction.deferReply(); // makes a task run longer than 3 seconds

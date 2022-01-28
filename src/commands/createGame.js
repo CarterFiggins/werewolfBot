@@ -1,9 +1,10 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { startGame } = require("../util/gameHelpers");
+const { commandNames } = require("../util/commandHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("play")
+    .setName(commandNames.CREATE_GAME)
     .setDescription("creates the game"),
   async execute(interaction) {
     await startGame(interaction);

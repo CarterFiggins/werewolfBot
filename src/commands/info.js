@@ -1,8 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { commandNames } = require("../util/commandHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("info")
+    .setName(commandNames.INFO)
     .setDescription("Get info about a user or a server!")
     .addSubcommand((subcommand) =>
       subcommand

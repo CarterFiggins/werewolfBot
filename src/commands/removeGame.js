@@ -1,9 +1,12 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { removeAllGameChannels } = require("../util/gameHelpers");
 const { deleteAllUsers } = require("../werewolf_db");
+const { commandNames } = require("../util/commandHelpers");
 
 module.exports = {
-  data: new SlashCommandBuilder().setName("end").setDescription("end the game"),
+  data: new SlashCommandBuilder()
+    .setName(commandNames.REMOVE_GAME)
+    .setDescription("end the game"),
   async execute(interaction) {
     // Delete users from db
     deleteAllUsers();

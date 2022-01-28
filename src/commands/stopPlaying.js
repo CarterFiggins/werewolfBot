@@ -1,9 +1,10 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { getRole, roleNames } = require("../util/gameHelpers");
+const { commandNames } = require("../util/commandHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("stop_playing")
+    .setName(commandNames.STOP_PLAYING)
     .setDescription("give the playing role to user"),
 
   async execute(interaction) {
