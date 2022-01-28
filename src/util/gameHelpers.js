@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const { createUsers } = require("../werewolf_db");
+const { gameCommandPermissions } = require("./commandHelpers");
 
 const roleNames = {
   PLAYING: "Playing",
@@ -34,6 +35,7 @@ async function startGame(interaction) {
   const playingUsers = await getPlayingUsers(interaction);
   const users = await giveUserRoles(interaction, playingUsers);
   await createChannels(interaction, users);
+  await gameCommandPermissions(interaction, users);
 }
 
 async function getPlayingUsers(interaction) {

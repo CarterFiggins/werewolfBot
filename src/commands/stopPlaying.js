@@ -5,7 +5,7 @@ const { commandNames } = require("../util/commandHelpers");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.STOP_PLAYING)
-    .setDescription("give the playing role to user"),
+    .setDescription("removes the playing role from the user"),
 
   async execute(interaction) {
     const member = await interaction.guild.members.fetch(interaction.user.id);
