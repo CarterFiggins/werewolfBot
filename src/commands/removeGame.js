@@ -1,6 +1,10 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { removeAllGameChannels } = require("../util/gameHelpers");
-const { deleteAllUsers } = require("../werewolf_db");
+const {
+  deleteAllUsers,
+  deleteGame,
+  deleteAllVotes,
+} = require("../werewolf_db");
 const { commandNames } = require("../util/commandHelpers");
 
 module.exports = {
@@ -13,6 +17,8 @@ module.exports = {
     // remove channels
     const currentChannels = await interaction.guild.channels.fetch();
     removeAllGameChannels(currentChannels);
+    await deleteGame(interaction.guild.id);
+    await deleteAllVotes(interaction.guild.id);
     await interaction.reply({ content: "Game Ended", ephemeral: true });
   },
 };

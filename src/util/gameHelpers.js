@@ -1,20 +1,13 @@
 const _ = require("lodash");
-const { createUsers } = require("../werewolf_db");
+const { createUsers, createGame } = require("../werewolf_db");
+const { sendStartMessages, channelNames } = require("./channelHelpers");
+const { timeScheduling } = require("./timeHelper");
 const { gameCommandPermissions } = require("./commandHelpers");
 
 const roleNames = {
   PLAYING: "Playing",
   ALIVE: "Alive",
   DEAD: "Dead",
-};
-
-const channelNames = {
-  THE_TOWN: "the-town",
-  TOWN_SQUARE: "town-square",
-  WEREWOLVES: "werewolves",
-  SEER: "seer",
-  AFTER_LIFE: "after-life",
-  MASON: "mason",
 };
 
 const characters = {
@@ -36,6 +29,26 @@ async function startGame(interaction) {
   const users = await giveUserRoles(interaction, playingUsers);
   await createChannels(interaction, users);
   await gameCommandPermissions(interaction, users);
+  await createGameDocument(interaction);
+  await timeScheduling(
+    interaction.guild.client,
+    interaction.guild.id,
+    "8",
+    "20"
+  );
+  await sendStartMessages(interaction);
+}
+
+async function createGameDocument(interaction) {
+  await createGame({
+    guild_id: interaction.guild.id,
+    is_day: false,
+    first_night: true,
+    active: true,
+    user_death_id: null,
+    user_protected_id: null,
+    user_guarded_id: null,
+  });
 }
 
 async function getPlayingUsers(interaction) {
@@ -130,6 +143,7 @@ async function giveUserRoles(interaction, users) {
       name: user.username,
       nickname: member.nickname,
       character: newCharacter,
+      guild_id: interaction.guild.id,
     };
     switch (newCharacter) {
       case characters.SEER:
@@ -137,12 +151,14 @@ async function giveUserRoles(interaction, users) {
         break;
       case characters.BODY_GUARD:
         userInfo.guard = true;
+        userInfo.last_guard_id = null;
         break;
       case characters.FOOL:
         userInfo.see = true;
         break;
       case characters.PRIEST:
         userInfo.protect = true;
+        userInfo.last_protect_id = null;
         userInfo.holyWater = true;
         break;
     }

@@ -11,6 +11,7 @@ const commandNames = {
   STOP_PLAYING: "stop_playing",
   VOTE: "vote",
   SERVER_SETUP: "server_setup",
+  RESET_SCHEDULING: "reset_scheduling",
 };
 
 async function gameCommandPermissions(interaction, users) {}
@@ -93,6 +94,10 @@ async function setupCommandPermissions(interaction) {
       id: organizedCommands.vote.id,
       permissions: allowPlayingPermissions,
     },
+    {
+      id: organizedCommands.reset_scheduling.id,
+      permissions: ownersPermissions,
+    },
   ];
 
   await interaction.guild.commands.permissions.set({ fullPermissions });
@@ -120,6 +125,9 @@ function organizeCommands(commands) {
         break;
       case commandNames.VOTE:
         commandObject.vote = command;
+        break;
+      case commandNames.RESET_SCHEDULING:
+        commandObject.reset_scheduling = command;
         break;
     }
   });
