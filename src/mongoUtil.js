@@ -11,7 +11,7 @@ module.exports = {
         keepAlive: true,
       },
       (err, mongoClient) => {
-        _db = mongoClient.db("Werewolf");
+        _db = mongoClient.db(process.env.MONGODB_NAME);
         return callback(err);
       }
     );
