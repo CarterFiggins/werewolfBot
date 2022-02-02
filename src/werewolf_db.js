@@ -1,11 +1,11 @@
 const db = require("./mongoUtil").getDb();
 
-async function deleteAllUsers() {
-  await db.collection("users").deleteMany({});
+async function deleteAllUsers(guild_id) {
+  await db.collection("users").deleteMany({ guild_id });
 }
 
-async function findUser(user_id) {
-  return await db.collection("users").findOne({ user_id });
+async function findUser(user_id, guild_id) {
+  return await db.collection("users").findOne({ user_id, guild_id });
 }
 
 async function updateUser(user_id, updatedUser) {
@@ -16,10 +16,10 @@ async function createUsers(newUsers) {
   await db.collection("users").insertMany(newUsers);
 }
 
-async function upsertVote(user_id, updatedVote) {
+async function upsertVote(user_id, guild_id, updatedVote) {
   db.collection("votes").updateOne(
-    { user_id },
-    { set: updatedVote },
+    { user_id, guild_id },
+    { $set: updatedVote },
     { upsert: true }
   );
 }

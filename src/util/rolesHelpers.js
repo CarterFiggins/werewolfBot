@@ -41,6 +41,16 @@ async function setupRoles(interaction) {
   }
 }
 
+async function removeGameRolesFromMembers(members, roles) {
+  const organizedRoles = organizeRoles(roles);
+  members.forEach((member) => {
+    member.roles.remove(organizedRoles.dead);
+    member.roles.remove(organizedRoles.alive);
+    // TODO: remove for testing
+    member.roles.add(organizedRoles.playing);
+  });
+}
+
 function organizeRoles(roles) {
   const rolesObject = {};
   roles.forEach((role) => {
@@ -65,5 +75,6 @@ function organizeRoles(roles) {
 module.exports = {
   setupRoles,
   organizeRoles,
+  removeGameRolesFromMembers,
   roleNames,
 };

@@ -30,12 +30,7 @@ async function startGame(interaction) {
   await createChannels(interaction, users);
   await gameCommandPermissions(interaction, users);
   await createGameDocument(interaction);
-  await timeScheduling(
-    interaction.guild.client,
-    interaction.guild.id,
-    "8",
-    "20"
-  );
+  await timeScheduling(interaction, "8", "20");
   await sendStartMessages(interaction);
 }
 
@@ -212,13 +207,13 @@ async function createChannels(interaction, users) {
 
   nonPlayersPermissions = {
     id: interaction.guild.id,
-    deny: ["SEND_MESSAGES"],
+    deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
     allow: ["VIEW_CHANNEL"],
   };
 
   deadPermissions = {
     id: deadRole.id,
-    deny: ["SEND_MESSAGES"],
+    deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
     allow: ["VIEW_CHANNEL"],
   };
 
