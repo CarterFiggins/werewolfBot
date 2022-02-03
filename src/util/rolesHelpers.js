@@ -46,8 +46,6 @@ async function removeGameRolesFromMembers(members, roles) {
   members.forEach((member) => {
     member.roles.remove(organizedRoles.dead);
     member.roles.remove(organizedRoles.alive);
-    // TODO: remove for testing
-    member.roles.add(organizedRoles.playing);
   });
 }
 
