@@ -1,3 +1,5 @@
+const _ = require("lodash");
+
 const channelNames = {
   THE_TOWN: "the-town",
   TOWN_SQUARE: "town-square",
@@ -42,7 +44,8 @@ async function sendStartMessages(interaction, users) {
 
 function showUsersCharacter(users) {
   let message = "";
-  users.forEach((user) => {
+
+  _.shuffle(users).forEach((user) => {
     message += `${user} is a ${user.character}\n`;
   });
   return message;

@@ -16,19 +16,28 @@ module.exports = {
     .setName(commandNames.REMOVE_GAME)
     .setDescription("end the game"),
   async execute(interaction) {
-    const cursor = await findAllUsers(interaction.guild.id);
-    const allUsers = await cursor.toArray();
-    await deleteAllUsers(interaction.guild.id);
+    // stop scheduling day and night
+    await schedule.gracefulShutdown();
+
+    // Remove Channels
     const currentChannels = await interaction.guild.channels.fetch();
     removeAllGameChannels(currentChannels);
-    const currentMembers = await interaction.guild.members.fetch();
+
     // removing all users game command permissions
+    const cursor = await findAllUsers(interaction.guild.id);
+    const allUsers = await cursor.toArray();
     await gameCommandPermissions(interaction, allUsers, false);
+
+    // remove all discord roles from players
     const roles = await interaction.guild.roles.fetch();
+    const currentMembers = await interaction.guild.members.fetch();
     await removeGameRolesFromMembers(currentMembers, roles);
-    await schedule.gracefulShutdown();
+
+    // delete all game info from database
+    await deleteAllUsers(interaction.guild.id);
     await deleteGame(interaction.guild.id);
     await deleteAllVotes(interaction.guild.id);
+
     await interaction.reply({ content: "Game Ended", ephemeral: true });
   },
 };

@@ -18,6 +18,7 @@ async function startGame(interaction) {
     return;
   }
 
+  await sendUsersMessage(interaction, users);
   await createChannels(interaction, users);
   // give users character command permissions
   await gameCommandPermissions(interaction, users, true);
@@ -27,6 +28,18 @@ async function startGame(interaction) {
 
   // successfully created game
   return true;
+}
+
+async function sendUsersMessage(interaction, users) {
+  await Promise.all(
+    users.map(async (user) => {
+      member = interaction.guild.members.cache.get(user.id);
+      // TODO add a switch statement on character to have nice greetings
+      if (!member.user.bot) {
+        await member.send(`You are a ${user.character}`);
+      }
+    })
+  );
 }
 
 async function createGameDocument(interaction) {

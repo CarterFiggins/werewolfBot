@@ -60,16 +60,18 @@ const characters = {
 };
 
 async function resetNightPowers(users, guildId) {
-  users.forEach(async (user) => {
-    switch (user.character) {
-      case characters.SEER:
-        await updateUser(user.id, guildId, { see: true });
-        break;
-      case characters.BODYGUARD:
-        await updateUser(user.id, guildId, { guard: true });
-        break;
-    }
-  });
+  await Promise.all(
+    users.map(async (user) => {
+      switch (user.character) {
+        case characters.SEER:
+          await updateUser(user.id, guildId, { see: true });
+          break;
+        case characters.BODYGUARD:
+          await updateUser(user.id, guildId, { guard: true });
+          break;
+      }
+    })
+  );
 }
 
 async function removeUsersPermissions(interaction, user) {

@@ -2,15 +2,19 @@ require("dotenv").config();
 const _ = require("lodash");
 const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
-const { organizeRoles } = require("./rolesHelpers");
+const { organizeRoles, removeGameRolesFromMembers } = require("./rolesHelpers");
 const {
   removeUsersPermissions,
   resetNightPowers,
+  gameCommandPermissions,
+  characters,
 } = require("./commandHelpers");
 const {
   findGame,
   updateGame,
+  deleteGame,
   findUser,
+  deleteAllUsers,
   getCountedVotes,
   deleteAllVotes,
 } = require("../werewolf_db");
@@ -82,7 +86,15 @@ async function dayTimeJob(interaction) {
   });
 
   organizedChannels.townSquare.send(`${message}\n It is day time`);
-  //TODO: check if game is over!
+
+  await checkGame(
+    interaction,
+    members,
+    organizedRoles.alive,
+    roles,
+    guildId,
+    organizedChannels.townSquare
+  );
 }
 
 // Handles town votes and death
@@ -141,7 +153,7 @@ async function nightTimeJob(interaction) {
     return;
   }
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
-  member = members.get(voteWinner._id.voted_user_id);
+  const member = members.get(voteWinner._id.voted_user_id);
   member.roles.remove(organizedRoles.alive);
   member.roles.add(organizedRoles.dead);
   const discordUser = users.get(voteWinner._id.voted_user_id);
@@ -164,7 +176,71 @@ async function nightTimeJob(interaction) {
   organizedChannels.townSquare.send(
     `${message}\n${deathMessage}\n It is night time`
   );
-  //TODO: check if game is over!
+
+  await checkGame(
+    interaction,
+    members,
+    organizedRoles.alive,
+    roles,
+    guildId,
+    organizedChannels.townSquare
+  );
+}
+
+async function checkGame(
+  interaction,
+  members,
+  aliveRole,
+  roles,
+  guildId,
+  townSquare
+) {
+  aliveMembers = members
+    .map((member) => {
+      if (member._roles.includes(aliveRole.id)) {
+        return member;
+      }
+    })
+    .filter((m) => m);
+
+  let werewolfCount = 0;
+
+  await Promise.all(
+    aliveMembers.map(async (member) => {
+      const dbUser = await findUser(member.user.id, guildId);
+      if (dbUser.character === characters.WEREWOLF) {
+        werewolfCount += 1;
+      }
+    })
+  );
+
+  if (werewolfCount === 0) {
+    townSquare.send("There are no more werewolves. **Villagers Win!**");
+    await endGame(interaction, guildId, roles, members);
+  }
+
+  if (werewolfCount >= aliveMembers.length - werewolfCount) {
+    townSquare.send("Werewolves out number the villagers. **Werewolves Win!**");
+    await endGame(interaction, guildId, roles, members);
+  }
+}
+
+async function endGame(interaction, guildId, roles, members) {
+  // stop scheduling day and night
+  await schedule.gracefulShutdown();
+
+  // removing all users game command permissions
+  const cursor = await findAllUsers(guildId);
+  const allUsers = await cursor.toArray();
+  await gameCommandPermissions(interaction, allUsers, false);
+
+  // remove all discord roles from players
+  await removeGameRolesFromMembers(members, roles);
+
+  // delete all game info from database
+  await deleteAllUsers(guildId);
+  await deleteGame(guildId);
+  await deleteAllVotes(guildId);
 }
 
 module.exports = {
