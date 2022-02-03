@@ -26,16 +26,26 @@ const masonStart =
 const bodyguardStart =
   "You are a bodyguard who protects this town! Use the `/guard` command to guard people at night. If you guard a player that the werewolves attack you will save them and they will not die. You can guard yourself but you can't guard someone twice in a row";
 
-async function sendStartMessages(interaction) {
+async function sendStartMessages(interaction, users) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
 
   organizedChannels.townSquare.send(townSquareStart);
   organizedChannels.werewolves.send(werewolfStart);
   organizedChannels.seer.send(seerStart);
-  organizedChannels.afterLife.send(afterLifeStart);
+  organizedChannels.afterLife.send(
+    `${afterLifeStart}\n${showUsersCharacter(users)}`
+  );
   organizedChannels.mason.send(masonStart);
   organizedChannels.bodyguard.send(bodyguardStart);
+}
+
+function showUsersCharacter(users) {
+  let message = "";
+  users.forEach((user) => {
+    message += `${user} is a ${user.character}\n`;
+  });
+  return message;
 }
 
 function organizeChannels(channels) {

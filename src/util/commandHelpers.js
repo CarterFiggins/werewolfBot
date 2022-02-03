@@ -5,7 +5,7 @@ const { updateUser } = require("../werewolf_db");
 /* 
 To add a new game command add it to the
   1. commandNames
-  2. removeUserPermissions
+  2. removeUsersPermissions
   3. gameCommandPermissions
   4. organizeGameCommands
 */
@@ -19,6 +19,7 @@ const commandNames = {
   STOP_PLAYING: "stop_playing",
   VOTE: "vote",
   SERVER_SETUP: "server_setup",
+  SHOW_VOTES: "show_votes",
   RESET_SCHEDULING: "reset_scheduling",
   KILL: "kill",
   SEE: "see",
@@ -88,16 +89,18 @@ async function removeUsersPermissions(interaction, user) {
       command = organizedCommands.guard;
       break;
   }
-  await interaction.guild.commands.permissions.add({
-    command: command.id,
-    permissions: [
-      {
-        id: user.user_id,
-        type: "USER",
-        permission: false,
-      },
-    ],
-  });
+  if (command) {
+    await interaction.guild.commands.permissions.add({
+      command: command.id,
+      permissions: [
+        {
+          id: user.user_id,
+          type: "USER",
+          permission: false,
+        },
+      ],
+    });
+  }
 }
 
 async function gameCommandPermissions(interaction, users, permission) {
@@ -216,8 +219,12 @@ async function setupCommandPermissions(interaction) {
       permissions: allowPlayingPermissions,
     },
     {
-      id: organizedCommands.reset_scheduling.id,
+      id: organizedCommands.resetScheduling.id,
       permissions: ownersPermissions,
+    },
+    {
+      id: organizedCommands.showVotes.id,
+      permissions: allowPlayingPermissions,
     },
   ];
 
@@ -247,7 +254,9 @@ function organizeSetupCommands(commands) {
         commandObject.vote = command;
         break;
       case commandNames.RESET_SCHEDULING:
-        commandObject.reset_scheduling = command;
+        commandObject.resetScheduling = command;
+      case commandNames.SHOW_VOTES:
+        commandObject.showVotes = command;
     }
   });
   return commandObject;

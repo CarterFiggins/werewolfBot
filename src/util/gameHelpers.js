@@ -23,7 +23,7 @@ async function startGame(interaction) {
   await gameCommandPermissions(interaction, users, true);
   await createGameDocument(interaction);
   await timeScheduling(interaction, "8", "20");
-  await sendStartMessages(interaction);
+  await sendStartMessages(interaction, users);
 
   // successfully created game
   return true;
