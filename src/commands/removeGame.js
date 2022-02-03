@@ -1,11 +1,13 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { removeAllGameChannels } = require("../util/gameHelpers");
 const { removeGameRolesFromMembers } = require("../util/rolesHelpers");
+const { gameCommandPermissions } = require("../util/commandHelpers");
 const schedule = require("node-schedule");
 const {
   deleteAllUsers,
   deleteGame,
   deleteAllVotes,
+  findAllUsers,
 } = require("../werewolf_db");
 const { commandNames } = require("../util/commandHelpers");
 
@@ -14,10 +16,14 @@ module.exports = {
     .setName(commandNames.REMOVE_GAME)
     .setDescription("end the game"),
   async execute(interaction) {
-    deleteAllUsers(interaction.guild.id);
+    const cursor = await findAllUsers(interaction.guild.id);
+    const allUsers = await cursor.toArray();
+    await deleteAllUsers(interaction.guild.id);
     const currentChannels = await interaction.guild.channels.fetch();
     removeAllGameChannels(currentChannels);
     const currentMembers = await interaction.guild.members.fetch();
+    // removing all users game command permissions
+    await gameCommandPermissions(interaction, allUsers, false);
     const roles = await interaction.guild.roles.fetch();
     await removeGameRolesFromMembers(currentMembers, roles);
     await schedule.gracefulShutdown();

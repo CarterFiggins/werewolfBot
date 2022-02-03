@@ -3,6 +3,7 @@ const channelNames = {
   TOWN_SQUARE: "town-square",
   WEREWOLVES: "werewolves",
   SEER: "seer",
+  BODYGUARD: "bodyguard",
   AFTER_LIFE: "after-life",
   MASON: "mason",
 };
@@ -22,6 +23,9 @@ const afterLifeStart =
 const masonStart =
   "You are the masons. You can't tell anyone! This is a secretive group. If the body guard protects one of you than he/she will join! You are on the villager's side and you know everyone in this group is not a werewolf";
 
+const bodyguardStart =
+  "You are a bodyguard who protects this town! Use the `/guard` command to guard people at night. If you guard a player that the werewolves attack you will save them and they will not die. You can guard yourself but you can't guard someone twice in a row";
+
 async function sendStartMessages(interaction) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
@@ -31,6 +35,7 @@ async function sendStartMessages(interaction) {
   organizedChannels.seer.send(seerStart);
   organizedChannels.afterLife.send(afterLifeStart);
   organizedChannels.mason.send(masonStart);
+  organizedChannels.bodyguard.send(bodyguardStart);
 }
 
 function organizeChannels(channels) {
@@ -51,6 +56,9 @@ function organizeChannels(channels) {
         break;
       case channelNames.MASON:
         channelObject.mason = channel;
+        break;
+      case channelNames.BODYGUARD:
+        channelObject.bodyguard = channel;
         break;
     }
   });

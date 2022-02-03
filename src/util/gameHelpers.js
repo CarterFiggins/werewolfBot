@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { createUsers, createGame } = require("../werewolf_db");
 const { sendStartMessages, channelNames } = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
-const { gameCommandPermissions } = require("./commandHelpers");
+const { gameCommandPermissions, characters } = require("./commandHelpers");
 
 const roleNames = {
   PLAYING: "Playing",
@@ -10,28 +10,23 @@ const roleNames = {
   DEAD: "Dead",
 };
 
-const characters = {
-  WEREWOLF: "werewolf",
-  VILLAGER: "villager",
-  SEER: "seer",
-  BODY_GUARD: "body guard",
-  APPRENTICE_SEER: "apprentice seer",
-  FOOL: "fool",
-  PRIEST: "priest",
-  LYCAN: "lycan",
-  TRAITOR: "traitor",
-  MASON: "mason",
-  HUNTER: "hunter",
-};
-
 async function startGame(interaction) {
   const playingUsers = await getPlayingUsers(interaction);
   const users = await giveUserRoles(interaction, playingUsers);
+  // if start game returns falsy the bot will reply with an error
+  if (!users) {
+    return;
+  }
+
   await createChannels(interaction, users);
-  await gameCommandPermissions(interaction, users);
+  // give users character command permissions
+  await gameCommandPermissions(interaction, users, true);
   await createGameDocument(interaction);
   await timeScheduling(interaction, "8", "20");
   await sendStartMessages(interaction);
+
+  // successfully created game
+  return true;
 }
 
 async function createGameDocument(interaction) {
@@ -73,19 +68,20 @@ async function giveUserRoles(interaction, users) {
   // At least 2 are regular village and Always seer and body guard
   let currentCharacters = [
     characters.SEER,
-    characters.BODY_GUARD,
+    characters.BODYGUARD,
     characters.VILLAGER,
     characters.VILLAGER,
   ];
+  // TODO: make these characters and add them in commandHelpers
   const leftOverRoles = _.shuffle([
-    characters.APPRENTICE_SEER,
-    characters.FOOL,
-    characters.PRIEST,
-    characters.LYCAN,
-    characters.TRAITOR,
-    characters.MASON,
-    characters.MASON,
-    characters.HUNTER,
+    // characters.APPRENTICE_SEER,
+    // characters.FOOL,
+    // characters.PRIEST,
+    // characters.LYCAN,
+    // characters.TRAITOR,
+    // characters.MASON,
+    // characters.MASON,
+    // characters.HUNTER,
   ]);
   numberOfPlayers = users.length;
   numberOfWerewolves = Math.floor(numberOfPlayers / 3);
@@ -97,6 +93,7 @@ async function giveUserRoles(interaction, users) {
       content: "Error: Not enough players (need at least 5)",
       ephemeral: true,
     });
+    return;
   }
 
   // add werewolves
@@ -115,7 +112,11 @@ async function giveUserRoles(interaction, users) {
   currentCharacters = _.shuffle(currentCharacters);
 
   if (currentCharacters.length !== users.length) {
-    throw new Error("Characters don't match users");
+    await interaction.reply({
+      content: "ERROR: Characters do not match users",
+      ephemeral: true,
+    });
+    return;
   }
 
   // This could be done better fetching for roles twice
@@ -144,9 +145,9 @@ async function giveUserRoles(interaction, users) {
       case characters.SEER:
         userInfo.see = true;
         break;
-      case characters.BODY_GUARD:
+      case characters.BODYGUARD:
         userInfo.guard = true;
-        userInfo.last_guard_id = null;
+        userInfo.last_user_guard_id = null;
         break;
       case characters.FOOL:
         userInfo.see = true;
@@ -185,6 +186,7 @@ async function removeAllGameChannels(channels) {
       case channelNames.MASON:
       case channelNames.AFTER_LIFE:
       case channelNames.THE_TOWN:
+      case channelNames.BODYGUARD:
         channel.delete();
     }
   });
@@ -247,6 +249,10 @@ async function createChannels(interaction, users) {
   const masonPermissions = createPermissions(users, characters.MASON).concat(
     defaultPermissions
   );
+  const bodyguardPermissions = createPermissions(
+    users,
+    characters.BODYGUARD
+  ).concat(defaultPermissions);
 
   afterLifePermissions = [
     nonPlayersPermissions,
@@ -291,6 +297,12 @@ async function createChannels(interaction, users) {
     masonPermissions,
     category
   );
+  await createChannel(
+    interaction,
+    channelNames.BODYGUARD,
+    bodyguardPermissions,
+    category
+  );
 }
 
 async function createChannel(interaction, name, permissionOverwrites, parent) {
@@ -324,7 +336,6 @@ module.exports = {
   startGame,
   removeAllGameChannels,
   getPlayingUsers,
-  giveUserRoles,
   getRole,
   roleNames,
   channelNames,

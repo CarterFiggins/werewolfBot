@@ -17,7 +17,13 @@ module.exports = {
       return;
     }
 
-    await startGame(interaction);
+    const ok = await startGame(interaction);
+    if (!ok) {
+      await interaction.reply({
+        content: "Error in game Creation",
+        ephemeral: true,
+      });
+    }
     await interaction.reply({ content: "Game Created", ephemeral: true });
   },
 };

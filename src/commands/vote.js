@@ -20,7 +20,7 @@ module.exports = {
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const votedMember = interaction.guild.members.cache.get(votedUser.id);
     const mapRoles = votedMember.roles.cache;
-    roles = mapRoles.map((role) => {
+    const roles = mapRoles.map((role) => {
       return role.name;
     });
 
@@ -37,7 +37,7 @@ module.exports = {
     if (game.first_night) {
       await interaction.reply({
         content:
-          "Can't vote before the first night\nhttps://tenor.com/VZNU.gif",
+          "Can't vote before the first night wait until tomorrow\nhttps://tenor.com/VZNU.gif",
         ephemeral: true,
       });
       return;
@@ -50,17 +50,17 @@ module.exports = {
       });
       return;
     }
-    if (!roles.includes(roleNames.ALIVE)) {
+    if (votedUser.bot) {
       await interaction.reply({
-        content:
-          "You voted for someone that is not alive try again\nhttps://tenor.com/blWe0.gif",
+        content: "https://tenor.com/67jg.gif",
         ephemeral: true,
       });
       return;
     }
-    if (votedUser.bot) {
+    if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content: "https://tenor.com/67jg.gif",
+        content:
+          "You voted for someone that is not alive try again\nhttps://tenor.com/blWe0.gif",
         ephemeral: true,
       });
       return;

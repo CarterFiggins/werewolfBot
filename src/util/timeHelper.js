@@ -4,6 +4,10 @@ const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
 const { organizeRoles } = require("./rolesHelpers");
 const {
+  removeUsersPermissions,
+  resetNightPowers,
+} = require("./commandHelpers");
+const {
   findGame,
   updateGame,
   findUser,
@@ -21,14 +25,20 @@ async function timeScheduling(interaction, dayHour, nightHour) {
   dayRule.minute = 0;
   dayRule.hour = dayHour;
   dayRule.tz = process.env.TIME_ZONE_TZ;
-  // schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
-  // schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
+  schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
+  schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
 
   // TODO: remove TESTING
-  schedule.scheduleJob("30 * * * *", () => nightTimeJob(interaction));
-  schedule.scheduleJob("0 * * * *", () => dayTimeJob(interaction));
+  // schedule.scheduleJob(
+  //   "2,6,10,14,18,22,26,30,34,38,42,46,50,54,58 * * * *",
+  //   () => nightTimeJob(interaction)
+  // );
+  // schedule.scheduleJob(
+  //   "0,4,8,12,16,20,24,28,32,36,40,44,48,52,56 * * * *",
+  //   () => dayTimeJob(interaction)
+  // );
 }
-
+// TODO: if bodyguard does not guard set last guard id to null
 // Handles werewolf kill.
 async function dayTimeJob(interaction) {
   const guildId = interaction.guild.id;
@@ -85,11 +95,10 @@ async function nightTimeJob(interaction) {
   const organizedRoles = organizeRoles(roles);
   const channels = await client.channels.cache;
   const organizedChannels = organizeChannels(channels);
-
   const game = await findGame(guildId);
+
   if (game.first_night) {
     await updateGame(guildId, {
-      first_night: false,
       is_day: false,
     });
     organizedChannels.werewolves.send(
@@ -101,18 +110,10 @@ async function nightTimeJob(interaction) {
     console.log("It is currently night skip");
     return;
   }
-  let message = "NO ONE DIED?!?";
+  let message;
 
   const cursor = await getCountedVotes(guildId);
   const allVotes = await cursor.toArray();
-
-  if (_.isEmpty(allVotes)) {
-    await updateGame(guildId, {
-      is_day: false,
-    });
-    organizedChannels.townSquare.send("No one voted\nIt is night time");
-    return;
-  }
 
   let topVotes = [];
   let topCount = 0;
@@ -124,22 +125,28 @@ async function nightTimeJob(interaction) {
     }
   });
 
-  let voteWinner;
   let killedRandomly = false;
-
-  if (topVotes.length <= 1) {
-    voteWinner = _.head(allVotes);
-  } else {
-    voteWinner = _.head(_.shuffle(topVotes));
+  if (topVotes.length > 1) {
     killedRandomly = true;
   }
+  const voteWinner = _.head(_.shuffle(topVotes));
 
+  await deleteAllVotes(guildId);
+  await resetNightPowers(users, guildId);
+  if (!voteWinner) {
+    await updateGame(guildId, {
+      is_day: false,
+    });
+    organizedChannels.townSquare.send("No one has voted...\nIt is night");
+    return;
+  }
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
   member = members.get(voteWinner._id.voted_user_id);
   member.roles.remove(organizedRoles.alive);
   member.roles.add(organizedRoles.dead);
   const discordUser = users.get(voteWinner._id.voted_user_id);
-  await deleteAllVotes(guildId);
+  // removes deadUser character command Permissions
+  await removeUsersPermissions(interaction, deadUser);
 
   // TODO: add a script for each character death?
   // TODO: add check to see if it was the hunter who died
