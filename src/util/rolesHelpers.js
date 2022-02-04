@@ -49,6 +49,19 @@ async function removeGameRolesFromMembers(members, roles) {
   });
 }
 
+async function getRole(interaction, roleName) {
+  const roles = await interaction.guild.roles.fetch();
+
+  let foundRole = null;
+
+  roles.forEach((role) => {
+    if (role.name === roleName) {
+      foundRole = role;
+    }
+  });
+  return foundRole;
+}
+
 function organizeRoles(roles) {
   const rolesObject = {};
   roles.forEach((role) => {
@@ -75,4 +88,5 @@ module.exports = {
   organizeRoles,
   removeGameRolesFromMembers,
   roleNames,
+  getRole,
 };

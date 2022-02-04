@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { getRole, roleNames } = require("../util/gameHelpers");
 const { commandNames } = require("../util/commandHelpers");
+const { getRole, roleNames } = require("../util/rolesHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()

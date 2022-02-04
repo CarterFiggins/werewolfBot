@@ -3,12 +3,7 @@ const { createUsers, createGame } = require("../werewolf_db");
 const { sendStartMessages, channelNames } = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
 const { gameCommandPermissions, characters } = require("./commandHelpers");
-
-const roleNames = {
-  PLAYING: "Playing",
-  ALIVE: "Alive",
-  DEAD: "Dead",
-};
+const { getRole, roleNames } = require("./rolesHelpers");
 
 async function startGame(interaction) {
   const playingUsers = await getPlayingUsers(interaction);
@@ -102,7 +97,7 @@ async function giveUserRoles(interaction, users) {
     numberOfPlayers - numberOfWerewolves - currentCharacters.length;
 
   if (numberOfPlayers < 5) {
-    await interaction.reply({
+    await interaction.followUp({
       content: "Error: Not enough players (need at least 5)",
       ephemeral: true,
     });
@@ -125,7 +120,7 @@ async function giveUserRoles(interaction, users) {
   currentCharacters = _.shuffle(currentCharacters);
 
   if (currentCharacters.length !== users.length) {
-    await interaction.reply({
+    await interaction.followUp({
       content: "ERROR: Characters do not match users",
       ephemeral: true,
     });
@@ -175,19 +170,6 @@ async function giveUserRoles(interaction, users) {
   });
   await createUsers(dbUsers);
   return users;
-}
-
-async function getRole(interaction, roleName) {
-  const roles = await interaction.guild.roles.fetch();
-
-  let foundRole = null;
-
-  roles.forEach((role) => {
-    if (role.name === roleName) {
-      foundRole = role;
-    }
-  });
-  return foundRole;
 }
 
 async function removeAllGameChannels(channels) {
