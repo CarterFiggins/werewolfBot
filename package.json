@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest ./src/__test__",
     "start": "node ./src/main.js",
     "dev": "nodemon ./src/main.js",
     "deploy": "node ./src/deploy-commands.js"
@@ -23,5 +23,8 @@
     "mongodb": "^4.3.1",
     "node-schedule": "^2.1.0",
     "yarn": "^1.22.17"
+  },
+  "devDependencies": {
+    "jest": "^27.4.7"
   }
 }
