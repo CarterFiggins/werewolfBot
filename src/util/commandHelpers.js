@@ -10,17 +10,21 @@ To add a new game command add it to the
   4. organizeGameCommands
 */
 const commandNames = {
-  CREATE_GAME: "play",
+  // Fun Commands
   GIF: "gif",
   INFO: "info",
   PING: "ping",
-  PLAYING: "playing",
-  REMOVE_GAME: "end",
-  STOP_PLAYING: "stop_playing",
-  VOTE: "vote",
+  // Admin commands
   SERVER_SETUP: "server_setup",
-  SHOW_VOTES: "show_votes",
+  CREATE_GAME: "play",
+  REMOVE_GAME: "end",
   RESET_SCHEDULING: "reset_scheduling",
+  // Player game commands
+  PLAYING: "playing",
+  STOP_PLAYING: "stop_playing",
+  WHO_IS_ALIVE: "who_is_alive",
+  SHOW_VOTES: "show_votes",
+  VOTE: "vote",
   KILL: "kill",
   SEE: "see",
   GUARD: "guard",

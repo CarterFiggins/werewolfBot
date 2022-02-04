@@ -17,11 +17,12 @@ module.exports = {
       return;
     }
 
+    await interaction.deferReply();
     const ok = await startGame(interaction);
     // error message was sent
     if (!ok) {
       return;
     }
-    await interaction.reply({ content: "Game Created", ephemeral: true });
+    await interaction.followUp({ content: "Game Created", ephemeral: true });
   },
 };
