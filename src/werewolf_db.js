@@ -18,6 +18,17 @@ async function findAllUsers(guild_id) {
   ]);
 }
 
+async function findUsersWithIds(guild_id, user_ids) {
+  return await db.collection("users").aggregate([
+    {
+      $match: {
+        guild_id: guild_id,
+        user_id: { $in: user_ids },
+      },
+    },
+  ]);
+}
+
 async function updateUser(user_id, guild_id, updatedUser) {
   await db
     .collection("users")
@@ -83,6 +94,7 @@ module.exports = {
   deleteAllUsers,
   findUser,
   findAllUsers,
+  findUsersWithIds,
   updateUser,
   createUsers,
   upsertVote,
