@@ -2,7 +2,11 @@ const _ = require("lodash");
 const { createUsers, createGame } = require("../werewolf_db");
 const { sendStartMessages, channelNames } = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
-const { gameCommandPermissions, characters } = require("./commandHelpers");
+const {
+  gameCommandPermissions,
+  characters,
+  sendGreeting,
+} = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
 
 async function startGame(interaction) {
@@ -29,10 +33,7 @@ async function sendUsersMessage(interaction, users) {
   await Promise.all(
     users.map(async (user) => {
       member = interaction.guild.members.cache.get(user.id);
-      // TODO add a switch statement on character to have nice greetings
-      if (!member.user.bot) {
-        await member.send(`You are a ${user.character}`);
-      }
+      sendGreeting(member);
     })
   );
 }
@@ -162,7 +163,7 @@ async function giveUserRoles(interaction, users) {
         break;
       case characters.PRIEST:
         userInfo.protect = true;
-        userInfo.last_protect_id = null;
+        userInfo.last_user_protect_id = null;
         userInfo.holyWater = true;
         break;
     }
@@ -331,8 +332,6 @@ module.exports = {
   startGame,
   removeAllGameChannels,
   getPlayingUsers,
-  getRole,
-  roleNames,
   channelNames,
   characters,
 };

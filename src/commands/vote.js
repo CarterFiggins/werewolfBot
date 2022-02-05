@@ -25,7 +25,6 @@ module.exports = {
     });
 
     // TODO: make a random gif generator for each voting error
-    // TODO: message people in the game and tell them who they are.
     if (channel.name !== channelNames.TOWN_SQUARE) {
       await interaction.reply({
         content:

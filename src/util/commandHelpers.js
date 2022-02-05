@@ -63,6 +63,37 @@ const characters = {
   // HUNTER: "hunter",
 };
 
+const voteText =
+  "Every day you may vote to hang someone by using the `/vote` command in the town square.";
+
+async function sendGreeting(member, user) {
+  if (member.user.bot) {
+    return;
+  }
+  switch (user.character) {
+    case characters.VILLAGER:
+      await member.send(
+        `You are a **Villager!** Your job is to find out who is a werewolf and hang them for their crimes. ${voteText} Be careful at night, the werewolves are hungry`
+      );
+      break;
+    case characters.WEREWOLF:
+      await member.send(
+        `You are a **Werewolf!** Don't let the villagers know or they will hang you! It is not your fault they are so tasty. ${voteText} At night use the \`/kill\` command to target a villager to be killed. You can change your target by using the same command. The werewolf team can only target one villager per night.`
+      );
+      break;
+    case characters.SEER:
+      await member.send(
+        `You are a **Seer!** You have been chosen by the spirits to help the villagers get rid of the werewolves. ${voteText} At night use the \`/see\` command to see if a player's character is a werewolf or a villager.`
+      );
+      break;
+    case characters.BODYGUARD:
+      await member.send(
+        `You are a **Bodyguard!** Your job is to guard the village from the werewolves. ${voteText} At night use the \`guard\` command to guard a player from the werewolves. If the werewolves choose the player you guarded then no one will die that night. You may guard yourself but you can't guard someone twice in a row.`
+      );
+      break;
+  }
+}
+
 async function resetNightPowers(users, guildId) {
   await Promise.all(
     users.map(async (user) => {
@@ -292,6 +323,7 @@ module.exports = {
   removeUsersPermissions,
   organizeGameCommands,
   resetNightPowers,
+  sendGreeting,
   commandNames,
   characters,
 };

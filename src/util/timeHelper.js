@@ -17,6 +17,8 @@ const {
   deleteAllUsers,
   getCountedVotes,
   deleteAllVotes,
+  findAllUsers,
+  updateUser,
 } = require("../werewolf_db");
 
 async function timeScheduling(interaction, dayHour, nightHour) {
@@ -31,18 +33,7 @@ async function timeScheduling(interaction, dayHour, nightHour) {
   dayRule.tz = process.env.TIME_ZONE_TZ;
   schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
   schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
-
-  // TODO: remove TESTING
-  // schedule.scheduleJob(
-  //   "2,6,10,14,18,22,26,30,34,38,42,46,50,54,58 * * * *",
-  //   () => nightTimeJob(interaction)
-  // );
-  // schedule.scheduleJob(
-  //   "0,4,8,12,16,20,24,28,32,36,40,44,48,52,56 * * * *",
-  //   () => dayTimeJob(interaction)
-  // );
 }
-// TODO: if bodyguard does not guard set last guard id to null
 // Handles werewolf kill.
 async function dayTimeJob(interaction) {
   const guildId = interaction.guild.id;
@@ -54,6 +45,21 @@ async function dayTimeJob(interaction) {
   const channels = client.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const game = await findGame(guildId);
+
+  // resetting bodyguards last user guarded if they didn't use their power.
+  if (!game.user_guarded_id || !game.user_protected_id) {
+    const cursor = await findAllUsers(guildId);
+    const allUsers = await cursor.toArray();
+    const bodyguard = _.head(
+      allUsers.filter((user) => user.character === characters.BODYGUARD)
+    );
+    if (bodyguard?.guard) {
+      // bodyguard did not use power last night
+      await updateUser(bodyguard.user_id, guildId, {
+        last_user_guard_id: null,
+      });
+    }
+  }
 
   if (game.is_day) {
     console.log("It is currently day skip");
