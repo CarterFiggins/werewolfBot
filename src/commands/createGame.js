@@ -23,6 +23,6 @@ module.exports = {
     if (!ok) {
       return;
     }
-    await interaction.followUp({ content: "Game Created", ephemeral: true });
+    await interaction.editReply({ content: "Game Created", ephemeral: true });
   },
 };

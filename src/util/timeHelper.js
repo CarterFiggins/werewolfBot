@@ -225,12 +225,15 @@ async function checkGame(
     .filter((m) => m);
 
   let werewolfCount = 0;
+  let villagerCount = 0;
 
   await Promise.all(
     aliveMembers.map(async (member) => {
       const dbUser = await findUser(member.user.id, guildId);
       if (dbUser.character === characters.WEREWOLF) {
         werewolfCount += 1;
+      } else {
+        villagerCount += 1;
       }
     })
   );
@@ -240,7 +243,7 @@ async function checkGame(
     await endGame(interaction, guildId, roles, members);
   }
 
-  if (werewolfCount >= aliveMembers.length - werewolfCount) {
+  if (werewolfCount >= villagerCount) {
     townSquare.send("Werewolves out number the villagers. **Werewolves Win!**");
     await endGame(interaction, guildId, roles, members);
   }
@@ -266,4 +269,6 @@ async function endGame(interaction, guildId, roles, members) {
 
 module.exports = {
   timeScheduling,
+  dayTimeJob,
+  nightTimeJob,
 };

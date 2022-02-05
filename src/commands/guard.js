@@ -58,7 +58,7 @@ module.exports = {
     }
     if (guardUser.last_user_guard_id == targetedUser.id) {
       await interaction.reply({
-        content: `You guard ${targetedUser} last night and can not protect someone twice in a row.`,
+        content: `You guarded ${targetedUser} last night and can not protect someone twice in a row.`,
         ephemeral: false,
       });
       return;
