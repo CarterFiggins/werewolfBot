@@ -23,7 +23,7 @@ const {
 
 async function timeScheduling(interaction, dayHour, nightHour) {
   await schedule.gracefulShutdown();
-  const game = await findGame(guildId);
+  const game = await findGame(interaction.guild.id);
   if(!game){
     await interaction.reply({
       content: "No game to schedule",
