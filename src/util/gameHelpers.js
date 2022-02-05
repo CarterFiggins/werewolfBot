@@ -100,7 +100,7 @@ async function giveUserRoles(interaction, users) {
     // characters.HUNTER,
   ]);
   numberOfPlayers = users.length;
-  numberOfWerewolves = Math.floor(numberOfPlayers / 3);
+  numberOfWerewolves = Math.floor(numberOfPlayers / 4);
   leftOverPlayers =
     numberOfPlayers - numberOfWerewolves - currentCharacters.length;
 
