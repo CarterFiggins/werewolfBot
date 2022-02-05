@@ -11,7 +11,7 @@ const { getRole, roleNames } = require("./rolesHelpers");
 
 async function startGame(interaction) {
   const playingUsers = await getPlayingUsers(interaction);
-  if(!playingUsers) {
+  if (!playingUsers) {
     return;
   }
   const users = await giveUserRoles(interaction, playingUsers);
@@ -70,7 +70,10 @@ async function getPlayingUsers(interaction) {
     .filter((m) => m);
 
   if (_.isEmpty(playingUsers)) {
-    await interaction.followUp({ content: "ERROR: No Players", ephemeral: true });
+    await interaction.followUp({
+      content: "ERROR: No Players",
+      ephemeral: true,
+    });
     return;
   }
 

@@ -257,7 +257,7 @@ async function setupCommandPermissions(interaction) {
     },
     {
       id: organizedCommands.resetScheduling.id,
-      permissions: ownersPermissions,
+      permissions: [...ownersPermissions, adminPermissions],
     },
     {
       id: organizedCommands.showVotes.id,
