@@ -23,6 +23,14 @@ const {
 
 async function timeScheduling(interaction, dayHour, nightHour) {
   await schedule.gracefulShutdown();
+  const game = await findGame(guildId);
+  if(!game){
+    await interaction.reply({
+      content: "No game to schedule",
+      ephemeral: true,
+    });
+    return;
+  }
   const nightRule = new schedule.RecurrenceRule();
   const dayRule = new schedule.RecurrenceRule();
   nightRule.minute = 0;
