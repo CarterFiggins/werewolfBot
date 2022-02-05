@@ -11,6 +11,9 @@ const { getRole, roleNames } = require("./rolesHelpers");
 
 async function startGame(interaction) {
   const playingUsers = await getPlayingUsers(interaction);
+  if(!playingUsers) {
+    return;
+  }
   const users = await giveUserRoles(interaction, playingUsers);
   // if start game returns falsy the bot will reply with an error
   if (!users) {
@@ -67,7 +70,8 @@ async function getPlayingUsers(interaction) {
     .filter((m) => m);
 
   if (_.isEmpty(playingUsers)) {
-    throw new Error("No Playing Members");
+    await interaction.followUp({ content: "ERROR: No Players", ephemeral: true });
+    return;
   }
 
   return playingUsers;
