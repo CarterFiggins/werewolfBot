@@ -8,6 +8,7 @@ To add a new game command add it to the
   2. removeUsersPermissions
   3. gameCommandPermissions
   4. organizeGameCommands
+  5. add new file for command
 */
 const commandNames = {
   // Fun Commands
@@ -19,6 +20,8 @@ const commandNames = {
   CREATE_GAME: "play",
   REMOVE_GAME: "end",
   RESET_SCHEDULING: "reset_scheduling",
+  DAY_TIME: "day_time",
+  NIGHT_TIME: "night_time",
   // Player game commands
   PLAYING: "playing",
   STOP_PLAYING: "stop_playing",
@@ -185,7 +188,7 @@ async function setupCommandPermissions(interaction) {
   const organizedRoles = organizeRoles(roles);
   const organizedCommands = organizeSetupCommands(commands);
 
-  denyPlayingPermissions = [
+  const denyPlayingPermissions = [
     {
       id: organizedRoles.alive.id,
       type: "ROLE",
@@ -198,7 +201,7 @@ async function setupCommandPermissions(interaction) {
     },
   ];
 
-  allowPlayingPermissions = [
+  const allowPlayingPermissions = [
     {
       id: organizedRoles.alive.id,
       type: "ROLE",
@@ -211,13 +214,13 @@ async function setupCommandPermissions(interaction) {
     },
   ];
 
-  adminPermissions = {
+  const adminPermissions = {
     id: organizedRoles.admin.id,
     type: "ROLE",
     permission: true,
   };
 
-  ownersPermissions = [
+  const ownersPermissions = [
     {
       id: interaction.guild.id,
       type: "ROLE",
@@ -230,6 +233,8 @@ async function setupCommandPermissions(interaction) {
     },
   ];
 
+  const ownerAndAdmin = [...ownersPermissions, adminPermissions];
+
   const fullPermissions = [
     {
       id: organizedCommands.playing.id,
@@ -241,7 +246,7 @@ async function setupCommandPermissions(interaction) {
     },
     {
       id: organizedCommands.removeGame.id,
-      permissions: [...ownersPermissions, adminPermissions],
+      permissions: ownerAndAdmin,
     },
     {
       id: organizedCommands.serverSetup.id,
@@ -249,7 +254,7 @@ async function setupCommandPermissions(interaction) {
     },
     {
       id: organizedCommands.createGame.id,
-      permissions: [...ownersPermissions, adminPermissions],
+      permissions: ownerAndAdmin,
     },
     {
       id: organizedCommands.vote.id,
@@ -257,11 +262,19 @@ async function setupCommandPermissions(interaction) {
     },
     {
       id: organizedCommands.resetScheduling.id,
-      permissions: [...ownersPermissions, adminPermissions],
+      permissions: ownerAndAdmin,
     },
     {
       id: organizedCommands.showVotes.id,
       permissions: allowPlayingPermissions,
+    },
+    {
+      id: organizedCommands.dayTime.id,
+      permissions: ownerAndAdmin,
+    },
+    {
+      id: organizedCommands.nightTime.id,
+      permissions: ownerAndAdmin,
     },
   ];
 
@@ -292,8 +305,16 @@ function organizeSetupCommands(commands) {
         break;
       case commandNames.RESET_SCHEDULING:
         commandObject.resetScheduling = command;
+        break;
       case commandNames.SHOW_VOTES:
         commandObject.showVotes = command;
+        break;
+      case commandNames.DAY_TIME:
+        commandObject.dayTime = command;
+        break;
+      case commandNames.NIGHT_TIME:
+        commandObject.nightTime = command;
+        break;
     }
   });
   return commandObject;
