@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
-const { channelNames } = require("../util/channelHelpers");
+const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { roleNames } = require("../util/rolesHelpers");
 const { findGame, upsertVote } = require("../werewolf_db");
 
@@ -45,14 +45,14 @@ module.exports = {
       await interaction.reply({
         content:
           "It is night time. Get some rest and vote tomorrow\nhttps://tenor.com/bFIfb.gif",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
     if (votedUser.bot) {
       await interaction.reply({
-        content: "https://tenor.com/67jg.gif",
-        ephemeral: true,
+        content: `You can't vote for me!\n${getRandomBotGif()}`,
+        ephemeral: false,
       });
       return;
     }
@@ -60,7 +60,7 @@ module.exports = {
       await interaction.reply({
         content:
           "You voted for someone that is not alive try again\nhttps://tenor.com/blWe0.gif",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }

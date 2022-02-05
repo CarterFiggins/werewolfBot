@@ -60,10 +60,15 @@ function organizeChannels(channels) {
   return channelObject;
 }
 
+function getRandomBotGif() {
+  return _.head(_.shuffle(botGifs));
+}
+
 module.exports = {
   sendStartMessages,
   organizeChannels,
   channelNames,
+  getRandomBotGif,
 };
 
 const townSquareStart =
@@ -83,3 +88,23 @@ const masonStart =
 
 const bodyguardStart =
   "You are a bodyguard who protects this town! Use the `/guard` command to guard people at night. If you guard a player that the werewolves attack you will save them and they will not die. You can guard yourself but you can't guard someone twice in a row";
+
+const botGifs = [
+  "https://tenor.com/bgdxA.gif",
+  "https://tenor.com/butD6.gif",
+  "https://tenor.com/bnYU9.gif",
+  "https://tenor.com/bdCga.gif",
+  "https://tenor.com/bnYVe.gif",
+  "https://tenor.com/VNmQ.gif",
+  "https://tenor.com/OjmN.gif",
+  "https://tenor.com/bm86m.gif",
+  "https://tenor.com/bNV6d.gif",
+  "https://tenor.com/bEteI.gif",
+  "https://tenor.com/bkDNh.gif",
+  "https://tenor.com/bEtei.gif",
+  "https://tenor.com/yyj8.gif",
+  "https://tenor.com/bj0ti.gif",
+  "https://tenor.com/uQ6W.gif",
+  "https://tenor.com/ZyKH.gif",
+  "https://tenor.com/v9FS.gif",
+];

@@ -30,14 +30,6 @@ module.exports = {
     let message;
 
     // TODO: add more random gifs
-    if (!seerUser.see) {
-      await interaction.reply({
-        content:
-          "You are tired. Your gift only works once. Try again next night",
-        ephemeral: true,
-      });
-      return;
-    }
     if (channel.name !== channelNames.SEER) {
       await interaction.reply({
         content: "Your magic only works in the seer channel",
@@ -45,24 +37,32 @@ module.exports = {
       });
       return;
     }
+    if (!seerUser.see) {
+      await interaction.reply({
+        content:
+          "You are tired. Your gift only works once. Try again next night",
+        ephemeral: false,
+      });
+      return;
+    }
     if (game.is_day) {
       await interaction.reply({
         content: "It is day time. Your power works at night.",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
     if (targetedUser.bot) {
       await interaction.reply({
         content: "https://tenor.com/67jg.gif",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
         content: "This Person is dead. Focus on the living",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
@@ -72,7 +72,7 @@ module.exports = {
     ) {
       await interaction.reply({
         content: `${targetedUser} is a seer... hmm thats you right? You don't have to investigate to know that! try again.`,
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }

@@ -34,28 +34,6 @@ module.exports = {
     let message;
 
     // TODO: add more random gifs
-    if (game.is_day) {
-      await interaction.reply({
-        content: "It is day time. Your power works at night.",
-        ephemeral: true,
-      });
-      return;
-    }
-    if (!guardUser.guard) {
-      await interaction.reply({
-        content:
-          "You are tired and can only guard one person. Try again next night.",
-        ephemeral: true,
-      });
-      return;
-    }
-    if (guardUser.last_user_guard_id == targetedUser.id) {
-      await interaction.reply({
-        content: `You guard ${targetedUser} last night and can not protect someone twice in a row.`,
-        ephemeral: true,
-      });
-      return;
-    }
     if (channel.name !== channelNames.BODYGUARD) {
       await interaction.reply({
         content: "You can only guard in the bodyguard channel.",
@@ -63,17 +41,39 @@ module.exports = {
       });
       return;
     }
+    if (game.is_day) {
+      await interaction.reply({
+        content: "It is day time. Your power works at night.",
+        ephemeral: false,
+      });
+      return;
+    }
+    if (!guardUser.guard) {
+      await interaction.reply({
+        content:
+          "You are tired and can only guard one person. Try again next night.",
+        ephemeral: false,
+      });
+      return;
+    }
+    if (guardUser.last_user_guard_id == targetedUser.id) {
+      await interaction.reply({
+        content: `You guard ${targetedUser} last night and can not protect someone twice in a row.`,
+        ephemeral: false,
+      });
+      return;
+    }
     if (targetedUser.bot) {
       await interaction.reply({
-        content: "https://tenor.com/67jg.gif",
-        ephemeral: true,
+        content: "https://tenor.com/yYlL.gif",
+        ephemeral: false,
       });
       return;
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
         content: "This Person is dead. Focus on guarding the living.",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }

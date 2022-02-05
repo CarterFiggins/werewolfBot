@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames, characters } = require("../util/commandHelpers");
-const { channelNames } = require("../util/channelHelpers");
+const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { roleNames } = require("../util/rolesHelpers");
 const { findGame, findUser, updateGame } = require("../werewolf_db");
 
@@ -44,28 +44,28 @@ module.exports = {
     if (game.is_day) {
       await interaction.reply({
         content: "It is day time. Werewolves hunt at night.",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
     if (targetedUser.bot) {
       await interaction.reply({
-        content: "https://tenor.com/67jg.gif",
-        ephemeral: true,
+        content: `You can't kill me!\n${getRandomBotGif()}`,
+        ephemeral: false,
       });
       return;
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
         content: "This Person is dead. \nhttps://tenor.com/blWe0.gif",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
     if (dbUser.character === characters.WEREWOLF) {
       await interaction.reply({
         content: `${targetedUser} is a werewolf... why would you do that?`,
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }

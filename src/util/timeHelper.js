@@ -24,7 +24,7 @@ const {
 async function timeScheduling(interaction, dayHour, nightHour) {
   await schedule.gracefulShutdown();
   const game = await findGame(interaction.guild.id);
-  if(!game){
+  if (!game) {
     await interaction.reply({
       content: "No game to schedule",
       ephemeral: true,
@@ -129,6 +129,12 @@ async function nightTimeJob(interaction) {
     });
     organizedChannels.werewolves.send(
       "This is the first night. Choose someone to kill with the `/kill` command"
+    );
+    organizedChannels.bodyguard.send(
+      "This is the first night. Choose someone to guard with the `/guard` command"
+    );
+    organizedChannels.seer.send(
+      "This is the first night. Choose someone to see with the `/see` command"
     );
     return;
   }

@@ -36,7 +36,7 @@ async function sendUsersMessage(interaction, users) {
   await Promise.all(
     users.map(async (user) => {
       member = interaction.guild.members.cache.get(user.id);
-      sendGreeting(member);
+      sendGreeting(member, user);
     })
   );
 }
