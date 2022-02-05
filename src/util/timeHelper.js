@@ -41,6 +41,7 @@ async function timeScheduling(interaction, dayHour, nightHour) {
   dayRule.tz = process.env.TIME_ZONE_TZ;
   schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
   schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
+  return true;
 }
 // Handles werewolf kill.
 async function dayTimeJob(interaction) {
