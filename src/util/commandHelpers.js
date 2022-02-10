@@ -58,11 +58,11 @@ const characters = {
   SEER: "seer",
   BODYGUARD: "bodyguard",
   APPRENTICE_SEER: "apprentice seer",
+  LYCAN: "lycan",
+  MASON: "mason",
   // FOOL: "fool",
   // PRIEST: "priest",
-  LYCAN: "lycan",
   // TRAITOR: "traitor",
-  MASON: "mason",
   // HUNTER: "hunter",
 };
 
@@ -101,7 +101,7 @@ async function sendGreeting(member, user) {
       break;
     case characters.LYCAN:
       await member.send(
-        `You are a **Lycan**.\nYou are a villager but you have a very rare gene that the spirits don't like.\n${voteText}\nBecause of your cursed gene, if a seer investigates your character the spirits will tell them you are a werewolf when you really are a villager.\n`
+        `You are a **Lycan**.\nYou are a villager but you have the very rare lycan gene that confuses the spirits.\n${voteText}\nBecause of your cursed gene, if a seer investigates your character the spirits will tell them you are a werewolf when you really are a villager.\n`
       );
       break;
     case characters.APPRENTICE_SEER:
