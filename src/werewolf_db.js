@@ -8,6 +8,10 @@ async function findUser(user_id, guild_id) {
   return await db.collection("users").findOne({ user_id, guild_id });
 }
 
+async function findOneUser(where) {
+  return await db.collection("users").findOne(where);
+}
+
 async function findAllUsers(guild_id) {
   return await db.collection("users").aggregate([
     {
@@ -93,6 +97,7 @@ async function deleteGame(guild_id) {
 module.exports = {
   deleteAllUsers,
   findUser,
+  findOneUser,
   findAllUsers,
   findUsersWithIds,
   updateUser,

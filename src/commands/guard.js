@@ -1,6 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { commandNames } = require("../util/commandHelpers");
-const { channelNames } = require("../util/channelHelpers");
+const { commandNames, characters } = require("../util/commandHelpers");
+const {
+  channelNames,
+  giveMasonChannelPermissions,
+} = require("../util/channelHelpers");
 const { roleNames } = require("../util/rolesHelpers");
 const {
   findGame,
@@ -76,6 +79,23 @@ module.exports = {
         ephemeral: false,
       });
       return;
+    }
+
+    const dbTargetedUser = await findUser(
+      targetedUser.id,
+      interaction.guild.id
+    );
+
+    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
+
+    if (
+      dbTargetedUser.character === characters.MASON &&
+      !dbUser.onMasonChannel
+    ) {
+      await updateUser(interaction.user.id, interaction.guild.id, {
+        onMasonChannel: true,
+      });
+      giveMasonChannelPermissions(interaction, interaction.user);
     }
 
     await updateGame(interaction.guild.id, {

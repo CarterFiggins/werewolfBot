@@ -1,6 +1,6 @@
 const { organizeRoles } = require("./rolesHelpers");
 require("dotenv").config();
-const { updateUser } = require("../werewolf_db");
+const { updateUser, findAllUsers } = require("../werewolf_db");
 
 /* 
 To add a new game command add it to the
@@ -57,12 +57,12 @@ const characters = {
   VILLAGER: "villager",
   SEER: "seer",
   BODYGUARD: "bodyguard",
-  // APPRENTICE_SEER: "apprentice seer",
+  APPRENTICE_SEER: "apprentice seer",
   // FOOL: "fool",
   // PRIEST: "priest",
-  LYCAN: "lycan", // can't be played currently
+  LYCAN: "lycan",
   // TRAITOR: "traitor",
-  // MASON: "mason",
+  MASON: "mason",
   // HUNTER: "hunter",
 };
 
@@ -76,36 +76,54 @@ async function sendGreeting(member, user) {
   switch (user.character) {
     case characters.VILLAGER:
       await member.send(
-        `You are a **Villager!**\n Your job is to find out who is a werewolf and hang them for their crimes.\n ${voteText}\n Be careful at night, the werewolves are hungry\n`
+        `You are a **Villager!**\nYour job is to find out who is a werewolf and hang them for their crimes.\n${voteText}\nBe careful at night, the werewolves are hungry\n`
       );
       break;
     case characters.WEREWOLF:
       await member.send(
-        `You are a **Werewolf!**\n Don't let the villagers know or they will hang you! It is not your fault they are so tasty.\n ${voteText}\n At night use the \`/kill\` command to target a villager to be killed.\n You can change your target by using the same command.\n The werewolf team can only target one villager per night.\n`
+        `You are a **Werewolf!**\nDon't let the villagers know or they will hang you! It is not your fault they are so tasty.\n${voteText}\nAt night use the \`/kill\` command to target a villager to be killed.\nYou can change your target by using the same command.\nThe werewolf team can only target one villager per night.\n`
       );
       break;
     case characters.SEER:
       await member.send(
-        `You are a **Seer!**\n You have been chosen by the spirits to help the villagers get rid of the werewolves.\n ${voteText}\n At night use the \`/see\` command to see if a player's character is a werewolf or a villager.\n`
+        `You are a **Seer!**\nYou have been chosen by the spirits to help the villagers get rid of the werewolves.\n${voteText}\nAt night use the \`/see\` command to see if a player's character is a werewolf or a villager.\n`
       );
       break;
     case characters.BODYGUARD:
       await member.send(
-        `You are a **Bodyguard!**\n Your job is to guard the village from the werewolves.\n ${voteText}\n At night use the \`guard\` command to guard a player from the werewolves.\n If the werewolves choose the player you guarded then no one will die that night.\n You may guard yourself but you can't guard someone twice in a row.\n`
+        `You are a **Bodyguard!**\nYour job is to guard the village from the werewolves.\n${voteText}\nAt night use the \`guard\` command to guard a player from the werewolves.\nIf the werewolves choose the player you guarded than no one will die that night.\nYou may guard yourself but you can't guard someone twice in a row.\n`
+      );
+      break;
+    case characters.MASON:
+      await member.send(
+        `You are a **Mason**.\nYou belong to a super secret group.\nEveryone in the mason group is to be trusted and is not a werewolf.\n${voteText}\nIf the bodyguard protects one of the masons they get to join your super cool group.\n`
+      );
+      break;
+    case characters.LYCAN:
+      await member.send(
+        `You are a **Lycan**.\nYou are a villager but you have a very rare gene that the spirits don't like.\n${voteText}\nBecause of your cursed gene, if a seer investigates your character the spirits will tell them you are a werewolf when you really are a villager.\n`
+      );
+      break;
+    case characters.APPRENTICE_SEER:
+      await member.send(
+        `You are the **Apprentice Seer**.\n${voteText}\nYou start as a regular villager but, if the seer dies you become the new seer and pick up where they left off.\nWhen that day comes use the \`/see\` command at night to see if a player's character is a werewolf or a villager.\n`
       );
       break;
   }
 }
 
-async function resetNightPowers(users, guildId) {
+async function resetNightPowers(guildId) {
+  const cursor = await findAllUsers(guildId);
+  const users = await cursor.toArray();
   await Promise.all(
     users.map(async (user) => {
       switch (user.character) {
         case characters.SEER:
-          await updateUser(user.id, guildId, { see: true });
+        case characters.APPRENTICE_SEER:
+          await updateUser(user.user_id, guildId, { see: true });
           break;
         case characters.BODYGUARD:
-          await updateUser(user.id, guildId, { guard: true });
+          await updateUser(user.user_id, guildId, { guard: true });
           break;
       }
     })
@@ -123,6 +141,7 @@ async function removeUsersPermissions(interaction, user) {
       command = organizedCommands.kill;
       break;
     case characters.SEER:
+    case characters.APPRENTICE_SEER:
       command = organizedCommands.see;
       break;
     case characters.BODYGUARD:
@@ -177,6 +196,22 @@ async function gameCommandPermissions(interaction, users, permission) {
         });
         break;
     }
+  });
+}
+
+async function addApprenticeSeePermissions(interaction, user) {
+  const commands = await interaction.guild.commands.fetch();
+  const organizedCommands = organizeGameCommands(commands);
+  permissions = [
+    {
+      id: user.user_id || user.id,
+      type: "USER",
+      permission: true,
+    },
+  ];
+  interaction.guild.commands.permissions.add({
+    command: organizedCommands.see.id,
+    permissions,
   });
 }
 

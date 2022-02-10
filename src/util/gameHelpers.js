@@ -90,14 +90,14 @@ async function giveUserRoles(interaction, users) {
   ];
   // TODO: make these characters and add them in commandHelpers
   const leftOverRoles = _.shuffle([
-    // characters.APPRENTICE_SEER,
-    // characters.FOOL,
-    // characters.PRIEST,
-    // characters.LYCAN,
-    // characters.TRAITOR,
-    // characters.MASON,
-    // characters.MASON,
+    characters.APPRENTICE_SEER,
+    characters.LYCAN,
+    characters.MASON,
+    characters.MASON,
     // characters.HUNTER,
+    // characters.PRIEST,
+    // characters.FOOL,
+    // characters.TRAITOR,
   ]);
   numberOfPlayers = users.length;
   numberOfWerewolves = Math.floor(numberOfPlayers / 4);

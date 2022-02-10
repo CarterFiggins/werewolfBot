@@ -60,6 +60,47 @@ function organizeChannels(channels) {
   return channelObject;
 }
 
+async function removeChannelPermissions(interaction, user) {
+  const channels = await interaction.guild.channels.fetch();
+  const organizedChannels = organizeChannels(channels);
+  await Promise.all(
+    _.map(organizedChannels, async (channel) => {
+      if (channel.name !== channelNames.AFTER_LIFE) {
+        await channel.permissionOverwrites.edit(user, {
+          SEND_MESSAGES: false,
+          VIEW_CHANNEL: true,
+        });
+      }
+    })
+  );
+}
+
+async function giveMasonChannelPermissions(interaction, user) {
+  const channels = await interaction.guild.channels.fetch();
+  const organizedChannels = organizeChannels(channels);
+
+  await organizedChannels.mason.permissionOverwrites.edit(user, {
+    SEND_MESSAGES: true,
+    VIEW_CHANNEL: true,
+  });
+
+  organizedChannels.mason.send(`The bodyguard ${user} has joined!`);
+}
+
+async function giveSeerChannelPermissions(interaction, user) {
+  const channels = await interaction.guild.channels.fetch();
+  const organizedChannels = organizeChannels(channels);
+
+  await organizedChannels.seer.permissionOverwrites.edit(user, {
+    SEND_MESSAGES: true,
+    VIEW_CHANNEL: true,
+  });
+
+  organizedChannels.seer.send(
+    `${user} the master seer has died and you must take their place`
+  );
+}
+
 function getRandomBotGif() {
   return _.head(_.shuffle(botGifs));
 }
@@ -67,8 +108,11 @@ function getRandomBotGif() {
 module.exports = {
   sendStartMessages,
   organizeChannels,
-  channelNames,
+  giveMasonChannelPermissions,
+  giveSeerChannelPermissions,
+  removeChannelPermissions,
   getRandomBotGif,
+  channelNames,
 };
 
 const townSquareStart =

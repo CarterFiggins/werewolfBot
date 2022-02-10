@@ -1,12 +1,17 @@
 require("dotenv").config();
 const _ = require("lodash");
 const schedule = require("node-schedule");
-const { organizeChannels } = require("./channelHelpers");
+const {
+  organizeChannels,
+  removeChannelPermissions,
+  giveSeerChannelPermissions,
+} = require("./channelHelpers");
 const { organizeRoles, removeGameRolesFromMembers } = require("./rolesHelpers");
 const {
   removeUsersPermissions,
   resetNightPowers,
   gameCommandPermissions,
+  addApprenticeSeePermissions,
   characters,
 } = require("./commandHelpers");
 const {
@@ -14,6 +19,7 @@ const {
   updateGame,
   deleteGame,
   findUser,
+  findOneUser,
   deleteAllUsers,
   getCountedVotes,
   deleteAllVotes,
@@ -43,6 +49,7 @@ async function timeScheduling(interaction, dayHour, nightHour) {
   schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
   return true;
 }
+
 // Handles werewolf kill.
 async function dayTimeJob(interaction) {
   const guildId = interaction.guild.id;
@@ -74,7 +81,7 @@ async function dayTimeJob(interaction) {
     console.log("It is currently day skip");
     return;
   }
-  let message = "No one die last night";
+  let message = "No one died last night";
 
   if (game.user_death_id) {
     if (
@@ -82,13 +89,16 @@ async function dayTimeJob(interaction) {
       game.user_death_id !== game.user_guarded_id
     ) {
       const deadUser = await findUser(game.user_death_id, guildId);
-      const member = members.get(game.user_death_id);
-      member.roles.remove(organizedRoles.alive);
-      member.roles.add(organizedRoles.dead);
+      const deadMember = members.get(game.user_death_id);
+      const deathCharacter = await removesDeadPermissions(
+        interaction,
+        deadUser,
+        deadMember,
+        organizedRoles
+      );
       const discordUser = users.get(game.user_death_id);
-      // TODO: add a script for each character death?
       // TODO: add check to see if it was the hunter who died
-      message = `Last night the ${deadUser.character} named ${discordUser} was killed by the werewolves.`;
+      message = `Last night the ${deathCharacter} named ${discordUser} was killed by the werewolves.`;
     }
   }
 
@@ -165,7 +175,7 @@ async function nightTimeJob(interaction) {
   const voteWinner = _.head(_.shuffle(topVotes));
 
   await deleteAllVotes(guildId);
-  await resetNightPowers(users, guildId);
+  await resetNightPowers(guildId);
   if (!voteWinner) {
     await updateGame(guildId, {
       is_day: false,
@@ -174,22 +184,25 @@ async function nightTimeJob(interaction) {
     return;
   }
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
-  const member = members.get(voteWinner._id.voted_user_id);
-  member.roles.remove(organizedRoles.alive);
-  member.roles.add(organizedRoles.dead);
-  const discordUser = users.get(voteWinner._id.voted_user_id);
-  // removes deadUser character command Permissions
-  await removeUsersPermissions(interaction, deadUser);
+  const deadMember = members.get(voteWinner._id.voted_user_id);
 
-  // TODO: add a script for each character death?
+  const deathCharacter = await removesDeadPermissions(
+    interaction,
+    deadUser,
+    deadMember,
+    organizedRoles
+  );
+
   // TODO: add check to see if it was the hunter who died
 
+  const discordUser = users.get(voteWinner._id.voted_user_id);
   if (killedRandomly) {
     message = `There was a tie so I randomly picked ${discordUser} to die`;
   } else {
     message = `The town has decided to hang ${discordUser}`;
   }
-  const deathMessage = `The town has killed a ${deadUser.character}`;
+
+  const deathMessage = `The town has killed a ${deathCharacter}`;
   await updateGame(guildId, {
     is_day: false,
   });
@@ -206,6 +219,43 @@ async function nightTimeJob(interaction) {
     guildId,
     organizedChannels.townSquare
   );
+}
+
+async function removesDeadPermissions(
+  interaction,
+  deadUser,
+  deadMember,
+  organizedRoles
+) {
+  deadMember.roles.remove(organizedRoles.alive);
+  deadMember.roles.add(organizedRoles.dead);
+  // removes deadUser character command and channel Permissions
+  await removeUsersPermissions(interaction, deadUser);
+  await removeChannelPermissions(interaction, deadMember);
+  await updateUser(deadUser.user_id, interaction.guild.id, { dead: true });
+
+  let deadCharacter = deadUser.character;
+
+  if (deadCharacter === characters.LYCAN) {
+    deadCharacter = characters.VILLAGER;
+  }
+
+  if (deadCharacter === characters.SEER) {
+    const apprenticeSeerUser = await findOneUser({
+      guild_id: interaction.guild.id,
+      character: characters.APPRENTICE_SEER,
+    });
+
+    if (apprenticeSeerUser && !apprenticeSeerUser.dead) {
+      const discordApprenticeUser = interaction.guild.members.cache.get(
+        apprenticeSeerUser.user_id
+      );
+      giveSeerChannelPermissions(interaction, discordApprenticeUser);
+      addApprenticeSeePermissions(interaction, apprenticeSeerUser);
+    }
+  }
+
+  return deadCharacter;
 }
 
 async function checkGame(
