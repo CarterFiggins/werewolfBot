@@ -73,6 +73,11 @@ async function sendGreeting(member, user) {
   if (member.user.bot) {
     return;
   }
+
+  if (!member) {
+    throw Error(`send greeting no member ${user}`)
+  }
+
   switch (user.character) {
     case characters.VILLAGER:
       await member.send(
