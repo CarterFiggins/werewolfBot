@@ -247,6 +247,9 @@ async function removesDeadPermissions(
     });
 
     if (apprenticeSeerUser && !apprenticeSeerUser.dead) {
+      await updateUser(apprenticeSeerUser.user_id, interaction.guild.id, {
+        character: characters.SEER,
+      });
       const discordApprenticeUser = interaction.guild.members.cache.get(
         apprenticeSeerUser.user_id
       );
