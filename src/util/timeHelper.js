@@ -20,11 +20,11 @@ const {
   deleteGame,
   findUser,
   findOneUser,
+  updateUser,
   deleteAllUsers,
   getCountedVotes,
   deleteAllVotes,
   findAllUsers,
-  updateUser,
 } = require("../werewolf_db");
 
 async function timeScheduling(interaction, dayHour, nightHour) {

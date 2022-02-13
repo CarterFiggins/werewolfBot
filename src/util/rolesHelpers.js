@@ -43,10 +43,12 @@ async function setupRoles(interaction) {
 
 async function removeGameRolesFromMembers(members, roles) {
   const organizedRoles = organizeRoles(roles);
-  members.forEach((member) => {
-    member.roles.remove(organizedRoles.dead);
-    member.roles.remove(organizedRoles.alive);
-  });
+  await Promise.all(
+    members.map(async (member) => {
+      await member.roles.remove(organizedRoles.dead);
+      await member.roles.remove(organizedRoles.alive);
+    })
+  );
 }
 
 async function getRole(interaction, roleName) {

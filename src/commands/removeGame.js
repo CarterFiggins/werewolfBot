@@ -17,6 +17,7 @@ module.exports = {
     .setDescription("end the game"),
   async execute(interaction) {
     // stop scheduling day and night
+    await interaction.deferReply();
     await schedule.gracefulShutdown();
 
     // Remove Channels
@@ -38,6 +39,6 @@ module.exports = {
     await deleteGame(interaction.guild.id);
     await deleteAllVotes(interaction.guild.id);
 
-    await interaction.reply({ content: "Game Ended", ephemeral: true });
+    await interaction.editReply({ content: "Game Ended", ephemeral: true });
   },
 };

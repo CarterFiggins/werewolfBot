@@ -118,7 +118,7 @@ async function giveUserRoles(interaction, users) {
   }
   // add leftover characters
   for (let i = 0; i < leftOverPlayers; i++) {
-    if (!_.isEmpty(leftOverPlayers)) {
+    if (!_.isEmpty(leftOverRoles)) {
       currentCharacters.push(leftOverRoles.pop());
     } else {
       currentCharacters.push(characters.VILLAGER);
@@ -140,42 +140,42 @@ async function giveUserRoles(interaction, users) {
   const playerRole = await getRole(interaction, roleNames.PLAYING);
   const dbUsers = [];
 
-  users.forEach((user) => {
-    // add alive role and remove playing role
-    const member = interaction.guild.members.cache.get(user.id);
-    member.roles.add(aliveRole);
-    member.roles.remove(playerRole);
-    // add character
-    const newCharacter = _.isEmpty(currentCharacters)
-      ? characters.VILLAGER
-      : currentCharacters.pop();
-    user.character = newCharacter;
-    const userInfo = {
-      user_id: user.id,
-      name: user.username,
-      nickname: member.nickname,
-      character: newCharacter,
-      guild_id: interaction.guild.id,
-    };
-    switch (newCharacter) {
-      case characters.SEER:
-        userInfo.see = true;
-        break;
-      case characters.BODYGUARD:
-        userInfo.guard = true;
-        userInfo.last_user_guard_id = null;
-        break;
-      case characters.FOOL:
-        userInfo.see = true;
-        break;
-      case characters.PRIEST:
-        userInfo.protect = true;
-        userInfo.last_user_protect_id = null;
-        userInfo.holyWater = true;
-        break;
-    }
-    dbUsers.push(userInfo);
-  });
+  await Promise.all(
+    users.map(async (user) => {
+      // add alive role and remove playing role
+      const member = interaction.guild.members.cache.get(user.id);
+      await member.roles.add(aliveRole);
+      await member.roles.remove(playerRole);
+      // add character
+      const newCharacter = _.isEmpty(currentCharacters)
+        ? characters.VILLAGER
+        : currentCharacters.pop();
+      user.character = newCharacter;
+      const userInfo = {
+        user_id: user.id,
+        name: user.username,
+        nickname: member.nickname,
+        character: newCharacter,
+        guild_id: interaction.guild.id,
+      };
+      switch (newCharacter) {
+        case characters.FOOL:
+        case characters.SEER:
+          userInfo.see = true;
+          break;
+        case characters.BODYGUARD:
+          userInfo.guard = true;
+          userInfo.last_user_guard_id = null;
+          break;
+        case characters.PRIEST:
+          userInfo.protect = true;
+          userInfo.last_user_protect_id = null;
+          userInfo.holyWater = true;
+          break;
+      }
+      dbUsers.push(userInfo);
+    })
+  );
   await createUsers(dbUsers);
   return users;
 }
