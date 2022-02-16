@@ -71,8 +71,9 @@ const voteText =
 
 async function sendGreeting(member, user) {
   try {
-    return;
-  }
+    if (member.user.bot) {
+      return;
+    }
 
     switch (user.character) {
       case characters.VILLAGER:
