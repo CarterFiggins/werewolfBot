@@ -17,12 +17,12 @@ module.exports = {
     .setDescription("end the game"),
   async execute(interaction) {
     // stop scheduling day and night
-    await interaction.deferReply();
     await schedule.gracefulShutdown();
+    await interaction.deferReply();
 
     // Remove Channels
     const currentChannels = await interaction.guild.channels.fetch();
-    removeAllGameChannels(currentChannels);
+    await removeAllGameChannels(currentChannels);
 
     // removing all users game command permissions
     const cursor = await findAllUsers(interaction.guild.id);

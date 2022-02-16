@@ -45,9 +45,19 @@ async function timeScheduling(interaction, dayHour, nightHour) {
   dayRule.minute = 0;
   dayRule.hour = dayHour;
   dayRule.tz = process.env.TIME_ZONE_TZ;
+
   schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
   schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
+  schedule.scheduleJob(`30 ${nightHour} * * *`, () =>
+    nightTimeWarning(interaction)
+  );
   return true;
+}
+
+async function nightTimeWarning(interaction) {
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  organizedChannels.townSquare.send("30 minutes until night");
 }
 
 // Handles werewolf kill.
@@ -304,7 +314,6 @@ async function checkGame(
 
 async function endGame(interaction, guildId, roles, members) {
   // stop scheduling day and night
-  await schedule.gracefulShutdown();
 
   // removing all users game command permissions
   const cursor = await findAllUsers(guildId);
@@ -318,6 +327,7 @@ async function endGame(interaction, guildId, roles, members) {
   await deleteAllUsers(guildId);
   await deleteGame(guildId);
   await deleteAllVotes(guildId);
+  await schedule.gracefulShutdown();
 }
 
 module.exports = {

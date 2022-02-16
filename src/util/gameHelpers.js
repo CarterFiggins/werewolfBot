@@ -181,24 +181,26 @@ async function giveUserRoles(interaction, users) {
 }
 
 async function removeAllGameChannels(channels) {
-  channels.forEach((channel) => {
-    switch (channel.name) {
-      case channelNames.TOWN_SQUARE:
-      case channelNames.WEREWOLVES:
-      case channelNames.SEER:
-      case channelNames.MASON:
-      case channelNames.AFTER_LIFE:
-      case channelNames.THE_TOWN:
-      case channelNames.BODYGUARD:
-        channel.delete();
-    }
-  });
+  await Promise.all(
+    channels.map(async (channel) => {
+      switch (channel.name) {
+        case channelNames.TOWN_SQUARE:
+        case channelNames.WEREWOLVES:
+        case channelNames.SEER:
+        case channelNames.MASON:
+        case channelNames.AFTER_LIFE:
+        case channelNames.THE_TOWN:
+        case channelNames.BODYGUARD:
+          await channel.delete();
+      }
+    })
+  );
 }
 
 async function createChannels(interaction, users) {
   const currentChannels = await interaction.guild.channels.fetch();
   // remove old channels
-  removeAllGameChannels(currentChannels);
+  await removeAllGameChannels(currentChannels);
 
   aliveRole = await getRole(interaction, roleNames.ALIVE);
   deadRole = await getRole(interaction, roleNames.DEAD);

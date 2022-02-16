@@ -10,6 +10,7 @@ module.exports = {
     .setDescription("Runs the day job"),
   async execute(interaction) {
     await schedule.gracefulShutdown();
+    await interaction.deferReply();
     const game = await findGame(interaction.guild.id);
     if (!game) {
       await interaction.reply({
@@ -26,8 +27,7 @@ module.exports = {
       return;
     }
     await dayTimeJob(interaction);
-
-    await interaction.reply({
+    await interaction.editReply({
       content: "Day job ran",
       ephemeral: true,
     });
