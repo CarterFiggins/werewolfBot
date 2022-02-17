@@ -32,7 +32,6 @@ module.exports = {
       message = `You have changed your target to ${targetedUser}`;
     }
 
-    // TODO: add more random gifs
     if (channel.name !== channelNames.WEREWOLVES) {
       await interaction.reply({
         content:

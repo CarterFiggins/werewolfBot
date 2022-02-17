@@ -36,7 +36,6 @@ module.exports = {
 
     let message;
 
-    // TODO: add more random gifs
     if (channel.name !== channelNames.BODYGUARD) {
       await interaction.reply({
         content: "You can only guard in the bodyguard channel.",

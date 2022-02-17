@@ -17,7 +17,7 @@ module.exports = {
       return;
     }
 
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
     const ok = await startGame(interaction);
     // error message was sent
     if (!ok) {

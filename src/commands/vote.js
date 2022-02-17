@@ -24,7 +24,6 @@ module.exports = {
       return role.name;
     });
 
-    // TODO: make a random gif generator for each voting error
     if (channel.name !== channelNames.TOWN_SQUARE) {
       await interaction.reply({
         content:

@@ -29,7 +29,6 @@ module.exports = {
 
     let message;
 
-    // TODO: add more random gifs
     if (channel.name !== channelNames.SEER) {
       await interaction.reply({
         content: "Your magic only works in the seer channel",

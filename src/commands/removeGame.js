@@ -17,8 +17,8 @@ module.exports = {
     .setDescription("end the game"),
   async execute(interaction) {
     // stop scheduling day and night
+    await interaction.deferReply({ ephemeral: true });
     await schedule.gracefulShutdown();
-    await interaction.deferReply();
 
     // Remove Channels
     const currentChannels = await interaction.guild.channels.fetch();

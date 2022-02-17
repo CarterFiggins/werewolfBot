@@ -10,7 +10,7 @@ module.exports = {
     .setDescription("Runs the night job"),
   async execute(interaction) {
     await schedule.gracefulShutdown();
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
     const game = await findGame(interaction.guild.id);
     if (!game) {
       await interaction.reply({
