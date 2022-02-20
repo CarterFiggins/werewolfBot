@@ -37,20 +37,24 @@ async function timeScheduling(interaction, dayHour, nightHour) {
     });
     return;
   }
+  // TODO: when a user can set the time and they set it at midnight than we will need to wrap around to 23
+  const warningHour = nightHour - 1;
+
   const nightRule = new schedule.RecurrenceRule();
   const dayRule = new schedule.RecurrenceRule();
+  const warningRule = new schedule.RecurrenceRule();
   nightRule.minute = 0;
   nightRule.hour = nightHour;
   nightRule.tz = process.env.TIME_ZONE_TZ;
   dayRule.minute = 0;
   dayRule.hour = dayHour;
   dayRule.tz = process.env.TIME_ZONE_TZ;
-
+  warningRule.minute = 30;
+  warningRule.hour = warningHour;
+  warningRule.tx = process.env.TIME_ZONE_TZ;
   schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
   schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
-  schedule.scheduleJob(`30 ${nightHour} * * *`, () =>
-    nightTimeWarning(interaction)
-  );
+  schedule.scheduleJob(warningRule, () => nightTimeWarning(interaction));
   return true;
 }
 

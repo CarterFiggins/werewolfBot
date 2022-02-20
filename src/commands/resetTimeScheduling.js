@@ -7,9 +7,9 @@ module.exports = {
     .setName(commandNames.RESET_SCHEDULING)
     .setDescription("Reset the time schedulers for day and nigh time"),
   async execute(interaction) {
-    const ok = await timeScheduling(interaction, "8", "20");
+    const ok = await timeScheduling(interaction, 8, 20);
     if (!ok) {
-      return
+      return;
     }
     await interaction.reply({
       content: "time scheduling reset",

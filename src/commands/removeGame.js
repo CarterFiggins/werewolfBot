@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { removeAllGameChannels } = require("../util/gameHelpers");
 const { removeGameRolesFromMembers } = require("../util/rolesHelpers");
 const { gameCommandPermissions } = require("../util/commandHelpers");
+const { channelNames } = require("../util/channelHelpers");
 const schedule = require("node-schedule");
 const {
   deleteAllUsers,
@@ -16,6 +17,28 @@ module.exports = {
     .setName(commandNames.REMOVE_GAME)
     .setDescription("end the game"),
   async execute(interaction) {
+    const interactionChannel = interaction.guild.channels.cache.get(
+      interaction.channelId
+    );
+
+    let wrongChannel = false;
+    await Promise.all(
+      Object.entries(channelNames).map(async ([_, channelName]) => {
+        if (channelName === interactionChannel.name) {
+          await interaction.reply({
+            content:
+              "Don't end game in channel that will be deleted. Try general",
+            ephemeral: true,
+          });
+          wrongChannel = true;
+        }
+      })
+    );
+
+    if (wrongChannel) {
+      return;
+    }
+
     // stop scheduling day and night
     await interaction.deferReply({ ephemeral: true });
     await schedule.gracefulShutdown();
