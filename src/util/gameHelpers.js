@@ -25,7 +25,7 @@ async function startGame(interaction) {
   // give users character command permissions
   await gameCommandPermissions(interaction, users, true);
   await createGameDocument(interaction);
-  await timeScheduling(interaction, "8", "20");
+  await timeScheduling(interaction, 8, 20);
   await sendStartMessages(interaction, users);
 
   // successfully created game
@@ -94,9 +94,9 @@ async function giveUserRoles(interaction, users) {
     characters.LYCAN,
     characters.MASON,
     characters.MASON,
+    characters.FOOL,
     // characters.HUNTER,
     // characters.PRIEST,
-    // characters.FOOL,
     // characters.TRAITOR,
   ]);
   numberOfPlayers = users.length;
@@ -248,8 +248,12 @@ async function createChannels(interaction, users) {
     users,
     characters.WEREWOLF
   ).concat(defaultPermissions);
-  const seerPermissions = createPermissions(users, characters.SEER).concat(
+  let seerPermissions = createPermissions(users, characters.SEER).concat(
     defaultPermissions
+  );
+  // TODO: create createPermissions with an array?
+  seerPermissions = seerPermissions.concat(
+    createPermissions(users, characters.FOOL)
   );
   const masonPermissions = createPermissions(users, characters.MASON).concat(
     defaultPermissions

@@ -60,7 +60,7 @@ const characters = {
   APPRENTICE_SEER: "apprentice seer",
   LYCAN: "lycan",
   MASON: "mason",
-  // FOOL: "fool",
+  FOOL: "fool",
   // PRIEST: "priest",
   // TRAITOR: "traitor",
   // HUNTER: "hunter",
@@ -87,8 +87,9 @@ async function sendGreeting(member, user) {
         );
         break;
       case characters.SEER:
+      case characters.FOOL:
         await member.send(
-          `You are a **Seer!**\nYou have been chosen by the spirits to help the villagers get rid of the werewolves.\n${voteText}\nAt night use the \`/see\` command to see if a player's character is a werewolf or a villager.\n`
+          `You are a **Seer!**\nYou have been chosen by the spirits to help the villagers get rid of the werewolves.\n${voteText}\nAt night use the \`/see\` command to see if a player's character is a werewolf or a villager.\n If there are two of you here one is the fool.`
         );
         break;
       case characters.BODYGUARD:
@@ -126,7 +127,7 @@ async function resetNightPowers(guildId) {
     users.map(async (user) => {
       switch (user.character) {
         case characters.SEER:
-        case characters.APPRENTICE_SEER:
+        case characters.FOOL:
           await updateUser(user.user_id, guildId, { see: true });
           break;
         case characters.BODYGUARD:
@@ -149,6 +150,7 @@ async function removeUsersPermissions(interaction, user) {
       break;
     case characters.SEER:
     case characters.APPRENTICE_SEER:
+    case characters.FOOL:
       command = organizedCommands.see;
       break;
     case characters.BODYGUARD:
@@ -176,7 +178,10 @@ async function gameCommandPermissions(interaction, users, permission) {
   const werewolves = users.filter(
     (user) => user.character === characters.WEREWOLF
   );
-  const seers = users.filter((user) => user.character === characters.SEER);
+  const seers = users.filter(
+    (user) =>
+      user.character === characters.SEER || user.character === characters.FOOL
+  );
   const bodyguards = users.filter(
     (user) => user.character === characters.BODYGUARD
   );

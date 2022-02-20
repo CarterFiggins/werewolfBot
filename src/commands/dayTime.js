@@ -20,7 +20,7 @@ module.exports = {
       return;
     }
     if (game.is_day) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "Already day",
         ephemeral: true,
       });

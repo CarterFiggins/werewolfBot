@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames, characters } = require("../util/commandHelpers");
 const { channelNames } = require("../util/channelHelpers");
@@ -26,8 +27,6 @@ module.exports = {
     const roles = mapRoles.map((role) => {
       return role.name;
     });
-
-    let message;
 
     if (channel.name !== channelNames.SEER) {
       await interaction.reply({
@@ -79,16 +78,22 @@ module.exports = {
     await updateUser(interaction.user.id, interaction.guild.id, { see: false });
 
     let targetedCharacter = "Villager! Nice someone you can trust";
+    if (seerUser.character === characters.FOOL) {
+      const randomNumber = _.random(1, 4);
+      // 25% chance of fool getting a werewolf
+      if (randomNumber === 1) {
+        targetedCharacter = "Werewolf! watch out for this guy.";
+      }
+      await interaction.reply(`${targetedUser} is a ${targetedCharacter}`);
+    } else {
+      if (
+        dbUser.character === characters.WEREWOLF ||
+        dbUser.character === characters.LYCAN
+      ) {
+        targetedCharacter = "Werewolf! watch out for this guy.";
+      }
 
-    if (
-      dbUser.character === characters.WEREWOLF ||
-      dbUser.character === characters.LYCAN
-    ) {
-      targetedCharacter = "Werewolf! watch out for this guy.";
+      await interaction.reply(`${targetedUser} is a ${targetedCharacter}`);
     }
-
-    await interaction.reply(
-      message ? message : `${targetedUser} is a ${targetedCharacter}`
-    );
   },
 };
