@@ -9,7 +9,6 @@ module.exports = {
     .setName(commandNames.DAY_TIME)
     .setDescription("Runs the day job"),
   async execute(interaction) {
-    await schedule.gracefulShutdown();
     await interaction.deferReply({ ephemeral: true });
     const game = await findGame(interaction.guild.id);
     if (!game) {

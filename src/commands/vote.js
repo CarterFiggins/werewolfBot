@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { roleNames } = require("../util/rolesHelpers");
-const { findGame, upsertVote } = require("../werewolf_db");
+const { findGame, upsertVote, findUser } = require("../werewolf_db");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -24,10 +24,19 @@ module.exports = {
       return role.name;
     });
 
+    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
+
     if (channel.name !== channelNames.TOWN_SQUARE) {
       await interaction.reply({
         content:
           "Use vote in the town-square so everyone can see\nhttps://tenor.com/3LlN.gif",
+        ephemeral: true,
+      });
+      return;
+    }
+    if (dbUser.dead) {
+      await interaction.reply({
+        content: "You can't vote because you are injured",
         ephemeral: true,
       });
       return;
