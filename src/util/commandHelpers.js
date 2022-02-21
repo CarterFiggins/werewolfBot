@@ -31,6 +31,7 @@ const commandNames = {
   KILL: "kill",
   SEE: "see",
   GUARD: "guard",
+  SHOOT: "shoot",
 };
 
 /* 
@@ -61,9 +62,9 @@ const characters = {
   LYCAN: "lycan",
   MASON: "mason",
   FOOL: "fool",
+  HUNTER: "hunter",
   // PRIEST: "priest",
   // TRAITOR: "traitor",
-  // HUNTER: "hunter",
 };
 
 const voteText =
