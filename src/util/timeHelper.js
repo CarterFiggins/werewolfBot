@@ -79,7 +79,6 @@ async function dayTimeJob(interaction) {
   const client = interaction.guild.client;
   const members = await interaction.guild.members.fetch();
   const roles = await interaction.guild.roles.fetch();
-  const users = client.users.cache;
   const organizedRoles = organizeRoles(roles);
   const channels = client.channels.cache;
   const organizedChannels = organizeChannels(channels);
@@ -154,7 +153,6 @@ async function nightTimeJob(interaction) {
   const client = interaction.guild.client;
   const members = await interaction.guild.members.fetch();
   const roles = await interaction.guild.roles.fetch();
-  const users = client.users.cache;
   const organizedRoles = organizeRoles(roles);
   const channels = await client.channels.cache;
   const organizedChannels = organizeChannels(channels);
@@ -221,11 +219,10 @@ async function nightTimeJob(interaction) {
 
   // TODO: add check to see if it was the hunter who died
 
-  const discordUser = users.get(voteWinner._id.voted_user_id);
   if (killedRandomly) {
-    message = `There was a tie so I randomly picked ${discordUser} to die`;
+    message = `There was a tie so I randomly picked ${deadMember} to die`;
   } else {
-    message = `The town has decided to hang ${discordUser}`;
+    message = `The town has decided to hang ${deadMember}`;
   }
 
   const deathMessage = `The town has killed a ${deathCharacter}`;
