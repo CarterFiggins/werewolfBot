@@ -52,7 +52,6 @@ making a channel for character
  3. add the channel to the channelHelpers
 */
 
-// TODO: make these characters and add them to giveUserRole in gameHelpers
 const characters = {
   WEREWOLF: "werewolf",
   VILLAGER: "villager",
@@ -118,6 +117,10 @@ async function sendGreeting(member, user) {
         await member.send(
           `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`
         );
+      case characters.HUNTER:
+        await member.send(
+          `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`
+        );
     }
   } catch (error) {
     console.log(error);
@@ -159,6 +162,9 @@ async function removeUsersPermissions(interaction, user) {
     case characters.FOOL:
       command = organizedCommands.see;
       break;
+    case characters.HUNTER:
+      command = organizedCommands.shoot;
+      break;
     case characters.BODYGUARD:
       command = organizedCommands.guard;
       break;
@@ -181,6 +187,7 @@ async function gameCommandPermissions(interaction, users, permission) {
   const commands = await interaction.guild.commands.fetch();
   const organizedCommands = organizeGameCommands(commands);
 
+  // TODO: refactor this into one loop
   const werewolves = users.filter(
     (user) => user.character === characters.WEREWOLF
   );
@@ -191,6 +198,7 @@ async function gameCommandPermissions(interaction, users, permission) {
   const bodyguards = users.filter(
     (user) => user.character === characters.BODYGUARD
   );
+  const hunters = users.filter((user) => user.character === characters.HUNTER);
 
   const werewolvesPermissions = werewolves.map((user) => ({
     id: user.user_id || user.id,
@@ -207,6 +215,11 @@ async function gameCommandPermissions(interaction, users, permission) {
     type: "USER",
     permission,
   }));
+  const hunterPermissions = hunters.map((user) => ({
+    id: user.user_id || user.id,
+    type: "USER",
+    permission,
+  }));
 
   await interaction.guild.commands.permissions.add({
     command: organizedCommands.kill.id,
@@ -219,6 +232,10 @@ async function gameCommandPermissions(interaction, users, permission) {
   await interaction.guild.commands.permissions.add({
     command: organizedCommands.guard.id,
     permissions: bodyguardsPermissions,
+  });
+  await interaction.guild.commands.permissions.add({
+    command: organizedCommands.shoot.id,
+    permissions: hunterPermissions,
   });
 }
 
@@ -390,6 +407,9 @@ function organizeGameCommands(commands) {
         break;
       case commandNames.GUARD:
         commandObject.guard = command;
+        break;
+      case commandNames.SHOOT:
+        commandObject.shoot = command;
         break;
     }
   });

@@ -70,7 +70,7 @@ async function getPlayingUsers(interaction) {
     .filter((m) => m);
 
   if (_.isEmpty(playingUsers)) {
-    await interaction.followUp({
+    await interaction.editReply({
       content: "ERROR: No Players",
       ephemeral: true,
     });
@@ -86,15 +86,14 @@ async function giveUserRoles(interaction, users) {
     characters.SEER,
     characters.BODYGUARD,
     characters.VILLAGER,
-    characters.VILLAGER,
+    characters.LYCAN,
   ];
-  // TODO: make these characters and add them in commandHelpers
   const leftOverRoles = _.shuffle([
     characters.APPRENTICE_SEER,
-    characters.LYCAN,
     characters.FOOL,
     characters.BAKER,
-    // characters.HUNTER,
+    characters.HUNTER,
+    characters.HUNTER,
     // characters.PRIEST,
     // characters.TRAITOR,
   ]);
@@ -104,7 +103,7 @@ async function giveUserRoles(interaction, users) {
     numberOfPlayers - numberOfWerewolves - currentCharacters.length;
 
   if (numberOfPlayers < 5) {
-    await interaction.followUp({
+    await interaction.editReply({
       content: "Error: Not enough players (need at least 5)",
       ephemeral: true,
     });
@@ -130,7 +129,7 @@ async function giveUserRoles(interaction, users) {
   currentCharacters = _.shuffle(currentCharacters);
 
   if (currentCharacters.length !== users.length) {
-    await interaction.followUp({
+    await interaction.editReply({
       content: "ERROR: Characters do not match users",
       ephemeral: true,
     });
@@ -169,6 +168,8 @@ async function giveUserRoles(interaction, users) {
           userInfo.guard = true;
           userInfo.last_user_guard_id = null;
           break;
+        case characters.HUNTER:
+          userInfo.can_shoot = false;
         case characters.PRIEST:
           userInfo.protect = true;
           userInfo.last_user_protect_id = null;
