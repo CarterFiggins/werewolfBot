@@ -7,6 +7,7 @@ const {
   giveSeerChannelPermissions,
 } = require("./channelHelpers");
 const { organizeRoles, removeGameRolesFromMembers } = require("./rolesHelpers");
+const { getAliveUsersIds } = require("./userHelpers");
 const {
   removeUsersPermissions,
   resetNightPowers,
@@ -21,6 +22,7 @@ const {
   findUser,
   findOneUser,
   updateUser,
+  findUsersWithIds,
   deleteAllUsers,
   getCountedVotes,
   deleteAllVotes,
@@ -67,14 +69,19 @@ async function nightTimeWarning(interaction) {
 // Handles werewolf kill.
 async function dayTimeJob(interaction) {
   const guildId = interaction.guild.id;
+  const game = await findGame(guildId);
+
+  if (game.is_day) {
+    console.log("It is currently day skip");
+    return;
+  }
+
   const client = interaction.guild.client;
   const members = await interaction.guild.members.fetch();
   const roles = await interaction.guild.roles.fetch();
-  const users = client.users.cache;
   const organizedRoles = organizeRoles(roles);
   const channels = client.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const game = await findGame(guildId);
 
   // resetting bodyguards last user guarded if they didn't use their power.
   if (!game.user_guarded_id || !game.user_protected_id) {
@@ -91,11 +98,7 @@ async function dayTimeJob(interaction) {
     }
   }
 
-  if (game.is_day) {
-    console.log("It is currently day skip");
-    return;
-  }
-  let message = "No one died last night";
+  let message = "No one died from a werewolf last night.\n";
 
   if (game.user_death_id) {
     if (
@@ -110,10 +113,18 @@ async function dayTimeJob(interaction) {
         deadMember,
         organizedRoles
       );
-      const discordUser = users.get(game.user_death_id);
       // TODO: add check to see if it was the hunter who died
-      message = `Last night the ${deathCharacter} named ${discordUser} was killed by the werewolves.`;
+      message = `Last night the ${deathCharacter} named ${deadMember} was killed by the werewolves.\n`;
     }
+    if (game.is_baker_dead) {
+      message += await starveUser(
+        interaction,
+        organizedRoles,
+        game.user_death_id
+      );
+    }
+  } else if (game.is_baker_dead) {
+    message += await starveUser(interaction, organizedRoles);
   }
 
   await updateGame(guildId, {
@@ -124,7 +135,7 @@ async function dayTimeJob(interaction) {
     first_night: false,
   });
 
-  organizedChannels.townSquare.send(`${message}\n It is day time`);
+  organizedChannels.townSquare.send(`${message} It is day time`);
 
   await checkGame(
     interaction,
@@ -142,7 +153,6 @@ async function nightTimeJob(interaction) {
   const client = interaction.guild.client;
   const members = await interaction.guild.members.fetch();
   const roles = await interaction.guild.roles.fetch();
-  const users = client.users.cache;
   const organizedRoles = organizeRoles(roles);
   const channels = await client.channels.cache;
   const organizedChannels = organizeChannels(channels);
@@ -209,11 +219,10 @@ async function nightTimeJob(interaction) {
 
   // TODO: add check to see if it was the hunter who died
 
-  const discordUser = users.get(voteWinner._id.voted_user_id);
   if (killedRandomly) {
-    message = `There was a tie so I randomly picked ${discordUser} to die`;
+    message = `There was a tie so I randomly picked ${deadMember} to die`;
   } else {
-    message = `The town has decided to hang ${discordUser}`;
+    message = `The town has decided to hang ${deadMember}`;
   }
 
   const deathMessage = `The town has killed a ${deathCharacter}`;
@@ -252,6 +261,10 @@ async function removesDeadPermissions(
 
   if (deadCharacter === characters.LYCAN) {
     deadCharacter = characters.VILLAGER;
+  } else if (deadCharacter === characters.BAKER) {
+    await updateGame(interaction.guild.id, {
+      is_baker_dead: true,
+    });
   }
 
   if (deadCharacter === characters.SEER) {
@@ -267,8 +280,8 @@ async function removesDeadPermissions(
       const discordApprenticeUser = interaction.guild.members.cache.get(
         apprenticeSeerUser.user_id
       );
-      giveSeerChannelPermissions(interaction, discordApprenticeUser);
-      addApprenticeSeePermissions(interaction, apprenticeSeerUser);
+      await giveSeerChannelPermissions(interaction, discordApprenticeUser);
+      await addApprenticeSeePermissions(interaction, apprenticeSeerUser);
     }
   }
 
@@ -314,6 +327,39 @@ async function checkGame(
     townSquare.send("Werewolves out number the villagers. **Werewolves Win!**");
     await endGame(interaction, guildId, roles, members);
   }
+}
+
+async function starveUser(interaction, organizedRoles, werewolfKillId) {
+  let aliveUserIds = await getAliveUsersIds(interaction);
+
+  const cursor = await findUsersWithIds(interaction.guild.id, aliveUserIds);
+  let aliveUsers = await cursor.toArray();
+
+  if (werewolfKillId) {
+    aliveUsers = _.filter(
+      aliveUsers,
+      (user) =>
+        user.user_id != werewolfKillId || user.character != characters.WEREWOLF
+    );
+  } else {
+    aliveUsers = _.filter(
+      aliveUsers,
+      (user) => user.character != characters.WEREWOLF
+    );
+  }
+
+  const starvedUser = _.head(_.shuffle(aliveUsers));
+  const starvedMember = interaction.guild.members.cache.get(
+    starvedUser.user_id
+  );
+  const starvedCharacter = await removesDeadPermissions(
+    interaction,
+    starvedUser,
+    starvedMember,
+    organizedRoles
+  );
+
+  return `The **${starvedCharacter}** named ${starvedMember} has died from starvation\n`;
 }
 
 async function endGame(interaction, guildId, roles, members) {

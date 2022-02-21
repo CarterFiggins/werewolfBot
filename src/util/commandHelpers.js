@@ -63,6 +63,7 @@ const characters = {
   MASON: "mason",
   FOOL: "fool",
   HUNTER: "hunter",
+  BAKER: "baker",
   // PRIEST: "priest",
   // TRAITOR: "traitor",
 };
@@ -113,6 +114,10 @@ async function sendGreeting(member, user) {
           `You are the **Apprentice Seer**.\n${voteText}\nYou start as a regular villager but, if the seer dies you become the new seer and pick up where they left off.\nWhen that day comes use the \`/see\` command at night to see if a player's character is a werewolf or a villager.\n`
         );
         break;
+      case characters.BAKER:
+        await member.send(
+          `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`
+        );
     }
   } catch (error) {
     console.log(error);

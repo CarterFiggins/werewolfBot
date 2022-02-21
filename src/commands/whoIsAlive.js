@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const _ = require("lodash");
 const { commandNames, characters } = require("../util/commandHelpers");
-const { getRole, roleNames } = require("../util/rolesHelpers");
 const { findUsersWithIds } = require("../werewolf_db");
+const { getAliveUsersIds } = require("../util/userHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -11,17 +11,9 @@ module.exports = {
       "Shows witch players are alive in the game and number of villagers and werewolves"
     ),
   async execute(interaction) {
-    let aliveRole = await getRole(interaction, roleNames.ALIVE);
-    const members = await interaction.guild.members.fetch();
-    const AliveUsersId = members
-      .map((member) => {
-        if (member._roles.includes(aliveRole.id)) {
-          return member.user.id;
-        }
-      })
-      .filter((m) => m);
+    const aliveUsersId = await getAliveUsersIds(interaction);
 
-    const cursor = await findUsersWithIds(interaction.guild.id, AliveUsersId);
+    const cursor = await findUsersWithIds(interaction.guild.id, aliveUsersId);
     const dbUsers = await cursor.toArray();
 
     message = "Players Alive:\n";
