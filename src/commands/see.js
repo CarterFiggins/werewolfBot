@@ -22,7 +22,7 @@ module.exports = {
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
     const mapRoles = targetedMember.roles.cache;
-    const dbUser = await findUser(targetedUser.id, interaction.guild.id);
+    const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
     const seerUser = await findUser(interaction.user.id, interaction.guild.id);
     const roles = mapRoles.map((role) => {
       return role.name;
@@ -65,8 +65,8 @@ module.exports = {
       return;
     }
     if (
-      dbUser.character === characters.SEER &&
-      dbUser.user_id === interaction.user.id
+      targetDbUser.character === characters.SEER &&
+      targetDbUser.user_id === interaction.user.id
     ) {
       await interaction.reply({
         content: `${targetedUser} is a seer... hmm thats you right? You don't have to investigate to know that! try again.`,
@@ -87,8 +87,8 @@ module.exports = {
       await interaction.reply(`${targetedUser} is a ${targetedCharacter}`);
     } else {
       if (
-        dbUser.character === characters.WEREWOLF ||
-        dbUser.character === characters.LYCAN
+        targetDbUser.character === characters.WEREWOLF ||
+        targetDbUser.character === characters.LYCAN
       ) {
         targetedCharacter = "Werewolf! watch out for this guy.";
       }

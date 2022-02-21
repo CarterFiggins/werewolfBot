@@ -46,7 +46,7 @@ async function createGameDocument(interaction) {
     guild_id: interaction.guild.id,
     is_day: false,
     first_night: true,
-    active: true,
+    is_baker_dead: false,
     user_death_id: null,
     user_protected_id: null,
     user_guarded_id: null,
@@ -92,9 +92,8 @@ async function giveUserRoles(interaction, users) {
   const leftOverRoles = _.shuffle([
     characters.APPRENTICE_SEER,
     characters.LYCAN,
-    characters.MASON,
-    characters.MASON,
     characters.FOOL,
+    characters.BAKER,
     // characters.HUNTER,
     // characters.PRIEST,
     // characters.TRAITOR,
@@ -112,9 +111,12 @@ async function giveUserRoles(interaction, users) {
     return;
   }
 
-  // add werewolves
+  // add werewolves and masons
   for (let i = 0; i < numberOfWerewolves; i++) {
     currentCharacters.push(characters.WEREWOLF);
+    if (i !== 0) {
+      leftOverRoles.push(characters.MASON);
+    }
   }
   // add leftover characters
   for (let i = 0; i < leftOverPlayers; i++) {
