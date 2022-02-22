@@ -117,10 +117,12 @@ async function sendGreeting(member, user) {
         await member.send(
           `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`
         );
+        break;
       case characters.HUNTER:
         await member.send(
           `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`
         );
+        break;
     }
   } catch (error) {
     console.log(error);
