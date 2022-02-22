@@ -69,6 +69,8 @@ module.exports = {
       return;
     }
 
+    await interaction.deferReply({ ephemeral: true });
+
     const members = await interaction.guild.members.fetch();
     const deadTargetMember = members.get(targetedUser.id);
     const hunterMember = members.get(interaction.user.id);
@@ -100,7 +102,7 @@ module.exports = {
       message = `${targetedUser} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
     }
 
-    await interaction.reply(
+    await interaction.editReply(
       `${interaction.user} took aim and shot the ${deadCharacter} named ${targetedUser}\n${message}`
     );
 
