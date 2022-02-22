@@ -42,7 +42,7 @@ module.exports = {
     if (channel.name !== channelNames.TOWN_SQUARE) {
       await interaction.reply({
         content:
-          "HEY! don't shoot here you can hurt someone! shoot in the town-square\nhttps://tenor.com/d1sVoQ4L6dz.gif",
+          "HEY! don't shoot here you can hurt someone! shoot in the town-square. :+1:",
         ephemeral: true,
       });
       return;
@@ -69,7 +69,7 @@ module.exports = {
       return;
     }
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.reply(":dart: PEW PEW :gun:");
 
     const members = await interaction.guild.members.fetch();
     const deadTargetMember = members.get(targetedUser.id);
