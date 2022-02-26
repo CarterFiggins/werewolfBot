@@ -11,6 +11,9 @@ module.exports = {
       "Shows witch players are alive in the game and number of villagers and werewolves"
     ),
   async execute(interaction) {
+    await interaction.deferReply({
+      ephemeral: false,
+    });
     const aliveUsersId = await getAliveUsersIds(interaction);
 
     const cursor = await findUsersWithIds(interaction.guild.id, aliveUsersId);
@@ -32,16 +35,19 @@ module.exports = {
     });
 
     if (_.isEmpty(dbUsers)) {
-      await interaction.reply({
+      await interaction.editReply({
         content:
           "No one is alive sorry...\nhttps://tenor.com/view/status-tired-dead-haggard-gif-11733031",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
 
     message += `Werewolf Count: ${werewolfCount}\nVillager Count: ${villagerCount}`;
 
-    await interaction.reply(message);
+    await interaction.editReply({
+      content: message,
+      ephemeral: false,
+    });
   },
 };

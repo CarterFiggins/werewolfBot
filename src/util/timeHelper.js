@@ -53,7 +53,7 @@ async function timeScheduling(interaction, dayHour, nightHour) {
   dayRule.tz = process.env.TIME_ZONE_TZ;
   warningRule.minute = 30;
   warningRule.hour = warningHour;
-  warningRule.tx = process.env.TIME_ZONE_TZ;
+  warningRule.tz = process.env.TIME_ZONE_TZ;
   schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
   schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
   schedule.scheduleJob(warningRule, () => nightTimeWarning(interaction));
@@ -114,7 +114,7 @@ async function dayTimeJob(interaction) {
       );
       message = `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
       if (deathCharacter === characters.HUNTER) {
-        message = `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live grab your gun and \`/shoot\` someone.\n`;
+        message = `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
       }
     }
     if (game.is_baker_dead) {
@@ -219,7 +219,7 @@ async function nightTimeJob(interaction) {
   let deathMessage = `The town has killed a **${deathCharacter}**`;
 
   if (deathCharacter === characters.HUNTER) {
-    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live grab your gun and \`/shoot\` someone.`;
+    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.`;
   }
 
   await updateGame(guildId, {

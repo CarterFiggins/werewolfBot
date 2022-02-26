@@ -64,23 +64,31 @@ module.exports = {
       });
       return;
     }
-    if (
-      targetDbUser.character === characters.SEER &&
-      targetDbUser.user_id === interaction.user.id
-    ) {
+    if (targetDbUser.user_id === interaction.user.id) {
       await interaction.reply({
         content: `${targetedUser} is a seer... hmm thats you right? You don't have to investigate to know that! try again.`,
         ephemeral: false,
       });
       return;
     }
-
-    await updateUser(interaction.user.id, interaction.guild.id, { see: false });
+    if (
+      targetDbUser.character === characters.SEER ||
+      targetDbUser.character === characters.FOOL
+    ) {
+      await interaction.reply({
+        content: `${targetedUser} is a **werewolf**..... jk they are a villager in the same channel as you! **try again!**\nhttps://tenor.com/bK8Gm.gif`,
+        ephemeral: false,
+      });
+      return;
+    }
+    await updateUser(interaction.user.id, interaction.guild.id, {
+      see: false,
+    });
 
     let targetedCharacter = "Villager! Nice someone you can trust";
     if (seerUser.character === characters.FOOL) {
-      const randomNumber = _.random(1, 4);
-      // 25% chance of fool getting a werewolf
+      const randomNumber = _.random(1, 3);
+      // 33% chance of fool getting a werewolf
       if (randomNumber === 1) {
         targetedCharacter = "Werewolf! watch out for this guy.";
       }

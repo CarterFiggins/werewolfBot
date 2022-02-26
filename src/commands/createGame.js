@@ -8,16 +8,16 @@ module.exports = {
     .setName(commandNames.CREATE_GAME)
     .setDescription("creates the game"),
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
     const currentGame = await findGame(interaction.guild.id);
     if (currentGame) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "There is already a game happening",
         ephemeral: true,
       });
       return;
     }
 
-    await interaction.deferReply({ ephemeral: true });
     const ok = await startGame(interaction);
     // error message was sent
     if (!ok) {

@@ -8,12 +8,13 @@ module.exports = {
     .setName(commandNames.SHOW_VOTES)
     .setDescription("Shows all votes for users"),
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: false });
     const cursor = await getCountedVotes(interaction.guild.id);
     const allVotes = await cursor.toArray();
     if (_.isEmpty(allVotes)) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "There are no votes to be counted",
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
@@ -27,7 +28,7 @@ module.exports = {
       message += `${member}: ${vote.count} votes\n`;
     });
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `Current Votes\n${message}`,
       ephemeral: false,
     });
