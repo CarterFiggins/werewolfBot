@@ -6,7 +6,12 @@ const {
   removeChannelPermissions,
   giveSeerChannelPermissions,
 } = require("./channelHelpers");
-const { organizeRoles, removeGameRolesFromMembers } = require("./rolesHelpers");
+const {
+  organizeRoles,
+  removeGameRolesFromMembers,
+  getRole,
+  roleNames,
+} = require("./rolesHelpers");
 const { getAliveUsersIds, getAliveMembers } = require("./userHelpers");
 const {
   removeUsersPermissions,
@@ -39,7 +44,7 @@ async function timeScheduling(interaction, dayHour, nightHour) {
     });
     return;
   }
-  // TODO: when a user can set the time and they set it at midnight than we will need to wrap around to 23
+  // TODO: when a user can set the time and they set it at midnight or later than we will need to wrap around to 23
   const warningHour = nightHour - 1;
 
   const nightRule = new schedule.RecurrenceRule();
@@ -63,7 +68,10 @@ async function timeScheduling(interaction, dayHour, nightHour) {
 async function nightTimeWarning(interaction) {
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  organizedChannels.townSquare.send("30 minutes until night");
+  const aliveRole = await getRole(interaction, roleNames.ALIVE);
+  await organizedChannels.townSquare.send(
+    `${aliveRole} 30 minutes until night`
+  );
 }
 
 // Handles werewolf kill.
