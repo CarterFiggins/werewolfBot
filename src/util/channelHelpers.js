@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const { characters } = require("./commandHelpers");
 
 const channelNames = {
   THE_TOWN: "the-town",
@@ -14,13 +15,28 @@ async function sendStartMessages(interaction, users) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
 
+  const werewolves = _.filter(
+    users,
+    (user) => user.character === characters.WEREWOLF
+  );
+
+  const seers = _.filter(
+    users,
+    (user) =>
+      user.character === characters.SEER || user.character === characters.FOOL
+  );
+
+  const masons = _.filter(users, (user) => user.character === characters.MASON);
+
   organizedChannels.townSquare.send(townSquareStart);
-  organizedChannels.werewolves.send(werewolfStart);
-  organizedChannels.seer.send(seerStart);
+  organizedChannels.werewolves.send(
+    `${werewolfStart}\nWerewolves:\n${werewolves}`
+  );
+  organizedChannels.seer.send(`${seerStart}\nSeers:\n${seers}`);
   organizedChannels.afterLife.send(
     `${afterLifeStart}\n${showUsersCharacter(users)}`
   );
-  organizedChannels.mason.send(masonStart);
+  organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
   organizedChannels.bodyguard.send(bodyguardStart);
 }
 
