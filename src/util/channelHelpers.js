@@ -28,7 +28,34 @@ async function sendStartMessages(interaction, users) {
 
   const masons = _.filter(users, (user) => user.character === characters.MASON);
 
-  organizedChannels.townSquare.send(townSquareStart);
+  const characterCount = new Map();
+
+  _.forEach(users, (user) => {
+    let currentCount = characterCount.get(user.character);
+
+    let mappedCharacter = user.character;
+
+    if (user.character === characters.LYCAN) {
+      mappedCharacter = characters.VILLAGER;
+    }
+
+    if (currentCount) {
+      characterCount.set(mappedCharacter, currentCount + 1);
+    } else {
+      characterCount.set(mappedCharacter, 1);
+    }
+  });
+
+  let printCharacters = "";
+  characterCount.forEach((count, character) => {
+    printCharacters += `${character}: ${count}\n`;
+  });
+
+  console.log(printCharacters);
+
+  organizedChannels.townSquare.send(
+    `${townSquareStart}\nCharacters in game:\n${printCharacters}`
+  );
   organizedChannels.werewolves.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );
