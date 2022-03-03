@@ -33,6 +33,7 @@ const commandNames = {
   GUARD: "guard",
   SHOOT: "shoot",
   WHISPER: "whisper",
+  PERMISSION_RESET: "permission_reset",
 };
 
 /* 
@@ -357,7 +358,11 @@ async function setupCommandPermissions(interaction) {
     {
       id: organizedCommands.whisper.id,
       permissions: allowPlayingPermissions,
-    }
+    },
+    {
+      id: organizedCommands.permissionReset.id,
+      permissions: ownerAndAdmin,
+    },
   ];
 
   await interaction.guild.commands.permissions.set({ fullPermissions });
@@ -399,6 +404,9 @@ function organizeSetupCommands(commands) {
         break;
       case commandNames.WHISPER:
         commandObject.whisper = command;
+        break;
+      case commandNames.PERMISSION_RESET:
+        commandObject.permissionReset = command;
         break;
     }
   });
