@@ -32,6 +32,7 @@ const commandNames = {
   SEE: "see",
   GUARD: "guard",
   SHOOT: "shoot",
+  WHISPER: "whisper",
 };
 
 /* 
@@ -353,6 +354,10 @@ async function setupCommandPermissions(interaction) {
       id: organizedCommands.nightTime.id,
       permissions: ownerAndAdmin,
     },
+    {
+      id: organizedCommands.whisper.id,
+      permissions: allowPlayingPermissions,
+    }
   ];
 
   await interaction.guild.commands.permissions.set({ fullPermissions });
@@ -391,6 +396,9 @@ function organizeSetupCommands(commands) {
         break;
       case commandNames.NIGHT_TIME:
         commandObject.nightTime = command;
+        break;
+      case commandNames.WHISPER:
+        commandObject.whisper = command;
         break;
     }
   });

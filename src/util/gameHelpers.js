@@ -170,6 +170,7 @@ async function giveUserRoles(interaction, users) {
           break;
         case characters.HUNTER:
           userInfo.can_shoot = false;
+          break;
         case characters.PRIEST:
           userInfo.protect = true;
           userInfo.last_user_protect_id = null;
