@@ -89,13 +89,13 @@ async function giveUserRoles(interaction, users) {
     characters.LYCAN,
   ];
   const leftOverRoles = _.shuffle([
-    characters.APPRENTICE_SEER,
     characters.FOOL,
     characters.BAKER,
     characters.HUNTER,
     characters.HUNTER,
+    characters.CURSED,
+    characters.APPRENTICE_SEER,
     // characters.PRIEST,
-    // characters.TRAITOR,
   ]);
   numberOfPlayers = users.length;
   numberOfWerewolves = Math.floor(numberOfPlayers / 4);

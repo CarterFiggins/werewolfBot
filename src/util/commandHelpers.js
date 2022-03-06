@@ -55,18 +55,18 @@ making a channel for character
 */
 
 const characters = {
-  WEREWOLF: "werewolf",
   VILLAGER: "villager",
   SEER: "seer",
   BODYGUARD: "bodyguard",
   APPRENTICE_SEER: "apprentice seer",
-  LYCAN: "lycan",
   MASON: "mason",
   FOOL: "fool",
   HUNTER: "hunter",
+  WEREWOLF: "werewolf",
+  LYCAN: "lycan",
   BAKER: "baker",
+  CURSED: "cursed villager",
   // PRIEST: "priest",
-  // TRAITOR: "traitor",
 };
 
 const voteText =
@@ -80,6 +80,7 @@ async function sendGreeting(member, user) {
 
     switch (user.character) {
       case characters.VILLAGER:
+      case characters.CURSED:
         await member.send(
           `You are a **Villager!**\nYour job is to find out who is a werewolf and hang them for their crimes.\n${voteText}\nBe careful at night, the werewolves are hungry\n`
         );
@@ -255,6 +256,22 @@ async function addApprenticeSeePermissions(interaction, user) {
   ];
   interaction.guild.commands.permissions.add({
     command: organizedCommands.see.id,
+    permissions,
+  });
+}
+
+async function addCursedKillPermissions(interaction, user) {
+  const commands = await interaction.guild.commands.fetch();
+  const organizedCommands = organizeGameCommands(commands);
+  permissions = [
+    {
+      id: user.user_id || user.id,
+      type: "USER",
+      permission: true,
+    },
+  ];
+  interaction.guild.commands.permissions.add({
+    command: organizedCommands.kill.id,
     permissions,
   });
 }
@@ -442,6 +459,7 @@ module.exports = {
   resetNightPowers,
   sendGreeting,
   addApprenticeSeePermissions,
+  addCursedKillPermissions,
   commandNames,
   characters,
 };

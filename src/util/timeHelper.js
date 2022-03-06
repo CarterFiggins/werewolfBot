@@ -5,6 +5,7 @@ const {
   organizeChannels,
   removeChannelPermissions,
   giveSeerChannelPermissions,
+  giveWerewolfChannelPermissions,
 } = require("./channelHelpers");
 const {
   organizeRoles,
@@ -18,6 +19,7 @@ const {
   resetNightPowers,
   gameCommandPermissions,
   addApprenticeSeePermissions,
+  addCursedKillPermissions,
   characters,
 } = require("./commandHelpers");
 const {
@@ -114,15 +116,35 @@ async function dayTimeJob(interaction) {
     ) {
       const deadUser = await findUser(game.user_death_id, guildId);
       const deadMember = members.get(game.user_death_id);
-      const deathCharacter = await removesDeadPermissions(
-        interaction,
-        deadUser,
-        deadMember,
-        organizedRoles
-      );
-      message = `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
-      if (deathCharacter === characters.HUNTER) {
-        message = `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+      let isDead = true;
+
+      if (deadUser.character === characters.CURSED) {
+        // join werewolf team
+        await updateUser(deadUser.user_id, interaction.guild.id, {
+          character: characters.WEREWOLF,
+        });
+        const discordDeadUser = interaction.guild.members.cache.get(
+          deadUser.user_id
+        );
+        await giveWerewolfChannelPermissions(interaction, discordDeadUser);
+        await addCursedKillPermissions(interaction, discordDeadUser);
+        await organizedChannels.werewolves.send(
+          `${discordDeadUser} did not die and has turned into a werewolf! :wolf:`
+        );
+        isDead = false;
+      }
+
+      if (isDead) {
+        const deathCharacter = await removesDeadPermissions(
+          interaction,
+          deadUser,
+          deadMember,
+          organizedRoles
+        );
+        message = `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
+        if (deathCharacter === characters.HUNTER) {
+          message = `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+        }
       }
     }
     if (game.is_baker_dead) {

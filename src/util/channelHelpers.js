@@ -33,16 +33,10 @@ async function sendStartMessages(interaction, users) {
   _.forEach(users, (user) => {
     let currentCount = characterCount.get(user.character);
 
-    let mappedCharacter = user.character;
-
-    if (user.character === characters.LYCAN) {
-      mappedCharacter = characters.VILLAGER;
-    }
-
     if (currentCount) {
-      characterCount.set(mappedCharacter, currentCount + 1);
+      characterCount.set(user.character, currentCount + 1);
     } else {
-      characterCount.set(mappedCharacter, 1);
+      characterCount.set(user.character, 1);
     }
   });
 
@@ -50,8 +44,6 @@ async function sendStartMessages(interaction, users) {
   characterCount.forEach((count, character) => {
     printCharacters += `${character}: ${count}\n`;
   });
-
-  console.log(printCharacters);
 
   organizedChannels.townSquare.send(
     `${townSquareStart}\nCharacters in game:\n${printCharacters}`
@@ -118,6 +110,15 @@ async function removeChannelPermissions(interaction, user) {
   );
 }
 
+async function giveWerewolfChannelPermissions(interaction, user) {
+  const channels = await interaction.guild.channels.fetch();
+  const organizedChannels = organizeChannels(channels);
+  await organizedChannels.werewolves.permissionOverwrites.edit(user, {
+    SEND_MESSAGES: true,
+    VIEW_CHANNEL: true,
+  });
+}
+
 async function giveMasonChannelPermissions(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
@@ -153,6 +154,7 @@ module.exports = {
   organizeChannels,
   giveMasonChannelPermissions,
   giveSeerChannelPermissions,
+  giveWerewolfChannelPermissions,
   removeChannelPermissions,
   getRandomBotGif,
   channelNames,
