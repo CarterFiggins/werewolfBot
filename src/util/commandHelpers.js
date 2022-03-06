@@ -55,18 +55,20 @@ making a channel for character
 */
 
 const characters = {
+  //helps villagers
   VILLAGER: "villager",
   SEER: "seer",
   BODYGUARD: "bodyguard",
   APPRENTICE_SEER: "apprentice seer",
   MASON: "mason",
-  FOOL: "fool",
   HUNTER: "hunter",
+  // PRIEST: "priest",
+  // helps werewolves
   WEREWOLF: "werewolf",
+  FOOL: "fool",
   LYCAN: "lycan",
   BAKER: "baker",
   CURSED: "cursed villager",
-  // PRIEST: "priest",
 };
 
 const voteText =
