@@ -348,7 +348,7 @@ async function setupCommandPermissions(interaction) {
     },
     {
       id: organizedCommands.serverSetup.id,
-      permissions: ownersPermissions,
+      permissions: ownerAndAdmin,
     },
     {
       id: organizedCommands.createGame.id,
@@ -376,7 +376,7 @@ async function setupCommandPermissions(interaction) {
     },
     {
       id: organizedCommands.whisper.id,
-      permissions: allowPlayingPermissions,
+      permissions: ownersPermissions,
     },
     {
       id: organizedCommands.permissionReset.id,
