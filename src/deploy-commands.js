@@ -26,7 +26,7 @@ const rest = new REST({ version: "9" }).setToken(TOKEN);
 
     // Set Global Commands sometimes takes a hour to update
     // await rest.put(
-    //   Routes.applicationCommands(clientId),
+    //   Routes.applicationCommands(CLIENT_ID),
     //   { body: commands },
     // );
 
