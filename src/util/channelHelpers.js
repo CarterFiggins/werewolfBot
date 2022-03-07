@@ -139,10 +139,6 @@ async function giveSeerChannelPermissions(interaction, user) {
     SEND_MESSAGES: true,
     VIEW_CHANNEL: true,
   });
-
-  organizedChannels.seer.send(
-    `${user} the master seer has died and you must take their place`
-  );
 }
 
 function getRandomBotGif() {

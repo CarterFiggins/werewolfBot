@@ -271,13 +271,14 @@ async function removesDeadPermissions(
 ) {
   const guildId = interaction.guild.id;
   let deadCharacter = deadUser.character;
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
   if (deadCharacter === characters.HUNTER && !deadUser.dead) {
     await updateUser(deadUser.user_id, guildId, {
       can_shoot: true,
       dead: true,
     });
 
-    //RUN JOB HERE
     const currentDate = new Date();
     const hours = 4;
     const shootingLimit = new Date(
@@ -312,13 +313,45 @@ async function removesDeadPermissions(
       character: characters.APPRENTICE_SEER,
     });
 
+    const foolUser = await findOneUser({
+      guild_id: guildId,
+      character: characters.FOOL,
+    });
+    const discordApprenticeUser = interaction.guild.members.cache.get(
+      apprenticeSeerUser.user_id
+    );
+
     if (apprenticeSeerUser && !apprenticeSeerUser.dead) {
-      await updateUser(apprenticeSeerUser.user_id, guildId, {
-        character: characters.SEER,
-      });
-      const discordApprenticeUser = interaction.guild.members.cache.get(
-        apprenticeSeerUser.user_id
-      );
+      if (foolUser && !foolUser.dead) {
+        let roles = [characters.SEER, characters.FOOL];
+
+        const discordFoolUser = interaction.guild.members.cache.get(
+          foolUser.user_id
+        );
+
+        roles = _.shuffle(roles);
+        const apprenticeNewRole = roles.pop();
+        const foolNewRole = roles.pop();
+        await updateUser(apprenticeSeerUser.user_id, guildId, {
+          character: apprenticeNewRole,
+        });
+        await updateUser(foolUser.user_id, guildId, {
+          character: foolNewRole,
+        });
+        await organizedChannels.seer.send(
+          `${discordApprenticeUser} and ${discordFoolUser} the master seer has died.\nOne of you is now the fool and the other is the seer.\nYou don't know who is who good luck.`
+        );
+        await organizedChannels.afterLife.send(
+          `${discordApprenticeUser} is now the ${apprenticeNewRole}\n${discordFoolUser} is now the ${foolNewRole}`
+        );
+      } else {
+        await updateUser(apprenticeSeerUser.user_id, guildId, {
+          character: characters.SEER,
+        });
+        await organizedChannels.seer.send(
+          `${discordApprenticeUser} the master seer has died and you must take their place`
+        );
+      }
       await giveSeerChannelPermissions(interaction, discordApprenticeUser);
       await addApprenticeSeePermissions(interaction, apprenticeSeerUser);
     }
