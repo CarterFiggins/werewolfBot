@@ -454,16 +454,22 @@ async function starveUser(interaction, organizedRoles, werewolfKillId) {
     aliveUsers = _.filter(
       aliveUsers,
       (user) =>
-        user.user_id != werewolfKillId || user.character != characters.WEREWOLF
+        user.user_id !== werewolfKillId &&
+        user.character !== characters.WEREWOLF
     );
   } else {
     aliveUsers = _.filter(
       aliveUsers,
-      (user) => user.character != characters.WEREWOLF
+      (user) => user.character !== characters.WEREWOLF
     );
   }
 
   const starvedUser = _.head(_.shuffle(aliveUsers));
+
+  if (_.isEmpty(starvedUser)) {
+    return "No one starved";
+  }
+
   const starvedMember = interaction.guild.members.cache.get(
     starvedUser.user_id
   );
@@ -501,5 +507,6 @@ module.exports = {
   dayTimeJob,
   nightTimeJob,
   removesDeadPermissions,
+  starveUser,
   checkGame,
 };

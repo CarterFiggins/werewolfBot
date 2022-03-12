@@ -21,12 +21,14 @@ module.exports = {
 
     let message = "";
 
-    _.forEach(allVotes, (vote) => {
-      const member = interaction.guild.members.cache.get(
-        vote._id.voted_user_id
-      );
-      message += `${member}: ${vote.count} votes\n`;
-    });
+    await Promise.all(
+      _.map(allVotes, async (vote) => {
+        const member = await interaction.guild.members.fetch(
+          vote._id.voted_user_id
+        );
+        message += `${member}: ${vote.count} votes\n`;
+      })
+    );
 
     await interaction.editReply({
       content: `Current Votes\n${message}`,
