@@ -29,7 +29,7 @@ module.exports = {
     let message;
 
     if (game.user_death_id) {
-      message = `You have changed your target to ${targetedUser}`;
+      message = `You have changed your target to ${targetedUser}\n`;
     }
 
     if (channel.name !== channelNames.WEREWOLVES) {
@@ -69,9 +69,30 @@ module.exports = {
       return;
     }
 
+    if (
+      targetedUser.id === game.user_death_id ||
+      targetedUser.id === game.second_user_death_id
+    ) {
+      await interaction.reply({
+        content: `Already targeting ${targetedUser}`,
+        ephemeral: false,
+      });
+      return;
+    }
+
     await updateGame(interaction.guild.id, {
       user_death_id: targetedUser.id,
+      second_user_death_id: game.wolf_double_kill ? game.user_death_id : null,
     });
+    const secondKill = interaction.guild.members.cache.get(game.user_death_id);
+
+    let secondKillMassage = "";
+    if (secondKill && game.wolf_double_kill) {
+      secondKillMassage = `and second target is ${secondKill}\n`;
+      if (message) {
+        message += secondKillMassage;
+      }
+    }
 
     await interaction.reply(message ? message : `Targeting ${targetedUser}`);
   },

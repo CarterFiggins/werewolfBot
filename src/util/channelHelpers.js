@@ -42,7 +42,9 @@ async function sendStartMessages(interaction, users) {
 
   let printCharacters = "";
   characterCount.forEach((count, character) => {
-    printCharacters += `${character}: ${count}\n`;
+    if (character === characters.WEREWOLF || character === characters.MASON) {
+      printCharacters += `${character}: ${count}\n`;
+    }
   });
 
   organizedChannels.townSquare.send(
@@ -63,7 +65,9 @@ function showUsersCharacter(users) {
   let message = "";
 
   _.shuffle(users).forEach((user) => {
-    message += `${user} is a ${user.character}\n`;
+    message += `${user} is a ${
+      user.is_cub ? characters.CUB : user.character
+    }\n`;
   });
   return message;
 }

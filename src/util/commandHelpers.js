@@ -69,6 +69,7 @@ const characters = {
   LYCAN: "lycan",
   BAKER: "baker",
   CURSED: "cursed villager",
+  CUB: "werewolf cub",
 };
 
 const voteText =

@@ -34,6 +34,7 @@ const {
   getCountedVotes,
   deleteAllVotes,
   findAllUsers,
+  findManyUsers,
 } = require("../werewolf_db");
 
 async function timeScheduling(interaction, dayHour, nightHour) {
@@ -92,67 +93,72 @@ async function dayTimeJob(interaction) {
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
 
-  // resetting bodyguards last user guarded if they didn't use their power.
-  if (!game.user_guarded_id || !game.user_protected_id) {
-    const cursor = await findAllUsers(guildId);
-    const allUsers = await cursor.toArray();
-    const bodyguard = _.head(
-      allUsers.filter((user) => user.character === characters.BODYGUARD)
-    );
-    if (bodyguard?.guard) {
-      // bodyguard did not use power last night
+  let message = "";
+
+  const cursorBodyguards = await findManyUsers({
+    guild_id: guildId,
+    character: characters.BODYGUARD,
+  });
+  const bodyGuards = await cursorBodyguards.toArray();
+
+  const guardedIds = await Promise.all(
+    _.map(bodyGuards, async (bodyguard) => {
       await updateUser(bodyguard.user_id, guildId, {
-        last_user_guard_id: null,
+        last_guarded_user_id: bodyguard.guarded_user_id,
+        guarded_user_id: null,
       });
-    }
-  }
 
-  let message = "No one died from a werewolf last night.\n";
+      return bodyguard.guarded_user_id;
+    })
+  );
 
-  if (game.user_death_id) {
-    if (
-      game.user_death_id !== game.user_protected_id &&
-      game.user_death_id !== game.user_guarded_id
-    ) {
-      const deadUser = await findUser(game.user_death_id, guildId);
-      const deadMember = members.get(game.user_death_id);
-      let isDead = true;
+  const deathIds = _.difference(
+    [game.user_death_id, game.second_user_death_id],
+    [...guardedIds, null]
+  );
 
-      if (deadUser.character === characters.CURSED) {
-        // join werewolf team
-        await updateUser(deadUser.user_id, interaction.guild.id, {
-          character: characters.WEREWOLF,
-        });
-        const discordDeadUser = interaction.guild.members.cache.get(
-          deadUser.user_id
-        );
-        await giveWerewolfChannelPermissions(interaction, discordDeadUser);
-        await addCursedKillPermissions(interaction, discordDeadUser);
-        await organizedChannels.werewolves.send(
-          `${discordDeadUser} did not die and has turned into a werewolf! :wolf:`
-        );
-        isDead = false;
-      }
+  // Allow double kill
+  if (!_.isEmpty(deathIds)) {
+    const cursor = await findUsersWithIds(guildId, deathIds);
+    const deadUsers = await cursor.toArray();
+    await Promise.all(
+      _.map(deadUsers, async (deadUser) => {
+        const deadMember = members.get(deadUser.user_id);
+        let isDead = true;
 
-      if (isDead) {
-        const deathCharacter = await removesDeadPermissions(
-          interaction,
-          deadUser,
-          deadMember,
-          organizedRoles
-        );
-        message = `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
-        if (deathCharacter === characters.HUNTER) {
-          message = `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+        if (deadUser.character === characters.CURSED) {
+          // join werewolf team
+          await updateUser(deadUser.user_id, interaction.guild.id, {
+            character: characters.WEREWOLF,
+          });
+          const discordDeadUser = interaction.guild.members.cache.get(
+            deadUser.user_id
+          );
+          await giveWerewolfChannelPermissions(interaction, discordDeadUser);
+          await addCursedKillPermissions(interaction, discordDeadUser);
+          await organizedChannels.werewolves.send(
+            `${discordDeadUser} did not die and has turned into a werewolf! :wolf:`
+          );
+          isDead = false;
         }
-      }
-    }
+
+        if (isDead) {
+          const deathCharacter = await removesDeadPermissions(
+            interaction,
+            deadUser,
+            deadMember,
+            organizedRoles
+          );
+          message += `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
+          if (deathCharacter === characters.HUNTER) {
+            message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+          }
+        }
+      })
+    );
+
     if (game.is_baker_dead) {
-      message += await starveUser(
-        interaction,
-        organizedRoles,
-        game.user_death_id
-      );
+      message += await starveUser(interaction, organizedRoles, deathIds);
     }
   } else if (game.is_baker_dead) {
     message += await starveUser(interaction, organizedRoles);
@@ -160,13 +166,17 @@ async function dayTimeJob(interaction) {
 
   await updateGame(guildId, {
     user_death_id: null,
-    user_protected_id: null,
-    user_guarded_id: null,
+    second_user_death_id: null,
+    wolf_double_kill: false,
     is_day: true,
     first_night: false,
   });
 
-  organizedChannels.townSquare.send(`${message}**It is day time**`);
+  const backUpMessage = "No one died from a werewolf last night.\n";
+
+  organizedChannels.townSquare.send(
+    `${message || backUpMessage}**It is day time**`
+  );
 
   await checkGame(interaction);
 }
@@ -306,8 +316,15 @@ async function removesDeadPermissions(
     await updateGame(guildId, {
       is_baker_dead: true,
     });
-  }
-  if (deadCharacter === characters.SEER) {
+  } else if (deadCharacter === characters.WEREWOLF && deadUser.is_cub) {
+    await updateGame(guildId, {
+      wolf_double_kill: true,
+    });
+    await organizedChannels.werewolves.send(
+      `The Werewolf Cub name ${deadMember} has been killed :rage:\nTonight you will be able to target two villagers!\nhttps://tenor.com/86LT.gif`
+    );
+    deadCharacter = characters.CUB;
+  } else if (deadCharacter === characters.SEER) {
     const apprenticeSeerUser = await findOneUser({
       guild_id: guildId,
       character: characters.APPRENTICE_SEER,
@@ -444,17 +461,17 @@ async function hunterShootingLimitJob(
   await checkGame(interaction);
 }
 
-async function starveUser(interaction, organizedRoles, werewolfKillId) {
+async function starveUser(interaction, organizedRoles, deathIds) {
   let aliveUserIds = await getAliveUsersIds(interaction);
 
   const cursor = await findUsersWithIds(interaction.guild.id, aliveUserIds);
   let aliveUsers = await cursor.toArray();
 
-  if (werewolfKillId) {
+  if (!_.isEmpty(deathIds)) {
     aliveUsers = _.filter(
       aliveUsers,
       (user) =>
-        user.user_id !== werewolfKillId &&
+        !deathIds.includes(user.user_id) &&
         user.character !== characters.WEREWOLF
     );
   } else {

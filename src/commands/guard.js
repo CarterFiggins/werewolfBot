@@ -58,7 +58,7 @@ module.exports = {
       });
       return;
     }
-    if (guardUser.last_user_guard_id == targetedUser.id) {
+    if (guardUser.last_guarded_user_id == targetedUser.id) {
       await interaction.reply({
         content: `You guarded ${targetedUser} last night and can not protect someone twice in a row.`,
         ephemeral: false,
@@ -97,12 +97,9 @@ module.exports = {
       giveMasonChannelPermissions(interaction, interaction.user);
     }
 
-    await updateGame(interaction.guild.id, {
-      user_guarded_id: targetedUser.id,
-    });
     await updateUser(interaction.user.id, interaction.guild.id, {
       guard: false,
-      last_user_guard_id: targetedUser.id,
+      guarded_user_id: targetedUser.id,
     });
 
     await interaction.reply(

@@ -48,8 +48,8 @@ async function createGameDocument(interaction) {
     first_night: true,
     is_baker_dead: false,
     user_death_id: null,
-    user_protected_id: null,
-    user_guarded_id: null,
+    wolf_double_kill: false,
+    second_user_death_id: null,
   });
 }
 
@@ -92,7 +92,6 @@ async function giveUserRoles(interaction, users) {
     characters.FOOL,
     characters.BAKER,
     characters.HUNTER,
-    characters.HUNTER,
     characters.CURSED,
     characters.APPRENTICE_SEER,
     // characters.PRIEST,
@@ -112,7 +111,11 @@ async function giveUserRoles(interaction, users) {
 
   // add werewolves and masons
   for (let i = 0; i < numberOfWerewolves; i++) {
-    currentCharacters.push(characters.WEREWOLF);
+    if (i === 2) {
+      currentCharacters.push(characters.CUB);
+    } else {
+      currentCharacters.push(characters.WEREWOLF);
+    }
     if (i !== 0) {
       leftOverRoles.push(characters.MASON);
     }
@@ -141,8 +144,10 @@ async function giveUserRoles(interaction, users) {
   const playerRole = await getRole(interaction, roleNames.PLAYING);
   const dbUsers = [];
 
+  const shuffledUsers = _.shuffle(users);
+
   await Promise.all(
-    users.map(async (user) => {
+    shuffledUsers.map(async (user) => {
       // add alive role and remove playing role
       const member = interaction.guild.members.cache.get(user.id);
       await member.roles.add(aliveRole);
@@ -151,12 +156,18 @@ async function giveUserRoles(interaction, users) {
       const newCharacter = _.isEmpty(currentCharacters)
         ? characters.VILLAGER
         : currentCharacters.pop();
-      user.character = newCharacter;
+
+      if (newCharacter === characters.CUB) {
+        user.character = characters.WEREWOLF;
+      } else {
+        user.character = newCharacter;
+      }
+
       const userInfo = {
         user_id: user.id,
         name: user.username,
         nickname: member.nickname,
-        character: newCharacter,
+        character: user.character,
         guild_id: interaction.guild.id,
       };
       switch (newCharacter) {
@@ -164,9 +175,13 @@ async function giveUserRoles(interaction, users) {
         case characters.SEER:
           userInfo.see = true;
           break;
+        case characters.CUB:
+          userInfo.is_cub = true;
+          user.is_cub = true;
+          break;
         case characters.BODYGUARD:
           userInfo.guard = true;
-          userInfo.last_user_guard_id = null;
+          userInfo.last_guarded_user_id = null;
           break;
         case characters.HUNTER:
           userInfo.can_shoot = false;
@@ -181,7 +196,7 @@ async function giveUserRoles(interaction, users) {
     })
   );
   await createUsers(dbUsers);
-  return users;
+  return shuffledUsers;
 }
 
 async function removeAllGameChannels(channels) {
