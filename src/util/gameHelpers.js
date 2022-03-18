@@ -111,12 +111,12 @@ async function giveUserRoles(interaction, users) {
 
   // add werewolves and masons
   for (let i = 0; i < numberOfWerewolves; i++) {
-    if (i === 2) {
+    if (i === 3) {
       currentCharacters.push(characters.CUB);
     } else {
       currentCharacters.push(characters.WEREWOLF);
     }
-    if (i !== 0) {
+    if (i > 2) {
       leftOverRoles.push(characters.MASON);
     }
   }
