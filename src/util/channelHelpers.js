@@ -42,14 +42,13 @@ async function sendStartMessages(interaction, users) {
 
   let printCharacters = "";
   characterCount.forEach((count, character) => {
-    if (character === characters.WEREWOLF || character === characters.MASON) {
-      printCharacters += `${character}: ${count}\n`;
-    }
+    printCharacters += `${character}: ${count}\n`;
   });
 
-  organizedChannels.townSquare.send(
-    `${townSquareStart}\nCharacters in game:\n${printCharacters}`
-  );
+  // Option to show what characters will be playing
+  // organizedChannels.townSquare.send(
+  //   `${townSquareStart}\nCharacters in game:\n${printCharacters}`
+  // );
   organizedChannels.werewolves.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );

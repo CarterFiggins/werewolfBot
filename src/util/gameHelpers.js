@@ -2,10 +2,12 @@ const _ = require("lodash");
 const { createUsers, createGame } = require("../werewolf_db");
 const { sendStartMessages, channelNames } = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
+const computeCharacters = require("./computeCharacters");
 const {
   gameCommandPermissions,
-  characters,
   sendGreeting,
+  characters,
+  characterPoints,
 } = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
 
@@ -81,55 +83,14 @@ async function getPlayingUsers(interaction) {
 }
 
 async function giveUserRoles(interaction, users) {
-  // At least 2 are regular village and Always seer and body guard
-  let currentCharacters = [
-    characters.SEER,
-    characters.BODYGUARD,
-    characters.VILLAGER,
-    characters.LYCAN,
-  ];
-  const leftOverRoles = _.shuffle([
-    characters.FOOL,
-    characters.BAKER,
-    characters.HUNTER,
-    characters.CURSED,
-    characters.APPRENTICE_SEER,
-    // characters.PRIEST,
-  ]);
-  numberOfPlayers = users.length;
-  numberOfWerewolves = Math.floor(numberOfPlayers / 4);
-  leftOverPlayers =
-    numberOfPlayers - numberOfWerewolves - currentCharacters.length;
-
-  if (numberOfPlayers < 5) {
+  if (users.length < 5) {
     await interaction.editReply({
       content: "Error: Not enough players (need at least 5)",
       ephemeral: true,
     });
     return;
   }
-
-  // add werewolves and masons
-  for (let i = 0; i < numberOfWerewolves; i++) {
-    if (i === 3) {
-      currentCharacters.push(characters.CUB);
-    } else {
-      currentCharacters.push(characters.WEREWOLF);
-    }
-    if (i > 2) {
-      leftOverRoles.push(characters.MASON);
-    }
-  }
-  // add leftover characters
-  for (let i = 0; i < leftOverPlayers; i++) {
-    if (!_.isEmpty(leftOverRoles)) {
-      currentCharacters.push(leftOverRoles.pop());
-    } else {
-      currentCharacters.push(characters.VILLAGER);
-    }
-  }
-  // Mix up characters for game
-  currentCharacters = _.shuffle(currentCharacters);
+  const currentCharacters = _.shuffle(computeCharacters(users.length));
 
   if (currentCharacters.length !== users.length) {
     await interaction.editReply({

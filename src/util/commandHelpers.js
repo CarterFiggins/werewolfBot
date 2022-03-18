@@ -72,6 +72,21 @@ const characters = {
   CUB: "werewolf cub",
 };
 
+const characterPoints = new Map([
+  [characters.VILLAGER, 2],
+  [characters.SEER, 6],
+  [characters.BODYGUARD, 4],
+  [characters.APPRENTICE_SEER, 7],
+  [characters.MASON, 4],
+  [characters.HUNTER, 4],
+  [characters.WEREWOLF, 6],
+  [characters.FOOL, 3],
+  [characters.LYCAN, 3],
+  [characters.BAKER, 5],
+  [characters.CURSED, 5],
+  [characters.CUB, 7],
+]);
+
 const voteText =
   "Every day you may vote to hang someone by using the `/vote` command in the town square.";
 
@@ -465,4 +480,5 @@ module.exports = {
   addCursedKillPermissions,
   commandNames,
   characters,
+  characterPoints,
 };
