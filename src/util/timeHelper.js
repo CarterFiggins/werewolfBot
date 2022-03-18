@@ -149,9 +149,10 @@ async function dayTimeJob(interaction) {
             deadMember,
             organizedRoles
           );
-          message += `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
           if (deathCharacter === characters.HUNTER) {
             message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+          } else {
+            message += `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
           }
         }
       })
