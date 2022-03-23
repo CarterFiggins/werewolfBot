@@ -63,7 +63,7 @@ module.exports = {
     }
     if (dbUser.character === characters.WEREWOLF) {
       await interaction.reply({
-        content: `${targetedUser} is a werewolf... why would you do that?`,
+        content: `${targetedUser} is a werewolf... try again?\nhttps://tenor.com/bPmzV.gif`,
         ephemeral: false,
       });
       return;

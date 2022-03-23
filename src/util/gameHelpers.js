@@ -130,6 +130,7 @@ async function giveUserRoles(interaction, users) {
         nickname: member.nickname,
         character: user.character,
         guild_id: interaction.guild.id,
+        death: false,
       };
       switch (newCharacter) {
         case characters.FOOL:
@@ -171,6 +172,7 @@ async function removeAllGameChannels(channels) {
         case channelNames.AFTER_LIFE:
         case channelNames.THE_TOWN:
         case channelNames.BODYGUARD:
+        case channelNames.WITCH:
           await channel.delete();
       }
     })
@@ -228,6 +230,9 @@ async function createChannels(interaction, users) {
     users,
     characters.WEREWOLF
   ).concat(defaultPermissions);
+  const witchesPermissions = createPermissions(users, characters.WITCH).concat(
+    defaultPermissions
+  );
   let seerPermissions = createPermissions(users, characters.SEER).concat(
     defaultPermissions
   );
@@ -290,6 +295,12 @@ async function createChannels(interaction, users) {
     interaction,
     channelNames.BODYGUARD,
     bodyguardPermissions,
+    category
+  );
+  await createChannel(
+    interaction,
+    channelNames.WITCH,
+    witchesPermissions,
     category
   );
 }

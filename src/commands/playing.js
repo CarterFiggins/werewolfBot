@@ -13,7 +13,7 @@ module.exports = {
     member.roles.add(playingRole);
 
     await interaction.reply({
-      content: `${interaction.user.username} is now playing`,
+      content: `${interaction.user} is now playing`,
     });
   },
 };

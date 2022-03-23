@@ -30,18 +30,38 @@ function computeCharacters(numberOfPlayers) {
   const maxWerewolves =
     Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 12) - 1;
   const maxWerewolfCub = Math.floor(numberOfPlayers / 12);
-  const maxMasons = Math.floor(numberOfPlayers / 8) + 1;
+  const maxMasons = Math.floor(numberOfPlayers / 8);
   const maxSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxFools = Math.floor(numberOfPlayers / 20) + 1;
   const maxLycans = Math.floor(numberOfPlayers / 10) + 1;
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
   const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
-  const maxVillager = Math.floor(numberOfPlayers / 5);
+  // only one witch for now
+  const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
   // only one bodyguard for now
   const maxBodyguards = 1;
   // only one baker for now
   const maxBakers = 1;
+  let maxVillagers = 2;
+
+  const totalCharacters =
+    maxWerewolfCub +
+    maxMasons +
+    maxSeers +
+    maxFools +
+    maxLycans +
+    maxApprenticeSeers +
+    maxHunters +
+    maxCursedVillager +
+    maxVillagers +
+    maxBodyguards +
+    maxBakers +
+    maxWitches;
+
+  if (numberOfPlayers > totalCharacters) {
+    maxVillagers += numberOfPlayers - totalCharacters;
+  }
 
   const werewolfHelperCards = _.shuffle([
     ...Array(maxWerewolves).fill(characters.WEREWOLF),
@@ -63,9 +83,12 @@ function computeCharacters(numberOfPlayers) {
 
   const currentCharacters = [characters.WEREWOLF];
   let werewolfPoints = characterPoints.get(characters.WEREWOLF);
+  const playersLeftOver = numberOfPlayers - 1;
   let villagerPoints = 0;
+  const masonInGame = false;
 
-  _.forEach(_.range(numberOfPlayers - 1), () => {
+  // minus one because we start with a werewolf
+  _.forEach(_.range(playersLeftOver), (count) => {
     if (werewolfPoints < villagerPoints) {
       let newCharacter = !_.isEmpty(werewolfHelperCards)
         ? werewolfHelperCards.pop()
@@ -76,8 +99,23 @@ function computeCharacters(numberOfPlayers) {
       let newCharacter = !_.isEmpty(villagerHelperCards)
         ? villagerHelperCards.pop()
         : randomVillagerHelperCard();
-      villagerPoints += characterPoints.get(newCharacter);
-      currentCharacters.push(newCharacter);
+
+      if (newCharacter === characters.MASON && !masonInGame) {
+        // Last player don't add masons
+        if (count === playersLeftOver - 1) {
+          newCharacter = characters.VILLAGER;
+          villagerPoints += characterPoints.get(newCharacter);
+          currentCharacters.push(newCharacter);
+        } else {
+          // add two masons
+          villagerPoints += characterPoints.get(newCharacter) * 2;
+          currentCharacters.push(newCharacter);
+          currentCharacters.push(newCharacter);
+        }
+      } else {
+        villagerPoints += characterPoints.get(newCharacter);
+        currentCharacters.push(newCharacter);
+      }
     }
   });
 

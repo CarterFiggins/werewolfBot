@@ -9,6 +9,7 @@ const channelNames = {
   BODYGUARD: "bodyguard",
   AFTER_LIFE: "after-life",
   MASON: "mason",
+  WITCH: "witch",
 };
 
 async function sendStartMessages(interaction, users) {
@@ -58,6 +59,7 @@ async function sendStartMessages(interaction, users) {
   );
   organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
   organizedChannels.bodyguard.send(bodyguardStart);
+  organizedChannels.witch.send(witchStart);
 }
 
 function showUsersCharacter(users) {
@@ -92,6 +94,9 @@ function organizeChannels(channels) {
         break;
       case channelNames.BODYGUARD:
         channelObject.bodyguard = channel;
+        break;
+      case channelNames.WITCH:
+        channelObject.witch = channel;
         break;
     }
   });
@@ -176,6 +181,9 @@ const masonStart =
 
 const bodyguardStart =
   "You are a bodyguard who protects this town! Use the `/guard` command to guard people at night. If you guard a player that the werewolves attack you will save them and they will not die. You can guard yourself but you can't guard someone twice in a row";
+
+const witchStart =
+  "You are a witch! You help the werewolves by cursing villagers with the `/curse` command. If the villagers kill you than all the villagers who have the curse will die. If the werewolves kill you the curse will break and they will not die";
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

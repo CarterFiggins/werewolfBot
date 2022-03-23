@@ -34,6 +34,7 @@ const commandNames = {
   SHOOT: "shoot",
   WHISPER: "whisper",
   PERMISSION_RESET: "permission_reset",
+  CURSE: "curse",
 };
 
 /* 
@@ -47,6 +48,8 @@ gameHelpers
   1. add character to leftOverRoles
   2. add characters powers in the newCharacter switch statement
   3. add permissions for character in createChannels
+Computing characters
+  1. add max character amount
 
 making a channel for character
  1. removeAllGameChannels
@@ -70,6 +73,7 @@ const characters = {
   BAKER: "baker",
   CURSED: "cursed villager",
   CUB: "werewolf cub",
+  WITCH: "witch",
 };
 
 const characterPoints = new Map([
@@ -85,6 +89,7 @@ const characterPoints = new Map([
   [characters.BAKER, 5],
   [characters.CURSED, 5],
   [characters.CUB, 7],
+  [characters.WITCH, 5],
 ]);
 
 const voteText =
@@ -144,6 +149,11 @@ async function sendGreeting(member, user) {
           `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`
         );
         break;
+      case characters.WITCH:
+        await member.send(
+          `You are a **Witch**.\n${voteText}\nYou are on the werewolf team but you don't know which players are the werewolves.\nYou can curse a player in the game with the \`/curse\` command.\nWhen you are hanged by the villagers the players that are cursed will die.\nWerewolves are not effected by the curse\nIf the werewolves kill you your curse does nothing.`
+        );
+        break;
     }
   } catch (error) {
     console.log(error);
@@ -191,6 +201,9 @@ async function removeUsersPermissions(interaction, user) {
     case characters.BODYGUARD:
       command = organizedCommands.guard;
       break;
+    case characters.WITCH:
+      command = organizedCommands.curse;
+      break;
   }
   if (command) {
     await interaction.guild.commands.permissions.add({
@@ -222,27 +235,19 @@ async function gameCommandPermissions(interaction, users, permission) {
     (user) => user.character === characters.BODYGUARD
   );
   const hunters = users.filter((user) => user.character === characters.HUNTER);
+  const witches = users.filter((user) => user.character === characters.WITCH);
 
-  const werewolvesPermissions = werewolves.map((user) => ({
+  const makePermission = (user) => ({
     id: user.user_id || user.id,
     type: "USER",
     permission,
-  }));
-  const seersPermissions = seers.map((user) => ({
-    id: user.user_id || user.id,
-    type: "USER",
-    permission,
-  }));
-  const bodyguardsPermissions = bodyguards.map((user) => ({
-    id: user.user_id || user.id,
-    type: "USER",
-    permission,
-  }));
-  const hunterPermissions = hunters.map((user) => ({
-    id: user.user_id || user.id,
-    type: "USER",
-    permission,
-  }));
+  });
+
+  const werewolvesPermissions = werewolves.map(makePermission);
+  const seersPermissions = seers.map(makePermission);
+  const bodyguardsPermissions = bodyguards.map(makePermission);
+  const hunterPermissions = hunters.map(makePermission);
+  const witchPermissions = witches.map(makePermission);
 
   await interaction.guild.commands.permissions.add({
     command: organizedCommands.kill.id,
@@ -259,6 +264,10 @@ async function gameCommandPermissions(interaction, users, permission) {
   await interaction.guild.commands.permissions.add({
     command: organizedCommands.shoot.id,
     permissions: hunterPermissions,
+  });
+  await interaction.guild.commands.permissions.add({
+    command: organizedCommands.curse.id,
+    permissions: witchPermissions,
   });
 }
 
@@ -463,6 +472,9 @@ function organizeGameCommands(commands) {
         break;
       case commandNames.SHOOT:
         commandObject.shoot = command;
+        break;
+      case commandNames.CURSE:
+        commandObject.curse = command;
         break;
     }
   });

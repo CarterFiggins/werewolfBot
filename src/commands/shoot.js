@@ -6,6 +6,7 @@ const { roleNames } = require("../util/rolesHelpers");
 const { findUser, updateUser } = require("../werewolf_db");
 const { organizeRoles } = require("../util/rolesHelpers");
 const { removesDeadPermissions, checkGame } = require("../util/timeHelper");
+const { castWitchCurse } = require("../util/userHelpers");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SHOOT)
@@ -100,6 +101,13 @@ module.exports = {
 
     if (targetDbUser.character === characters.HUNTER) {
       message = `${targetedUser} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
+    }
+    if (targetDbUser.character === characters.WITCH) {
+      message = await castWitchCurse(
+        interaction,
+        organizedRoles,
+        removesDeadPermissions
+      );
     }
 
     await interaction.editReply(
