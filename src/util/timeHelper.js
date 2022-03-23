@@ -389,11 +389,11 @@ async function removesDeadPermissions(
       guild_id: guildId,
       character: characters.FOOL,
     });
-    const discordApprenticeUser = interaction.guild.members.cache.get(
-      apprenticeSeerUser.user_id
-    );
 
     if (apprenticeSeerUser && !apprenticeSeerUser.dead) {
+      const discordApprenticeUser = interaction.guild.members.cache.get(
+        apprenticeSeerUser.user_id
+      );
       if (foolUser && !foolUser.dead) {
         let roles = [characters.SEER, characters.FOOL];
 

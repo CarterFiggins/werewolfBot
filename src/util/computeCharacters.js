@@ -30,7 +30,7 @@ function computeCharacters(numberOfPlayers) {
   const maxWerewolves =
     Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 12) - 1;
   const maxWerewolfCub = Math.floor(numberOfPlayers / 12);
-  const maxMasons = Math.floor(numberOfPlayers / 8) + 1;
+  const maxMasons = Math.floor(numberOfPlayers / 8);
   const maxSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxFools = Math.floor(numberOfPlayers / 20) + 1;
   const maxLycans = Math.floor(numberOfPlayers / 10) + 1;
@@ -83,9 +83,12 @@ function computeCharacters(numberOfPlayers) {
 
   const currentCharacters = [characters.WEREWOLF];
   let werewolfPoints = characterPoints.get(characters.WEREWOLF);
+  const playersLeftOver = numberOfPlayers - 1;
   let villagerPoints = 0;
+  const masonInGame = false;
 
-  _.forEach(_.range(numberOfPlayers - 1), () => {
+  // minus one because we start with a werewolf
+  _.forEach(_.range(playersLeftOver), (count) => {
     if (werewolfPoints < villagerPoints) {
       let newCharacter = !_.isEmpty(werewolfHelperCards)
         ? werewolfHelperCards.pop()
