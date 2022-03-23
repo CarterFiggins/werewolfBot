@@ -13,7 +13,11 @@ const {
   getRole,
   roleNames,
 } = require("./rolesHelpers");
-const { getAliveUsersIds, getAliveMembers } = require("./userHelpers");
+const {
+  getAliveUsersIds,
+  getAliveMembers,
+  castWitchCurse,
+} = require("./userHelpers");
 const {
   removeUsersPermissions,
   resetNightPowers,
@@ -266,36 +270,11 @@ async function nightTimeJob(interaction) {
   let cursedMessage = "";
 
   if (deadUser.character === characters.WITCH) {
-    const cursorCursed = await findManyUsers({
-      guild_id: guildId,
-      is_cursed: true,
-      death: false,
-    });
-    const cursedPlayers = await cursorCursed.toArray();
-    const cursedVillagers = _.filter(cursedPlayers, (player) => {
-      return player.character !== characters.WEREWOLF;
-    });
-
-    const deathCharacters = await Promise.all(
-      _.map(cursedVillagers, async (villager) => {
-        const villagerMember = members.get(villager.user_id);
-
-        const deadVillager = await removesDeadPermissions(
-          interaction,
-          villager,
-          villagerMember,
-          organizedRoles
-        );
-        let hunterMessage = "";
-        if (deadVillager === characters.HUNTER) {
-          hunterMessage =
-            "you don't have long to live. Grab your gun and `/shoot` someone.";
-        }
-        return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}\n`;
-      })
+    cursedMessage = await castWitchCurse(
+      interaction,
+      organizedRoles,
+      removesDeadPermissions
     );
-
-    cursedMessage = `The witch curse has killed:\n${deathCharacters}\nhttps://tenor.com/NYMC.gif`;
   }
 
   const deathCharacter = await removesDeadPermissions(

@@ -89,7 +89,7 @@ const characterPoints = new Map([
   [characters.BAKER, 5],
   [characters.CURSED, 5],
   [characters.CUB, 7],
-  [characters.WITCH, 6],
+  [characters.WITCH, 5],
 ]);
 
 const voteText =
