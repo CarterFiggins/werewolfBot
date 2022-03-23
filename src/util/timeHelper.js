@@ -93,6 +93,25 @@ async function dayTimeJob(interaction) {
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
 
+  const cursorWitches = await findManyUsers({
+    guild_id: guildId,
+    character: characters.WITCH,
+  });
+  const witches = await cursorWitches.toArray();
+
+  await Promise.all(
+    _.map(witches, async (witch) => {
+      if (witch.target_cursed_user_id) {
+        await updateUser(witch.target_cursed_user_id, guildId, {
+          is_cursed: true,
+        });
+        await updateUser(witch.user_id, guildId, {
+          target_cursed_user_id: null,
+        });
+      }
+    })
+  );
+
   let message = "";
 
   const cursorBodyguards = await findManyUsers({
@@ -244,6 +263,41 @@ async function nightTimeJob(interaction) {
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
   const deadMember = members.get(voteWinner._id.voted_user_id);
 
+  let cursedMessage = "";
+
+  if (deadUser.character === characters.WITCH) {
+    const cursorCursed = await findManyUsers({
+      guild_id: guildId,
+      is_cursed: true,
+      death: false,
+    });
+    const cursedPlayers = await cursorCursed.toArray();
+    const cursedVillagers = _.filter(cursedPlayers, (player) => {
+      return player.character !== characters.WEREWOLF;
+    });
+
+    const deathCharacters = await Promise.all(
+      _.map(cursedVillagers, async (villager) => {
+        const villagerMember = members.get(villager.user_id);
+
+        const deadVillager = await removesDeadPermissions(
+          interaction,
+          villager,
+          villagerMember,
+          organizedRoles
+        );
+        let hunterMessage = "";
+        if (deadVillager === characters.HUNTER) {
+          hunterMessage =
+            "you don't have long to live. Grab your gun and `/shoot` someone.";
+        }
+        return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}\n`;
+      })
+    );
+
+    cursedMessage = `The witch curse has killed:\n${deathCharacters}\nhttps://tenor.com/NYMC.gif`;
+  }
+
   const deathCharacter = await removesDeadPermissions(
     interaction,
     deadUser,
@@ -268,7 +322,7 @@ async function nightTimeJob(interaction) {
   });
 
   organizedChannels.townSquare.send(
-    `${message}\n${deathMessage}\n**It is night time**`
+    `${message}\n${deathMessage}\n${cursedMessage}\n**It is night time**`
   );
 
   await checkGame(interaction);
@@ -287,7 +341,7 @@ async function removesDeadPermissions(
   if (deadCharacter === characters.HUNTER && !deadUser.dead) {
     await updateUser(deadUser.user_id, guildId, {
       can_shoot: true,
-      dead: true,
+      death: true,
     });
 
     const currentDate = new Date();

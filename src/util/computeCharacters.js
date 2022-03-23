@@ -37,11 +37,31 @@ function computeCharacters(numberOfPlayers) {
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
   const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
-  const maxVillager = Math.floor(numberOfPlayers / 5);
+  // only one witch for now
+  const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
   // only one bodyguard for now
   const maxBodyguards = 1;
   // only one baker for now
   const maxBakers = 1;
+  let maxVillagers = 2;
+
+  const totalCharacters =
+    maxWerewolfCub +
+    maxMasons +
+    maxSeers +
+    maxFools +
+    maxLycans +
+    maxApprenticeSeers +
+    maxHunters +
+    maxCursedVillager +
+    maxVillagers +
+    maxBodyguards +
+    maxBakers +
+    maxWitches;
+
+  if (numberOfPlayers > totalCharacters) {
+    maxVillagers += numberOfPlayers - totalCharacters;
+  }
 
   const werewolfHelperCards = _.shuffle([
     ...Array(maxWerewolves).fill(characters.WEREWOLF),
@@ -76,8 +96,23 @@ function computeCharacters(numberOfPlayers) {
       let newCharacter = !_.isEmpty(villagerHelperCards)
         ? villagerHelperCards.pop()
         : randomVillagerHelperCard();
-      villagerPoints += characterPoints.get(newCharacter);
-      currentCharacters.push(newCharacter);
+
+      if (newCharacter === characters.MASON && !masonInGame) {
+        // Last player don't add masons
+        if (count === playersLeftOver - 1) {
+          newCharacter = characters.VILLAGER;
+          villagerPoints += characterPoints.get(newCharacter);
+          currentCharacters.push(newCharacter);
+        } else {
+          // add two masons
+          villagerPoints += characterPoints.get(newCharacter) * 2;
+          currentCharacters.push(newCharacter);
+          currentCharacters.push(newCharacter);
+        }
+      } else {
+        villagerPoints += characterPoints.get(newCharacter);
+        currentCharacters.push(newCharacter);
+      }
     }
   });
 
