@@ -47,9 +47,13 @@ async function sendStartMessages(interaction, users) {
   });
 
   // Option to show what characters will be playing
-  // organizedChannels.townSquare.send(
-  //   `${townSquareStart}\nCharacters in game:\n${printCharacters}`
-  // );
+  if (printPlayers) {
+    organizedChannels.townSquare.send(
+      `${townSquareStart}\nCharacters in game:\n${printCharacters}`
+    );
+  } else {
+    organizedChannels.townSquare.send(townSquareStart);
+  }
   organizedChannels.werewolves.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );
