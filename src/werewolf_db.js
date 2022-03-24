@@ -55,6 +55,10 @@ async function upsertVote(user_id, guild_id, updatedVote) {
   );
 }
 
+async function findManyVotes(where) {
+  return await db.collection("votes").find(where);
+}
+
 async function deleteAllVotes(guild_id) {
   await db.collection("votes").deleteMany({ guild_id });
 }
@@ -110,6 +114,7 @@ module.exports = {
   upsertVote,
   getCountedVotes,
   deleteAllVotes,
+  findManyVotes,
   createGame,
   findGame,
   updateGame,
