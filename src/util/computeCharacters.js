@@ -78,7 +78,7 @@ function computeCharacters(numberOfPlayers) {
     ...Array(maxApprenticeSeers).fill(characters.APPRENTICE_SEER),
     ...Array(maxHunters).fill(characters.HUNTER),
     ...Array(maxBodyguards).fill(characters.BODYGUARD),
-    ...Array(maxVillager).fill(characters.VILLAGER),
+    ...Array(maxVillagers).fill(characters.VILLAGER),
   ]);
 
   const currentCharacters = [characters.WEREWOLF];
