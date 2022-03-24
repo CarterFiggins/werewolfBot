@@ -31,7 +31,7 @@ function computeCharacters(numberOfPlayers) {
     Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 16) - 1;
   const maxWerewolfCub = Math.floor(numberOfPlayers / 16);
   const maxMasons = Math.floor(numberOfPlayers / 8);
-  const maxSeers = Math.floor(numberOfPlayers / 25) + 1;
+  const maxSeers = Math.floor(numberOfPlayers / 25);
   const maxFools = Math.floor(numberOfPlayers / 20) + 1;
   const maxLycans = Math.floor(numberOfPlayers / 10) + 1;
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
@@ -82,14 +82,14 @@ function computeCharacters(numberOfPlayers) {
     ...Array(maxVillagers).fill(characters.VILLAGER),
   ]);
 
-  const currentCharacters = [characters.WEREWOLF];
+  const currentCharacters = [characters.WEREWOLF, characters.SEER];
   let werewolfPoints = characterPoints.get(characters.WEREWOLF);
-  const playersLeftOver = numberOfPlayers - 1;
-  let villagerPoints = 0;
+  let villagerPoints = characterPoints.get(characters.SEER);
+  // minus off players already added
+  const playersLeftOver = numberOfPlayers - currentCharacters.length;
   let masonInGame = false;
   let skipLoop = false;
 
-  // minus one because we start with a werewolf
   _.forEach(_.range(playersLeftOver), (count) => {
     if (!skipLoop) {
       if (werewolfPoints < villagerPoints) {
@@ -114,8 +114,8 @@ function computeCharacters(numberOfPlayers) {
             villagerPoints += characterPoints.get(newCharacter) * 2;
             currentCharacters.push(newCharacter);
             currentCharacters.push(newCharacter);
-            masonInGame = true
-            skipLoop = true
+            masonInGame = true;
+            skipLoop = true;
           }
         } else {
           villagerPoints += characterPoints.get(newCharacter);
@@ -123,7 +123,7 @@ function computeCharacters(numberOfPlayers) {
         }
       }
     } else {
-      skipLoop = false
+      skipLoop = false;
     }
   });
 

@@ -94,6 +94,12 @@ module.exports = {
       }
     }
 
-    await interaction.reply(message ? message : `Targeting ${targetedUser}`);
+    await interaction.reply(
+      message
+        ? message
+        : `Targeting ${targetedUser} ${
+            game.wolf_double_kill ? "You can target another player" : ""
+          }`
+    );
   },
 };

@@ -90,7 +90,9 @@ async function giveUserRoles(interaction, users) {
     });
     return;
   }
+
   const currentCharacters = _.shuffle(computeCharacters(users.length));
+  const shuffledUsers = _.shuffle(users);
 
   if (currentCharacters.length !== users.length) {
     await interaction.editReply({
@@ -104,8 +106,6 @@ async function giveUserRoles(interaction, users) {
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   const playerRole = await getRole(interaction, roleNames.PLAYING);
   const dbUsers = [];
-
-  const shuffledUsers = _.shuffle(users);
 
   await Promise.all(
     shuffledUsers.map(async (user) => {
