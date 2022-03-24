@@ -85,36 +85,41 @@ function computeCharacters(numberOfPlayers) {
   let werewolfPoints = characterPoints.get(characters.WEREWOLF);
   const playersLeftOver = numberOfPlayers - 1;
   let villagerPoints = 0;
-  const masonInGame = false;
+  let masonInGame = false;
+  let skipLoop = false;
 
   // minus one because we start with a werewolf
   _.forEach(_.range(playersLeftOver), (count) => {
-    if (werewolfPoints < villagerPoints) {
-      let newCharacter = !_.isEmpty(werewolfHelperCards)
-        ? werewolfHelperCards.pop()
-        : randomWolfHelperCard();
-      werewolfPoints += characterPoints.get(newCharacter);
-      currentCharacters.push(newCharacter);
-    } else {
-      let newCharacter = !_.isEmpty(villagerHelperCards)
-        ? villagerHelperCards.pop()
-        : randomVillagerHelperCard();
+    if (!skipLoop) {
+      if (werewolfPoints < villagerPoints) {
+        let newCharacter = !_.isEmpty(werewolfHelperCards)
+          ? werewolfHelperCards.pop()
+          : randomWolfHelperCard();
+        werewolfPoints += characterPoints.get(newCharacter);
+        currentCharacters.push(newCharacter);
+      } else {
+        let newCharacter = !_.isEmpty(villagerHelperCards)
+          ? villagerHelperCards.pop()
+          : randomVillagerHelperCard();
 
-      if (newCharacter === characters.MASON && !masonInGame) {
-        // Last player don't add masons
-        if (count === playersLeftOver - 1) {
-          newCharacter = characters.VILLAGER;
+        if (newCharacter === characters.MASON && !masonInGame) {
+          // Last player don't add masons
+          if (count === playersLeftOver - 1) {
+            newCharacter = characters.VILLAGER;
+            villagerPoints += characterPoints.get(newCharacter);
+            currentCharacters.push(newCharacter);
+          } else {
+            // add two masons
+            villagerPoints += characterPoints.get(newCharacter) * 2;
+            currentCharacters.push(newCharacter);
+            currentCharacters.push(newCharacter);
+            masonInGame = true
+            skipLoop = true
+          }
+        } else {
           villagerPoints += characterPoints.get(newCharacter);
           currentCharacters.push(newCharacter);
-        } else {
-          // add two masons
-          villagerPoints += characterPoints.get(newCharacter) * 2;
-          currentCharacters.push(newCharacter);
-          currentCharacters.push(newCharacter);
         }
-      } else {
-        villagerPoints += characterPoints.get(newCharacter);
-        currentCharacters.push(newCharacter);
       }
     }
   });
