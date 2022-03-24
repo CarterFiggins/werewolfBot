@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { getRole, roleNames } = require("../util/rolesHelpers");
-const { findManyUsers } = require("../werewolf_db");
+const { findManyUsers, deleteManyVotes } = require("../werewolf_db");
 const { characters } = require("./commandHelpers");
 
 async function getAliveMembers(interaction, getId) {
@@ -65,8 +65,16 @@ async function castWitchCurse(
   return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif";
 }
 
+async function removeUserVotes(guildId, userId) {
+  await deleteManyVotes({
+    guild_id: guildId,
+    $or: [{ user_id: userId }, { voted_user_id: userId }],
+  });
+}
+
 module.exports = {
   getAliveUsersIds,
   getAliveMembers,
   castWitchCurse,
+  removeUserVotes,
 };

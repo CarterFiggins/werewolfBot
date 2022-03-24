@@ -96,7 +96,7 @@ module.exports = {
       });
 
       await interaction.editReply({
-        content: message || "No Votes to be found",
+        content: message || "No Votes Found",
         ephemeral: false,
       });
     }

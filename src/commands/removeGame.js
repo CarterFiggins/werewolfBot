@@ -7,7 +7,7 @@ const schedule = require("node-schedule");
 const {
   deleteAllUsers,
   deleteGame,
-  deleteAllVotes,
+  deleteManyVotes,
   findAllUsers,
 } = require("../werewolf_db");
 const { commandNames } = require("../util/commandHelpers");
@@ -60,7 +60,7 @@ module.exports = {
     // delete all game info from database
     await deleteAllUsers(interaction.guild.id);
     await deleteGame(interaction.guild.id);
-    await deleteAllVotes(interaction.guild.id);
+    await deleteManyVotes({ guild_id: interaction.guild.id });
 
     await interaction.editReply({ content: "Game Ended", ephemeral: true });
   },

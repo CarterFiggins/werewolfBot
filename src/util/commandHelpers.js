@@ -26,7 +26,8 @@ const commandNames = {
   PLAYING: "playing",
   STOP_PLAYING: "stop_playing",
   WHO_IS_ALIVE: "who_is_alive",
-  SHOW_VOTES: "show_votes",
+  SHOW_VOTES: "votes",
+  SHOW_VOTERS_FOR: "voters_for",
   VOTE: "vote",
   KILL: "kill",
   SEE: "see",
@@ -407,6 +408,10 @@ async function setupCommandPermissions(interaction) {
       id: organizedCommands.permissionReset.id,
       permissions: ownerAndAdmin,
     },
+    {
+      id: organizedCommands.showVotersFor.id,
+      permissions: allowPlayingPermissions,
+    },
   ];
 
   await interaction.guild.commands.permissions.set({ fullPermissions });
@@ -451,6 +456,9 @@ function organizeSetupCommands(commands) {
         break;
       case commandNames.PERMISSION_RESET:
         commandObject.permissionReset = command;
+        break;
+      case commandNames.SHOW_VOTERS_FOR:
+        commandNames.showVotersFor = command;
         break;
     }
   });

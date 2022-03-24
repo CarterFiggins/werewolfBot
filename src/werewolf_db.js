@@ -59,8 +59,8 @@ async function findManyVotes(where) {
   return await db.collection("votes").find(where);
 }
 
-async function deleteAllVotes(guild_id) {
-  await db.collection("votes").deleteMany({ guild_id });
+async function deleteManyVotes(where) {
+  await db.collection("votes").deleteMany(where);
 }
 
 async function getCountedVotes(guild_id) {
@@ -113,7 +113,7 @@ module.exports = {
   createUsers,
   upsertVote,
   getCountedVotes,
-  deleteAllVotes,
+  deleteManyVotes,
   findManyVotes,
   createGame,
   findGame,

@@ -17,6 +17,7 @@ const {
   getAliveUsersIds,
   getAliveMembers,
   castWitchCurse,
+  removeUserVotes,
 } = require("./userHelpers");
 const {
   removeUsersPermissions,
@@ -36,9 +37,9 @@ const {
   findUsersWithIds,
   deleteAllUsers,
   getCountedVotes,
-  deleteAllVotes,
   findAllUsers,
   findManyUsers,
+  deleteManyVotes,
 } = require("../werewolf_db");
 
 async function timeScheduling(interaction, dayHour, nightHour) {
@@ -255,7 +256,7 @@ async function nightTimeJob(interaction) {
   }
   const voteWinner = _.head(_.shuffle(topVotes));
 
-  await deleteAllVotes(guildId);
+  await deleteManyVotes({ guild_id: guildId });
   await resetNightPowers(guildId);
   if (!voteWinner) {
     await updateGame(guildId, {
@@ -317,7 +318,7 @@ async function removesDeadPermissions(
   let deadCharacter = deadUser.character;
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  if (deadCharacter === characters.HUNTER && !deadUser.dead) {
+  if (deadCharacter === characters.HUNTER && !deadUser.death) {
     await updateUser(deadUser.user_id, guildId, {
       can_shoot: true,
       death: true,
@@ -342,6 +343,7 @@ async function removesDeadPermissions(
 
   await removeUsersPermissions(interaction, deadUser);
   await removeChannelPermissions(interaction, deadMember);
+  await removeUserVotes(guildId, deadUser.user_id);
   await updateUser(deadUser.user_id, guildId, { dead: true });
 
   if (deadCharacter === characters.LYCAN) {
@@ -369,11 +371,11 @@ async function removesDeadPermissions(
       character: characters.FOOL,
     });
 
-    if (apprenticeSeerUser && !apprenticeSeerUser.dead) {
+    if (apprenticeSeerUser && !apprenticeSeerUser.death) {
       const discordApprenticeUser = interaction.guild.members.cache.get(
         apprenticeSeerUser.user_id
       );
-      if (foolUser && !foolUser.dead) {
+      if (foolUser && !foolUser.death) {
         let roles = [characters.SEER, characters.FOOL];
 
         const discordFoolUser = interaction.guild.members.cache.get(
@@ -506,7 +508,8 @@ async function starveUser(interaction, organizedRoles, deathIds) {
       aliveUsers,
       (user) =>
         !deathIds.includes(user.user_id) &&
-        user.character !== characters.WEREWOLF
+        user.character !== characters.WEREWOLF &&
+        user.character !== characters.WITCH
     );
   } else {
     aliveUsers = _.filter(
@@ -548,7 +551,7 @@ async function endGame(interaction, guildId, roles, members) {
   // delete all game info from database
   await deleteAllUsers(guildId);
   await deleteGame(guildId);
-  await deleteAllVotes(guildId);
+  await deleteManyVotes({ guild_id: guildId });
   for (const job in schedule.scheduledJobs) schedule.cancelJob(job);
   await schedule.gracefulShutdown();
 }

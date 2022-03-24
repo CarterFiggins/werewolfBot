@@ -34,7 +34,7 @@ module.exports = {
       });
       return;
     }
-    if (dbUser.dead) {
+    if (dbUser.death) {
       await interaction.reply({
         content: "You can't vote because you are injured",
         ephemeral: true,
