@@ -28,8 +28,8 @@ const randomVillagerHelperCard = () => {
 function computeCharacters(numberOfPlayers) {
   // subtracting the werewolfCubs and first werewolf
   const maxWerewolves =
-    Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 12) - 1;
-  const maxWerewolfCub = Math.floor(numberOfPlayers / 12);
+    Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 16) - 1;
+  const maxWerewolfCub = Math.floor(numberOfPlayers / 16);
   const maxMasons = Math.floor(numberOfPlayers / 8);
   const maxSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxFools = Math.floor(numberOfPlayers / 20) + 1;
@@ -70,6 +70,7 @@ function computeCharacters(numberOfPlayers) {
     ...Array(maxFools).fill(characters.FOOL),
     ...Array(maxCursedVillager).fill(characters.CURSED),
     ...Array(maxBakers).fill(characters.BAKER),
+    ...Array(maxWitches).fill(characters.WITCH),
   ]);
 
   const villagerHelperCards = _.shuffle([
@@ -121,6 +122,8 @@ function computeCharacters(numberOfPlayers) {
           currentCharacters.push(newCharacter);
         }
       }
+    } else {
+      skipLoop = false
     }
   });
 
