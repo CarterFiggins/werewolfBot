@@ -91,7 +91,7 @@ async function giveUserRoles(interaction, users) {
     return;
   }
 
-  const currentCharacters = _.shuffle(computeCharacters(users.length));
+  const currentCharacters = computeCharacters(users.length);
   const shuffledUsers = _.shuffle(users);
 
   if (currentCharacters.length !== users.length) {

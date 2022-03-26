@@ -28,8 +28,9 @@ const randomVillagerHelperCard = () => {
 function computeCharacters(numberOfPlayers) {
   // subtracting the werewolfCubs and first werewolf
   const maxWerewolves =
-    Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 16) - 1;
-  const maxWerewolfCub = Math.floor(numberOfPlayers / 16);
+    Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 12);
+  const maxWerewolfCub = Math.floor(numberOfPlayers / 12);
+  // first mason will be two masons
   const maxMasons = Math.floor(numberOfPlayers / 8);
   const maxSeers = Math.floor(numberOfPlayers / 25);
   const maxFools = Math.floor(numberOfPlayers / 20) + 1;
@@ -37,13 +38,13 @@ function computeCharacters(numberOfPlayers) {
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
   const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
+  let maxVillagers = Math.floor(numberOfPlayers / 10) + 1;
   // only one witch for now
   const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
   // only one bodyguard for now
   const maxBodyguards = 1;
   // only one baker for now
   const maxBakers = 1;
-  let maxVillagers = 2;
 
   const totalCharacters =
     maxWerewolfCub +
@@ -64,10 +65,7 @@ function computeCharacters(numberOfPlayers) {
   }
 
   const werewolfHelperCards = _.shuffle([
-    ...Array(maxWerewolves).fill(characters.WEREWOLF),
-    ...Array(maxWerewolfCub).fill(characters.CUB),
     ...Array(maxLycans).fill(characters.LYCAN),
-    ...Array(maxFools).fill(characters.FOOL),
     ...Array(maxCursedVillager).fill(characters.CURSED),
     ...Array(maxBakers).fill(characters.BAKER),
     ...Array(maxWitches).fill(characters.WITCH),
@@ -75,15 +73,26 @@ function computeCharacters(numberOfPlayers) {
 
   const villagerHelperCards = _.shuffle([
     ...Array(maxSeers).fill(characters.SEER),
-    ...Array(maxMasons).fill(characters.MASON),
     ...Array(maxApprenticeSeers).fill(characters.APPRENTICE_SEER),
+    ...Array(maxFools).fill(characters.FOOL),
+    ...Array(maxMasons).fill(characters.MASON),
     ...Array(maxHunters).fill(characters.HUNTER),
     ...Array(maxBodyguards).fill(characters.BODYGUARD),
     ...Array(maxVillagers).fill(characters.VILLAGER),
   ]);
 
-  const currentCharacters = [characters.WEREWOLF, characters.SEER];
-  let werewolfPoints = characterPoints.get(characters.WEREWOLF);
+  let werewolfPoints = 0;
+  const currentCharacters = [
+    ..._.map(_.range(maxWerewolves), () => {
+      werewolfPoints += characterPoints.get(characters.WEREWOLF);
+      return characters.WEREWOLF;
+    }),
+    ..._.map(_.range(maxWerewolfCub), () => {
+      werewolfPoints += characterPoints.get(characters.CUB);
+      return characters.CUB;
+    }),
+    characters.SEER,
+  ];
   let villagerPoints = characterPoints.get(characters.SEER);
   // minus off players already added
   const playersLeftOver = numberOfPlayers - currentCharacters.length;
@@ -127,7 +136,7 @@ function computeCharacters(numberOfPlayers) {
     }
   });
 
-  return currentCharacters;
+  return _.shuffle(currentCharacters);
 }
 
 module.exports = computeCharacters;

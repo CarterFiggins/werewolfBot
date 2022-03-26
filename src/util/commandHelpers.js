@@ -84,13 +84,13 @@ const characterPoints = new Map([
   [characters.APPRENTICE_SEER, 7],
   [characters.MASON, 4],
   [characters.HUNTER, 4],
-  [characters.WEREWOLF, 6],
+  [characters.WEREWOLF, 5],
   [characters.FOOL, 3],
   [characters.LYCAN, 3],
   [characters.BAKER, 5],
-  [characters.CURSED, 5],
-  [characters.CUB, 7],
-  [characters.WITCH, 5],
+  [characters.CURSED, 4],
+  [characters.CUB, 6],
+  [characters.WITCH, 4],
 ]);
 
 const voteText =
@@ -102,12 +102,26 @@ async function sendGreeting(member, user) {
       return;
     }
 
+    const villagerMessage = `You are a **Villager!**\nYour job is to find out who is a werewolf and hang them for their crimes.\n${voteText}\nBe careful at night, the werewolves are hungry\n`;
+    const lycanMessage = `You are a **Lycan**.\nYou are a villager but you have the very rare lycan gene that confuses the spirits.\n${voteText}\nBecause of your cursed gene, if a seer investigates your character the spirits will tell them you are a werewolf when you really are a villager.\n`;
+    const bakerMessage = `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`;
+    const hunterMessage = `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`;
+
     switch (user.character) {
-      case characters.VILLAGER:
       case characters.CURSED:
         await member.send(
-          `You are a **Villager!**\nYour job is to find out who is a werewolf and hang them for their crimes.\n${voteText}\nBe careful at night, the werewolves are hungry\n`
+          _.head(
+            _.shuffle([
+              villagerMessage,
+              lycanMessage,
+              bakerMessage,
+              hunterMessage,
+            ])
+          )
         );
+        break;
+      case characters.VILLAGER:
+        await member.send(villagerMessage);
         break;
       case characters.WEREWOLF:
         await member.send(
@@ -131,9 +145,7 @@ async function sendGreeting(member, user) {
         );
         break;
       case characters.LYCAN:
-        await member.send(
-          `You are a **Lycan**.\nYou are a villager but you have the very rare lycan gene that confuses the spirits.\n${voteText}\nBecause of your cursed gene, if a seer investigates your character the spirits will tell them you are a werewolf when you really are a villager.\n`
-        );
+        await member.send(lycanMessage);
         break;
       case characters.APPRENTICE_SEER:
         await member.send(
@@ -141,14 +153,10 @@ async function sendGreeting(member, user) {
         );
         break;
       case characters.BAKER:
-        await member.send(
-          `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`
-        );
+        await member.send(bakerMessage);
         break;
       case characters.HUNTER:
-        await member.send(
-          `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`
-        );
+        await member.send(hunterMessage);
         break;
       case characters.WITCH:
         await member.send(
