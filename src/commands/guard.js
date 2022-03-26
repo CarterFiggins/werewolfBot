@@ -74,7 +74,7 @@ module.exports = {
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content: "This Person is dead. Focus on guarding the living.",
+        content: `${targetedUser} is dead. Focus on guarding the living.`,
         ephemeral: false,
       });
       return;

@@ -66,8 +66,7 @@ module.exports = {
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content:
-          "You voted for someone that is not alive try again\nhttps://tenor.com/blWe0.gif",
+        content: `You voted for ${votedUser} who is dead. Try again\nhttps://tenor.com/bkaVf.gif`,
         ephemeral: false,
       });
       return;

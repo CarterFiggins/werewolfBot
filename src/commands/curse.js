@@ -51,8 +51,7 @@ module.exports = {
     // }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content:
-          "Curses don't work on dead people. Try again.\nhttps://tenor.com/bcD0a.gif",
+        content: `${targetedUser} is dead. This curse doesn't work on dead people. Try again.\nhttps://tenor.com/bcD0a.gif`,
         ephemeral: false,
       });
       return;

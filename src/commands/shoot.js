@@ -57,7 +57,7 @@ module.exports = {
     }
     if (!userRoles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content: "Don't shoot dead people\nhttps://tenor.com/Jx9w.gif",
+        content: `${targetedUser} is already dead. Don't shoot dead people! try again.\nhttps://tenor.com/Jx9w.gif`,
         ephemeral: false,
       });
       return;

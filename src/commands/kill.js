@@ -56,7 +56,7 @@ module.exports = {
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content: "This Person is dead. \nhttps://tenor.com/blWe0.gif",
+        content: `${targetedUser} is dead. \nhttps://tenor.com/blWe0.gif`,
         ephemeral: false,
       });
       return;
