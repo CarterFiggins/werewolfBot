@@ -36,6 +36,7 @@ const commandNames = {
   WHISPER: "whisper",
   PERMISSION_RESET: "permission_reset",
   CURSE: "curse",
+  VAMPIRE_BITE: "vampire_bite",
 };
 
 /* 
@@ -75,6 +76,7 @@ const characters = {
   CURSED: "cursed villager",
   CUB: "werewolf cub",
   WITCH: "witch",
+  VAMPIRE: "vampire",
 };
 
 const characterPoints = new Map([
@@ -91,6 +93,7 @@ const characterPoints = new Map([
   [characters.CURSED, 4],
   [characters.CUB, 6],
   [characters.WITCH, 4],
+  [characters.VAMPIRE, 40],
 ]);
 
 const voteText =
@@ -163,6 +166,11 @@ async function sendGreeting(member, user) {
           `You are a **Witch**.\n${voteText}\nYou are on the werewolf team but you don't know which players are the werewolves.\nYou can curse a player in the game with the \`/curse\` command.\nWhen you are hanged by the villagers the players that are cursed will die.\nWerewolves are not effected by the curse\nIf the werewolves kill you your curse does nothing.`
         );
         break;
+      case characters.VAMPIRE:
+        await member.send(
+          `You are a **Vampire**\n${voteText}\nVampires are on there own team. Bite other players to turn them into a vampire by using the command \`/vampire_bite\`\nIf you try to bite a werewolf you die.\nIf you bite someone the same night as the werewolf kill that victim you will also die.\nYou have to bite the victim **2 times** before they turn into a vampire.`
+        );
+        break;
     }
   } catch (error) {
     console.log(error);
@@ -213,6 +221,8 @@ async function removeUsersPermissions(interaction, user) {
     case characters.WITCH:
       command = organizedCommands.curse;
       break;
+    case characters.VAMPIRE:
+      command = organizedCommands.bite;
   }
   if (command) {
     await interaction.guild.commands.permissions.add({
@@ -232,6 +242,7 @@ async function gameCommandPermissions(interaction, users, permission) {
   const commands = await interaction.guild.commands.fetch();
   const organizedCommands = organizeGameCommands(commands);
 
+  console.log("filtering");
   // TODO: refactor this into one loop
   const werewolves = users.filter(
     (user) => user.character === characters.WEREWOLF
@@ -245,6 +256,9 @@ async function gameCommandPermissions(interaction, users, permission) {
   );
   const hunters = users.filter((user) => user.character === characters.HUNTER);
   const witches = users.filter((user) => user.character === characters.WITCH);
+  const vampires = users.filter(
+    (user) => user.character === characters.VAMPIRE
+  );
 
   const makePermission = (user) => ({
     id: user.user_id || user.id,
@@ -252,12 +266,16 @@ async function gameCommandPermissions(interaction, users, permission) {
     permission,
   });
 
+  console.log("making permissions");
   const werewolvesPermissions = werewolves.map(makePermission);
   const seersPermissions = seers.map(makePermission);
   const bodyguardsPermissions = bodyguards.map(makePermission);
   const hunterPermissions = hunters.map(makePermission);
   const witchPermissions = witches.map(makePermission);
+  const vampirePermissions = vampires.map(makePermission);
 
+  console.log("adding permissions to commands");
+  // TODO: find a way to combined adding permissions.
   await interaction.guild.commands.permissions.add({
     command: organizedCommands.kill.id,
     permissions: werewolvesPermissions,
@@ -277,6 +295,10 @@ async function gameCommandPermissions(interaction, users, permission) {
   await interaction.guild.commands.permissions.add({
     command: organizedCommands.curse.id,
     permissions: witchPermissions,
+  });
+  await interaction.guild.commands.permissions.add({
+    command: organizedCommands.bite.id,
+    permissions: vampirePermissions,
   });
 }
 
@@ -308,6 +330,22 @@ async function addCursedKillPermissions(interaction, user) {
   ];
   interaction.guild.commands.permissions.add({
     command: organizedCommands.kill.id,
+    permissions,
+  });
+}
+
+async function addVampireBitePermissions(interaction, user) {
+  const commands = await interaction.guild.commands.fetch();
+  const organizedCommands = organizeGameCommands(commands);
+  permissions = [
+    {
+      id: user.user_id || user.id,
+      type: "USER",
+      permission: true,
+    },
+  ];
+  interaction.guild.commands.permissions.add({
+    command: organizedCommands.bite.id,
     permissions,
   });
 }
@@ -492,6 +530,9 @@ function organizeGameCommands(commands) {
       case commandNames.CURSE:
         commandObject.curse = command;
         break;
+      case commandNames.VAMPIRE_BITE:
+        commandObject.bite = command;
+        break;
     }
   });
   return commandObject;
@@ -506,6 +547,7 @@ module.exports = {
   sendGreeting,
   addApprenticeSeePermissions,
   addCursedKillPermissions,
+  addVampireBitePermissions,
   commandNames,
   characters,
   characterPoints,

@@ -41,6 +41,7 @@ const {
   findManyUsers,
   deleteManyVotes,
 } = require("../werewolf_db");
+const { vampiresAttack } = require("./vampireHelpers");
 
 async function timeScheduling(interaction, dayHour, nightHour) {
   await schedule.gracefulShutdown();
@@ -82,7 +83,7 @@ async function nightTimeWarning(interaction) {
   );
 }
 
-// Handles werewolf kill.
+// Handles werewolf kill and vampire bites.
 async function dayTimeJob(interaction) {
   const guildId = interaction.guild.id;
   const game = await findGame(guildId);
@@ -141,7 +142,12 @@ async function dayTimeJob(interaction) {
     [...guardedIds, null]
   );
 
-  // Allow double kill
+  const vampireDeathMessages = await vampiresAttack(
+    interaction,
+    deathIds,
+    removesDeadPermissions
+  );
+
   if (!_.isEmpty(deathIds)) {
     const cursor = await findUsersWithIds(guildId, deathIds);
     const deadUsers = await cursor.toArray();
@@ -200,7 +206,7 @@ async function dayTimeJob(interaction) {
   const backUpMessage = "No one died from a werewolf last night.\n";
 
   organizedChannels.townSquare.send(
-    `${message || backUpMessage}**It is day time**`
+    `${message || backUpMessage}${vampireDeathMessages}**It is day time**`
   );
 
   await checkGame(interaction);

@@ -38,6 +38,7 @@ function computeCharacters(numberOfPlayers) {
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
   const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
+  const maxVampires = Math.floor(numberOfPlayers / 20);
   let maxVillagers = Math.floor(numberOfPlayers / 10) + 1;
   // only one witch for now
   const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
@@ -58,6 +59,7 @@ function computeCharacters(numberOfPlayers) {
     maxVillagers +
     maxBodyguards +
     maxBakers +
+    maxVampires +
     maxWitches;
 
   if (numberOfPlayers > totalCharacters) {
@@ -81,6 +83,11 @@ function computeCharacters(numberOfPlayers) {
     ...Array(maxVillagers).fill(characters.VILLAGER),
   ]);
 
+  // only one card for now
+  const vampireHelperCards = _.shuffle([
+    ...Array(maxVampires).fill(characters.VAMPIRE),
+  ]);
+
   let werewolfPoints = 0;
   const currentCharacters = [
     ..._.map(_.range(maxWerewolves), () => {
@@ -94,6 +101,7 @@ function computeCharacters(numberOfPlayers) {
     characters.SEER,
   ];
   let villagerPoints = characterPoints.get(characters.SEER);
+  let vampirePoints = 35;
   // minus off players already added
   const playersLeftOver = numberOfPlayers - currentCharacters.length;
   let masonInGame = false;
@@ -101,12 +109,24 @@ function computeCharacters(numberOfPlayers) {
 
   _.forEach(_.range(playersLeftOver), (count) => {
     if (!skipLoop) {
-      if (werewolfPoints < villagerPoints) {
+      if (werewolfPoints < villagerPoints && werewolfPoints < vampirePoints) {
         let newCharacter = !_.isEmpty(werewolfHelperCards)
           ? werewolfHelperCards.pop()
           : randomWolfHelperCard();
         werewolfPoints += characterPoints.get(newCharacter);
         currentCharacters.push(newCharacter);
+      } else if (
+        vampirePoints < werewolfPoints &&
+        vampirePoints < villagerPoints
+      ) {
+        let newCharacter = !_.isEmpty(vampireHelperCards)
+          ? vampireHelperCards.pop()
+          : _.head(
+              _.shuffle([randomWolfHelperCard(), randomVillagerHelperCard()])
+            );
+        currentCharacters.push(newCharacter);
+        // When we add more vampire helper cards we will use characterPoints
+        vampirePoints += 40;
       } else {
         let newCharacter = !_.isEmpty(villagerHelperCards)
           ? villagerHelperCards.pop()

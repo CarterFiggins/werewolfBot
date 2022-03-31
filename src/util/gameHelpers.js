@@ -7,7 +7,6 @@ const {
   gameCommandPermissions,
   sendGreeting,
   characters,
-  characterPoints,
 } = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
 
@@ -130,7 +129,9 @@ async function giveUserRoles(interaction, users) {
         nickname: member.nickname,
         character: user.character,
         guild_id: interaction.guild.id,
+        is_vampire: false,
         death: false,
+        vampire_bites: 0,
       };
       switch (newCharacter) {
         case characters.FOOL:
@@ -147,6 +148,10 @@ async function giveUserRoles(interaction, users) {
           break;
         case characters.HUNTER:
           userInfo.can_shoot = false;
+          break;
+        case characters.VAMPIRE:
+          userInfo.bite_user_id = null;
+          userInfo.is_vampire = true;
           break;
         case characters.PRIEST:
           userInfo.protect = true;
@@ -173,6 +178,7 @@ async function removeAllGameChannels(channels) {
         case channelNames.THE_TOWN:
         case channelNames.BODYGUARD:
         case channelNames.WITCH:
+        case channelNames.VAMPIRES:
           await channel.delete();
       }
     })
@@ -233,6 +239,10 @@ async function createChannels(interaction, users) {
   const witchesPermissions = createPermissions(users, characters.WITCH).concat(
     defaultPermissions
   );
+  const vampirePermissions = createPermissions(
+    users,
+    characters.VAMPIRE
+  ).concat(defaultPermissions);
   let seerPermissions = createPermissions(users, characters.SEER).concat(
     defaultPermissions
   );
@@ -301,6 +311,12 @@ async function createChannels(interaction, users) {
     interaction,
     channelNames.WITCH,
     witchesPermissions,
+    category
+  );
+  await createChannel(
+    interaction,
+    channelNames.VAMPIRES,
+    vampirePermissions,
     category
   );
 }
