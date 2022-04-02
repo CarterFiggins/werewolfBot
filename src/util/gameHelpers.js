@@ -130,7 +130,7 @@ async function giveUserRoles(interaction, users) {
         character: user.character,
         guild_id: interaction.guild.id,
         is_vampire: false,
-        death: false,
+        is_dead: false,
         vampire_bites: 0,
       };
       switch (newCharacter) {
@@ -152,6 +152,7 @@ async function giveUserRoles(interaction, users) {
         case characters.VAMPIRE:
           userInfo.bite_user_id = null;
           userInfo.is_vampire = true;
+          user.is_vampire = true;
           break;
         case characters.PRIEST:
           userInfo.protect = true;

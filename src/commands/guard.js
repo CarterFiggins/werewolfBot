@@ -67,7 +67,7 @@ module.exports = {
     }
     if (targetedUser.bot) {
       await interaction.reply({
-        content: "https://tenor.com/yYlL.gif",
+        content: "You can't guard a bot!\nhttps://tenor.com/yYlL.gif",
         ephemeral: false,
       });
       return;

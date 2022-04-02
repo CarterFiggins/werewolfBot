@@ -12,7 +12,7 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
     const game = await findGame(interaction.guild.id);
     if (!game) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "ERROR: no game is active",
         ephemeral: true,
       });

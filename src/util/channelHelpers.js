@@ -79,9 +79,13 @@ function showUsersCharacter(users) {
   let message = "";
 
   _.shuffle(users).forEach((user) => {
-    message += `${user} is a ${
-      user.is_cub ? characters.CUB : user.character
-    }\n`;
+    let character = user.character;
+    if (user.is_cub) {
+      character = characters.CUB;
+    } else if (user.is_vampire) {
+      character = `vampire ${characters.VAMPIRE}`;
+    }
+    message += `${user} is a ${character}\n`;
   });
   return message;
 }

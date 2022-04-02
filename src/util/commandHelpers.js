@@ -76,7 +76,7 @@ const characters = {
   CURSED: "cursed villager",
   CUB: "werewolf cub",
   WITCH: "witch",
-  VAMPIRE: "vampire",
+  VAMPIRE: "king",
 };
 
 const characterPoints = new Map([
@@ -242,7 +242,6 @@ async function gameCommandPermissions(interaction, users, permission) {
   const commands = await interaction.guild.commands.fetch();
   const organizedCommands = organizeGameCommands(commands);
 
-  console.log("filtering");
   // TODO: refactor this into one loop
   const werewolves = users.filter(
     (user) => user.character === characters.WEREWOLF
@@ -266,7 +265,6 @@ async function gameCommandPermissions(interaction, users, permission) {
     permission,
   });
 
-  console.log("making permissions");
   const werewolvesPermissions = werewolves.map(makePermission);
   const seersPermissions = seers.map(makePermission);
   const bodyguardsPermissions = bodyguards.map(makePermission);
@@ -274,7 +272,6 @@ async function gameCommandPermissions(interaction, users, permission) {
   const witchPermissions = witches.map(makePermission);
   const vampirePermissions = vampires.map(makePermission);
 
-  console.log("adding permissions to commands");
   // TODO: find a way to combined adding permissions.
   await interaction.guild.commands.permissions.add({
     command: organizedCommands.kill.id,

@@ -15,6 +15,7 @@ module.exports = {
       ephemeral: false,
     });
     const aliveUsersId = await getAliveUsersIds(interaction);
+    const members = await interaction.guild.members.fetch();
 
     const cursor = await findUsersWithIds(interaction.guild.id, aliveUsersId);
     const dbUsers = await cursor.toArray();
@@ -22,13 +23,14 @@ module.exports = {
     message = "Players Alive:\n";
     werewolfCount = 0;
     villagerCount = 0;
+    vampireCount = 0;
 
     _.shuffle(dbUsers).forEach((user) => {
-      message += user.nickname
-        ? `**${user.nickname}**\n`
-        : `**${user.name}**\n`;
+      message += `${members.get(user.user_id)}\n`;
       if (user.character === characters.WEREWOLF) {
         werewolfCount += 1;
+      } else if (user.is_vampire) {
+        vampireCount += 1;
       } else {
         villagerCount += 1;
       }
@@ -43,7 +45,7 @@ module.exports = {
       return;
     }
 
-    message += `Werewolf Count: ${werewolfCount}\nVillager Count: ${villagerCount}`;
+    message += `Werewolf Count: ${werewolfCount}\nVampire Count: ${vampireCount}\nVillager Count: ${villagerCount}`;
 
     await interaction.editReply({
       content: message,

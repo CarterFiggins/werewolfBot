@@ -35,6 +35,13 @@ module.exports = {
       });
       return;
     }
+    if (targetDbUser.is_dead) {
+      await interaction.reply({
+        content: "You can't bite because you are injured",
+        ephemeral: true,
+      });
+      return;
+    }
     if (game.is_day) {
       await interaction.reply({
         content:
@@ -72,6 +79,8 @@ module.exports = {
       bite_user_id: targetedUser.id,
     });
 
-    await interaction.reply(`You are going to bite ${targetedUser}`);
+    await interaction.reply(
+      `${interaction.user} is going to bite ${targetedUser}`
+    );
   },
 };
