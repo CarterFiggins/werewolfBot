@@ -130,7 +130,7 @@ async function giveUserRoles(interaction, users) {
         nickname: member.nickname,
         character: user.character,
         guild_id: interaction.guild.id,
-        death: false,
+        is_dead: false,
       };
       switch (newCharacter) {
         case characters.FOOL:

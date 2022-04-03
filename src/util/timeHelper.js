@@ -318,10 +318,10 @@ async function removesDeadPermissions(
   let deadCharacter = deadUser.character;
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  if (deadCharacter === characters.HUNTER && !deadUser.death) {
+  if (deadCharacter === characters.HUNTER && !deadUser.is_dead) {
     await updateUser(deadUser.user_id, guildId, {
       can_shoot: true,
-      death: true,
+      is_dead: true,
     });
 
     const currentDate = new Date();
@@ -344,7 +344,7 @@ async function removesDeadPermissions(
   await removeUsersPermissions(interaction, deadUser);
   await removeChannelPermissions(interaction, deadMember);
   await removeUserVotes(guildId, deadUser.user_id);
-  await updateUser(deadUser.user_id, guildId, { dead: true });
+  await updateUser(deadUser.user_id, guildId, { is_dead: true });
 
   if (deadCharacter === characters.LYCAN) {
     deadCharacter = characters.VILLAGER;
@@ -371,11 +371,11 @@ async function removesDeadPermissions(
       character: characters.FOOL,
     });
 
-    if (apprenticeSeerUser && !apprenticeSeerUser.death) {
+    if (apprenticeSeerUser && !apprenticeSeerUser.is_dead) {
       const discordApprenticeUser = interaction.guild.members.cache.get(
         apprenticeSeerUser.user_id
       );
-      if (foolUser && !foolUser.death) {
+      if (foolUser && !foolUser.is_dead) {
         let roles = [characters.SEER, characters.FOOL];
 
         const discordFoolUser = interaction.guild.members.cache.get(
