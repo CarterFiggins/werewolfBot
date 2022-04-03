@@ -373,7 +373,7 @@ async function removesDeadPermissions(
   await removeUsersPermissions(interaction, deadUser);
   await removeChannelPermissions(interaction, deadMember);
   await removeUserVotes(guildId, deadUser.user_id);
-  await updateUser(deadUser.user_id, guildId, { dead: true });
+  await updateUser(deadUser.user_id, guildId, { is_dead: true });
 
   if (deadCharacter === characters.LYCAN) {
     deadCharacter = characters.VILLAGER;
