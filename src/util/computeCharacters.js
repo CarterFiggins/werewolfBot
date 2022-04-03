@@ -38,7 +38,7 @@ function computeCharacters(numberOfPlayers) {
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
   const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
-  const maxVampires = Math.floor(numberOfPlayers / 20);
+  const maxVampires = Math.floor(numberOfPlayers / 16);
   let maxVillagers = Math.floor(numberOfPlayers / 10) + 1;
   // only one witch for now
   const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
@@ -101,7 +101,7 @@ function computeCharacters(numberOfPlayers) {
     characters.SEER,
   ];
   let villagerPoints = characterPoints.get(characters.SEER);
-  let vampirePoints = 35;
+  let vampirePoints = 25;
   // minus off players already added
   const playersLeftOver = numberOfPlayers - currentCharacters.length;
   let masonInGame = false;
