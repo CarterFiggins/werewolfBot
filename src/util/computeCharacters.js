@@ -156,7 +156,15 @@ function computeCharacters(numberOfPlayers) {
     }
   });
 
-  return _.shuffle(currentCharacters);
+  const numberOfShuffles = Math.floor(Math.random() * 5) + 1;
+
+  let shuffledCharacters = currentCharacters;
+
+  _.forEach(_.range(numberOfShuffles), () => {
+    shuffledCharacters = _.shuffle(shuffledCharacters);
+  });
+
+  return shuffledCharacters;
 }
 
 module.exports = computeCharacters;

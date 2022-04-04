@@ -107,7 +107,7 @@ async function giveUserRoles(interaction, users) {
   const dbUsers = [];
 
   await Promise.all(
-    shuffledUsers.map(async (user) => {
+    _.map(shuffledUsers, async (user) => {
       // add alive role and remove playing role
       const member = interaction.guild.members.cache.get(user.id);
       await member.roles.add(aliveRole);
