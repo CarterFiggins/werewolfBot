@@ -578,6 +578,13 @@ async function starveUser(interaction, organizedRoles, deathIds) {
     organizedRoles
   );
 
+  let deadMessage = "has died from starvation";
+
+  if (starvedUser.character === characters.HUNTER) {
+    deadMessage =
+      "is really hungry and about to die. Quick shoot someone with the `/shoot` command";
+  }
+
   return `The **${starvedCharacter}** named ${starvedMember} has died from starvation\n`;
 }
 
