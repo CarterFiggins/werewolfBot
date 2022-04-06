@@ -81,18 +81,18 @@ const characters = {
 
 const characterPoints = new Map([
   [characters.VILLAGER, 2],
-  [characters.SEER, 6],
+  [characters.SEER, 5],
   [characters.BODYGUARD, 4],
-  [characters.APPRENTICE_SEER, 7],
-  [characters.MASON, 4],
+  [characters.APPRENTICE_SEER, 6],
+  [characters.MASON, 3],
   [characters.HUNTER, 4],
-  [characters.WEREWOLF, 5],
-  [characters.FOOL, 3],
+  [characters.WEREWOLF, 6],
+  [characters.FOOL, 2],
   [characters.LYCAN, 3],
-  [characters.BAKER, 5],
-  [characters.CURSED, 4],
-  [characters.CUB, 6],
-  [characters.WITCH, 4],
+  [characters.BAKER, 6],
+  [characters.CURSED, 5],
+  [characters.CUB, 7],
+  [characters.WITCH, 5],
   [characters.VAMPIRE, 40],
 ]);
 

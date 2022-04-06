@@ -27,9 +27,13 @@ const randomVillagerHelperCard = () => {
 
 function computeCharacters(numberOfPlayers) {
   // subtracting the werewolfCubs and first werewolf
+  const divideWerewolvesBy = numberOfPlayers >= 16 ? 5 : 4;
+  const divideCubBy = numberOfPlayers >= 16 ? 20 : 16;
+
   const maxWerewolves =
-    Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 12);
-  const maxWerewolfCub = Math.floor(numberOfPlayers / 12);
+    Math.floor(numberOfPlayers / divideWerewolvesBy) -
+    Math.floor(numberOfPlayers / divideCubBy);
+  const maxWerewolfCub = Math.floor(numberOfPlayers / divideCubBy);
   // first mason will be two masons
   const maxMasons = Math.floor(numberOfPlayers / 8);
   const maxSeers = Math.floor(numberOfPlayers / 25);

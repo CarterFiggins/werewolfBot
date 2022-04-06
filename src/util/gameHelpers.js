@@ -117,12 +117,6 @@ async function giveUserRoles(interaction, users) {
         ? characters.VILLAGER
         : currentCharacters.pop();
 
-      if (newCharacter === characters.CUB) {
-        user.character = characters.WEREWOLF;
-      } else {
-        user.character = newCharacter;
-      }
-
       const userInfo = {
         user_id: user.id,
         name: user.username,
@@ -141,6 +135,7 @@ async function giveUserRoles(interaction, users) {
         case characters.CUB:
           userInfo.is_cub = true;
           user.is_cub = true;
+          user.character = characters.WEREWOLF;
           break;
         case characters.BODYGUARD:
           userInfo.guard = true;
