@@ -1,5 +1,6 @@
 const { organizeRoles } = require("./rolesHelpers");
 require("dotenv").config();
+const _ = require("lodash");
 const { updateUser, findAllUsers } = require("../werewolf_db");
 
 /* 
