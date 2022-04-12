@@ -75,6 +75,9 @@ async function vampiresAttack(
         if (bitePlayer(victim) && !werewolfAttacked) {
           biteCount += 1;
           usersBittenById.set(victim.user_id, biteCount);
+          organizedChannels.vampires.send(
+            `${vampireMember} you have successfully bitten ${victimMember}`
+          );
           if (biteCount >= 2) {
             await transformIntoVampire(interaction, victim, victimMember);
           }
@@ -89,6 +92,9 @@ async function vampiresAttack(
               organizedRoles
             );
             if (werewolfAttacked) {
+              if (victim.character === characters.CURSED) {
+                return `The vampire named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/blRya.gif\n`;
+              }
               return `The vampire named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/blRya.gif\n`;
             } else {
               return `The vampire named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
@@ -109,22 +115,22 @@ async function vampiresAttack(
 async function transformIntoVampire(interaction, user, userMember) {
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const is_cursed = user.character === characters.CURSED
-  
+  const is_cursed = user.character === characters.CURSED;
+
   await updateUser(user.user_id, interaction.guild.id, {
     is_vampire: true,
-    character: is_cursed ? characters.VAMPIRE : user.character
+    character: is_cursed ? characters.VAMPIRE : user.character,
   });
 
   await addVampireBitePermissions(interaction, user);
   await giveVampireChannelPermissions(interaction, userMember);
-  const vampireType = is_cursed ? 'vampire king!' : 'vampire!'
+  const vampireType = is_cursed ? "vampire king!" : "vampire!";
   await organizedChannels.vampires.send(
     `${userMember} has turned into a ${vampireType}`
   );
 }
 
-async function bitePlayer(user) {
+function bitePlayer(user) {
   if (user.character === characters.WEREWOLF) {
     return false;
   }

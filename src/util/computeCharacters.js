@@ -28,7 +28,7 @@ const randomVillagerHelperCard = () => {
 function computeCharacters(numberOfPlayers) {
   // subtracting the werewolfCubs and first werewolf
   const divideWerewolvesBy = numberOfPlayers >= 16 ? 5 : 4;
-  const divideCubBy = numberOfPlayers >= 16 ? 20 : 16;
+  const divideCubBy = numberOfPlayers >= 16 ? 16 : 14;
 
   const maxWerewolves =
     Math.floor(numberOfPlayers / divideWerewolvesBy) -
@@ -46,8 +46,7 @@ function computeCharacters(numberOfPlayers) {
   let maxVillagers = Math.floor(numberOfPlayers / 10) + 1;
   // only one witch for now
   const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
-  // only one bodyguard for now
-  const maxBodyguards = 1;
+  // Add max bodyguards when there can be more than one bodyguard
   // only one baker for now
   const maxBakers = 1;
 
@@ -61,7 +60,6 @@ function computeCharacters(numberOfPlayers) {
     maxHunters +
     maxCursedVillager +
     maxVillagers +
-    maxBodyguards +
     maxBakers +
     maxVampires +
     maxWitches;
@@ -83,7 +81,6 @@ function computeCharacters(numberOfPlayers) {
     ...Array(maxFools).fill(characters.FOOL),
     ...Array(maxMasons).fill(characters.MASON),
     ...Array(maxHunters).fill(characters.HUNTER),
-    ...Array(maxBodyguards).fill(characters.BODYGUARD),
     ...Array(maxVillagers).fill(characters.VILLAGER),
   ]);
 
@@ -103,8 +100,11 @@ function computeCharacters(numberOfPlayers) {
       return characters.CUB;
     }),
     characters.SEER,
+    characters.BODYGUARD,
   ];
-  let villagerPoints = characterPoints.get(characters.SEER);
+  let villagerPoints =
+    characterPoints.get(characters.SEER) +
+    characterPoints.get(characters.BODYGUARD);
   let vampirePoints = 25;
   // minus off players already added
   const playersLeftOver = numberOfPlayers - currentCharacters.length;
