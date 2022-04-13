@@ -93,9 +93,9 @@ async function vampiresAttack(
             );
             if (werewolfAttacked) {
               if (victim.character === characters.CURSED) {
-                return `The vampire named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/blRya.gif\n`;
+                return `The vampire named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
               }
-              return `The vampire named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/blRya.gif\n`;
+              return `The vampire named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
             } else {
               return `The vampire named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
             }
