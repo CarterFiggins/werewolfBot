@@ -113,15 +113,15 @@ function computeCharacters(numberOfPlayers) {
 
   _.forEach(_.range(playersLeftOver), (count) => {
     if (!skipLoop) {
-      if (werewolfPoints < villagerPoints && werewolfPoints < vampirePoints) {
+      if (werewolfPoints <= villagerPoints && werewolfPoints <= vampirePoints) {
         let newCharacter = !_.isEmpty(werewolfHelperCards)
           ? werewolfHelperCards.pop()
           : randomWolfHelperCard();
         werewolfPoints += characterPoints.get(newCharacter);
         currentCharacters.push(newCharacter);
       } else if (
-        vampirePoints < werewolfPoints &&
-        vampirePoints < villagerPoints
+        vampirePoints <= werewolfPoints &&
+        vampirePoints <= villagerPoints
       ) {
         let newCharacter = !_.isEmpty(vampireHelperCards)
           ? vampireHelperCards.pop()
