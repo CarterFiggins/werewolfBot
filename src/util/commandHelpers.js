@@ -29,6 +29,7 @@ const commandNames = {
   WHO_IS_ALIVE: "who_is_alive",
   SHOW_VOTES: "votes",
   SHOW_VOTERS_FOR: "voters_for",
+  SHOW: "show",
   VOTE: "vote",
   KILL: "kill",
   SEE: "see",
@@ -199,7 +200,7 @@ async function resetNightPowers(guildId) {
 }
 
 async function removeUsersPermissions(interaction, user) {
-  const commands = await interaction.guild.commands.fetch();
+  const commands = await interaction.client.application.commands.fetch();
   const organizedCommands = organizeGameCommands(commands);
   let command;
   switch (user.character) {
@@ -226,7 +227,7 @@ async function removeUsersPermissions(interaction, user) {
       command = organizedCommands.bite;
   }
   if (command) {
-    await interaction.guild.commands.permissions.add({
+    await interaction.client.application.commands.permissions.add({
       command: command.id,
       permissions: [
         {
@@ -240,7 +241,7 @@ async function removeUsersPermissions(interaction, user) {
 }
 
 async function gameCommandPermissions(interaction, users, permission) {
-  const commands = await interaction.guild.commands.fetch();
+  const commands = await interaction.client.application.commands.fetch();
   const organizedCommands = organizeGameCommands(commands);
 
   // TODO: refactor this into one loop
@@ -274,34 +275,40 @@ async function gameCommandPermissions(interaction, users, permission) {
   const vampirePermissions = vampires.map(makePermission);
 
   // TODO: find a way to combined adding permissions.
-  await interaction.guild.commands.permissions.add({
+  await interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.kill.id,
     permissions: werewolvesPermissions,
   });
-  await interaction.guild.commands.permissions.add({
+  await interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.see.id,
     permissions: seersPermissions,
   });
-  await interaction.guild.commands.permissions.add({
+  await interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.guard.id,
     permissions: bodyguardsPermissions,
   });
-  await interaction.guild.commands.permissions.add({
+  await interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.shoot.id,
     permissions: hunterPermissions,
   });
-  await interaction.guild.commands.permissions.add({
+  await interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.curse.id,
     permissions: witchPermissions,
   });
-  await interaction.guild.commands.permissions.add({
+  await interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.bite.id,
     permissions: vampirePermissions,
   });
 }
 
 async function addApprenticeSeePermissions(interaction, user) {
-  const commands = await interaction.guild.commands.fetch();
+  const commands = await interaction.client.application.commands.fetch();
   const organizedCommands = organizeGameCommands(commands);
   permissions = [
     {
@@ -310,14 +317,15 @@ async function addApprenticeSeePermissions(interaction, user) {
       permission: true,
     },
   ];
-  interaction.guild.commands.permissions.add({
+  interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.see.id,
     permissions,
   });
 }
 
 async function addCursedKillPermissions(interaction, user) {
-  const commands = await interaction.guild.commands.fetch();
+  const commands = await interaction.client.application.commands.fetch();
   const organizedCommands = organizeGameCommands(commands);
   permissions = [
     {
@@ -326,14 +334,15 @@ async function addCursedKillPermissions(interaction, user) {
       permission: true,
     },
   ];
-  interaction.guild.commands.permissions.add({
+  interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.kill.id,
     permissions,
   });
 }
 
 async function addVampireBitePermissions(interaction, user) {
-  const commands = await interaction.guild.commands.fetch();
+  const commands = await interaction.client.application.commands.fetch();
   const organizedCommands = organizeGameCommands(commands);
   permissions = [
     {
@@ -342,7 +351,8 @@ async function addVampireBitePermissions(interaction, user) {
       permission: true,
     },
   ];
-  interaction.guild.commands.permissions.add({
+  interaction.client.application.commands.permissions.add({
+    guild: interaction.guild.id,
     command: organizedCommands.bite.id,
     permissions,
   });
@@ -351,7 +361,7 @@ async function addVampireBitePermissions(interaction, user) {
 // run permissions for playing commands when server launches
 // run permissions for game commands for user ids.
 async function setupCommandPermissions(interaction) {
-  const commands = await interaction.guild.commands.fetch();
+  const commands = await interaction.client.application.commands.fetch();
   const roles = await interaction.guild.roles.fetch();
   const organizedRoles = organizeRoles(roles);
   const organizedCommands = organizeSetupCommands(commands);
@@ -452,13 +462,12 @@ async function setupCommandPermissions(interaction) {
       id: organizedCommands.permissionReset.id,
       permissions: ownerAndAdmin,
     },
-    {
-      id: organizedCommands.showVotersFor.id,
-      permissions: allowPlayingPermissions,
-    },
   ];
 
-  await interaction.guild.commands.permissions.set({ fullPermissions });
+  await interaction.client.application.commands.permissions.set({
+    fullPermissions,
+    guild: interaction.guild.id,
+  });
 }
 
 function organizeSetupCommands(commands) {
@@ -486,7 +495,7 @@ function organizeSetupCommands(commands) {
       case commandNames.RESET_SCHEDULING:
         commandObject.resetScheduling = command;
         break;
-      case commandNames.SHOW_VOTES:
+      case commandNames.SHOW:
         commandObject.showVotes = command;
         break;
       case commandNames.DAY_TIME:
@@ -500,9 +509,6 @@ function organizeSetupCommands(commands) {
         break;
       case commandNames.PERMISSION_RESET:
         commandObject.permissionReset = command;
-        break;
-      case commandNames.SHOW_VOTERS_FOR:
-        commandNames.showVotersFor = command;
         break;
     }
   });
