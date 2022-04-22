@@ -45,7 +45,11 @@ module.exports = {
       return;
     }
 
-    message += `Werewolf Count: ${werewolfCount}\nVampire Count: ${vampireCount}\nVillager Count: ${villagerCount}`;
+    const vampireMessage = vampireCount
+      ? `Vampire Count: ${vampireCount}\n`
+      : "";
+
+    message += `Werewolf Count: ${werewolfCount}\n${vampireMessage}Villager Count: ${villagerCount}`;
 
     await interaction.editReply({
       content: message,

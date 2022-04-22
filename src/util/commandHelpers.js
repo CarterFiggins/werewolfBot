@@ -228,6 +228,7 @@ async function removeUsersPermissions(interaction, user) {
   }
   if (command) {
     await interaction.client.application.commands.permissions.add({
+      guild: interaction.guild.id,
       command: command.id,
       permissions: [
         {

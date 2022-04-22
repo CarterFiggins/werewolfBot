@@ -457,7 +457,10 @@ async function checkGame(interaction) {
   await Promise.all(
     aliveMembers.map(async (member) => {
       const dbUser = await findUser(member.user.id, guildId);
-      if (dbUser.character === characters.WEREWOLF) {
+      if (
+        dbUser.character === characters.WEREWOLF ||
+        dbUser.character === characters.WITCH
+      ) {
         werewolfCount += 1;
       } else if (dbUser.is_vampire) {
         vampireCount += 1;
