@@ -279,7 +279,7 @@ async function nightTimeJob(interaction) {
   if (topVotes.length > 1) {
     killedRandomly = true;
   }
-  const voteWinner = _.head(_.shuffle(topVotes));
+  const voteWinner = _.sample(topVotes);
 
   await deleteManyVotes({ guild_id: guildId });
   await resetNightPowers(guildId);
@@ -511,7 +511,7 @@ async function hunterShootingLimitJob(
 
   aliveUserIds = _.filter(aliveUserIds, (id) => id != deadHunterMember.user.id);
 
-  const shotUserId = _.head(_.shuffle(aliveUserIds));
+  const shotUserId = _.sample(aliveUserIds);
   const shotUser = await findUser(shotUserId, interaction.guild.id);
   const shotMember = interaction.guild.members.cache.get(shotUserId);
   // kill hunter
@@ -565,7 +565,7 @@ async function starveUser(interaction, organizedRoles, deathIds) {
     );
   }
 
-  const starvedUser = _.head(_.shuffle(aliveUsers));
+  const starvedUser = _.sample(aliveUsers);
 
   if (_.isEmpty(starvedUser)) {
     return "No one starved";
@@ -588,7 +588,7 @@ async function starveUser(interaction, organizedRoles, deathIds) {
       "is really hungry and about to die. Quick shoot someone with the `/shoot` command";
   }
 
-  return `The **${starvedCharacter}** named ${starvedMember} has died from starvation\n`;
+  return `The **${starvedCharacter}** named ${starvedMember} ${deadMessage}\n`;
 }
 
 async function endGame(interaction, guildId, roles, members) {

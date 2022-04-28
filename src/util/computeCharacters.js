@@ -27,8 +27,9 @@ const randomVillagerHelperCard = () => {
 
 function computeCharacters(numberOfPlayers) {
   // subtracting the werewolfCubs and first werewolf
-  const divideWerewolvesBy = numberOfPlayers >= 16 ? 5 : 4;
-  const divideCubBy = numberOfPlayers >= 16 ? 16 : 14;
+  const allowVampiresAt = 16;
+  const divideWerewolvesBy = numberOfPlayers >= allowVampiresAt ? 5 : 4;
+  const divideCubBy = numberOfPlayers >= allowVampiresAt ? 16 : 14;
 
   const maxWerewolves =
     Math.floor(numberOfPlayers / divideWerewolvesBy) -
@@ -42,7 +43,7 @@ function computeCharacters(numberOfPlayers) {
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
   const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
-  const maxVampires = Math.floor(numberOfPlayers / 16);
+  const maxVampires = Math.floor(numberOfPlayers / allowVampiresAt);
   let maxVillagers = Math.floor(numberOfPlayers / 10) + 1;
   // only one witch for now
   const maxWitches = numberOfPlayers >= 14 ? 1 : 0;

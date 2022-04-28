@@ -28,7 +28,7 @@ module.exports = {
 };
 
 function getRandomGif(gifArray) {
-  return _.head(_.shuffle(gifArray));
+  return _.sample(gifArray);
 }
 
 const sad = [

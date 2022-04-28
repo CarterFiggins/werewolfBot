@@ -180,7 +180,7 @@ async function giveVampireChannelPermissions(interaction, user) {
 }
 
 function getRandomBotGif() {
-  return _.head(_.shuffle(botGifs));
+  return _.sample(botGifs);
 }
 
 module.exports = {
