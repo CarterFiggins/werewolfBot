@@ -1,4 +1,3 @@
-const { organizeRoles } = require("./rolesHelpers");
 require("dotenv").config();
 const _ = require("lodash");
 const { updateUser, findAllUsers } = require("../werewolf_db");
@@ -6,10 +5,7 @@ const { updateUser, findAllUsers } = require("../werewolf_db");
 /* 
 To add a new game command add it to the
   1. commandNames
-  2. removeUsersPermissions
-  3. gameCommandPermissions
-  4. organizeGameCommands
-  5. add new file for command
+  2. add new file for command
 */
 const commandNames = {
   // Fun Commands
@@ -43,10 +39,8 @@ const commandNames = {
 /* 
 To add a new character add it to these
   1. characters list below
-  2. removeUsersPermissions
-  3. resetNightPowers
-  4. gameCommandPermissions
-  5. add a channel for character?
+  2. resetNightPowers
+  3. add a channel for character?
 gameHelpers
   1. add character to leftOverRoles
   2. add characters powers in the newCharacter switch statement
@@ -198,35 +192,7 @@ async function resetNightPowers(guildId) {
   );
 }
 
-function organizeGameCommands(commands) {
-  const commandObject = {};
-  commands.forEach((command) => {
-    switch (command.name) {
-      case commandNames.KILL:
-        commandObject.kill = command;
-        break;
-      case commandNames.SEE:
-        commandObject.see = command;
-        break;
-      case commandNames.GUARD:
-        commandObject.guard = command;
-        break;
-      case commandNames.SHOOT:
-        commandObject.shoot = command;
-        break;
-      case commandNames.CURSE:
-        commandObject.curse = command;
-        break;
-      case commandNames.VAMPIRE_BITE:
-        commandObject.bite = command;
-        break;
-    }
-  });
-  return commandObject;
-}
-
 module.exports = {
-  organizeGameCommands,
   resetNightPowers,
   sendGreeting,
   commandNames,

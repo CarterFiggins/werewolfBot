@@ -20,7 +20,6 @@ async function startGame(interaction) {
   await sendUsersMessage(interaction, users);
   await createChannels(interaction, users);
   // give users character command permissions
-  await gameCommandPermissions(interaction, users, true);
   await createGameDocument(interaction);
   await timeScheduling(interaction, 8, 20);
   await sendStartMessages(interaction, users);
