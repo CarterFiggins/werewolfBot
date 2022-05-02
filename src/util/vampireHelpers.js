@@ -122,8 +122,6 @@ async function transformIntoVampire(interaction, user, userMember) {
     character: is_cursed ? characters.VAMPIRE : user.character,
   });
 
-  // ***** Discord js is broken *****
-  // await addVampireBitePermissions(interaction, user);
   await giveVampireChannelPermissions(interaction, userMember);
   const vampireType = is_cursed ? "vampire king!" : "vampire!";
   await organizedChannels.vampires.send(

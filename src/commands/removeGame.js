@@ -55,12 +55,6 @@ module.exports = {
     const currentChannels = await interaction.guild.channels.fetch();
     await removeAllGameChannels(currentChannels);
 
-    // ***** Discord js is broken *****
-    // removing all users game command permissions
-    // const cursor = await findAllUsers(interaction.guild.id);
-    // const allUsers = await cursor.toArray();
-    // await gameCommandPermissions(interaction, allUsers, false);
-
     // remove all discord roles from players
     const roles = await interaction.guild.roles.fetch();
     const currentMembers = await interaction.guild.members.fetch();

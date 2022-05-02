@@ -19,14 +19,6 @@ module.exports = {
     }
 
     await setupRoles(interaction);
-    // ***** currently broken on Discord js *****
-    // await setupCommandPermissions(interaction);
-    await createSettings({
-      guild_id: interaction.guild.id,
-      day_time: "8:00",
-      night_time: "20:00",
-      can_whisper: false,
-    });
     await interaction.reply("Server is READY!");
   },
 };

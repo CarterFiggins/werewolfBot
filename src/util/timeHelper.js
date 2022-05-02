@@ -173,8 +173,6 @@ async function dayTimeJob(interaction) {
             deadUser.user_id
           );
           await giveWerewolfChannelPermissions(interaction, discordDeadUser);
-          // ***** Discord js is broken *****
-          // await addCursedKillPermissions(interaction, discordDeadUser);
           await organizedChannels.werewolves.send(
             `${discordDeadUser} did not die and has turned into a werewolf! :wolf:`
           );
@@ -363,9 +361,6 @@ async function removesDeadPermissions(
   // removes deadUser character command and channel Permissions
   deadMember.roles.remove(organizedRoles.alive);
   deadMember.roles.add(organizedRoles.dead);
-
-  // ***** Discord js is broken *****
-  // await removeUsersPermissions(interaction, deadUser);
   await removeChannelPermissions(interaction, deadMember);
   await removeUserVotes(guildId, deadUser.user_id);
   await updateUser(deadUser.user_id, guildId, { is_dead: true });
@@ -430,8 +425,6 @@ async function removesDeadPermissions(
         );
       }
       await giveSeerChannelPermissions(interaction, discordApprenticeUser);
-      // ***** Discord js is broken *****
-      // await addApprenticeSeePermissions(interaction, apprenticeSeerUser);
     }
   }
 
@@ -588,14 +581,6 @@ async function starveUser(interaction, organizedRoles, deathIds) {
 }
 
 async function endGame(interaction, guildId, roles, members) {
-  // stop scheduling day and night
-
-  // ***** Discord js is broken *****
-  // removing all users game command permissions
-  // const cursor = await findAllUsers(guildId);
-  // const allUsers = await cursor.toArray();
-  // await gameCommandPermissions(interaction, allUsers, false);
-
   // remove all discord roles from players
   await removeGameRolesFromMembers(members, roles);
 
