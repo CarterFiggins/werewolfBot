@@ -19,8 +19,9 @@ module.exports = {
   async execute(interaction) {
     const dbUser = await findUser(interaction.user.id, interaction.guild.id);
     const seerOrFool =
-      dbUser.character === characters.SEER ||
-      dbUser.character === characters.FOOL;
+      dbUser &&
+      (dbUser.character === characters.SEER ||
+        dbUser.character === characters.FOOL);
     if (!isAlive(interaction.member) || !seerOrFool) {
       await interaction.reply({
         content: "Permission denied",
