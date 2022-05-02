@@ -3,11 +3,7 @@ const { createUsers, createGame } = require("../werewolf_db");
 const { sendStartMessages, channelNames } = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
 const computeCharacters = require("./computeCharacters");
-const {
-  gameCommandPermissions,
-  sendGreeting,
-  characters,
-} = require("./commandHelpers");
+const { sendGreeting, characters } = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
 
 async function startGame(interaction) {
