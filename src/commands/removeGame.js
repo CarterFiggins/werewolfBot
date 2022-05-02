@@ -1,14 +1,12 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { removeAllGameChannels } = require("../util/gameHelpers");
 const { removeGameRolesFromMembers, isAdmin } = require("../util/rolesHelpers");
-const { gameCommandPermissions } = require("../util/commandHelpers");
 const { channelNames } = require("../util/channelHelpers");
 const schedule = require("node-schedule");
 const {
   deleteAllUsers,
   deleteGame,
   deleteManyVotes,
-  findAllUsers,
 } = require("../werewolf_db");
 const { commandNames } = require("../util/commandHelpers");
 
