@@ -33,6 +33,7 @@ module.exports = {
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const dbTargetUser = await findUser(targetedUser.id, interaction.guild.id);
 
     let message;
 
@@ -69,7 +70,7 @@ module.exports = {
       });
       return;
     }
-    if (dbUser.character === characters.WEREWOLF) {
+    if (dbTargetUser.character === characters.WEREWOLF) {
       await interaction.reply({
         content: `${targetedUser} is a werewolf... try again?\nhttps://tenor.com/bPmzV.gif`,
         ephemeral: false,
