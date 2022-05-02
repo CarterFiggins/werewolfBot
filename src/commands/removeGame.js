@@ -16,7 +16,7 @@ module.exports = {
     .setDescription("end the game"),
   async execute(interaction) {
     if (!isAdmin(interaction.member)) {
-      await interaction.editReply({
+      await interaction.reply({
         content: "You don't have the permissions to end the game",
         ephemeral: true,
       });
