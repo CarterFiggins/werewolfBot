@@ -10,8 +10,6 @@ function isAdmin(member) {
   const roles = mapRoles.map((role) => {
     return role.name;
   });
-  console.log(roles);
-  console.log(roles.includes(roleNames.ADMIN));
   return roles.includes(roleNames.ADMIN);
 }
 
