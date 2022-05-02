@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { removeAllGameChannels } = require("../util/gameHelpers");
-const { removeGameRolesFromMembers } = require("../util/rolesHelpers");
+const { removeGameRolesFromMembers, isAdmin } = require("../util/rolesHelpers");
 const { gameCommandPermissions } = require("../util/commandHelpers");
 const { channelNames } = require("../util/channelHelpers");
 const schedule = require("node-schedule");
@@ -17,6 +17,14 @@ module.exports = {
     .setName(commandNames.REMOVE_GAME)
     .setDescription("end the game"),
   async execute(interaction) {
+    if (!isAdmin(interaction.member)) {
+      await interaction.editReply({
+        content: "You don't have the permissions to end the game",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const interactionChannel = interaction.guild.channels.cache.get(
       interaction.channelId
     );
@@ -47,10 +55,11 @@ module.exports = {
     const currentChannels = await interaction.guild.channels.fetch();
     await removeAllGameChannels(currentChannels);
 
+    // ***** Discord js is broken *****
     // removing all users game command permissions
-    const cursor = await findAllUsers(interaction.guild.id);
-    const allUsers = await cursor.toArray();
-    await gameCommandPermissions(interaction, allUsers, false);
+    // const cursor = await findAllUsers(interaction.guild.id);
+    // const allUsers = await cursor.toArray();
+    // await gameCommandPermissions(interaction, allUsers, false);
 
     // remove all discord roles from players
     const roles = await interaction.guild.roles.fetch();

@@ -1,6 +1,12 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
-const { getRole, roleNames } = require("../util/rolesHelpers");
+const {
+  getRole,
+  roleNames,
+  isAlive,
+  isPlaying,
+  isDead,
+} = require("../util/rolesHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,7 +14,15 @@ module.exports = {
     .setDescription("give the playing role to user"),
 
   async execute(interaction) {
-    const member = await interaction.guild.members.fetch(interaction.user.id);
+    const member = interaction.member;
+    if (isAlive(member) || isPlaying(member) || isDead(member)) {
+      await interaction.reply({
+        content: "You are already Playing",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const playingRole = await getRole(interaction, roleNames.PLAYING);
     member.roles.add(playingRole);
 

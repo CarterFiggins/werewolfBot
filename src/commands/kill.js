@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames, characters } = require("../util/commandHelpers");
 const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
-const { roleNames } = require("../util/rolesHelpers");
+const { isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateGame } = require("../werewolf_db");
 
 module.exports = {
@@ -16,15 +16,23 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
+
+    if (
+      !isAlive(interaction.member) ||
+      dbUser.character !== characters.WEREWOLF
+    ) {
+      await interaction.reply({
+        content: "Permission denied",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const targetedUser = await interaction.options.getUser("target");
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
-    const mapRoles = targetedMember.roles.cache;
-    const dbUser = await findUser(targetedUser.id, interaction.guild.id);
-    const roles = mapRoles.map((role) => {
-      return role.name;
-    });
 
     let message;
 
@@ -54,7 +62,7 @@ module.exports = {
       });
       return;
     }
-    if (!roles.includes(roleNames.ALIVE)) {
+    if (!isAlive(targetedMember)) {
       await interaction.reply({
         content: `${targetedUser} is dead. \nhttps://tenor.com/blWe0.gif`,
         ephemeral: false,

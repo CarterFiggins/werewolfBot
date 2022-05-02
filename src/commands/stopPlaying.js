@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
-const { getRole, roleNames } = require("../util/rolesHelpers");
+const { getRole, roleNames, isPlaying } = require("../util/rolesHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,12 +8,20 @@ module.exports = {
     .setDescription("removes the playing role from the user"),
 
   async execute(interaction) {
-    const member = await interaction.guild.members.fetch(interaction.user.id);
-    const playingRole = await getRole(interaction, roleNames.PLAYING);
-    member.roles.remove(playingRole);
+    const member = interaction.member;
+    if (isPlaying(member)) {
+      const playingRole = await getRole(interaction, roleNames.PLAYING);
+      member.roles.remove(playingRole);
 
-    await interaction.reply({
-      content: `${interaction.user.username} has removed themselves from playing`,
-    });
+      await interaction.reply({
+        content: `${interaction.user.username} has removed themselves from playing`,
+      });
+    } else {
+      await interaction.reply({
+        content: "Permission denied",
+        ephemeral: true,
+      });
+      return;
+    }
   },
 };
