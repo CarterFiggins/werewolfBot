@@ -10,24 +10,31 @@ const channelNames = {
   AFTER_LIFE: "after-life",
   MASON: "mason",
   WITCH: "witch",
+  VAMPIRES: "vampires",
 };
 
 async function sendStartMessages(interaction, users) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
 
-  const werewolves = _.filter(
-    users,
-    (user) => user.character === characters.WEREWOLF
-  );
+  const werewolves = [];
+  const masons = [];
+  const seers = [];
 
-  const seers = _.filter(
-    users,
-    (user) =>
-      user.character === characters.SEER || user.character === characters.FOOL
-  );
-
-  const masons = _.filter(users, (user) => user.character === characters.MASON);
+  _.forEach(users, (user) => {
+    switch (user.character) {
+      case characters.WEREWOLF:
+        werewolves.push(user);
+        break;
+      case characters.MASON:
+        masons.push(user);
+        break;
+      case characters.SEER:
+      case characters.FOOL:
+        seers.push(user);
+        break;
+    }
+  });
 
   const characterCount = new Map();
 
@@ -65,15 +72,20 @@ async function sendStartMessages(interaction, users) {
   organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
   organizedChannels.bodyguard.send(bodyguardStart);
   organizedChannels.witch.send(witchStart);
+  organizedChannels.vampires.send(vampireStart);
 }
 
 function showUsersCharacter(users) {
   let message = "";
 
   _.shuffle(users).forEach((user) => {
-    message += `${user} is a ${
-      user.is_cub ? characters.CUB : user.character
-    }\n`;
+    let character = user.character;
+    if (user.is_cub) {
+      character = characters.CUB;
+    } else if (user.is_vampire) {
+      character = `vampire ${characters.VAMPIRE}`;
+    }
+    message += `${user} is a ${character}\n`;
   });
   return message;
 }
@@ -102,6 +114,9 @@ function organizeChannels(channels) {
         break;
       case channelNames.WITCH:
         channelObject.witch = channel;
+        break;
+      case channelNames.VAMPIRES:
+        channelObject.vampires = channel;
         break;
     }
   });
@@ -154,8 +169,18 @@ async function giveSeerChannelPermissions(interaction, user) {
   });
 }
 
+async function giveVampireChannelPermissions(interaction, user) {
+  const channels = await interaction.guild.channels.fetch();
+  const organizedChannels = organizeChannels(channels);
+
+  await organizedChannels.vampires.permissionOverwrites.edit(user, {
+    SEND_MESSAGES: true,
+    VIEW_CHANNEL: true,
+  });
+}
+
 function getRandomBotGif() {
-  return _.head(_.shuffle(botGifs));
+  return _.sample(botGifs);
 }
 
 module.exports = {
@@ -164,6 +189,7 @@ module.exports = {
   giveMasonChannelPermissions,
   giveSeerChannelPermissions,
   giveWerewolfChannelPermissions,
+  giveVampireChannelPermissions,
   removeChannelPermissions,
   getRandomBotGif,
   channelNames,
@@ -189,6 +215,9 @@ const bodyguardStart =
 
 const witchStart =
   "You are a witch! You help the werewolves by cursing villagers with the `/curse` command. If the villagers kill you than all the villagers who have the curse will die. If the werewolves kill you the curse will break and they will not die";
+
+const vampireStart =
+  "You are a vampire! Use the '/vampire_bite' command to turn villagers into vampires. It takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey.";
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

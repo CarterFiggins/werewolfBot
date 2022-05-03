@@ -1,24 +1,24 @@
 const _ = require("lodash");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { commandNames, characters } = require("../util/commandHelpers");
+const { commandNames } = require("../util/commandHelpers");
 const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(commandNames.CURSE)
-    .setDescription("Curse a player")
+    .setName(commandNames.VAMPIRE_BITE)
+    .setDescription("bite a player")
     .setDefaultPermission(false)
     .addUserOption((option) =>
       option
         .setName("target")
-        .setDescription("name of player to curse")
+        .setDescription("name of player to bite")
         .setRequired(true)
     ),
   async execute(interaction) {
     const dbUser = await findUser(interaction.user.id, interaction.guild.id);
-    if (!isAlive(interaction.member) || dbUser.character !== characters.WITCH) {
+    if (!isAlive(interaction.member) || !dbUser.is_vampire) {
       await interaction.reply({
         content: "Permission denied",
         ephemeral: true,
@@ -32,9 +32,17 @@ module.exports = {
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
 
-    if (channel.name !== channelNames.WITCH) {
+    if (channel.name !== channelNames.VAMPIRES) {
       await interaction.reply({
-        content: "Your dark magic only works in the witch channel",
+        content:
+          "Don't get caught sucking blood in this channel. Use the vampire channel!\nhttps://tenor.com/boEA8.gif",
+        ephemeral: true,
+      });
+      return;
+    }
+    if (targetDbUser.is_dead) {
+      await interaction.reply({
+        content: "You can't bite because you are injured",
         ephemeral: true,
       });
       return;
@@ -42,47 +50,42 @@ module.exports = {
     if (game.is_day) {
       await interaction.reply({
         content:
-          "It is day time. Your dark magic works at night.\nhttps://tenor.com/bJMLr.gif",
+          "It is day time. You hunt at night.\nhttps://tenor.com/ZtPg.gif",
         ephemeral: false,
       });
       return;
     }
     if (targetedUser.bot) {
       await interaction.reply({
-        content: `You can't curse me!\n${getRandomBotGif()}`,
+        content: `You can't bite me!\n${getRandomBotGif()}`,
         ephemeral: false,
       });
       return;
     }
     if (!isAlive(targetedMember)) {
       await interaction.reply({
-        content: `${targetedUser} is dead. This curse doesn't work on dead people. Try again.\nhttps://tenor.com/bcD0a.gif`,
+        content: `Don't bite ${targetedUser}! They are dead. Try again.\nhttps://tenor.com/bcD0a.gif`,
         ephemeral: false,
       });
       return;
     }
     if (
       targetDbUser.user_id === interaction.user.id ||
-      targetDbUser.character === characters.WITCH
+      targetDbUser.is_vampire
     ) {
       await interaction.reply({
-        content: `Can't curse a witch. Try again.\nhttps://tenor.com/w80x.gif`,
-        ephemeral: false,
-      });
-      return;
-    }
-    if (targetDbUser.is_cursed) {
-      await interaction.reply({
-        content: `This player is already cursed\nhttps://tenor.com/bgyEU.gif`,
+        content: `Can't bite a vampire. Try again.\nhttps://tenor.com/bciFe.gif`,
         ephemeral: false,
       });
       return;
     }
 
     await updateUser(interaction.user.id, interaction.guild.id, {
-      target_cursed_user_id: targetedUser.id,
+      bite_user_id: targetedUser.id,
     });
 
-    await interaction.reply(`You are going to curse ${targetedUser}`);
+    await interaction.reply(
+      `${interaction.user} is going to bite ${targetedUser}`
+    );
   },
 };

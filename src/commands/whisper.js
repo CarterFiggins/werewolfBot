@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
-const { roleNames } = require("../util/rolesHelpers");
+const { isAlive } = require("../util/rolesHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
 
 module.exports = {
@@ -24,6 +24,14 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
+    if (!isAlive(interaction.member)) {
+      await interaction.reply({
+        content: "Permission denied",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const messageSender = interaction.user;
     const senderMember = await interaction.guild.members.fetch(
       messageSender.id
@@ -31,14 +39,10 @@ module.exports = {
     const player = interaction.options.getUser("player");
     const playerMember = await interaction.guild.members.fetch(player.id);
     const message = interaction.options.getString("message");
-    const mapRoles = playerMember.roles.cache;
-    const roles = mapRoles.map((role) => {
-      return role.name;
-    });
     const channels = await interaction.guild.channels.cache;
     const organizedChannels = organizeChannels(channels);
 
-    if (!roles.includes(roleNames.ALIVE)) {
+    if (!isAlive(playerMember)) {
       await interaction.editReply({
         content: "psst you can only whisper to people who are alive.",
         ephemeral: true,

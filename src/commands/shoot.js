@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames, characters } = require("../util/commandHelpers");
 const { channelNames } = require("../util/channelHelpers");
-const { roleNames } = require("../util/rolesHelpers");
+const { isAlive } = require("../util/rolesHelpers");
 const { findUser, updateUser } = require("../werewolf_db");
 const { organizeRoles } = require("../util/rolesHelpers");
 const { removesDeadPermissions, checkGame } = require("../util/timeHelper");
@@ -19,18 +19,26 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
+    if (
+      !isAlive(interaction.member) ||
+      dbUser.character !== characters.HUNTER
+    ) {
+      await interaction.reply({
+        content: "Permission denied",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const targetedUser = await interaction.options.getUser("target");
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
-    const mapRoles = targetedMember.roles.cache;
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
     const hunterUser = await findUser(
       interaction.user.id,
       interaction.guild.id
     );
-    const userRoles = mapRoles.map((role) => {
-      return role.name;
-    });
 
     if (!hunterUser.can_shoot) {
       await interaction.reply({
@@ -55,7 +63,7 @@ module.exports = {
       });
       return;
     }
-    if (!userRoles.includes(roleNames.ALIVE)) {
+    if (!isAlive(targetedMember)) {
       await interaction.reply({
         content: `${targetedUser} is already dead. Don't shoot dead people! try again.\nhttps://tenor.com/Jx9w.gif`,
         ephemeral: false,
@@ -111,7 +119,9 @@ module.exports = {
     }
 
     await interaction.editReply(
-      `${interaction.user} took aim and shot the ${deadCharacter} named ${targetedUser}\n${message}`
+      `${interaction.user} took aim and shot the ${
+        targetDbUser.is_vampire ? `vampire ${deadCharacter}` : deadCharacter
+      } named ${targetedUser}\n${message}`
     );
 
     await checkGame(interaction);

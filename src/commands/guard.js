@@ -4,7 +4,7 @@ const {
   channelNames,
   giveMasonChannelPermissions,
 } = require("../util/channelHelpers");
-const { roleNames } = require("../util/rolesHelpers");
+const { isAlive } = require("../util/rolesHelpers");
 const {
   findGame,
   findUser,
@@ -24,15 +24,23 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
+    if (
+      !isAlive(interaction.member) ||
+      dbUser.character !== characters.BODYGUARD
+    ) {
+      await interaction.reply({
+        content: "Permission denied",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const targetedUser = await interaction.options.getUser("target");
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
-    const mapRoles = targetedMember.roles.cache;
     const guardUser = await findUser(interaction.user.id, interaction.guild.id);
-    const roles = mapRoles.map((role) => {
-      return role.name;
-    });
 
     let message;
 
@@ -67,12 +75,12 @@ module.exports = {
     }
     if (targetedUser.bot) {
       await interaction.reply({
-        content: "https://tenor.com/yYlL.gif",
+        content: "You can't guard a bot!\nhttps://tenor.com/yYlL.gif",
         ephemeral: false,
       });
       return;
     }
-    if (!roles.includes(roleNames.ALIVE)) {
+    if (!isAlive(targetedMember)) {
       await interaction.reply({
         content: `${targetedUser} is dead. Focus on guarding the living.`,
         ephemeral: false,
@@ -84,8 +92,6 @@ module.exports = {
       targetedUser.id,
       interaction.guild.id
     );
-
-    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
 
     if (
       dbTargetedUser.character === characters.MASON &&

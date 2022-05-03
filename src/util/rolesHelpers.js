@@ -5,6 +5,38 @@ const roleNames = {
   ADMIN: "Admin",
 };
 
+function isAdmin(member) {
+  const mapRoles = member.roles.cache;
+  const roles = mapRoles.map((role) => {
+    return role.name;
+  });
+  return roles.includes(roleNames.ADMIN);
+}
+
+function isAlive(member) {
+  const mapRoles = member.roles.cache;
+  const roles = mapRoles.map((role) => {
+    return role.name;
+  });
+  return roles.includes(roleNames.ALIVE);
+}
+
+function isPlaying(member) {
+  const mapRoles = member.roles.cache;
+  const roles = mapRoles.map((role) => {
+    return role.name;
+  });
+  return roles.includes(roleNames.PLAYING);
+}
+
+function isDead(member) {
+  const mapRoles = member.roles.cache;
+  const roles = mapRoles.map((role) => {
+    return role.name;
+  });
+  return roles.includes(roleNames.DEAD);
+}
+
 async function setupRoles(interaction) {
   const roles = await interaction.guild.roles.fetch();
   const allRoles = organizeRoles(roles);
@@ -91,4 +123,8 @@ module.exports = {
   removeGameRolesFromMembers,
   roleNames,
   getRole,
+  isAdmin,
+  isAlive,
+  isPlaying,
+  isDead,
 };

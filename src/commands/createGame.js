@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { startGame } = require("../util/gameHelpers");
 const { findGame } = require("../werewolf_db");
 const { commandNames } = require("../util/commandHelpers");
+const { isAdmin } = require("../util/rolesHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,6 +10,15 @@ module.exports = {
     .setDescription("creates the game"),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
+
+    if (!isAdmin(interaction.member)) {
+      await interaction.editReply({
+        content: "You don't have the permissions to create a game",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const currentGame = await findGame(interaction.guild.id);
     if (currentGame) {
       await interaction.editReply({

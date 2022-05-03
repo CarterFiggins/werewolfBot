@@ -1,14 +1,11 @@
-const { organizeRoles } = require("./rolesHelpers");
 require("dotenv").config();
+const _ = require("lodash");
 const { updateUser, findAllUsers } = require("../werewolf_db");
 
 /* 
 To add a new game command add it to the
   1. commandNames
-  2. removeUsersPermissions
-  3. gameCommandPermissions
-  4. organizeGameCommands
-  5. add new file for command
+  2. add new file for command
 */
 const commandNames = {
   // Fun Commands
@@ -36,15 +33,14 @@ const commandNames = {
   WHISPER: "whisper",
   PERMISSION_RESET: "permission_reset",
   CURSE: "curse",
+  VAMPIRE_BITE: "vampire_bite",
 };
 
 /* 
 To add a new character add it to these
   1. characters list below
-  2. removeUsersPermissions
-  3. resetNightPowers
-  4. gameCommandPermissions
-  5. add a channel for character?
+  2. resetNightPowers
+  3. add a channel for character?
 gameHelpers
   1. add character to leftOverRoles
   2. add characters powers in the newCharacter switch statement
@@ -75,22 +71,24 @@ const characters = {
   CURSED: "cursed villager",
   CUB: "werewolf cub",
   WITCH: "witch",
+  VAMPIRE: "king",
 };
 
 const characterPoints = new Map([
   [characters.VILLAGER, 2],
-  [characters.SEER, 6],
+  [characters.SEER, 5],
   [characters.BODYGUARD, 4],
-  [characters.APPRENTICE_SEER, 7],
-  [characters.MASON, 4],
+  [characters.APPRENTICE_SEER, 6],
+  [characters.MASON, 3],
   [characters.HUNTER, 4],
-  [characters.WEREWOLF, 5],
-  [characters.FOOL, 3],
+  [characters.WEREWOLF, 6],
+  [characters.FOOL, 2],
   [characters.LYCAN, 3],
-  [characters.BAKER, 5],
-  [characters.CURSED, 4],
-  [characters.CUB, 6],
-  [characters.WITCH, 4],
+  [characters.BAKER, 6],
+  [characters.CURSED, 5],
+  [characters.CUB, 7],
+  [characters.WITCH, 5],
+  [characters.VAMPIRE, 40],
 ]);
 
 const voteText =
@@ -163,6 +161,11 @@ async function sendGreeting(member, user) {
           `You are a **Witch**.\n${voteText}\nYou are on the werewolf team but you don't know which players are the werewolves.\nYou can curse a player in the game with the \`/curse\` command.\nWhen you are hanged by the villagers the players that are cursed will die.\nWerewolves are not effected by the curse\nIf the werewolves kill you your curse does nothing.`
         );
         break;
+      case characters.VAMPIRE:
+        await member.send(
+          `You are a **Vampire King**\n${voteText}\nVampires are on there own team. Bite other players to turn them into a vampire by using the command \`/vampire_bite\`\nIf you try to bite a werewolf you die.\nIf you bite someone the same night as the werewolf kill that victim you will also die.\nYou have to bite the victim **2 times** before they turn into a vampire.`
+        );
+        break;
     }
   } catch (error) {
     console.log(error);
@@ -189,323 +192,9 @@ async function resetNightPowers(guildId) {
   );
 }
 
-async function removeUsersPermissions(interaction, user) {
-  const commands = await interaction.guild.commands.fetch();
-  const organizedCommands = organizeGameCommands(commands);
-  let command;
-  switch (user.character) {
-    case characters.VILLAGER:
-      break;
-    case characters.WEREWOLF:
-      command = organizedCommands.kill;
-      break;
-    case characters.SEER:
-    case characters.APPRENTICE_SEER:
-    case characters.FOOL:
-      command = organizedCommands.see;
-      break;
-    case characters.HUNTER:
-      command = organizedCommands.shoot;
-      break;
-    case characters.BODYGUARD:
-      command = organizedCommands.guard;
-      break;
-    case characters.WITCH:
-      command = organizedCommands.curse;
-      break;
-  }
-  if (command) {
-    await interaction.guild.commands.permissions.add({
-      command: command.id,
-      permissions: [
-        {
-          id: user.user_id,
-          type: "USER",
-          permission: false,
-        },
-      ],
-    });
-  }
-}
-
-async function gameCommandPermissions(interaction, users, permission) {
-  const commands = await interaction.guild.commands.fetch();
-  const organizedCommands = organizeGameCommands(commands);
-
-  // TODO: refactor this into one loop
-  const werewolves = users.filter(
-    (user) => user.character === characters.WEREWOLF
-  );
-  const seers = users.filter(
-    (user) =>
-      user.character === characters.SEER || user.character === characters.FOOL
-  );
-  const bodyguards = users.filter(
-    (user) => user.character === characters.BODYGUARD
-  );
-  const hunters = users.filter((user) => user.character === characters.HUNTER);
-  const witches = users.filter((user) => user.character === characters.WITCH);
-
-  const makePermission = (user) => ({
-    id: user.user_id || user.id,
-    type: "USER",
-    permission,
-  });
-
-  const werewolvesPermissions = werewolves.map(makePermission);
-  const seersPermissions = seers.map(makePermission);
-  const bodyguardsPermissions = bodyguards.map(makePermission);
-  const hunterPermissions = hunters.map(makePermission);
-  const witchPermissions = witches.map(makePermission);
-
-  await interaction.guild.commands.permissions.add({
-    command: organizedCommands.kill.id,
-    permissions: werewolvesPermissions,
-  });
-  await interaction.guild.commands.permissions.add({
-    command: organizedCommands.see.id,
-    permissions: seersPermissions,
-  });
-  await interaction.guild.commands.permissions.add({
-    command: organizedCommands.guard.id,
-    permissions: bodyguardsPermissions,
-  });
-  await interaction.guild.commands.permissions.add({
-    command: organizedCommands.shoot.id,
-    permissions: hunterPermissions,
-  });
-  await interaction.guild.commands.permissions.add({
-    command: organizedCommands.curse.id,
-    permissions: witchPermissions,
-  });
-}
-
-async function addApprenticeSeePermissions(interaction, user) {
-  const commands = await interaction.guild.commands.fetch();
-  const organizedCommands = organizeGameCommands(commands);
-  permissions = [
-    {
-      id: user.user_id || user.id,
-      type: "USER",
-      permission: true,
-    },
-  ];
-  interaction.guild.commands.permissions.add({
-    command: organizedCommands.see.id,
-    permissions,
-  });
-}
-
-async function addCursedKillPermissions(interaction, user) {
-  const commands = await interaction.guild.commands.fetch();
-  const organizedCommands = organizeGameCommands(commands);
-  permissions = [
-    {
-      id: user.user_id || user.id,
-      type: "USER",
-      permission: true,
-    },
-  ];
-  interaction.guild.commands.permissions.add({
-    command: organizedCommands.kill.id,
-    permissions,
-  });
-}
-
-// run permissions for playing commands when server launches
-// run permissions for game commands for user ids.
-async function setupCommandPermissions(interaction) {
-  const commands = await interaction.guild.commands.fetch();
-  const roles = await interaction.guild.roles.fetch();
-  const organizedRoles = organizeRoles(roles);
-  const organizedCommands = organizeSetupCommands(commands);
-
-  const denyPlayingPermissions = [
-    {
-      id: organizedRoles.alive.id,
-      type: "ROLE",
-      permission: false,
-    },
-    {
-      id: organizedRoles.dead.id,
-      type: "ROLE",
-      permission: false,
-    },
-  ];
-
-  const allowPlayingPermissions = [
-    {
-      id: organizedRoles.alive.id,
-      type: "ROLE",
-      permission: true,
-    },
-    {
-      id: interaction.guild.id,
-      type: "ROLE",
-      permission: false,
-    },
-  ];
-
-  const adminPermissions = {
-    id: organizedRoles.admin.id,
-    type: "ROLE",
-    permission: true,
-  };
-
-  const ownersPermissions = [
-    {
-      id: interaction.guild.id,
-      type: "ROLE",
-      permission: false,
-    },
-    {
-      id: interaction.guild.ownerId,
-      type: "USER",
-      permission: true,
-    },
-  ];
-
-  const ownerAndAdmin = [...ownersPermissions, adminPermissions];
-
-  const fullPermissions = [
-    {
-      id: organizedCommands.playing.id,
-      permissions: denyPlayingPermissions,
-    },
-    {
-      id: organizedCommands.stopPlaying.id,
-      permissions: denyPlayingPermissions,
-    },
-    {
-      id: organizedCommands.removeGame.id,
-      permissions: ownerAndAdmin,
-    },
-    {
-      id: organizedCommands.serverSetup.id,
-      permissions: ownerAndAdmin,
-    },
-    {
-      id: organizedCommands.createGame.id,
-      permissions: ownerAndAdmin,
-    },
-    {
-      id: organizedCommands.vote.id,
-      permissions: allowPlayingPermissions,
-    },
-    {
-      id: organizedCommands.resetScheduling.id,
-      permissions: ownerAndAdmin,
-    },
-    {
-      id: organizedCommands.showVotes.id,
-      permissions: allowPlayingPermissions,
-    },
-    {
-      id: organizedCommands.dayTime.id,
-      permissions: ownerAndAdmin,
-    },
-    {
-      id: organizedCommands.nightTime.id,
-      permissions: ownerAndAdmin,
-    },
-    {
-      id: organizedCommands.whisper.id,
-      permissions: ownersPermissions,
-    },
-    {
-      id: organizedCommands.permissionReset.id,
-      permissions: ownerAndAdmin,
-    },
-    {
-      id: organizedCommands.showVotersFor.id,
-      permissions: allowPlayingPermissions,
-    },
-  ];
-
-  await interaction.guild.commands.permissions.set({ fullPermissions });
-}
-
-function organizeSetupCommands(commands) {
-  const commandObject = {};
-  commands.forEach((command) => {
-    switch (command.name) {
-      case commandNames.PLAYING:
-        commandObject.playing = command;
-        break;
-      case commandNames.STOP_PLAYING:
-        commandObject.stopPlaying = command;
-        break;
-      case commandNames.SERVER_SETUP:
-        commandObject.serverSetup = command;
-        break;
-      case commandNames.REMOVE_GAME:
-        commandObject.removeGame = command;
-        break;
-      case commandNames.CREATE_GAME:
-        commandObject.createGame = command;
-        break;
-      case commandNames.VOTE:
-        commandObject.vote = command;
-        break;
-      case commandNames.RESET_SCHEDULING:
-        commandObject.resetScheduling = command;
-        break;
-      case commandNames.SHOW_VOTES:
-        commandObject.showVotes = command;
-        break;
-      case commandNames.DAY_TIME:
-        commandObject.dayTime = command;
-        break;
-      case commandNames.NIGHT_TIME:
-        commandObject.nightTime = command;
-        break;
-      case commandNames.WHISPER:
-        commandObject.whisper = command;
-        break;
-      case commandNames.PERMISSION_RESET:
-        commandObject.permissionReset = command;
-        break;
-      case commandNames.SHOW_VOTERS_FOR:
-        commandNames.showVotersFor = command;
-        break;
-    }
-  });
-  return commandObject;
-}
-
-function organizeGameCommands(commands) {
-  const commandObject = {};
-  commands.forEach((command) => {
-    switch (command.name) {
-      case commandNames.KILL:
-        commandObject.kill = command;
-        break;
-      case commandNames.SEE:
-        commandObject.see = command;
-        break;
-      case commandNames.GUARD:
-        commandObject.guard = command;
-        break;
-      case commandNames.SHOOT:
-        commandObject.shoot = command;
-        break;
-      case commandNames.CURSE:
-        commandObject.curse = command;
-        break;
-    }
-  });
-  return commandObject;
-}
-
 module.exports = {
-  setupCommandPermissions,
-  gameCommandPermissions,
-  removeUsersPermissions,
-  organizeGameCommands,
   resetNightPowers,
   sendGreeting,
-  addApprenticeSeePermissions,
-  addCursedKillPermissions,
   commandNames,
   characters,
   characterPoints,

@@ -7,7 +7,7 @@ module.exports = {
 
     if (!command) return;
     console.log(
-      `${interaction.user.tag} in ${interaction.guild.name} channel #${interaction.channel.name} triggered command ${interaction.commandName}`
+      `${interaction.user.tag} in guild ${interaction.guild.name}, channel #${interaction.channel.name} triggered command ${interaction.commandName}`
     );
 
     try {

@@ -3,12 +3,7 @@ const { createUsers, createGame } = require("../werewolf_db");
 const { sendStartMessages, channelNames } = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
 const computeCharacters = require("./computeCharacters");
-const {
-  gameCommandPermissions,
-  sendGreeting,
-  characters,
-  characterPoints,
-} = require("./commandHelpers");
+const { sendGreeting, characters } = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
 
 async function startGame(interaction) {
@@ -25,7 +20,6 @@ async function startGame(interaction) {
   await sendUsersMessage(interaction, users);
   await createChannels(interaction, users);
   // give users character command permissions
-  await gameCommandPermissions(interaction, users, true);
   await createGameDocument(interaction);
   await timeScheduling(interaction, 8, 20);
   await sendStartMessages(interaction, users);
@@ -108,7 +102,7 @@ async function giveUserRoles(interaction, users) {
   const dbUsers = [];
 
   await Promise.all(
-    shuffledUsers.map(async (user) => {
+    _.map(shuffledUsers, async (user) => {
       // add alive role and remove playing role
       const member = interaction.guild.members.cache.get(user.id);
       await member.roles.add(aliveRole);
@@ -118,19 +112,17 @@ async function giveUserRoles(interaction, users) {
         ? characters.VILLAGER
         : currentCharacters.pop();
 
-      if (newCharacter === characters.CUB) {
-        user.character = characters.WEREWOLF;
-      } else {
-        user.character = newCharacter;
-      }
+      user.character = newCharacter;
 
       const userInfo = {
         user_id: user.id,
         name: user.username,
         nickname: member.nickname,
-        character: user.character,
+        character: newCharacter,
         guild_id: interaction.guild.id,
+        is_vampire: false,
         is_dead: false,
+        vampire_bites: 0,
       };
       switch (newCharacter) {
         case characters.FOOL:
@@ -140,6 +132,8 @@ async function giveUserRoles(interaction, users) {
         case characters.CUB:
           userInfo.is_cub = true;
           user.is_cub = true;
+          user.character = characters.WEREWOLF;
+          userInfo.character = characters.WEREWOLF;
           break;
         case characters.BODYGUARD:
           userInfo.guard = true;
@@ -147,6 +141,11 @@ async function giveUserRoles(interaction, users) {
           break;
         case characters.HUNTER:
           userInfo.can_shoot = false;
+          break;
+        case characters.VAMPIRE:
+          userInfo.bite_user_id = null;
+          userInfo.is_vampire = true;
+          user.is_vampire = true;
           break;
         case characters.PRIEST:
           userInfo.protect = true;
@@ -173,6 +172,7 @@ async function removeAllGameChannels(channels) {
         case channelNames.THE_TOWN:
         case channelNames.BODYGUARD:
         case channelNames.WITCH:
+        case channelNames.VAMPIRES:
           await channel.delete();
       }
     })
@@ -233,6 +233,10 @@ async function createChannels(interaction, users) {
   const witchesPermissions = createPermissions(users, characters.WITCH).concat(
     defaultPermissions
   );
+  const vampirePermissions = createPermissions(
+    users,
+    characters.VAMPIRE
+  ).concat(defaultPermissions);
   let seerPermissions = createPermissions(users, characters.SEER).concat(
     defaultPermissions
   );
@@ -301,6 +305,12 @@ async function createChannels(interaction, users) {
     interaction,
     channelNames.WITCH,
     witchesPermissions,
+    category
+  );
+  await createChannel(
+    interaction,
+    channelNames.VAMPIRES,
+    vampirePermissions,
     category
   );
 }

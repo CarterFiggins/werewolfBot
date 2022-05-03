@@ -32,7 +32,7 @@ async function castWitchCurse(
   const cursorCursed = await findManyUsers({
     guild_id: interaction.guild.id,
     is_cursed: true,
-    death: false,
+    is_dead: false,
   });
   const cursedPlayers = await cursorCursed.toArray();
   const cursedVillagers = _.filter(cursedPlayers, (player) => {
@@ -55,7 +55,9 @@ async function castWitchCurse(
         hunterMessage =
           "you don't have long to live. Grab your gun and `/shoot` someone.";
       }
-      return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}\n`;
+      return `The ${
+        villager.is_vampire ? `vampire ${deadVillager}` : deadVillager
+      } named ${villagerMember}. ${hunterMessage}\n`;
     })
   );
 

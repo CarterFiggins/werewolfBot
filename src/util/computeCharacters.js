@@ -27,9 +27,14 @@ const randomVillagerHelperCard = () => {
 
 function computeCharacters(numberOfPlayers) {
   // subtracting the werewolfCubs and first werewolf
+  const allowVampiresAt = 16;
+  const divideWerewolvesBy = numberOfPlayers >= allowVampiresAt ? 5 : 4;
+  const divideCubBy = numberOfPlayers >= allowVampiresAt ? 16 : 14;
+
   const maxWerewolves =
-    Math.floor(numberOfPlayers / 4) - Math.floor(numberOfPlayers / 12);
-  const maxWerewolfCub = Math.floor(numberOfPlayers / 12);
+    Math.floor(numberOfPlayers / divideWerewolvesBy) -
+    Math.floor(numberOfPlayers / divideCubBy);
+  const maxWerewolfCub = Math.floor(numberOfPlayers / divideCubBy);
   // first mason will be two masons
   const maxMasons = Math.floor(numberOfPlayers / 8);
   const maxSeers = Math.floor(numberOfPlayers / 25);
@@ -38,11 +43,11 @@ function computeCharacters(numberOfPlayers) {
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
   const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
+  const maxVampires = Math.floor(numberOfPlayers / allowVampiresAt);
   let maxVillagers = Math.floor(numberOfPlayers / 10) + 1;
   // only one witch for now
   const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
-  // only one bodyguard for now
-  const maxBodyguards = 1;
+  // Add max bodyguards when there can be more than one bodyguard
   // only one baker for now
   const maxBakers = 1;
 
@@ -56,8 +61,8 @@ function computeCharacters(numberOfPlayers) {
     maxHunters +
     maxCursedVillager +
     maxVillagers +
-    maxBodyguards +
     maxBakers +
+    maxVampires +
     maxWitches;
 
   if (numberOfPlayers > totalCharacters) {
@@ -77,8 +82,12 @@ function computeCharacters(numberOfPlayers) {
     ...Array(maxFools).fill(characters.FOOL),
     ...Array(maxMasons).fill(characters.MASON),
     ...Array(maxHunters).fill(characters.HUNTER),
-    ...Array(maxBodyguards).fill(characters.BODYGUARD),
     ...Array(maxVillagers).fill(characters.VILLAGER),
+  ]);
+
+  // only one card for now
+  const vampireHelperCards = _.shuffle([
+    ...Array(maxVampires).fill(characters.VAMPIRE),
   ]);
 
   let werewolfPoints = 0;
@@ -92,8 +101,12 @@ function computeCharacters(numberOfPlayers) {
       return characters.CUB;
     }),
     characters.SEER,
+    characters.BODYGUARD,
   ];
-  let villagerPoints = characterPoints.get(characters.SEER);
+  let villagerPoints =
+    characterPoints.get(characters.SEER) +
+    characterPoints.get(characters.BODYGUARD);
+  let vampirePoints = 25;
   // minus off players already added
   const playersLeftOver = numberOfPlayers - currentCharacters.length;
   let masonInGame = false;
@@ -101,12 +114,24 @@ function computeCharacters(numberOfPlayers) {
 
   _.forEach(_.range(playersLeftOver), (count) => {
     if (!skipLoop) {
-      if (werewolfPoints < villagerPoints) {
+      if (werewolfPoints <= villagerPoints && werewolfPoints <= vampirePoints) {
         let newCharacter = !_.isEmpty(werewolfHelperCards)
           ? werewolfHelperCards.pop()
           : randomWolfHelperCard();
         werewolfPoints += characterPoints.get(newCharacter);
         currentCharacters.push(newCharacter);
+      } else if (
+        vampirePoints <= werewolfPoints &&
+        vampirePoints <= villagerPoints
+      ) {
+        let newCharacter = !_.isEmpty(vampireHelperCards)
+          ? vampireHelperCards.pop()
+          : _.head(
+              _.shuffle([randomWolfHelperCard(), randomVillagerHelperCard()])
+            );
+        currentCharacters.push(newCharacter);
+        // When we add more vampire helper cards we will use characterPoints
+        vampirePoints += 40;
       } else {
         let newCharacter = !_.isEmpty(villagerHelperCards)
           ? villagerHelperCards.pop()
@@ -136,7 +161,15 @@ function computeCharacters(numberOfPlayers) {
     }
   });
 
-  return _.shuffle(currentCharacters);
+  const numberOfShuffles = Math.floor(Math.random() * 5) + 1;
+
+  let shuffledCharacters = currentCharacters;
+
+  _.forEach(_.range(numberOfShuffles), () => {
+    shuffledCharacters = _.shuffle(shuffledCharacters);
+  });
+
+  return shuffledCharacters;
 }
 
 module.exports = computeCharacters;
