@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
+const { findSettings } = require("../werewolf_db");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -24,8 +25,9 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
-    if (!isAlive(interaction.member)) {
-      await interaction.reply({
+    const settings = await findSettings(interaction.guild.id);
+    if (!isAlive(interaction.member) || !settings.can_whisper) {
+      await interaction.editReply({
         content: "Permission denied",
         ephemeral: true,
       });

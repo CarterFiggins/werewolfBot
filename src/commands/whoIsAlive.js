@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const _ = require("lodash");
 const { commandNames, characters } = require("../util/commandHelpers");
 const { findUsersWithIds } = require("../werewolf_db");
-const { getAliveUsersIds } = require("../util/userHelpers");
+const { getAliveUsersIds, getPlayingCount } = require("../util/userHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -38,8 +38,7 @@ module.exports = {
 
     if (_.isEmpty(dbUsers)) {
       await interaction.editReply({
-        content:
-          "No one is alive sorry...\nhttps://tenor.com/view/status-tired-dead-haggard-gif-11733031",
+        content: `Player count: ${await getPlayingCount(interaction)}`,
         ephemeral: false,
       });
       return;

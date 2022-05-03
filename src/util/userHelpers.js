@@ -20,6 +20,20 @@ async function getAliveMembers(interaction, getId) {
     .filter((m) => m);
 }
 
+async function getPlayingCount(interaction) {
+  let playingRole = await getRole(interaction, roleNames.PLAYING);
+  const members = await interaction.guild.members.fetch();
+
+  let playersCount = 0;
+  members.forEach((member) => {
+    console.log(member);
+    if (member._roles.includes(playingRole.id)) {
+      playersCount += 1;
+    }
+  });
+  return playersCount;
+}
+
 async function getAliveUsersIds(interaction) {
   return getAliveMembers(interaction, true);
 }
@@ -79,4 +93,5 @@ module.exports = {
   getAliveMembers,
   castWitchCurse,
   removeUserVotes,
+  getPlayingCount,
 };

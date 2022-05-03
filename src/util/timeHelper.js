@@ -30,13 +30,14 @@ const {
   findUsersWithIds,
   deleteAllUsers,
   getCountedVotes,
-  findAllUsers,
   findManyUsers,
   deleteManyVotes,
+  findSettings,
 } = require("../werewolf_db");
 const { vampiresAttack } = require("./vampireHelpers");
+const { parseSettingTime } = require("./checkTime");
 
-async function timeScheduling(interaction, dayHour, nightHour) {
+async function timeScheduling(interaction) {
   await schedule.gracefulShutdown();
   const game = await findGame(interaction.guild.id);
   if (!game) {
@@ -46,19 +47,41 @@ async function timeScheduling(interaction, dayHour, nightHour) {
     });
     return;
   }
-  // TODO: when a user can set the time and they set it at midnight or later than we will need to wrap around to 23
-  const warningHour = nightHour - 1;
+
+  const settings = await findSettings(interaction.guild.id);
+
+  if (!settings) {
+    await interaction.reply({
+      content: "run server setup",
+      ephemeral: true,
+    });
+    return;
+  }
+
+  const day = parseSettingTime(settings.day_time);
+  const night = parseSettingTime(settings.night_time);
+
+  let warningHour = night.hour;
+  let warningMinute = night.minute - 30;
+
+  if (warningMinute < 0) {
+    warningMinute = 60 + warningMinute;
+    warningHour -= 1;
+    if (warningHour < 0) {
+      warningHour = 23;
+    }
+  }
 
   const nightRule = new schedule.RecurrenceRule();
   const dayRule = new schedule.RecurrenceRule();
   const warningRule = new schedule.RecurrenceRule();
-  nightRule.minute = 0;
-  nightRule.hour = nightHour;
+  nightRule.minute = night.minute;
+  nightRule.hour = night.hour;
   nightRule.tz = process.env.TIME_ZONE_TZ;
-  dayRule.minute = 0;
-  dayRule.hour = dayHour;
+  dayRule.minute = day.minute;
+  dayRule.hour = day.hour;
   dayRule.tz = process.env.TIME_ZONE_TZ;
-  warningRule.minute = 30;
+  warningRule.minute = warningMinute;
   warningRule.hour = warningHour;
   warningRule.tz = process.env.TIME_ZONE_TZ;
   schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
