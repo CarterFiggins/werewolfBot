@@ -102,6 +102,20 @@ async function deleteGame(guild_id) {
   return await db.collection("games").deleteOne({ guild_id });
 }
 
+async function findSettings(guild_id) {
+  return await db.collection("settings").findOne({ guild_id });
+}
+
+async function createSettings(newSettings) {
+  return await db.collection("settings").insertOne(newSettings);
+}
+
+async function updateSettings(guild_id, updatedSettings) {
+  return await db
+    .collection("settings")
+    .updateOne({ guild_id }, { $set: updatedSettings });
+}
+
 module.exports = {
   deleteAllUsers,
   findUser,
@@ -119,4 +133,7 @@ module.exports = {
   findGame,
   updateGame,
   deleteGame,
+  findSettings,
+  createSettings,
+  updateSettings,
 };

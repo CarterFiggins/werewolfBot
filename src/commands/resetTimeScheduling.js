@@ -16,7 +16,7 @@ module.exports = {
       return;
     }
 
-    const ok = await timeScheduling(interaction, 8, 20);
+    const ok = await timeScheduling(interaction);
     if (!ok) {
       return;
     }
