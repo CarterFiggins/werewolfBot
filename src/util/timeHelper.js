@@ -130,6 +130,11 @@ async function dayTimeJob(interaction) {
         await updateUser(witch.user_id, guildId, {
           target_cursed_user_id: null,
         });
+        organizedChannels.witch.send(
+          `${members.get(witch.user_id)} have successfully cursed ${members.get(
+            witch.target_cursed_user_id
+          )}`
+        );
       }
     })
   );
