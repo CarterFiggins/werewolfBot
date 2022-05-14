@@ -9,7 +9,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.CURSE)
     .setDescription("Curse a player")
-    .setDefaultPermission(false)
     .addUserOption((option) =>
       option
         .setName("target")

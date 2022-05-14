@@ -11,7 +11,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SHOOT)
     .setDescription("shoots another player")
-    .setDefaultPermission(false)
     .addUserOption((option) =>
       option
         .setName("target")

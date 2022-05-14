@@ -9,6 +9,7 @@ const {
   deleteManyVotes,
 } = require("../werewolf_db");
 const { commandNames } = require("../util/commandHelpers");
+const { endGuildJobs } = require("../util/schedulHelper");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -47,7 +48,7 @@ module.exports = {
 
     // stop scheduling day and night
     await interaction.deferReply({ ephemeral: true });
-    await schedule.gracefulShutdown();
+    await endGuildJobs(interaction);
 
     // Remove Channels
     const currentChannels = await interaction.guild.channels.fetch();

@@ -9,7 +9,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SEE)
     .setDescription("sees the player's character")
-    .setDefaultPermission(false)
     .addUserOption((option) =>
       option
         .setName("target")
