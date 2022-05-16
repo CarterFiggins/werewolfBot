@@ -84,10 +84,10 @@ const characterPoints = new Map([
   [characters.WEREWOLF, 6],
   [characters.FOOL, 2],
   [characters.LYCAN, 3],
-  [characters.BAKER, 6],
-  [characters.CURSED, 5],
+  [characters.BAKER, 5],
+  [characters.CURSED, 4],
   [characters.CUB, 7],
-  [characters.WITCH, 5],
+  [characters.WITCH, 4],
   [characters.VAMPIRE, 40],
 ]);
 
