@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
-const { setupRoles } = require("../util/rolesHelpers");
+const { setupRoles, isAdmin } = require("../util/rolesHelpers");
 const { findSettings, createSettings } = require("../werewolf_db");
 
 module.exports = {
