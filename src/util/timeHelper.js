@@ -36,9 +36,10 @@ const {
 } = require("../werewolf_db");
 const { vampiresAttack } = require("./vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
+const { endGuildJobs } = require("./schedulHelper");
 
 async function timeScheduling(interaction) {
-  await schedule.gracefulShutdown();
+  await endGuildJobs(interaction);
   const game = await findGame(interaction.guild.id);
   if (!game) {
     await interaction.reply({
@@ -84,9 +85,15 @@ async function timeScheduling(interaction) {
   warningRule.minute = warningMinute;
   warningRule.hour = warningHour;
   warningRule.tz = process.env.TIME_ZONE_TZ;
-  schedule.scheduleJob(nightRule, () => nightTimeJob(interaction));
-  schedule.scheduleJob(dayRule, () => dayTimeJob(interaction));
-  schedule.scheduleJob(warningRule, () => nightTimeWarning(interaction));
+  schedule.scheduleJob(`${interaction.guild.id}-night`, nightRule, () =>
+    nightTimeJob(interaction)
+  );
+  schedule.scheduleJob(`${interaction.guild.id}-day`, dayRule, () =>
+    dayTimeJob(interaction)
+  );
+  schedule.scheduleJob(`${interaction.guild.id}-warning`, warningRule, () =>
+    nightTimeWarning(interaction)
+  );
   return true;
 }
 
@@ -130,6 +137,11 @@ async function dayTimeJob(interaction) {
         await updateUser(witch.user_id, guildId, {
           target_cursed_user_id: null,
         });
+        organizedChannels.witch.send(
+          `${members.get(witch.user_id)} have successfully cursed ${members.get(
+            witch.target_cursed_user_id
+          )}`
+        );
       }
     })
   );
@@ -374,8 +386,10 @@ async function removesDeadPermissions(
       currentDate.setHours(currentDate.getHours() + hours)
     );
 
-    schedule.scheduleJob(shootingLimit, () =>
-      hunterShootingLimitJob(interaction, deadMember, organizedRoles)
+    schedule.scheduleJob(
+      `${guildId}-hunter-${deadUser.user_id}`,
+      shootingLimit,
+      () => hunterShootingLimitJob(interaction, deadMember, organizedRoles)
     );
 
     return deadCharacter;
@@ -611,8 +625,7 @@ async function endGame(interaction, guildId, roles, members) {
   await deleteAllUsers(guildId);
   await deleteGame(guildId);
   await deleteManyVotes({ guild_id: guildId });
-  for (const job in schedule.scheduledJobs) schedule.cancelJob(job);
-  await schedule.gracefulShutdown();
+  await endGuildJobs(interaction);
 }
 
 module.exports = {

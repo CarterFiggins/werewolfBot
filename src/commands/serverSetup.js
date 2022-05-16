@@ -8,11 +8,19 @@ module.exports = {
     .setName(commandNames.SERVER_SETUP)
     .setDescription("Sets up the server's roles and settings"),
   async execute(interaction) {
+    const settings = await findSettings(interaction.guild.id);
+    if (settings && !isAdmin(interaction.member)) {
+      await interaction.reply({
+        content: "You don't have the permissions to setup the server",
+        ephemeral: true,
+      });
+      return;
+    }
+
     await interaction.client.application.fetch();
 
     await setupRoles(interaction);
 
-    const settings = await findSettings(interaction.guild.id);
     if (!settings) {
       await createSettings({
         guild_id: interaction.guild.id,

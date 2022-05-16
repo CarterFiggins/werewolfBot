@@ -16,7 +16,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.GUARD)
     .setDescription("guard a player for the night")
-    .setDefaultPermission(false)
     .addUserOption((option) =>
       option
         .setName("target")
