@@ -20,15 +20,13 @@ const rest = new REST({ version: "9" }).setToken(TOKEN);
   try {
     console.log("Started refreshing application (/) commands.");
 
-    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
-      body: commands,
-    });
+    // set guild commands
+    // await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
+    //   body: commands,
+    // });
 
     // Set Global Commands sometimes takes a hour to update
-    // await rest.put(
-    //   Routes.applicationCommands(CLIENT_ID),
-    //   { body: commands },
-    // );
+    await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
 
     console.log("Successfully reloaded application (/) commands.");
   } catch (error) {
