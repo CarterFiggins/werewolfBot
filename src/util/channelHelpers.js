@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const { findSettings } = require("../werewolf_db");
 const { characters } = require("./commandHelpers");
 
 const channelNames = {
@@ -141,9 +142,11 @@ async function removeChannelPermissions(interaction, user) {
 async function giveWerewolfChannelPermissions(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
+  const guildSettings = await findSettings(interaction.guild.id);
   await organizedChannels.werewolves.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
     VIEW_CHANNEL: true,
+    ADD_REACTIONS: guildSettings.allow_reactions,
   });
 }
 
@@ -154,6 +157,7 @@ async function giveMasonChannelPermissions(interaction, user) {
   await organizedChannels.mason.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
     VIEW_CHANNEL: true,
+    ADD_REACTIONS: guildSettings.allow_reactions,
   });
 
   organizedChannels.mason.send(`The bodyguard ${user} has joined!`);
@@ -166,6 +170,7 @@ async function giveSeerChannelPermissions(interaction, user) {
   await organizedChannels.seer.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
     VIEW_CHANNEL: true,
+    ADD_REACTIONS: guildSettings.allow_reactions,
   });
 }
 
@@ -176,6 +181,7 @@ async function giveVampireChannelPermissions(interaction, user) {
   await organizedChannels.vampires.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
     VIEW_CHANNEL: true,
+    ADD_REACTIONS: guildSettings.allow_reactions,
   });
 }
 
