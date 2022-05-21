@@ -185,6 +185,10 @@ async function giveVampireChannelPermissions(interaction, user) {
   });
 }
 
+function onDmChannel(interaction) {
+  return interaction.channel.type == "DM";
+}
+
 function getRandomBotGif() {
   return _.sample(botGifs);
 }
@@ -197,6 +201,7 @@ module.exports = {
   giveWerewolfChannelPermissions,
   giveVampireChannelPermissions,
   removeChannelPermissions,
+  onDmChannel,
   getRandomBotGif,
   channelNames,
 };

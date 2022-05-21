@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
+const { permissionCheck } = require("../util/permissionCheck");
 const { setupRoles, isAdmin } = require("../util/rolesHelpers");
 const { findSettings, createSettings } = require("../werewolf_db");
 
@@ -8,10 +9,16 @@ module.exports = {
     .setName(commandNames.SERVER_SETUP)
     .setDescription("Sets up the server's roles and settings"),
   async execute(interaction) {
-    const settings = await findSettings(interaction.guild.id);
-    if (settings && !isAdmin(interaction.member)) {
+    const settings = await findSettings(interaction.guild?.id);
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+      check: () => settings && !isAdmin(interaction.member),
+    });
+
+    if (deniedMessage) {
       await interaction.reply({
-        content: "You don't have the permissions to setup the server",
+        content: deniedMessage,
         ephemeral: true,
       });
       return;

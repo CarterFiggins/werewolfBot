@@ -7,6 +7,7 @@ const { findUser, updateUser } = require("../werewolf_db");
 const { organizeRoles } = require("../util/rolesHelpers");
 const { removesDeadPermissions, checkGame } = require("../util/timeHelper");
 const { castWitchCurse } = require("../util/userHelpers");
+const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SHOOT)
@@ -18,13 +19,17 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
-    if (
-      !isAlive(interaction.member) ||
-      dbUser.character !== characters.HUNTER
-    ) {
+    const dbUser = await findUser(interaction.user.id, interaction.guild?.id);
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+      check: () =>
+        !isAlive(interaction.member) || dbUser.character !== characters.HUNTER,
+    });
+
+    if (deniedMessage) {
       await interaction.reply({
-        content: "Permission denied",
+        content: deniedMessage,
         ephemeral: true,
       });
       return;

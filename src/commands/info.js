@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
+const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -23,6 +24,18 @@ module.exports = {
       );
     }
     if (interaction.options.getSubcommand() === "server") {
+      const deniedMessage = await permissionCheck({
+        interaction,
+        guildOnly: true,
+      });
+
+      if (deniedMessage) {
+        await interaction.reply({
+          content: deniedMessage,
+          ephemeral: true,
+        });
+        return;
+      }
       await interaction.reply(
         `Server name: ${interaction.guild.name}\nTotal members: ${interaction.guild.memberCount}`
       );

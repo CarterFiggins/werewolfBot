@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const _ = require("lodash");
 const { commandNames } = require("../util/commandHelpers");
+const { permissionCheck } = require("../util/permissionCheck");
 const { getCountedVotes, findManyVotes } = require("../werewolf_db");
 
 module.exports = {
@@ -24,6 +25,19 @@ module.exports = {
     ),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: false });
+
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+    });
+
+    if (deniedMessage) {
+      await interaction.editReply({
+        content: deniedMessage,
+        ephemeral: true,
+      });
+      return;
+    }
 
     if (interaction.options.getSubcommand() === commandNames.SHOW_VOTES) {
       const cursor = await getCountedVotes(interaction.guild.id);

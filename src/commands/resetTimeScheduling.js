@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
+const { permissionCheck } = require("../util/permissionCheck");
 const { isAdmin } = require("../util/rolesHelpers");
 const { timeScheduling } = require("../util/timeHelper");
 
@@ -8,9 +9,15 @@ module.exports = {
     .setName(commandNames.RESET_SCHEDULING)
     .setDescription("Reset the time schedulers for day and nigh time"),
   async execute(interaction) {
-    if (!isAdmin(interaction.member)) {
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+      check: () => !isAdmin(interaction.member),
+    });
+
+    if (deniedMessage) {
       await interaction.reply({
-        content: "You don't have the permissions to reset the time scheduling",
+        content: deniedMessage,
         ephemeral: true,
       });
       return;

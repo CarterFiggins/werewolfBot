@@ -3,6 +3,7 @@ const { commandNames } = require("../util/commandHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
 const { findSettings } = require("../werewolf_db");
+const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -25,10 +26,17 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
-    const settings = await findSettings(interaction.guild.id);
-    if (!isAlive(interaction.member) || !settings.can_whisper) {
+    const settings = await findSettings(interaction.guild?.id);
+
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+      check: () => !isAlive(interaction.member) || !settings.can_whisper,
+    });
+
+    if (deniedMessage) {
       await interaction.editReply({
-        content: "Permission denied",
+        content: deniedMessage,
         ephemeral: true,
       });
       return;

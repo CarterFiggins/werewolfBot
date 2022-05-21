@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
+const { permissionCheck } = require("../util/permissionCheck");
 const {
   getRole,
   roleNames,
@@ -14,6 +15,18 @@ module.exports = {
     .setDescription("give the playing role to user"),
 
   async execute(interaction) {
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+    });
+
+    if (deniedMessage) {
+      await interaction.reply({
+        content: deniedMessage,
+        ephemeral: true,
+      });
+      return;
+    }
     const member = interaction.member;
     if (isAlive(member) || isPlaying(member) || isDead(member)) {
       await interaction.reply({
