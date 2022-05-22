@@ -26,7 +26,6 @@ async function getPlayingCount(interaction) {
 
   let playersCount = 0;
   members.forEach((member) => {
-    console.log(member);
     if (member._roles.includes(playingRole.id)) {
       playersCount += 1;
     }
