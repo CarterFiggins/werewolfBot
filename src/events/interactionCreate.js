@@ -2,6 +2,13 @@ module.exports = {
   name: "interactionCreate",
   async execute(interaction) {
     if (!interaction.isCommand()) return;
+    if (interaction.channel.type == "DM") {
+      await interaction.reply({
+        content: "DM commands are turned off",
+        ephemeral: true,
+      });
+      return;
+    }
 
     const command = interaction.client.commands.get(interaction.commandName);
 

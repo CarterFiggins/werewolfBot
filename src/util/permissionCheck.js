@@ -5,7 +5,7 @@ async function permissionCheck({ interaction, guildOnly, check }) {
   if (guildOnly && (await onDmChannel(interaction))) {
     return "Not a DM command";
   }
-  if (check()) {
+  if (check && check()) {
     return "Permission denied";
   }
 }
