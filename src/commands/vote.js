@@ -3,6 +3,7 @@ const { commandNames } = require("../util/commandHelpers");
 const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { roleNames } = require("../util/rolesHelpers");
 const { findGame, upsertVote, findUser } = require("../werewolf_db");
+const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,6 +16,20 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+      check: () => !isAlive(interaction.member),
+    });
+
+    if (deniedMessage) {
+      await interaction.reply({
+        content: deniedMessage,
+        ephemeral: true,
+      });
+      return;
+    }
+
     const votedUser = interaction.options.getUser("voted");
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);

@@ -194,6 +194,8 @@ async function createChannels(interaction, users) {
     (user) => user.character !== characters.WEREWOLF
   );
 
+  const guildSettings = await findSettings(interaction.guild.id);
+
   nonPlayersPermissions = {
     id: interaction.guild.id,
     deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
@@ -216,7 +218,11 @@ async function createChannels(interaction, users) {
     deadPermissions,
     {
       id: aliveRole.id,
-      allow: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+      allow: [
+        "SEND_MESSAGES",
+        "VIEW_CHANNEL",
+        guildSettings.allow_reactions && "ADD_REACTIONS",
+      ],
     },
   ];
 
@@ -226,30 +232,27 @@ async function createChannels(interaction, users) {
     nonPlayersPermissions,
   ];
 
-  const werewolvesPermissions = createPermissions(
-    users,
-    characters.WEREWOLF
+  const werewolvesPermissions = (
+    await createPermissions(users, characters.WEREWOLF, guildSettings)
   ).concat(defaultPermissions);
-  const witchesPermissions = createPermissions(users, characters.WITCH).concat(
-    defaultPermissions
-  );
-  const vampirePermissions = createPermissions(
-    users,
-    characters.VAMPIRE
+  const witchesPermissions = (
+    await createPermissions(users, characters.WITCH, guildSettings)
   ).concat(defaultPermissions);
-  let seerPermissions = createPermissions(users, characters.SEER).concat(
-    defaultPermissions
-  );
+  const vampirePermissions = (
+    await createPermissions(users, characters.VAMPIRE, guildSettings)
+  ).concat(defaultPermissions);
+  let seerPermissions = (
+    await createPermissions(users, characters.SEER, guildSettings)
+  ).concat(defaultPermissions);
   // TODO: create createPermissions with an array?
   seerPermissions = seerPermissions.concat(
-    createPermissions(users, characters.FOOL)
+    await createPermissions(users, characters.FOOL, guildSettings)
   );
-  const masonPermissions = createPermissions(users, characters.MASON).concat(
-    defaultPermissions
-  );
-  const bodyguardPermissions = createPermissions(
-    users,
-    characters.BODYGUARD
+  const masonPermissions = (
+    await createPermissions(users, characters.MASON, guildSettings)
+  ).concat(defaultPermissions);
+  const bodyguardPermissions = (
+    await createPermissions(users, characters.BODYGUARD, guildSettings)
   ).concat(defaultPermissions);
 
   afterLifePermissions = [
@@ -260,7 +263,7 @@ async function createChannels(interaction, users) {
     },
     {
       id: deadRole.id,
-      allow: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+      allow: ["SEND_MESSAGES", "VIEW_CHANNEL", "ADD_REACTIONS"],
     },
   ];
 
@@ -329,13 +332,17 @@ async function createCategory(interaction, name) {
   });
 }
 
-function createPermissions(users, character) {
+async function createPermissions(users, character, guildSettings) {
   return users
     .map((user) => {
       if (user.character === character) {
         return {
           id: user.id,
-          allow: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+          allow: [
+            "SEND_MESSAGES",
+            "VIEW_CHANNEL",
+            guildSettings.allow_reactions && "ADD_REACTIONS",
+          ],
         };
       }
     })

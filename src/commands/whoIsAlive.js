@@ -3,6 +3,7 @@ const _ = require("lodash");
 const { commandNames, characters } = require("../util/commandHelpers");
 const { findUsersWithIds } = require("../werewolf_db");
 const { getAliveUsersIds, getPlayingCount } = require("../util/userHelpers");
+const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,6 +15,20 @@ module.exports = {
     await interaction.deferReply({
       ephemeral: false,
     });
+
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+    });
+
+    if (deniedMessage) {
+      await interaction.editReply({
+        content: deniedMessage,
+        ephemeral: true,
+      });
+      return;
+    }
+
     const aliveUsersId = await getAliveUsersIds(interaction);
     const members = await interaction.guild.members.fetch();
 

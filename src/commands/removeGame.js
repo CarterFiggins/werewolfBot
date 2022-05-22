@@ -10,15 +10,22 @@ const {
 } = require("../werewolf_db");
 const { commandNames } = require("../util/commandHelpers");
 const { endGuildJobs } = require("../util/schedulHelper");
+const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.REMOVE_GAME)
     .setDescription("end the game"),
   async execute(interaction) {
-    if (!isAdmin(interaction.member)) {
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+      check: () => !isAdmin(interaction.member),
+    });
+
+    if (deniedMessage) {
       await interaction.reply({
-        content: "You don't have the permissions to end the game",
+        content: deniedMessage,
         ephemeral: true,
       });
       return;

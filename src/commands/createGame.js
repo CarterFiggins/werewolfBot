@@ -3,6 +3,7 @@ const { startGame } = require("../util/gameHelpers");
 const { findGame } = require("../werewolf_db");
 const { commandNames } = require("../util/commandHelpers");
 const { isAdmin } = require("../util/rolesHelpers");
+const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -11,9 +12,15 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
-    if (!isAdmin(interaction.member)) {
+    const deniedMessage = await permissionCheck({
+      interaction,
+      guildOnly: true,
+      check: () => !isAdmin(interaction.member),
+    });
+
+    if (deniedMessage) {
       await interaction.editReply({
-        content: "You don't have the permissions to create a game",
+        content: deniedMessage,
         ephemeral: true,
       });
       return;
