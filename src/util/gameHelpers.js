@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { createUsers, createGame } = require("../werewolf_db");
+const { createUsers, createGame, findSettings } = require("../werewolf_db");
 const { sendStartMessages, channelNames } = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
 const computeCharacters = require("./computeCharacters");
