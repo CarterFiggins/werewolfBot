@@ -213,16 +213,17 @@ async function createChannels(interaction, users) {
     deny: ["SEND_MESSAGES", "VIEW_CHANNEL"],
   };
 
+  let allow = ["SEND_MESSAGES", "VIEW_CHANNEL"];
+
+  if (guildSettings.allow_reactions) {
+    allow.push("ADD_REACTIONS");
+  }
   townSquarePermissions = [
     nonPlayersPermissions,
     deadPermissions,
     {
       id: aliveRole.id,
-      allow: [
-        "SEND_MESSAGES",
-        "VIEW_CHANNEL",
-        guildSettings.allow_reactions && "ADD_REACTIONS",
-      ],
+      allow,
     },
   ];
 
@@ -333,16 +334,18 @@ async function createCategory(interaction, name) {
 }
 
 async function createPermissions(users, character, guildSettings) {
+  let allow = ["SEND_MESSAGES", "VIEW_CHANNEL"];
+
+  if (guildSettings.allow_reactions) {
+    allow.push("ADD_REACTIONS");
+  }
+
   return users
     .map((user) => {
       if (user.character === character) {
         return {
           id: user.id,
-          allow: [
-            "SEND_MESSAGES",
-            "VIEW_CHANNEL",
-            guildSettings.allow_reactions && "ADD_REACTIONS",
-          ],
+          allow,
         };
       }
     })
