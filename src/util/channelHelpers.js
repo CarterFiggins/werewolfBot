@@ -143,6 +143,7 @@ async function giveWerewolfChannelPermissions(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const guildSettings = await findSettings(interaction.guild.id);
+
   await organizedChannels.werewolves.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
     VIEW_CHANNEL: true,
@@ -153,6 +154,7 @@ async function giveWerewolfChannelPermissions(interaction, user) {
 async function giveMasonChannelPermissions(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
+  const guildSettings = await findSettings(interaction.guild.id);
 
   await organizedChannels.mason.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
@@ -166,6 +168,7 @@ async function giveMasonChannelPermissions(interaction, user) {
 async function giveSeerChannelPermissions(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
+  const guildSettings = await findSettings(interaction.guild.id);
 
   await organizedChannels.seer.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
