@@ -114,13 +114,6 @@ module.exports = {
     if (targetDbUser.character === characters.HUNTER) {
       message = `${targetedUser} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
     }
-    if (targetDbUser.character === characters.WITCH) {
-      message = await castWitchCurse(
-        interaction,
-        organizedRoles,
-        removesDeadPermissions
-      );
-    }
 
     await interaction.editReply(
       `${interaction.user} took aim and shot the ${

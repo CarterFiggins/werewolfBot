@@ -167,7 +167,10 @@ async function dayTimeJob(interaction) {
       });
 
       const guardedUser = await findUser(guardedUserId, guildId);
-      if (guardedUser.character === characters.VAMPIRE) {
+      if (
+        guardedUser.character === characters.VAMPIRE ||
+        guardedUser.character === characters.WITCH
+      ) {
         organizedChannels.bodyguard.send(
           `While guarding ${members.get(
             guardedUserId
@@ -210,6 +213,11 @@ async function dayTimeJob(interaction) {
           await giveWerewolfChannelPermissions(interaction, discordDeadUser);
           await organizedChannels.werewolves.send(
             `${discordDeadUser} did not die and has turned into a werewolf! :wolf:`
+          );
+          isDead = false;
+        } else if (deadUser.character === characters.WITCH) {
+          organizedChannels.werewolves.send(
+            `You did not kill ${discordDeadUser} because they are the witch!`
           );
           isDead = false;
         }
@@ -280,6 +288,12 @@ async function nightTimeJob(interaction) {
     );
     organizedChannels.seer.send(
       "This is the first night. Choose someone to see with the `/see` command"
+    );
+    organizedChannels.witch.send(
+      "This is the first night. Choose someone to curse with the `/curse` command"
+    );
+    organizedChannels.vampires.send(
+      "This is the first night. Choose someone to bite with the `/vampire_bite` command"
     );
     return;
   }
@@ -581,7 +595,6 @@ async function starveUser(interaction, organizedRoles, deathIds) {
       (user) =>
         !deathIds.includes(user.user_id) &&
         user.character !== characters.WEREWOLF &&
-        user.character !== characters.WITCH &&
         !user.is_vampire
     );
   } else {
