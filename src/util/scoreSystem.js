@@ -52,7 +52,6 @@ async function awardWinners(dbUsers, winner) {
 }
 
 async function addPoints({ is_dead, guild_id, user_id }, score = 100) {
-  // get the score for user if not there create it. update new score
   const userScore = await findUserScore({ guild_id, user_id });
   let newPoints = score;
 
