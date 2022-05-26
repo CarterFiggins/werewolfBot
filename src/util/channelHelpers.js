@@ -188,6 +188,39 @@ async function giveVampireChannelPermissions(interaction, user) {
   });
 }
 
+async function createChannel(interaction, name, permissionOverwrites, parent) {
+  return await interaction.guild.channels.create(name, {
+    parent,
+    type: "GUILD_TEXT",
+    permissionOverwrites,
+  });
+}
+
+async function createCategory(interaction, name) {
+  return await interaction.guild.channels.create(name, {
+    type: "GUILD_CATEGORY",
+  });
+}
+
+async function createPermissions(users, character, guildSettings) {
+  let allow = ["SEND_MESSAGES", "VIEW_CHANNEL"];
+
+  if (guildSettings.allow_reactions) {
+    allow.push("ADD_REACTIONS");
+  }
+
+  return users
+    .map((user) => {
+      if (user.character === character) {
+        return {
+          id: user.id,
+          allow,
+        };
+      }
+    })
+    .filter((u) => u);
+}
+
 function onDmChannel(interaction) {
   return interaction.channel.type == "DM";
 }
@@ -197,6 +230,9 @@ function getRandomBotGif() {
 }
 
 module.exports = {
+  createChannel,
+  createCategory,
+  createPermissions,
   sendStartMessages,
   organizeChannels,
   giveMasonChannelPermissions,

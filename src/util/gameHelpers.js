@@ -1,6 +1,12 @@
 const _ = require("lodash");
 const { createUsers, createGame, findSettings } = require("../werewolf_db");
-const { sendStartMessages, channelNames } = require("./channelHelpers");
+const {
+  sendStartMessages,
+  channelNames,
+  createChannel,
+  createCategory,
+  createPermissions,
+} = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
 const computeCharacters = require("./computeCharacters");
 const { sendGreeting, characters } = require("./commandHelpers");
@@ -196,19 +202,19 @@ async function createChannels(interaction, users) {
 
   const guildSettings = await findSettings(interaction.guild.id);
 
-  nonPlayersPermissions = {
+  const nonPlayersPermissions = {
     id: interaction.guild.id,
     deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
     allow: ["VIEW_CHANNEL"],
   };
 
-  deadPermissions = {
+  const deadPermissions = {
     id: deadRole.id,
     deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
     allow: ["VIEW_CHANNEL"],
   };
 
-  denyAlivePermissions = {
+  const denyAlivePermissions = {
     id: aliveRole.id,
     deny: ["SEND_MESSAGES", "VIEW_CHANNEL"],
   };
@@ -317,39 +323,6 @@ async function createChannels(interaction, users) {
     vampirePermissions,
     category
   );
-}
-
-async function createChannel(interaction, name, permissionOverwrites, parent) {
-  return await interaction.guild.channels.create(name, {
-    parent,
-    type: "GUILD_TEXT",
-    permissionOverwrites,
-  });
-}
-
-async function createCategory(interaction, name) {
-  return await interaction.guild.channels.create(name, {
-    type: "GUILD_CATEGORY",
-  });
-}
-
-async function createPermissions(users, character, guildSettings) {
-  let allow = ["SEND_MESSAGES", "VIEW_CHANNEL"];
-
-  if (guildSettings.allow_reactions) {
-    allow.push("ADD_REACTIONS");
-  }
-
-  return users
-    .map((user) => {
-      if (user.character === character) {
-        return {
-          id: user.id,
-          allow,
-        };
-      }
-    })
-    .filter((u) => u);
 }
 
 module.exports = {
