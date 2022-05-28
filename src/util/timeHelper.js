@@ -37,6 +37,7 @@ const {
 const { vampiresAttack } = require("./vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
 const { endGuildJobs } = require("./schedulHelper");
+const { teams, calculateScores } = require("./scoreSystem");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -511,26 +512,32 @@ async function checkGame(interaction) {
   );
 
   let isGameOver = false;
+  let winner;
 
   if (werewolfCount === 0 && vampireCount === 0) {
     organizedChannels.townSquare.send(
       "There are no more werewolves or vampires. **Villagers Win!**"
     );
     isGameOver = true;
+    winner = teams.VILLAGERS;
   } else if (werewolfCount >= villagerCount + vampireCount) {
     organizedChannels.townSquare.send(
       "Werewolves out number the villagers and vampires. **Werewolves Win!**"
     );
     isGameOver = true;
+    winner = teams.WEREWOLVES;
   } else if (vampireCount >= villagerCount + werewolfCount) {
     organizedChannels.townSquare.send(
       "Vampires out number the villagers and werewolves. **Vampires Win!**"
     );
     isGameOver = true;
+    winner = teams.VAMPIRES;
   }
 
+  const scoreData = { winner };
+
   if (isGameOver) {
-    await endGame(interaction, guildId, roles, members);
+    await endGame(interaction, roles, members, scoreData);
   }
 }
 
@@ -630,9 +637,12 @@ async function starveUser(interaction, organizedRoles, deathIds) {
   return `The **${starvedCharacter}** named ${starvedMember} ${deadMessage}\n`;
 }
 
-async function endGame(interaction, guildId, roles, members) {
+async function endGame(interaction, roles, members, scoreData) {
+  const guildId = interaction.guild.id;
   // remove all discord roles from players
   await removeGameRolesFromMembers(members, roles);
+
+  await calculateScores(interaction, scoreData);
 
   // delete all game info from database
   await deleteAllUsers(guildId);
