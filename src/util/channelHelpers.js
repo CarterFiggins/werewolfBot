@@ -180,7 +180,6 @@ async function giveSeerChannelPermissions(interaction, user) {
 async function giveVampireChannelPermissions(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
-  const guildSettings = await findSettings(interaction.guild.id);
   
   await organizedChannels.vampires.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
