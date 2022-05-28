@@ -76,19 +76,19 @@ const characters = {
 
 const characterPoints = new Map([
   [characters.VILLAGER, 2],
-  [characters.SEER, 5],
-  [characters.BODYGUARD, 4],
-  [characters.APPRENTICE_SEER, 6],
-  [characters.MASON, 3],
+  [characters.SEER, 6],
+  [characters.BODYGUARD, 6],
+  [characters.APPRENTICE_SEER, 7],
+  [characters.MASON, 4],
   [characters.HUNTER, 4],
   [characters.WEREWOLF, 6],
-  [characters.FOOL, 2],
+  [characters.FOOL, 3],
   [characters.LYCAN, 3],
   [characters.BAKER, 5],
   [characters.CURSED, 4],
   [characters.CUB, 7],
   [characters.WITCH, 4],
-  [characters.VAMPIRE, 40],
+  [characters.VAMPIRE, 20],
 ]);
 
 const voteText =
