@@ -142,7 +142,6 @@ async function giveUserRoles(interaction, users) {
           userInfo.character = characters.WEREWOLF;
           break;
         case characters.BODYGUARD:
-          userInfo.guard = true;
           userInfo.last_guarded_user_id = null;
           break;
         case characters.HUNTER:

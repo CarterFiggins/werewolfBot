@@ -58,14 +58,6 @@ module.exports = {
       });
       return;
     }
-    if (!guardUser.guard) {
-      await interaction.reply({
-        content:
-          "You are tired and can only guard one person. Try again next night.",
-        ephemeral: false,
-      });
-      return;
-    }
     if (guardUser.last_guarded_user_id == targetedUser.id) {
       await interaction.reply({
         content: `You guarded ${targetedUser} last night and can not protect someone twice in a row.`,
@@ -93,23 +85,12 @@ module.exports = {
       interaction.guild.id
     );
 
-    if (
-      dbTargetedUser.character === characters.MASON &&
-      !dbUser.onMasonChannel
-    ) {
-      await updateUser(interaction.user.id, interaction.guild.id, {
-        onMasonChannel: true,
-      });
-      giveMasonChannelPermissions(interaction, interaction.user);
-    }
-
     await updateUser(interaction.user.id, interaction.guild.id, {
-      guard: false,
       guarded_user_id: targetedUser.id,
     });
 
     await interaction.reply(
-      message ? message : `You have chosen to guard ${targetedUser}.`
+      message ? message : `You are going to guard ${targetedUser}.`
     );
   },
 };

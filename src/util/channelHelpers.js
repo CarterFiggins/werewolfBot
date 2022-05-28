@@ -151,7 +151,7 @@ async function giveWerewolfChannelPermissions(interaction, user) {
   });
 }
 
-async function giveMasonChannelPermissions(interaction, user) {
+async function giveMasonChannelPermissions(interaction, user, character) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const guildSettings = await findSettings(interaction.guild.id);
@@ -162,7 +162,7 @@ async function giveMasonChannelPermissions(interaction, user) {
     ADD_REACTIONS: guildSettings.allow_reactions,
   });
 
-  organizedChannels.mason.send(`The bodyguard ${user} has joined!`);
+  organizedChannels.mason.send(`The ${character} ${user} has joined!`);
 }
 
 async function giveSeerChannelPermissions(interaction, user) {

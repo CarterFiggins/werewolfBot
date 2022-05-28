@@ -6,6 +6,7 @@ const {
   removeChannelPermissions,
   giveSeerChannelPermissions,
   giveWerewolfChannelPermissions,
+  giveMasonChannelPermissions,
 } = require("./channelHelpers");
 const {
   organizeRoles,
@@ -162,12 +163,22 @@ async function dayTimeJob(interaction) {
         return;
       }
 
+      const guardedUser = await findUser(guardedUserId, guildId);
+      if (
+        guardedUser.character === characters.MASON &&
+        !bodyguard.onMasonChannel
+      ) {
+        await updateUser(bodyguard.user_id, guildId, {
+          onMasonChannel: true,
+        });
+        giveMasonChannelPermissions(interaction, members.get(bodyguard.user_id), 'bodyguard');
+      }
+
       await updateUser(bodyguard.user_id, guildId, {
         last_guarded_user_id: guardedUserId,
         guarded_user_id: null,
       });
 
-      const guardedUser = await findUser(guardedUserId, guildId);
       if (
         guardedUser.character === characters.VAMPIRE ||
         guardedUser.character === characters.WITCH
