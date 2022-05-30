@@ -24,7 +24,6 @@ const {
   updateGame,
   deleteGame,
   findUser,
-  findOneUser,
   updateUser,
   findUsersWithIds,
   deleteAllUsers,
@@ -33,11 +32,13 @@ const {
   deleteManyVotes,
   findSettings,
 } = require("../werewolf_db");
-const { vampiresAttack } = require("./vampireHelpers");
+const { vampiresAttack } = require("./characterHelpers/vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
 const { endGuildJobs } = require("./schedulHelper");
 const { teams, calculateScores } = require("./scoreSystem");
-const { copyCharacter } = require("./doppelgangerHelper");
+const { copyCharacter } = require("./characterHelpers/doppelgangerHelper");
+const { starveUser, checkBakers } = require("./characterHelpers/bakerHelper");
+const { shuffleSeers } = require("./characterHelpers/seerHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -456,9 +457,7 @@ async function removesDeadPermissions(
   if (deadCharacter === characters.LYCAN) {
     deadCharacter = characters.VILLAGER;
   } else if (deadCharacter === characters.BAKER) {
-    await updateGame(guildId, {
-      is_baker_dead: true,
-    });
+    await checkBakers(guildId, organizedChannels.townSquare);
   } else if (deadCharacter === characters.WEREWOLF && deadUser.is_cub) {
     await updateGame(guildId, {
       wolf_double_kill: true,
@@ -468,56 +467,7 @@ async function removesDeadPermissions(
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
-    const apprenticeSeerUser = await findOneUser({
-      guild_id: guildId,
-      character: characters.APPRENTICE_SEER,
-    });
-
-    const foolUser = await findOneUser({
-      guild_id: guildId,
-      character: characters.FOOL,
-    });
-
-    if (apprenticeSeerUser && !apprenticeSeerUser.is_dead) {
-      const discordApprenticeUser = interaction.guild.members.cache.get(
-        apprenticeSeerUser.user_id
-      );
-      if (foolUser && !foolUser.is_dead) {
-        let roles = [characters.SEER, characters.FOOL];
-
-        const discordFoolUser = interaction.guild.members.cache.get(
-          foolUser.user_id
-        );
-
-        roles = _.shuffle(roles);
-        const apprenticeNewRole = roles.pop();
-        const foolNewRole = roles.pop();
-        await updateUser(apprenticeSeerUser.user_id, guildId, {
-          character: apprenticeNewRole,
-        });
-        await updateUser(foolUser.user_id, guildId, {
-          character: foolNewRole,
-        });
-        await organizedChannels.seer.send(
-          `${discordApprenticeUser} and ${discordFoolUser} the master seer has died.\nOne of you is now the fool and the other is the seer.\nYou don't know who is who good luck.`
-        );
-        await organizedChannels.afterLife.send(
-          `${discordApprenticeUser} is now the ${apprenticeNewRole}\n${discordFoolUser} is now the ${foolNewRole}`
-        );
-      } else {
-        await updateUser(apprenticeSeerUser.user_id, guildId, {
-          character: characters.SEER,
-        });
-        await organizedChannels.seer.send(
-          `${discordApprenticeUser} the master seer has died and you must take their place`
-        );
-      }
-      await giveChannelPermissions({
-        interaction,
-        user: discordApprenticeUser,
-        character: characters.SEER,
-      });
-    }
+    await shuffleSeers(interaction, organizedChannels);
   }
 
   return deadCharacter;
@@ -630,53 +580,6 @@ async function hunterShootingLimitJob(
   await checkGame(interaction);
 }
 
-async function starveUser(interaction, organizedRoles, deathIds) {
-  let aliveUserIds = await getAliveUsersIds(interaction);
-
-  const cursor = await findUsersWithIds(interaction.guild.id, aliveUserIds);
-  let aliveUsers = await cursor.toArray();
-
-  if (!_.isEmpty(deathIds)) {
-    aliveUsers = _.filter(
-      aliveUsers,
-      (user) =>
-        !deathIds.includes(user.user_id) &&
-        user.character !== characters.WEREWOLF &&
-        !user.is_vampire
-    );
-  } else {
-    aliveUsers = _.filter(
-      aliveUsers,
-      (user) => user.character !== characters.WEREWOLF
-    );
-  }
-
-  const starvedUser = _.sample(aliveUsers);
-
-  if (_.isEmpty(starvedUser)) {
-    return "No one starved";
-  }
-
-  const starvedMember = interaction.guild.members.cache.get(
-    starvedUser.user_id
-  );
-  const starvedCharacter = await removesDeadPermissions(
-    interaction,
-    starvedUser,
-    starvedMember,
-    organizedRoles
-  );
-
-  let deadMessage = "has died from starvation";
-
-  if (starvedUser.character === characters.HUNTER) {
-    deadMessage =
-      "is really hungry and about to die. Quick shoot someone with the `/shoot` command";
-  }
-
-  return `The **${starvedCharacter}** named ${starvedMember} ${deadMessage}\n`;
-}
-
 async function endGame(interaction, roles, members, scoreData) {
   const guildId = interaction.guild.id;
   // remove all discord roles from players
@@ -696,6 +599,5 @@ module.exports = {
   dayTimeJob,
   nightTimeJob,
   removesDeadPermissions,
-  starveUser,
   checkGame,
 };

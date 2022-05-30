@@ -1,12 +1,18 @@
-const { findUser, updateUser, findAllUsers } = require("../werewolf_db");
-const { giveChannelPermissions } = require("./channelHelpers");
-const { characters } = require("./commandHelpers");
+const _ = require("lodash");
+const {
+  findUser,
+  updateUser,
+  findAllUsers,
+  findManyUsers,
+} = require("../../werewolf_db");
+const { giveChannelPermissions } = require("../channelHelpers");
+const { characters } = require("../commandHelpers");
 
 async function copyCharacter(interaction, doppelgangerUserId, copyUserId) {
   const guildId = interaction.guild.id;
   let copiedCharacter;
   if (!copyUserId) {
-    copiedCharacter = await randomUser(interaction).character;
+    copiedCharacter = (await randomUser(guildId)).character;
   } else {
     const originalUser = await findUser(copyUserId, guildId);
     copiedCharacter = originalUser.character;
@@ -36,9 +42,12 @@ async function copyCharacter(interaction, doppelgangerUserId, copyUserId) {
 }
 
 async function randomUser(guildId) {
-  const cursor = await findAllUsers(guildId);
+  const cursor = await findManyUsers({
+    guild_id: guildId,
+    character: { $not: new RegExp(characters.DOPPELGANGER, "g") },
+  });
   const users = await cursor.toArray();
-  return _.head(_.shuffle(users));
+  return _.sample(users);
 }
 
 module.exports = {

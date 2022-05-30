@@ -111,14 +111,7 @@ async function sendGreeting(member, user) {
     switch (user.character) {
       case characters.CURSED:
         await member.send(
-          _.head(
-            _.shuffle([
-              villagerMessage,
-              lycanMessage,
-              bakerMessage,
-              hunterMessage,
-            ])
-          )
+          _.sample([villagerMessage, lycanMessage, bakerMessage, hunterMessage])
         );
         break;
       case characters.VILLAGER:

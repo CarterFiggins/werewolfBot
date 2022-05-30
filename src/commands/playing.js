@@ -36,10 +36,12 @@ module.exports = {
       return;
     }
 
+    await interaction.deferReply();
+
     const playingRole = await getRole(interaction, roleNames.PLAYING);
     member.roles.add(playingRole);
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `${interaction.user} is now playing`,
     });
   },

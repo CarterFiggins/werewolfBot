@@ -37,6 +37,9 @@ module.exports = {
         allow_reactions: false,
       });
     }
-    await interaction.reply("Server is READY!");
+    await interaction.reply({
+      content: "Server is READY!",
+      ephemeral: true,
+    });
   },
 };
