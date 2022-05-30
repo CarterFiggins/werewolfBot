@@ -4,9 +4,7 @@ const schedule = require("node-schedule");
 const {
   organizeChannels,
   removeChannelPermissions,
-  giveSeerChannelPermissions,
-  giveWerewolfChannelPermissions,
-  giveMasonChannelPermissions,
+  giveChannelPermissions,
 } = require("./channelHelpers");
 const {
   organizeRoles,
@@ -39,6 +37,7 @@ const { vampiresAttack } = require("./vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
 const { endGuildJobs } = require("./schedulHelper");
 const { teams, calculateScores } = require("./scoreSystem");
+const { copyCharacter } = require("./doppelgangerHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -124,6 +123,22 @@ async function dayTimeJob(interaction) {
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
 
+  const cursorDoppelganger = await findManyUsers({
+    guild_id: guildId,
+    character: characters.DOPPELGANGER,
+  });
+
+  const doppelgangers = await cursorDoppelganger.toArray();
+  await Promise.all(
+    _.map(doppelgangers, async (doppelganger) => {
+      await copyCharacter(
+        interaction,
+        doppelganger.user_id,
+        doppelganger.copy_user_id
+      );
+    })
+  );
+
   const cursorWitches = await findManyUsers({
     guild_id: guildId,
     character: characters.WITCH,
@@ -171,7 +186,13 @@ async function dayTimeJob(interaction) {
         await updateUser(bodyguard.user_id, guildId, {
           onMasonChannel: true,
         });
-        giveMasonChannelPermissions(interaction, members.get(bodyguard.user_id), 'bodyguard');
+        const bodyguardMember = members.get(bodyguard.user_id);
+        await giveChannelPermissions({
+          interaction,
+          user: bodyguardMember,
+          character: characters.MASON,
+          message: `The bodyguard ${bodyguardMember} has joined!`,
+        });
       }
 
       await updateUser(bodyguard.user_id, guildId, {
@@ -222,7 +243,11 @@ async function dayTimeJob(interaction) {
           const discordDeadUser = interaction.guild.members.cache.get(
             deadUser.user_id
           );
-          await giveWerewolfChannelPermissions(interaction, discordDeadUser);
+          await giveChannelPermissions({
+            interaction,
+            user: discordDeadUser,
+            character: characters.WEREWOLF,
+          });
           await organizedChannels.werewolves.send(
             `${discordDeadUser} did not die and has turned into a werewolf! :wolf:`
           );
@@ -487,7 +512,11 @@ async function removesDeadPermissions(
           `${discordApprenticeUser} the master seer has died and you must take their place`
         );
       }
-      await giveSeerChannelPermissions(interaction, discordApprenticeUser);
+      await giveChannelPermissions({
+        interaction,
+        user: discordApprenticeUser,
+        character: characters.SEER,
+      });
     }
   }
 

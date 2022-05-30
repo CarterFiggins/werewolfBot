@@ -139,54 +139,53 @@ async function removeChannelPermissions(interaction, user) {
   );
 }
 
-async function giveWerewolfChannelPermissions(interaction, user) {
+async function giveChannelPermissions({
+  interaction,
+  user,
+  character,
+  message,
+}) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const guildSettings = await findSettings(interaction.guild.id);
+  let channel;
 
-  await organizedChannels.werewolves.permissionOverwrites.edit(user, {
+  switch (character) {
+    case characters.WEREWOLF:
+      channel = organizedChannels.werewolves;
+      break;
+    case characters.WITCH:
+      channel = organizedChannels.witch;
+      break;
+    case characters.BODYGUARD:
+      channel = organizedChannels.bodyguard;
+      break;
+    case characters.MASON:
+      channel = organizedChannels.mason;
+      break;
+    case characters.VAMPIRE:
+      channel = organizedChannels.vampires;
+      break;
+    case characters.SEER:
+    case characters.FOOL:
+      channel = organizedChannels.seer;
+      break;
+  }
+
+  if (!channel) {
+    return organizedChannels;
+  }
+
+  await channel.permissionOverwrites.edit(user, {
     SEND_MESSAGES: true,
     VIEW_CHANNEL: true,
     ADD_REACTIONS: guildSettings.allow_reactions,
   });
-}
 
-async function giveMasonChannelPermissions(interaction, user, character) {
-  const channels = await interaction.guild.channels.fetch();
-  const organizedChannels = organizeChannels(channels);
-  const guildSettings = await findSettings(interaction.guild.id);
-
-  await organizedChannels.mason.permissionOverwrites.edit(user, {
-    SEND_MESSAGES: true,
-    VIEW_CHANNEL: true,
-    ADD_REACTIONS: guildSettings.allow_reactions,
-  });
-
-  organizedChannels.mason.send(`The ${character} ${user} has joined!`);
-}
-
-async function giveSeerChannelPermissions(interaction, user) {
-  const channels = await interaction.guild.channels.fetch();
-  const organizedChannels = organizeChannels(channels);
-  const guildSettings = await findSettings(interaction.guild.id);
-
-  await organizedChannels.seer.permissionOverwrites.edit(user, {
-    SEND_MESSAGES: true,
-    VIEW_CHANNEL: true,
-    ADD_REACTIONS: guildSettings.allow_reactions,
-  });
-}
-
-async function giveVampireChannelPermissions(interaction, user) {
-  const channels = await interaction.guild.channels.fetch();
-  const organizedChannels = organizeChannels(channels);
-  const guildSettings = await findSettings(interaction.guild.id);
-  
-  await organizedChannels.vampires.permissionOverwrites.edit(user, {
-    SEND_MESSAGES: true,
-    VIEW_CHANNEL: true,
-    ADD_REACTIONS: guildSettings.allow_reactions,
-  });
+  if (message) {
+    await channel.send(message);
+  }
+  return organizedChannels;
 }
 
 async function createChannel(interaction, name, permissionOverwrites, parent) {
@@ -236,10 +235,7 @@ module.exports = {
   createPermissions,
   sendStartMessages,
   organizeChannels,
-  giveMasonChannelPermissions,
-  giveSeerChannelPermissions,
-  giveWerewolfChannelPermissions,
-  giveVampireChannelPermissions,
+  giveChannelPermissions,
   removeChannelPermissions,
   onDmChannel,
   getRandomBotGif,

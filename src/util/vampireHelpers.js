@@ -3,8 +3,8 @@ const { findUser, findManyUsers, updateUser } = require("../werewolf_db");
 const { characters } = require("./commandHelpers");
 const { organizeRoles } = require("./rolesHelpers");
 const {
-  giveVampireChannelPermissions,
   organizeChannels,
+  giveChannelPermissions,
 } = require("./channelHelpers");
 
 async function vampiresAttack(
@@ -122,11 +122,14 @@ async function transformIntoVampire(interaction, user, userMember) {
     character: is_cursed ? characters.VAMPIRE : user.character,
   });
 
-  await giveVampireChannelPermissions(interaction, userMember);
   const vampireType = is_cursed ? "vampire king!" : "vampire!";
-  await organizedChannels.vampires.send(
-    `${userMember} has turned into a ${vampireType}`
-  );
+
+  await giveChannelPermissions({
+    interaction,
+    user: userMember,
+    character: characters.VAMPIRE,
+    message: `${userMember} has turned into a ${vampireType}`,
+  });
 }
 
 function bitePlayer(user) {

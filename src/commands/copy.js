@@ -1,6 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { getRandomBotGif } = require("../util/channelHelpers");
 const { commandNames, characters } = require("../util/commandHelpers");
-const { updateUser } = require("../werewolf_db");
+const { permissionCheck } = require("../util/permissionCheck");
+const { isAlive } = require("../util/rolesHelpers");
+const { updateUser, findUser } = require("../werewolf_db");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -35,7 +38,7 @@ module.exports = {
 
     if (targetedUser.bot) {
       await interaction.reply({
-        content: "You can't copy me!\nhttps://tenor.com/yYlL.gif",
+        content: `You can't copy me!\n${getRandomBotGif()}`,
         ephemeral: true,
       });
       return;
