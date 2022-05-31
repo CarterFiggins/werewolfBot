@@ -34,6 +34,7 @@ const commandNames = {
   PERMISSION_RESET: "permission_reset",
   CURSE: "curse",
   VAMPIRE_BITE: "vampire_bite",
+  COPY: "copy",
 };
 
 /* 
@@ -63,6 +64,7 @@ const characters = {
   MASON: "mason",
   HUNTER: "hunter",
   // PRIEST: "priest",
+  DOPPELGANGER: "doppelganger",
   // helps werewolves
   WEREWOLF: "werewolf",
   FOOL: "fool",
@@ -89,6 +91,7 @@ const characterPoints = new Map([
   [characters.CUB, 7],
   [characters.WITCH, 4],
   [characters.VAMPIRE, 20],
+  [characters.DOPPELGANGER, 0],
 ]);
 
 const voteText =
@@ -108,14 +111,7 @@ async function sendGreeting(member, user) {
     switch (user.character) {
       case characters.CURSED:
         await member.send(
-          _.head(
-            _.shuffle([
-              villagerMessage,
-              lycanMessage,
-              bakerMessage,
-              hunterMessage,
-            ])
-          )
+          _.sample([villagerMessage, lycanMessage, bakerMessage, hunterMessage])
         );
         break;
       case characters.VILLAGER:
@@ -166,6 +162,11 @@ async function sendGreeting(member, user) {
           `You are a **Vampire King**\n${voteText}\nVampires are on there own team. Bite other players to turn them into a vampire by using the command \`/vampire_bite\`\nIf you try to bite a werewolf you die.\nIf you bite someone the same night as the werewolf kill that victim you will also die.\nYou have to bite the victim **2 times** before they turn into a vampire.`
         );
         break;
+      case characters.DOPPELGANGER:
+        await member.send(
+          `You are a **Doppelganger**\n${voteText}\nYou don't know what team you are on yet. Use the \`/copy\` command to copy another players character. If that player has a chat you will join them. If you do not choose by the next day the bot will choose for you.`
+        );
+        break;
     }
   } catch (error) {
     console.log(error);
@@ -183,9 +184,6 @@ async function resetNightPowers(guildId) {
         case characters.SEER:
         case characters.FOOL:
           await updateUser(user.user_id, guildId, { see: true });
-          break;
-        case characters.BODYGUARD:
-          await updateUser(user.user_id, guildId, { guard: true });
           break;
       }
     })

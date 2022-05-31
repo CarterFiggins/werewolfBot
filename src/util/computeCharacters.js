@@ -1,30 +1,6 @@
 const _ = require("lodash");
 const { characters, characterPoints } = require("./commandHelpers");
 
-const randomWolfHelperCard = () => {
-  return _.head(
-    _.shuffle([
-      characters.WEREWOLF,
-      characters.CUB,
-      characters.FOOL,
-      characters.CURSED,
-      characters.LYCAN,
-    ])
-  );
-};
-
-const randomVillagerHelperCard = () => {
-  return _.head(
-    _.shuffle([
-      characters.SEER,
-      characters.MASON,
-      characters.APPRENTICE_SEER,
-      characters.HUNTER,
-      characters.VILLAGER,
-    ])
-  );
-};
-
 function computeCharacters(numberOfPlayers) {
   // subtracting the werewolfCubs and first werewolf
   const allowVampiresAt = 16;
@@ -42,14 +18,13 @@ function computeCharacters(numberOfPlayers) {
   const maxLycans = Math.floor(numberOfPlayers / 10) + 1;
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
-  const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
+  const maxCursedVillager = Math.floor(numberOfPlayers / 18) + 1;
   const maxVampires = Math.floor(numberOfPlayers / allowVampiresAt);
+  const maxDoppelgangers = Math.floor(numberOfPlayers / 10);
+  const maxBakers = 1;
   let maxVillagers = Math.floor(numberOfPlayers / 10) + 1;
   // only one witch for now
   const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
-  // Add max bodyguards when there can be more than one bodyguard
-  // only one baker for now
-  const maxBakers = 1;
 
   const totalCharacters =
     maxWerewolfCub +
@@ -63,6 +38,7 @@ function computeCharacters(numberOfPlayers) {
     maxVillagers +
     maxBakers +
     maxVampires +
+    maxDoppelgangers +
     maxWitches;
 
   if (numberOfPlayers > totalCharacters) {
@@ -83,6 +59,7 @@ function computeCharacters(numberOfPlayers) {
     ...Array(maxMasons).fill(characters.MASON),
     ...Array(maxHunters).fill(characters.HUNTER),
     ...Array(maxVillagers).fill(characters.VILLAGER),
+    ...Array(maxDoppelgangers).fill(characters.DOPPELGANGER),
   ]);
 
   // only one card for now
@@ -117,7 +94,7 @@ function computeCharacters(numberOfPlayers) {
       if (werewolfPoints <= villagerPoints && werewolfPoints <= vampirePoints) {
         let newCharacter = !_.isEmpty(werewolfHelperCards)
           ? werewolfHelperCards.pop()
-          : randomWolfHelperCard();
+          : characters.DOPPELGANGER;
         werewolfPoints += characterPoints.get(newCharacter);
         currentCharacters.push(newCharacter);
       } else if (
@@ -126,16 +103,14 @@ function computeCharacters(numberOfPlayers) {
       ) {
         let newCharacter = !_.isEmpty(vampireHelperCards)
           ? vampireHelperCards.pop()
-          : _.head(
-              _.shuffle([randomWolfHelperCard(), randomVillagerHelperCard()])
-            );
+          : characters.DOPPELGANGER;
         currentCharacters.push(newCharacter);
         // When we add more vampire helper cards we will use characterPoints
         vampirePoints += 40;
       } else {
         let newCharacter = !_.isEmpty(villagerHelperCards)
           ? villagerHelperCards.pop()
-          : randomVillagerHelperCard();
+          : characters.DOPPELGANGER;
 
         if (newCharacter === characters.MASON && !masonInGame) {
           // Last player don't add masons

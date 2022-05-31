@@ -1,9 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames, characters } = require("../util/commandHelpers");
-const {
-  channelNames,
-  giveMasonChannelPermissions,
-} = require("../util/channelHelpers");
+const { channelNames } = require("../util/channelHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
@@ -42,8 +39,6 @@ module.exports = {
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
     const guardUser = await findUser(interaction.user.id, interaction.guild.id);
 
-    let message;
-
     if (channel.name !== channelNames.BODYGUARD) {
       await interaction.reply({
         content: "You can only guard in the bodyguard channel.",
@@ -54,14 +49,6 @@ module.exports = {
     if (game.is_day) {
       await interaction.reply({
         content: "It is day time. Your power works at night.",
-        ephemeral: false,
-      });
-      return;
-    }
-    if (!guardUser.guard) {
-      await interaction.reply({
-        content:
-          "You are tired and can only guard one person. Try again next night.",
         ephemeral: false,
       });
       return;
@@ -88,28 +75,10 @@ module.exports = {
       return;
     }
 
-    const dbTargetedUser = await findUser(
-      targetedUser.id,
-      interaction.guild.id
-    );
-
-    if (
-      dbTargetedUser.character === characters.MASON &&
-      !dbUser.onMasonChannel
-    ) {
-      await updateUser(interaction.user.id, interaction.guild.id, {
-        onMasonChannel: true,
-      });
-      giveMasonChannelPermissions(interaction, interaction.user);
-    }
-
     await updateUser(interaction.user.id, interaction.guild.id, {
-      guard: false,
       guarded_user_id: targetedUser.id,
     });
 
-    await interaction.reply(
-      message ? message : `You have chosen to guard ${targetedUser}.`
-    );
+    await interaction.reply(`You are going to guard ${targetedUser}.`);
   },
 };
