@@ -36,9 +36,23 @@ async function copyCharacter(interaction, doppelgangerUserId, copyUserId) {
     message: `The doppelganger ${doppelgangerMember} has joined`,
   });
 
+  let isVampire = "";
+  if (copiedCharacter === characters.VAMPIRE) {
+    isVampire = "vampire ";
+  }
+
   await organizedChannels.afterLife.send(
-    `${doppelgangerMember} has become a ${copiedCharacter}`
+    `${doppelgangerMember} has become a ${isVampire}${copiedCharacter}`
   );
+
+  try {
+    await doppelgangerMember.send(
+      `You are now a ${isVampire}${copiedCharacter}`
+    );
+  } catch (e) {
+    console.log(e);
+    console.log("Failed to send doppelganger new character message");
+  }
 }
 
 async function randomUser(guildId) {

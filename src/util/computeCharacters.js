@@ -18,14 +18,13 @@ function computeCharacters(numberOfPlayers) {
   const maxLycans = Math.floor(numberOfPlayers / 10) + 1;
   const maxApprenticeSeers = Math.floor(numberOfPlayers / 25) + 1;
   const maxHunters = Math.floor(numberOfPlayers / 10) + 1;
-  const maxCursedVillager = Math.floor(numberOfPlayers / 15) + 1;
+  const maxCursedVillager = Math.floor(numberOfPlayers / 18) + 1;
   const maxVampires = Math.floor(numberOfPlayers / allowVampiresAt);
+  const maxDoppelgangers = Math.floor(numberOfPlayers / 10);
+  const maxBakers = 1;
   let maxVillagers = Math.floor(numberOfPlayers / 10) + 1;
   // only one witch for now
   const maxWitches = numberOfPlayers >= 14 ? 1 : 0;
-  // Add max bodyguards when there can be more than one bodyguard
-  // only one baker for now
-  const maxBakers = 1;
 
   const totalCharacters =
     maxWerewolfCub +
@@ -39,6 +38,7 @@ function computeCharacters(numberOfPlayers) {
     maxVillagers +
     maxBakers +
     maxVampires +
+    maxDoppelgangers +
     maxWitches;
 
   if (numberOfPlayers > totalCharacters) {
@@ -59,6 +59,7 @@ function computeCharacters(numberOfPlayers) {
     ...Array(maxMasons).fill(characters.MASON),
     ...Array(maxHunters).fill(characters.HUNTER),
     ...Array(maxVillagers).fill(characters.VILLAGER),
+    ...Array(maxDoppelgangers).fill(characters.DOPPELGANGER),
   ]);
 
   // only one card for now
