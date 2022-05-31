@@ -1,12 +1,8 @@
 const _ = require("lodash");
-const {
-  findUsersWithIds,
-  findManyUsers,
-  updateGame,
-} = require("../../werewolf_db");
+const { findUsersWithIds } = require("../../werewolf_db");
 const { characters } = require("../commandHelpers");
-const { removesDeadPermissions } = require("../timeHelper");
-const { getAliveUsersIds } = require("../userHelpers");
+const { removesDeadPermissions } = require("../deathHelper");
+const { getAliveUsersIds } = require("../discordHelpers");
 
 async function starveUser(interaction, organizedRoles, deathIds) {
   let aliveUserIds = await getAliveUsersIds(interaction);
@@ -55,25 +51,6 @@ async function starveUser(interaction, organizedRoles, deathIds) {
   return `The **${starvedCharacter}** named ${starvedMember} ${deadMessage}\n`;
 }
 
-async function checkBakers(guildId, townSquare) {
-  const bakers = await (
-    await findManyUsers({
-      guild_id: guildId,
-      is_dead: false,
-      character: characters.BAKER,
-    })
-  ).toArray();
-  if (_.isEmpty(bakers)) {
-    await updateGame(guildId, {
-      is_baker_dead: true,
-    });
-    townSquare.send(
-      "There is no more bread! One villager will starve every morning"
-    );
-  }
-}
-
 module.exports = {
   starveUser,
-  checkBakers,
 };

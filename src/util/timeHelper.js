@@ -3,30 +3,17 @@ const _ = require("lodash");
 const schedule = require("node-schedule");
 const {
   organizeChannels,
-  removeChannelPermissions,
   giveChannelPermissions,
 } = require("./channelHelpers");
-const {
-  organizeRoles,
-  removeGameRolesFromMembers,
-  getRole,
-  roleNames,
-} = require("./rolesHelpers");
-const {
-  getAliveUsersIds,
-  getAliveMembers,
-  castWitchCurse,
-  removeUserVotes,
-} = require("./userHelpers");
+const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
+const { castWitchCurse } = require("./userHelpers");
 const { resetNightPowers, characters } = require("./commandHelpers");
 const {
   findGame,
   updateGame,
-  deleteGame,
   findUser,
   updateUser,
   findUsersWithIds,
-  deleteAllUsers,
   getCountedVotes,
   findManyUsers,
   deleteManyVotes,
@@ -35,10 +22,10 @@ const {
 const { vampiresAttack } = require("./characterHelpers/vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
 const { endGuildJobs } = require("./schedulHelper");
-const { teams, calculateScores } = require("./scoreSystem");
 const { copyCharacter } = require("./characterHelpers/doppelgangerHelper");
-const { starveUser, checkBakers } = require("./characterHelpers/bakerHelper");
-const { shuffleSeers } = require("./characterHelpers/seerHelper");
+const { starveUser } = require("./characterHelpers/bakerHelper");
+const { checkGame } = require("./endGameHelper");
+const { removesDeadPermissions } = require("./deathHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -224,8 +211,7 @@ async function dayTimeJob(interaction) {
   const vampireDeathMessages = await vampiresAttack(
     interaction,
     deathIds,
-    guardedIds,
-    removesDeadPermissions
+    guardedIds
   );
 
   if (!_.isEmpty(deathIds)) {
@@ -375,11 +361,7 @@ async function nightTimeJob(interaction) {
   let cursedMessage = "";
 
   if (deadUser.character === characters.WITCH) {
-    cursedMessage = await castWitchCurse(
-      interaction,
-      organizedRoles,
-      removesDeadPermissions
-    );
+    cursedMessage = await castWitchCurse(interaction, organizedRoles);
   }
 
   const deathCharacter = await removesDeadPermissions(
@@ -416,188 +398,8 @@ async function nightTimeJob(interaction) {
   await checkGame(interaction);
 }
 
-async function removesDeadPermissions(
-  interaction,
-  deadUser,
-  deadMember,
-  organizedRoles
-) {
-  const guildId = interaction.guild.id;
-  let deadCharacter = deadUser.character;
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
-  if (deadCharacter === characters.HUNTER && !deadUser.is_dead) {
-    await updateUser(deadUser.user_id, guildId, {
-      can_shoot: true,
-      is_dead: true,
-    });
-
-    const currentDate = new Date();
-    const hours = 4;
-    const shootingLimit = new Date(
-      currentDate.setHours(currentDate.getHours() + hours)
-    );
-
-    schedule.scheduleJob(
-      `${guildId}-hunter-${deadUser.user_id}`,
-      shootingLimit,
-      () => hunterShootingLimitJob(interaction, deadMember, organizedRoles)
-    );
-
-    return deadCharacter;
-  }
-
-  // removes deadUser character command and channel Permissions
-  deadMember.roles.remove(organizedRoles.alive);
-  deadMember.roles.add(organizedRoles.dead);
-  await removeChannelPermissions(interaction, deadMember);
-  await removeUserVotes(guildId, deadUser.user_id);
-  await updateUser(deadUser.user_id, guildId, { is_dead: true });
-
-  if (deadCharacter === characters.LYCAN) {
-    deadCharacter = characters.VILLAGER;
-  } else if (deadCharacter === characters.BAKER) {
-    await checkBakers(guildId, organizedChannels.townSquare);
-  } else if (deadCharacter === characters.WEREWOLF && deadUser.is_cub) {
-    await updateGame(guildId, {
-      wolf_double_kill: true,
-    });
-    await organizedChannels.werewolves.send(
-      `The Werewolf Cub name ${deadMember} has been killed :rage:\nTonight you will be able to target two villagers!\nhttps://tenor.com/86LT.gif`
-    );
-    deadCharacter = characters.CUB;
-  } else if (deadCharacter === characters.SEER) {
-    await shuffleSeers(interaction, organizedChannels);
-  }
-
-  return deadCharacter;
-}
-
-async function checkGame(interaction) {
-  const members = interaction.guild.members.cache;
-  const guildId = interaction.guild.id;
-  const roles = interaction.guild.roles.cache;
-  const aliveMembers = await getAliveMembers(interaction);
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
-
-  let werewolfCount = 0;
-  let villagerCount = 0;
-  let vampireCount = 0;
-
-  await Promise.all(
-    aliveMembers.map(async (member) => {
-      const dbUser = await findUser(member.user.id, guildId);
-      if (
-        dbUser.character === characters.WEREWOLF ||
-        dbUser.character === characters.WITCH
-      ) {
-        werewolfCount += 1;
-      } else if (dbUser.is_vampire) {
-        vampireCount += 1;
-      } else {
-        villagerCount += 1;
-      }
-    })
-  );
-
-  let isGameOver = false;
-  let winner;
-
-  if (werewolfCount === 0 && vampireCount === 0) {
-    organizedChannels.townSquare.send(
-      "There are no more werewolves or vampires. **Villagers Win!**"
-    );
-    isGameOver = true;
-    winner = teams.VILLAGERS;
-  } else if (werewolfCount >= villagerCount + vampireCount) {
-    organizedChannels.townSquare.send(
-      "Werewolves out number the villagers and vampires. **Werewolves Win!**"
-    );
-    isGameOver = true;
-    winner = teams.WEREWOLVES;
-  } else if (vampireCount >= villagerCount + werewolfCount) {
-    organizedChannels.townSquare.send(
-      "Vampires out number the villagers and werewolves. **Vampires Win!**"
-    );
-    isGameOver = true;
-    winner = teams.VAMPIRES;
-  }
-
-  const scoreData = { winner };
-
-  if (isGameOver) {
-    await endGame(interaction, roles, members, scoreData);
-  }
-}
-
-async function hunterShootingLimitJob(
-  interaction,
-  deadHunterMember,
-  organizedRoles
-) {
-  const deadDbHunter = await findUser(
-    deadHunterMember.user.id,
-    interaction.guild.id
-  );
-  if (!deadDbHunter.can_shoot) {
-    return;
-  }
-  // get all alive users but not the hunter
-  let aliveUserIds = await getAliveUsersIds(interaction);
-
-  aliveUserIds = _.filter(aliveUserIds, (id) => id != deadHunterMember.user.id);
-
-  const shotUserId = _.sample(aliveUserIds);
-  const shotUser = await findUser(shotUserId, interaction.guild.id);
-  const shotMember = interaction.guild.members.cache.get(shotUserId);
-  // kill hunter
-  await removesDeadPermissions(
-    interaction,
-    deadDbHunter,
-    deadHunterMember,
-    organizedRoles
-  );
-  // kill targeted user
-  const deadCharacter = await removesDeadPermissions(
-    interaction,
-    shotUser,
-    shotMember,
-    organizedRoles
-  );
-
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
-  let message = "";
-  if (deadCharacter === characters.HUNTER) {
-    message = `${shotMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
-  }
-  await organizedChannels.townSquare.send(
-    `${deadHunterMember} didn't have time to shoot and died. They dropped their gun and it shot the ${
-      shotUser.is_vampire ? `vampire ${deadCharacter}` : deadCharacter
-    } named ${shotMember}\n${message}\n`
-  );
-  await checkGame(interaction);
-}
-
-async function endGame(interaction, roles, members, scoreData) {
-  const guildId = interaction.guild.id;
-  // remove all discord roles from players
-  await removeGameRolesFromMembers(members, roles);
-
-  await calculateScores(interaction, scoreData);
-
-  // delete all game info from database
-  await deleteAllUsers(guildId);
-  await deleteGame(guildId);
-  await deleteManyVotes({ guild_id: guildId });
-  await endGuildJobs(interaction);
-}
-
 module.exports = {
   timeScheduling,
   dayTimeJob,
   nightTimeJob,
-  removesDeadPermissions,
-  checkGame,
 };

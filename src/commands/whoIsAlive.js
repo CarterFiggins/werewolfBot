@@ -2,8 +2,9 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const _ = require("lodash");
 const { commandNames, characters } = require("../util/commandHelpers");
 const { findUsersWithIds } = require("../werewolf_db");
-const { getAliveUsersIds, getPlayingCount } = require("../util/userHelpers");
+const { getPlayingCount } = require("../util/userHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
+const { getAliveUsersIds } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()

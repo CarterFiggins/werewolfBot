@@ -5,9 +5,10 @@ const { channelNames } = require("../util/channelHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { findUser, updateUser } = require("../werewolf_db");
 const { organizeRoles } = require("../util/rolesHelpers");
-const { removesDeadPermissions, checkGame } = require("../util/timeHelper");
-const { castWitchCurse } = require("../util/userHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
+const { removesDeadPermissions } = require("../util/deathHelper");
+const { checkGame } = require("../util/endGameHelper");
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SHOOT)

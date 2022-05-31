@@ -1,24 +1,8 @@
 const _ = require("lodash");
 const { getRole, roleNames } = require("../util/rolesHelpers");
-const { findManyUsers, deleteManyVotes } = require("../werewolf_db");
+const { findManyUsers } = require("../werewolf_db");
 const { characters } = require("./commandHelpers");
-
-async function getAliveMembers(interaction, getId) {
-  let aliveRole = await getRole(interaction, roleNames.ALIVE);
-  const members = await interaction.guild.members.fetch();
-
-  return members
-    .map((member) => {
-      if (member._roles.includes(aliveRole.id)) {
-        if (getId) {
-          return member.user.id;
-        } else {
-          return member;
-        }
-      }
-    })
-    .filter((m) => m);
-}
+const { removesDeadPermissions } = require("./deathHelper");
 
 async function getPlayingCount(interaction) {
   let playingRole = await getRole(interaction, roleNames.PLAYING);
@@ -33,15 +17,7 @@ async function getPlayingCount(interaction) {
   return playersCount;
 }
 
-async function getAliveUsersIds(interaction) {
-  return getAliveMembers(interaction, true);
-}
-
-async function castWitchCurse(
-  interaction,
-  organizedRoles,
-  removesDeadPermissions
-) {
+async function castWitchCurse(interaction, organizedRoles) {
   const cursorCursed = await findManyUsers({
     guild_id: interaction.guild.id,
     is_cursed: true,
@@ -80,17 +56,7 @@ async function castWitchCurse(
   return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif";
 }
 
-async function removeUserVotes(guildId, userId) {
-  await deleteManyVotes({
-    guild_id: guildId,
-    $or: [{ user_id: userId }, { voted_user_id: userId }],
-  });
-}
-
 module.exports = {
-  getAliveUsersIds,
-  getAliveMembers,
   castWitchCurse,
-  removeUserVotes,
   getPlayingCount,
 };

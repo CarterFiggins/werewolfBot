@@ -1,10 +1,5 @@
 const _ = require("lodash");
-const {
-  findUser,
-  updateUser,
-  findAllUsers,
-  findManyUsers,
-} = require("../../werewolf_db");
+const { findUser, updateUser, findManyUsers } = require("../../werewolf_db");
 const { giveChannelPermissions } = require("../channelHelpers");
 const { characters } = require("../commandHelpers");
 
