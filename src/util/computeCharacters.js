@@ -79,6 +79,7 @@ function computeCharacters(numberOfPlayers) {
     }),
     characters.SEER,
     characters.BODYGUARD,
+    characters.DOPPELGANGER,
   ];
   let villagerPoints =
     characterPoints.get(characters.SEER) +
