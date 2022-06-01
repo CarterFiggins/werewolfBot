@@ -69,7 +69,11 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
       const vampireKilled = _.includes(werewolfKillIds, vampire.user_id);
       if (!victim.is_vampire && !vampireKilled) {
         if (bitePlayer(victim) && !werewolfAttacked) {
-          biteCount += 1;
+          if (isVampireKing) {
+            biteCount += 2
+          } else {
+            biteCount += 1;
+          }
           usersBittenById.set(victim.user_id, biteCount);
           organizedChannels.vampires.send(
             `${vampireMember} you have successfully bitten ${victimMember}`
@@ -78,7 +82,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             await transformIntoVampire(interaction, victim, victimMember);
           }
         } else {
-          if (isVampireKing) {
+          if (isVampireKing && victim.character !== characters.WEREWOLF) {
             organizedChannels.vampires.send(protectedMemberMessage);
           } else {
             await removesDeadPermissions(

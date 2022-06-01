@@ -3,9 +3,9 @@ const { characters, characterPoints } = require("./commandHelpers");
 
 function computeCharacters(numberOfPlayers) {
   // subtracting the werewolfCubs and first werewolf
-  const allowVampiresAt = 16;
+  const allowVampiresAt = 12;
   const divideWerewolvesBy = numberOfPlayers >= allowVampiresAt ? 5 : 4;
-  const divideCubBy = numberOfPlayers >= allowVampiresAt ? 16 : 14;
+  const divideCubBy = numberOfPlayers >= allowVampiresAt ? allowVampiresAt : 10;
 
   const maxWerewolves =
     Math.floor(numberOfPlayers / divideWerewolvesBy) -
