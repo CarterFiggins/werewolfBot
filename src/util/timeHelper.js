@@ -26,6 +26,7 @@ const { copyCharacter } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
 const { removesDeadPermissions } = require("./deathHelper");
+const { guardPlayers } = require("./characterHelpers/bodyguardHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -153,54 +154,10 @@ async function dayTimeJob(interaction) {
 
   let message = "";
 
-  const cursorBodyguards = await findManyUsers({
-    guild_id: guildId,
-    character: characters.BODYGUARD,
-  });
-  const bodyGuards = await cursorBodyguards.toArray();
-
-  const guardedIds = await Promise.all(
-    _.map(bodyGuards, async (bodyguard) => {
-      const guardedUserId = bodyguard.guarded_user_id;
-      if (!guardedUserId) {
-        return;
-      }
-
-      const guardedUser = await findUser(guardedUserId, guildId);
-      if (
-        guardedUser.character === characters.MASON &&
-        !bodyguard.onMasonChannel
-      ) {
-        await updateUser(bodyguard.user_id, guildId, {
-          onMasonChannel: true,
-        });
-        const bodyguardMember = members.get(bodyguard.user_id);
-        await giveChannelPermissions({
-          interaction,
-          user: bodyguardMember,
-          character: characters.MASON,
-          message: `The bodyguard ${bodyguardMember} has joined!`,
-        });
-      }
-
-      await updateUser(bodyguard.user_id, guildId, {
-        last_guarded_user_id: guardedUserId,
-        guarded_user_id: null,
-      });
-
-      if (
-        guardedUser.character === characters.VAMPIRE ||
-        guardedUser.character === characters.WITCH
-      ) {
-        organizedChannels.bodyguard.send(
-          `While guarding ${members.get(
-            guardedUserId
-          )} you notice something off about them. They are not a villager.. They are a vampire!`
-        );
-      }
-
-      return guardedUserId;
-    })
+  const guardedIds = await guardPlayers(
+    interaction,
+    organizedChannels,
+    members
   );
 
   const deathIds = _.difference(
