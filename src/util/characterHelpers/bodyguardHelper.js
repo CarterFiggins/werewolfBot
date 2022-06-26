@@ -56,7 +56,7 @@ async function joinMasons({
     guardedUser.character === characters.MASON &&
     !bodyguard.on_mason_channel
   ) {
-    await updateUser(bodyguard.user_id, guildId, {
+    await updateUser(bodyguard.user_id, interaction.guild.id, {
       on_mason_channel: true,
     });
     await giveChannelPermissions({
