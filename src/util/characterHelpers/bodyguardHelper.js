@@ -1,10 +1,14 @@
 const _ = require("lodash");
 const { findManyUsers, findUser, updateUser } = require("../../werewolf_db");
-const { giveChannelPermissions } = require("../channelHelpers");
+const {
+  giveChannelPermissions,
+  organizeChannels,
+} = require("../channelHelpers");
 const { characters } = require("../commandHelpers");
 
-async function guardPlayers(interaction, organizedChannels, members) {
+async function guardPlayers(interaction) {
   const guildId = interaction.guild.id;
+  const members = interaction.guild.members.cache;
   const cursorBodyguards = await findManyUsers({
     guild_id: guildId,
     character: characters.BODYGUARD,
@@ -29,7 +33,7 @@ async function guardPlayers(interaction, organizedChannels, members) {
         bodyguardMember: members.get(bodyguard.user_id),
       });
       await guardedVampireMessage({
-        organizedChannels,
+        interaction,
         guardedUser,
         guardedMember: members.get(guardedUser.user_id),
       });
@@ -69,10 +73,12 @@ async function joinMasons({
 }
 
 async function guardedVampireMessage({
-  organizedChannels,
+  interaction,
   guardedUser,
   guardedMember,
 }) {
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
   if (guardedUser.is_vampire || guardedUser.character === characters.WITCH) {
     await organizedChannels.bodyguard.send(
       `While guarding ${guardedMember} you notice something off about them. They are not a villager.. They are a vampire!`

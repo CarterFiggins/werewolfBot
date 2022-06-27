@@ -49,7 +49,7 @@ module.exports = {
     const player = interaction.options.getUser("player");
     const playerMember = await interaction.guild.members.fetch(player.id);
     const message = interaction.options.getString("message");
-    const channels = await interaction.guild.channels.cache;
+    const channels = interaction.guild.channels.cache;
     const organizedChannels = organizeChannels(channels);
 
     if (!isAlive(playerMember)) {

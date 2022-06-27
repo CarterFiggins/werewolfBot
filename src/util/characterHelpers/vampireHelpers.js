@@ -9,10 +9,10 @@ const {
 const { removesDeadPermissions } = require("../deathHelper");
 
 async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
-  const members = await interaction.guild.members.fetch();
-  const channels = await interaction.guild.channels.fetch();
+  const members = interaction.guild.members.cache;
+  const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const allRoles = await interaction.guild.roles.fetch();
+  const allRoles = interaction.guild.roles.cache;
   const organizedRoles = await organizeRoles(allRoles);
   const guildId = interaction.guild.id;
   const cursor = await findManyUsers({
@@ -70,7 +70,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
       if (!victim.is_vampire && !vampireKilled) {
         if (bitePlayer(victim) && !werewolfAttacked) {
           if (isVampireKing) {
-            biteCount += 2
+            biteCount += 2;
           } else {
             biteCount += 1;
           }
@@ -113,8 +113,6 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
 }
 
 async function transformIntoVampire(interaction, user, userMember) {
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
   const is_cursed = user.character === characters.CURSED;
 
   await updateUser(user.user_id, interaction.guild.id, {

@@ -3,8 +3,23 @@ const { findUser, updateUser, findManyUsers } = require("../../werewolf_db");
 const { giveChannelPermissions } = require("../channelHelpers");
 const { characters } = require("../commandHelpers");
 
-async function copyCharacter(interaction, doppelgangerUserId, copyUserId) {
+async function copyCharacters(interaction) {
+  const cursorDoppelganger = await findManyUsers({
+    guild_id: interaction.guild.id,
+    character: characters.DOPPELGANGER,
+  });
+
+  const doppelgangers = await cursorDoppelganger.toArray();
+  await Promise.all(
+    _.map(doppelgangers, async (doppelganger) => {
+      await copy(interaction, doppelganger.user_id, doppelganger.copy_user_id);
+    })
+  );
+}
+
+async function copy(interaction, doppelgangerUserId, copyUserId) {
   const guildId = interaction.guild.id;
+  const members = interaction.guild.members.cache;
   let copiedCharacter;
   if (!copyUserId) {
     copiedCharacter = (await randomUser(guildId)).character;
@@ -22,8 +37,7 @@ async function copyCharacter(interaction, doppelgangerUserId, copyUserId) {
     character: copiedCharacter,
   });
 
-  const doppelgangerMember =
-    interaction.guild.members.cache.get(doppelgangerUserId);
+  const doppelgangerMember = members.get(doppelgangerUserId);
   const organizedChannels = await giveChannelPermissions({
     interaction,
     user: doppelgangerMember,
@@ -60,5 +74,5 @@ async function randomUser(guildId) {
 }
 
 module.exports = {
-  copyCharacter,
+  copyCharacters,
 };

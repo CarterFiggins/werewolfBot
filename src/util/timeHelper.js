@@ -1,32 +1,30 @@
 require("dotenv").config();
 const _ = require("lodash");
 const schedule = require("node-schedule");
-const {
-  organizeChannels,
-  giveChannelPermissions,
-} = require("./channelHelpers");
+const { organizeChannels } = require("./channelHelpers");
 const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
-const { castWitchCurse } = require("./userHelpers");
 const { resetNightPowers, characters } = require("./commandHelpers");
 const {
   findGame,
   updateGame,
   findUser,
-  updateUser,
-  findUsersWithIds,
   getCountedVotes,
-  findManyUsers,
   deleteManyVotes,
   findSettings,
 } = require("../werewolf_db");
 const { vampiresAttack } = require("./characterHelpers/vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
 const { endGuildJobs } = require("./schedulHelper");
-const { copyCharacter } = require("./characterHelpers/doppelgangerHelper");
+const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
 const { removesDeadPermissions } = require("./deathHelper");
 const { guardPlayers } = require("./characterHelpers/bodyguardHelper");
+const {
+  castWitchCurse,
+  cursePlayers,
+} = require("./characterHelpers/witchHelper");
+const { killPlayers } = require("./characterHelpers/werewolfHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -88,9 +86,16 @@ async function timeScheduling(interaction) {
 }
 
 async function nightTimeWarning(interaction) {
+  const game = await findGame(guildId);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
+  if (game.first_night) {
+    await organizedChannels.townSquare.send(
+      `${aliveRole} This is the first night. Voting will start tomorrow`
+    );
+    return;
+  }
   await organizedChannels.townSquare.send(
     `${aliveRole} 30 minutes until night`
   );
@@ -106,128 +111,32 @@ async function dayTimeJob(interaction) {
     return;
   }
 
-  const members = await interaction.guild.members.fetch();
+  await interaction.guild.members.fetch();
   const roles = await interaction.guild.roles.fetch();
   const organizedRoles = organizeRoles(roles);
-  const channels = interaction.guild.channels.cache;
+  const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
-
-  const cursorDoppelganger = await findManyUsers({
-    guild_id: guildId,
-    character: characters.DOPPELGANGER,
-  });
-
-  const doppelgangers = await cursorDoppelganger.toArray();
-  await Promise.all(
-    _.map(doppelgangers, async (doppelganger) => {
-      await copyCharacter(
-        interaction,
-        doppelganger.user_id,
-        doppelganger.copy_user_id
-      );
-    })
-  );
-
-  const cursorWitches = await findManyUsers({
-    guild_id: guildId,
-    character: characters.WITCH,
-  });
-  const witches = await cursorWitches.toArray();
-
-  await Promise.all(
-    _.map(witches, async (witch) => {
-      if (witch.target_cursed_user_id) {
-        await updateUser(witch.target_cursed_user_id, guildId, {
-          is_cursed: true,
-        });
-        await updateUser(witch.user_id, guildId, {
-          target_cursed_user_id: null,
-        });
-        organizedChannels.witch.send(
-          `${members.get(witch.user_id)} have successfully cursed ${members.get(
-            witch.target_cursed_user_id
-          )}`
-        );
-      }
-    })
-  );
-
   let message = "";
 
-  const guardedIds = await guardPlayers(
-    interaction,
-    organizedChannels,
-    members
-  );
+  await copyCharacters(interaction);
+  await cursePlayers(interaction);
+
+  const guardedIds = await guardPlayers(interaction);
 
   const deathIds = _.difference(
     [game.user_death_id, game.second_user_death_id],
     [...guardedIds, null]
   );
-
   const vampireDeathMessages = await vampiresAttack(
     interaction,
     deathIds,
     guardedIds
   );
 
-  if (!_.isEmpty(deathIds)) {
-    const cursor = await findUsersWithIds(guildId, deathIds);
-    const deadUsers = await cursor.toArray();
-    await Promise.all(
-      _.map(deadUsers, async (deadUser) => {
-        const deadMember = members.get(deadUser.user_id);
-        let isDead = true;
+  message += await killPlayers(interaction, deathIds);
 
-        if (deadUser.character === characters.CURSED) {
-          // join werewolf team
-          await updateUser(deadUser.user_id, interaction.guild.id, {
-            character: characters.WEREWOLF,
-          });
-          const discordDeadUser = interaction.guild.members.cache.get(
-            deadUser.user_id
-          );
-          await giveChannelPermissions({
-            interaction,
-            user: discordDeadUser,
-            character: characters.WEREWOLF,
-          });
-          await organizedChannels.werewolves.send(
-            `${discordDeadUser} did not die and has turned into a werewolf! :wolf:`
-          );
-          isDead = false;
-        } else if (deadUser.character === characters.WITCH) {
-          organizedChannels.werewolves.send(
-            `You did not kill ${discordDeadUser} because they are the witch!`
-          );
-          isDead = false;
-        }
-
-        if (isDead) {
-          const deathCharacter = await removesDeadPermissions(
-            interaction,
-            deadUser,
-            deadMember,
-            organizedRoles
-          );
-          if (deathCharacter === characters.HUNTER) {
-            message += `Last night the werewolves injured the **${
-              deadUser.is_vampire ? `vampire ${deathCharacter}` : deathCharacter
-            }**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
-          } else {
-            message += `Last night the **${
-              deadUser.is_vampire ? `vampire ${deathCharacter}` : deathCharacter
-            }** named ${deadMember} was killed by the werewolves.\n`;
-          }
-        }
-      })
-    );
-
-    if (game.is_baker_dead) {
-      message += await starveUser(interaction, organizedRoles, deathIds);
-    }
-  } else if (game.is_baker_dead) {
-    message += await starveUser(interaction, organizedRoles);
+  if (game.is_baker_dead) {
+    message += await starveUser(interaction, organizedRoles, deathIds);
   }
 
   await updateGame(guildId, {
@@ -253,7 +162,7 @@ async function nightTimeJob(interaction) {
   const members = await interaction.guild.members.fetch();
   const roles = await interaction.guild.roles.fetch();
   const organizedRoles = organizeRoles(roles);
-  const channels = await interaction.guild.channels.cache;
+  const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const game = await findGame(guildId);
 
