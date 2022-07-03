@@ -150,6 +150,7 @@ async function giveUserRoles(interaction, users) {
         case characters.VAMPIRE:
           userInfo.bite_user_id = null;
           userInfo.is_vampire = true;
+          userInfo.first_bite = true;
           user.is_vampire = true;
           break;
         case characters.PRIEST:

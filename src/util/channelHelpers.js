@@ -264,7 +264,7 @@ const witchStart =
   "You are a witch! You help the werewolves by cursing villagers with the `/curse` command. If the villagers kill you than all the villagers who have the curse will die. If the werewolves kill you the curse will break and they will not die";
 
 const vampireStart =
-  "You are a vampire! Use the '/vampire_bite' command to turn villagers into vampires. It takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey.";
+  "You are a vampire! Use the '/vampire_bite' command to turn villagers into vampires. **Vampire king's first bite will transform a player into a vampire** after that it takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey.";
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

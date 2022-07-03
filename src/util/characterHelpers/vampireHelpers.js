@@ -69,8 +69,9 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
       const vampireKilled = _.includes(werewolfKillIds, vampire.user_id);
       if (!victim.is_vampire && !vampireKilled) {
         if (bitePlayer(victim) && !werewolfAttacked) {
-          if (isVampireKing) {
+          if (isVampireKing && vampire.first_bite) {
             biteCount += 2;
+            await updateUser(vampire.user_id, guildId, { first_bite: false });
           } else {
             biteCount += 1;
           }
@@ -117,10 +118,13 @@ async function transformIntoVampire(interaction, user, userMember) {
 
   await updateUser(user.user_id, interaction.guild.id, {
     is_vampire: true,
+    first_bite: is_cursed,
     character: is_cursed ? characters.VAMPIRE : user.character,
   });
 
-  const vampireType = is_cursed ? "vampire king!" : "vampire!";
+  const vampireType = is_cursed
+    ? "vampire king! Their first successful bite will transform a player into a vampire."
+    : "vampire! It will take them two bites to transform a player into a vampire.";
 
   await giveChannelPermissions({
     interaction,

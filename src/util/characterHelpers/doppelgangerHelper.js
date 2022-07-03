@@ -33,8 +33,11 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
       ? characters.VILLAGER
       : copiedCharacter;
 
+  const copiedVampire = copiedCharacter === characters.VAMPIRE;
+
   await updateUser(doppelgangerUserId, guildId, {
     character: copiedCharacter,
+    first_bite: copiedVampire,
   });
 
   const doppelgangerMember = members.get(doppelgangerUserId);
@@ -46,7 +49,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   });
 
   let isVampire = "";
-  if (copiedCharacter === characters.VAMPIRE) {
+  if (copiedVampire) {
     isVampire = "vampire ";
   }
 
