@@ -86,6 +86,7 @@ async function timeScheduling(interaction) {
 }
 
 async function nightTimeWarning(interaction) {
+  const guildId = interaction.guild.id;
   const game = await findGame(guildId);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
