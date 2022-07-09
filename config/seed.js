@@ -34,6 +34,9 @@ async function createCollections(client) {
   if (!collectionNames.includes("settings")) {
     await client.db().createCollection("settings", {});
   }
+  if (!collectionNames.includes("userScore")) {
+    await client.db().createCollection("userScore", {});
+  }
 
   console.log("Data Base Ready!");
 }

@@ -13,9 +13,14 @@ module.exports = {
       "Shows witch players are alive in the game and number of villagers and werewolves"
     ),
   async execute(interaction) {
-    await interaction.deferReply({
-      ephemeral: false,
-    });
+    try {
+      await interaction.deferReply({
+        ephemeral: false,
+      });
+    } catch (error) {
+      console.log('error in whoIsAlive')
+      console.log(error)
+    }
 
     const deniedMessage = await permissionCheck({
       interaction,
