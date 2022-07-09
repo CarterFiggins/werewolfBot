@@ -9,6 +9,7 @@ const { characters } = require("./commandHelpers");
 const { getAliveMembers } = require("./discordHelpers");
 const { removeGameRolesFromMembers } = require("./rolesHelpers");
 const { endGuildJobs } = require("./schedulHelper");
+const { calculateScores, teams } = require("./scoreSystem");
 
 async function checkGame(interaction) {
   const members = interaction.guild.members.cache;
