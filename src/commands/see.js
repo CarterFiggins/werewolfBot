@@ -74,7 +74,7 @@ module.exports = {
     }
     if (!isAlive(targetedMember)) {
       await interaction.reply({
-        content: `${targetedUser} is dead. Focus on the living`,
+        content: `${targetedUser} is dead. Focus on the living and try again`,
         ephemeral: false,
       });
       return;
