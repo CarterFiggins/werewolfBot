@@ -3,7 +3,7 @@ const mongoUtil = require("./mongoUtil");
 const fs = require("fs");
 const { Client, Collection } = require("discord.js");
 
-mongoUtil.connectToServer(function (err, mongoClient) {
+mongoUtil.connectToServer(function (err) {
   if (err) console.log(err);
   console.log("connected to Mongo DB");
 
@@ -35,10 +35,15 @@ mongoUtil.connectToServer(function (err, mongoClient) {
 
   for (const file of eventFiles) {
     const event = require(`./events/${file}`);
-    if (event.once) {
-      client.once(event.name, (...args) => event.execute(...args));
-    } else {
-      client.on(event.name, (...args) => event.execute(...args));
+    try {
+      if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args));
+      } else {
+        client.on(event.name, (...args) => event.execute(...args));
+      }
+    } catch (error) {
+      console.log("error in event handling")
+      console.log(error)
     }
   }
   // *****************************

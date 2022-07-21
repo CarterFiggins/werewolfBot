@@ -45,8 +45,9 @@ module.exports = {
       });
       return;
     }
+    await interaction.deferReply();
     if (game.is_day) {
-      await interaction.reply({
+      await interaction.editReply({
         content:
           "It is day time. Your dark magic works at night.\nhttps://tenor.com/bJMLr.gif",
         ephemeral: false,
@@ -54,14 +55,14 @@ module.exports = {
       return;
     }
     if (targetedUser.bot) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `You can't curse me!\n${getRandomBotGif()}`,
         ephemeral: false,
       });
       return;
     }
     if (!isAlive(targetedMember)) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `${targetedUser} is dead. This curse doesn't work on dead people. Try again.\nhttps://tenor.com/bcD0a.gif`,
         ephemeral: false,
       });
@@ -71,14 +72,14 @@ module.exports = {
       targetDbUser.user_id === interaction.user.id ||
       targetDbUser.character === characters.WITCH
     ) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `Can't curse a witch. Try again.\nhttps://tenor.com/w80x.gif`,
         ephemeral: false,
       });
       return;
     }
     if (targetDbUser.is_cursed) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `This player is already cursed\nhttps://tenor.com/bgyEU.gif`,
         ephemeral: false,
       });
@@ -89,6 +90,6 @@ module.exports = {
       target_cursed_user_id: targetedUser.id,
     });
 
-    await interaction.reply(`You are going to curse ${targetedUser}`);
+    await interaction.editReply(`You are going to curse ${targetedUser}`);
   },
 };
