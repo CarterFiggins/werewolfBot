@@ -20,17 +20,25 @@ module.exports = {
 
       await command.execute(interaction);
     } catch (error) {
+      console.log("error in interaction Create")
       console.error(error);
-      if (interaction.replied) {
-        await interaction.editReply({
-          content: "There was an error while executing this command!",
-          ephemeral: true,
-        });
-      } else {
-        await interaction.reply({
-          content: "There was an error while executing this command!",
-          ephemeral: true,
-        });
+      console.log('interaction.replied')
+      console.log(interaction.replied)
+      try {
+        if (interaction.replied) {
+          await interaction.editReply({
+            content: "There was an error while executing this command!",
+            ephemeral: true,
+          });
+        } else {
+          await interaction.reply({
+            content: "There was an error while executing this command!",
+            ephemeral: true,
+          });
+        }
+      } catch (error) {
+        console.log("error in error")
+        console.log(error)
       }
     }
   },
