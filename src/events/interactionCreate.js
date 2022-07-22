@@ -22,11 +22,8 @@ module.exports = {
     } catch (error) {
       console.log("error in interaction Create")
       console.error(error);
-      console.log('interaction.replied')
-      console.log(interaction.replied)
-      console.log(interaction)
       try {
-        if (interaction.replied) {
+        if (interaction.replied || interaction.deferred) {
           await interaction.editReply({
             content: "There was an error while executing this command!",
             ephemeral: true,
