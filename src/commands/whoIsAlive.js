@@ -13,22 +13,13 @@ module.exports = {
       "Shows witch players are alive in the game and number of villagers and werewolves"
     ),
   async execute(interaction) {
-    try {
-      await interaction.deferReply({
-        ephemeral: false,
-      });
-    } catch (error) {
-      console.log('error in whoIsAlive')
-      console.log(error)
-    }
-
     const deniedMessage = await permissionCheck({
       interaction,
       guildOnly: true,
     });
 
     if (deniedMessage) {
-      await interaction.editReply({
+      await interaction.reply({
         content: deniedMessage,
         ephemeral: true,
       });
@@ -58,7 +49,7 @@ module.exports = {
     });
 
     if (_.isEmpty(dbUsers)) {
-      await interaction.editReply({
+      await interaction.reply({
         content: `Player count: ${await getPlayingCount(interaction)}`,
         ephemeral: false,
       });
@@ -71,7 +62,7 @@ module.exports = {
 
     message += `Werewolf Count: ${werewolfCount}\n${vampireMessage}Villager Count: ${villagerCount}`;
 
-    await interaction.editReply({
+    await interaction.reply({
       content: message,
       ephemeral: false,
     });
