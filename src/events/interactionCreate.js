@@ -23,7 +23,8 @@ module.exports = {
       console.log("error in interaction Create")
       console.error(error);
       console.log('interaction.replied')
-      console.log(interaction.replied)
+      console.log(interaction.isRepliable())
+      console.log(interaction)
       try {
         if (interaction.replied) {
           await interaction.editReply({
