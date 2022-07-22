@@ -10,7 +10,7 @@ module.exports = {
     .setName(commandNames.DAY_TIME)
     .setDescription("Runs the day job"),
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.reply({ content: "Running Day Job...", ephemeral: true });
 
     const deniedMessage = await permissionCheck({
       interaction,
@@ -28,7 +28,7 @@ module.exports = {
 
     const game = await findGame(interaction.guild.id);
     if (!game) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "ERROR: no game is active",
         ephemeral: true,
       });
