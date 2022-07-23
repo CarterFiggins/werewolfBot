@@ -19,8 +19,7 @@ module.exports = {
     try {
       await command.execute(interaction);
     } catch (error) {
-      console.log("error in interaction Create");
-      console.error(error);
+      console.log(`ERROR: executing a command\n${error}`);
       try {
         if (interaction.replied || interaction.deferred) {
           await interaction.editReply({
@@ -34,8 +33,7 @@ module.exports = {
           });
         }
       } catch (error) {
-        console.log("error in error");
-        console.log(error);
+        console.log(`ERROR: while replying\n${error}`);
       }
     }
   },
