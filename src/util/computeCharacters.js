@@ -3,7 +3,7 @@ const { findSettings } = require("../werewolf_db");
 const { characters } = require("./commandHelpers");
 
 const characterPoints = new Map([
-  [characters.VILLAGER, 2],
+  [characters.VILLAGER, 3],
   [characters.SEER, 6],
   [characters.BODYGUARD, 6],
   [characters.APPRENTICE_SEER, 7],
@@ -17,7 +17,7 @@ const characterPoints = new Map([
   [characters.CUB, 7],
   [characters.WITCH, 7],
   [characters.VAMPIRE, 50],
-  [characters.DOPPELGANGER, 0],
+  [characters.DOPPELGANGER, 10],
 ]);
 
 async function computeCharacters(numberOfPlayers, guildId) {
@@ -42,17 +42,19 @@ async function computeCharacters(numberOfPlayers, guildId) {
 
   let villagerHelperCards = [
     ...Array(oneEvery(25)).fill(characters.SEER),
-    ...Array(oneEvery(25)).fill(characters.BODYGUARD),
+    ...Array(oneEvery(20)).fill(characters.BODYGUARD),
     ...Array(oneEvery(8)).fill(characters.MASON),
     ...Array(oneEvery(10) + 1).fill(characters.HUNTER),
     ...Array(oneEvery(10) + 1).fill(characters.VILLAGER),
   ];
 
-  // only one card for now
-  const vampireHelperCards = _.shuffle([
-    ...Array(oneEvery(maxVampires)).fill(characters.VAMPIRE),
-  ]);
+  const vampireHelperCards = _.shuffle(
+    settings.allow_vampires
+      ? [...Array(maxVampires).fill(characters.VAMPIRE)]
+      : []
+  );
 
+  // EXTRA CARDS
   if (settings.extra_characters) {
     werewolfHelperCards.concat([
       ...Array(oneEvery(18) + 1).fill(characters.CURSED),
@@ -107,9 +109,9 @@ async function computeCharacters(numberOfPlayers, guildId) {
     });
   }
 
-  let masonInGame = false;
   // so we can add two masons
   let skipLoop = false;
+  let masonInGame = false;
 
   const getNextCharacter = (cards) =>
     _.isEmpty(cards) ? characters.DOPPELGANGER : cards.pop();
@@ -136,7 +138,6 @@ async function computeCharacters(numberOfPlayers, guildId) {
       } else {
         // *** applyVillagerHelperCard  ***
         let newCharacter = getNextCharacter(villagerHelperCards);
-
         if (newCharacter === characters.MASON && !masonInGame) {
           // Last player don't add masons
           if (count === playersLeftOver - 1) {
