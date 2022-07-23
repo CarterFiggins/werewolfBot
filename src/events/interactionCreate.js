@@ -14,13 +14,12 @@ module.exports = {
 
     if (!command) return;
     console.log(
-      `${interaction.user.tag} in guild ${interaction?.guild?.name}, channel #${interaction.channel.name} triggered command ${interaction.commandName}`
+      `${interaction?.user?.tag} in guild ${interaction?.guild?.name}, channel #${interaction?.channel?.name} triggered command ${interaction?.commandName}`
     );
-
     try {
       await command.execute(interaction);
     } catch (error) {
-      console.error(error);
+      console.log(`ERROR: executing a command\n${error}`);
       try {
         if (interaction.replied || interaction.deferred) {
           await interaction.editReply({
@@ -34,8 +33,7 @@ module.exports = {
           });
         }
       } catch (error) {
-        console.log("ERROR IN ERROR");
-        console.log(error);
+        console.log(`ERROR: while replying\n${error}`);
       }
     }
   },
