@@ -10,7 +10,7 @@ module.exports = {
     .setName(commandNames.DAY_TIME)
     .setDescription("Runs the day job"),
   async execute(interaction) {
-    await interaction.reply({ content: "Running Day Job...", ephemeral: true });
+    await interaction.deferReply({ ephemeral: true });
 
     const deniedMessage = await permissionCheck({
       interaction,
