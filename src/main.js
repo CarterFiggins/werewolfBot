@@ -3,7 +3,7 @@ const mongoUtil = require("./mongoUtil");
 const fs = require("fs");
 const { Client, Collection } = require("discord.js");
 
-mongoUtil.connectToServer(function (err) {
+mongoUtil.connectToServer(function (err, mongoClient) {
   if (err) console.log(err);
   console.log("connected to Mongo DB");
 

@@ -45,7 +45,7 @@ module.exports = {
       });
       return;
     }
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: false });
     if (game.is_day) {
       await interaction.editReply({
         content:

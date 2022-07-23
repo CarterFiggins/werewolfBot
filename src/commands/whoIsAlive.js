@@ -13,7 +13,6 @@ module.exports = {
       "Shows witch players are alive in the game and number of villagers and werewolves"
     ),
   async execute(interaction) {
-
     const deniedMessage = await permissionCheck({
       interaction,
       guildOnly: true,
