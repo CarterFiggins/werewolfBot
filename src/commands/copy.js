@@ -8,7 +8,7 @@ const { updateUser, findUser } = require("../werewolf_db");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.COPY)
-    .setDescription("Copies another players character")
+    .setDescription("DOPPELGANGER COMMAND: Copies another players character")
     .setDefaultPermission(true)
     .addUserOption((option) =>
       option

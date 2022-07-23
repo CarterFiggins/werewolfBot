@@ -8,7 +8,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.KILL)
-    .setDescription("Targets the next villager to kill")
+    .setDescription("WEREWOLF COMMAND: Targets the next villager to kill")
     .addUserOption((option) =>
       option
         .setName("target")

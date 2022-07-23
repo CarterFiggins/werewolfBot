@@ -12,7 +12,7 @@ const { checkGame } = require("../util/endGameHelper");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SHOOT)
-    .setDescription("shoots another player")
+    .setDescription("HUNTER COMMAND: shoots another player")
     .addUserOption((option) =>
       option
         .setName("target")

@@ -7,7 +7,7 @@ const { findSettings, createSettings } = require("../werewolf_db");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SERVER_SETUP)
-    .setDescription("Sets up the server's roles and settings"),
+    .setDescription("ADMIN COMMAND: Sets up the server's roles and settings"),
   async execute(interaction) {
     const settings = await findSettings(interaction.guild?.id);
     const deniedMessage = await permissionCheck({

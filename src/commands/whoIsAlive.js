@@ -10,7 +10,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.WHO_IS_ALIVE)
     .setDescription(
-      "Shows witch players are alive in the game and number of villagers and werewolves"
+      "Shows which players are alive in the game and number of villagers and werewolves"
     ),
   async execute(interaction) {
     const deniedMessage = await permissionCheck({

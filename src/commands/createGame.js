@@ -8,7 +8,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.CREATE_GAME)
-    .setDescription("creates the game"),
+    .setDescription("ADMIN COMMAND: creates the game"),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 

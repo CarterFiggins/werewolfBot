@@ -39,10 +39,13 @@ async function checkGame(interaction) {
     })
   );
 
+  const game = await findGame(guildId);
+
   let isGameOver = false;
   let winner;
 
-  if (werewolfCount === 0 && vampireCount === 0) {
+  if (villagerCount === 0 && werewolfCount === vampireCount && game.is_day) {
+  } else if (werewolfCount === 0 && vampireCount === 0) {
     organizedChannels.townSquare.send(
       "There are no more werewolves or vampires. **Villagers Win!**"
     );
@@ -74,7 +77,8 @@ async function endGame(interaction, roles, members, scoreData) {
   // remove all discord roles from players
   await removeGameRolesFromMembers(members, roles);
 
-  // await calculateScores(interaction, scoreData);
+  // Currently not displaying points
+  await calculateScores(interaction, scoreData);
 
   // delete all game info from database
   await deleteAllUsers(guildId);
