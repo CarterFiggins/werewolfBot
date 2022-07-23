@@ -33,8 +33,10 @@ module.exports = {
         guild_id: interaction.guild.id,
         day_time: "8:00",
         night_time: "20:00",
-        can_whisper: false,
+        can_whisper: true,
         allow_reactions: false,
+        allow_vampires: false,
+        extra_characters: false,
       });
     }
     await interaction.reply({

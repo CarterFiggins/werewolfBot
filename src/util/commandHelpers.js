@@ -76,24 +76,6 @@ const characters = {
   VAMPIRE: "king",
 };
 
-const characterPoints = new Map([
-  [characters.VILLAGER, 2],
-  [characters.SEER, 6],
-  [characters.BODYGUARD, 6],
-  [characters.APPRENTICE_SEER, 7],
-  [characters.MASON, 4],
-  [characters.HUNTER, 4],
-  [characters.WEREWOLF, 6],
-  [characters.FOOL, 3],
-  [characters.LYCAN, 3],
-  [characters.BAKER, 5],
-  [characters.CURSED, 4],
-  [characters.CUB, 7],
-  [characters.WITCH, 4],
-  [characters.VAMPIRE, 20],
-  [characters.DOPPELGANGER, 0],
-]);
-
 const voteText =
   "Every day you may vote to hang someone by using the `/vote` command in the town square.";
 
@@ -195,5 +177,4 @@ module.exports = {
   sendGreeting,
   commandNames,
   characters,
-  characterPoints,
 };

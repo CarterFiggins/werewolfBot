@@ -91,7 +91,10 @@ async function giveUserRoles(interaction, users) {
     return;
   }
 
-  const currentCharacters = computeCharacters(users.length);
+  const currentCharacters = await computeCharacters(
+    users.length,
+    interaction.guild.id
+  );
   const shuffledUsers = _.shuffle(users);
 
   if (currentCharacters.length !== users.length) {

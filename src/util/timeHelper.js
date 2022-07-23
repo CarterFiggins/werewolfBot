@@ -73,12 +73,15 @@ async function timeScheduling(interaction) {
   warningRule.minute = warningMinute;
   warningRule.hour = warningHour;
   warningRule.tz = process.env.TIME_ZONE_TZ;
+  console.log(`creating ${interaction.guild.id}-night`)
   schedule.scheduleJob(`${interaction.guild.id}-night`, nightRule, () =>
-    nightTimeJob(interaction)
+  nightTimeJob(interaction)
   );
+  console.log(`creating ${interaction.guild.id}-day`)
   schedule.scheduleJob(`${interaction.guild.id}-day`, dayRule, () =>
-    dayTimeJob(interaction)
+  dayTimeJob(interaction)
   );
+  console.log(`creating ${interaction.guild.id}-warning`)
   schedule.scheduleJob(`${interaction.guild.id}-warning`, warningRule, () =>
     nightTimeWarning(interaction)
   );
