@@ -52,14 +52,10 @@ async function killPlayers(interaction, deathIds) {
           deadMember,
           organizedRoles
         );
-        if (deathCharacter === characters.HUNTER) {
-          message += `Last night the werewolves injured the **${
-            deadUser.is_vampire ? `vampire ${deathCharacter}` : deathCharacter
-          }**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+        if (deadUser.character === characters.HUNTER) {
+          message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
         } else {
-          message += `Last night the **${
-            deadUser.is_vampire ? `vampire ${deathCharacter}` : deathCharacter
-          }** named ${deadMember} was killed by the werewolves.\n`;
+          message += `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
         }
       }
     })

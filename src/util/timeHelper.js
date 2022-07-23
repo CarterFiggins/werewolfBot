@@ -73,15 +73,15 @@ async function timeScheduling(interaction) {
   warningRule.minute = warningMinute;
   warningRule.hour = warningHour;
   warningRule.tz = process.env.TIME_ZONE_TZ;
-  console.log(`creating ${interaction.guild.id}-night`)
+  console.log(`creating ${interaction.guild.id}-night`);
   schedule.scheduleJob(`${interaction.guild.id}-night`, nightRule, () =>
-  nightTimeJob(interaction)
+    nightTimeJob(interaction)
   );
-  console.log(`creating ${interaction.guild.id}-day`)
+  console.log(`creating ${interaction.guild.id}-day`);
   schedule.scheduleJob(`${interaction.guild.id}-day`, dayRule, () =>
-  dayTimeJob(interaction)
+    dayTimeJob(interaction)
   );
-  console.log(`creating ${interaction.guild.id}-warning`)
+  console.log(`creating ${interaction.guild.id}-warning`);
   schedule.scheduleJob(`${interaction.guild.id}-warning`, warningRule, () =>
     nightTimeWarning(interaction)
   );
@@ -210,10 +210,6 @@ async function nightTimeJob(interaction) {
     }
   });
 
-  let killedRandomly = false;
-  if (topVotes.length > 1) {
-    killedRandomly = true;
-  }
   const voteWinner = _.sample(topVotes);
 
   await deleteManyVotes({ guild_id: guildId });
@@ -241,20 +237,16 @@ async function nightTimeJob(interaction) {
     organizedRoles
   );
 
-  if (killedRandomly) {
+  if (topVotes.length > 1) {
     message = `There was a tie so I randomly picked ${deadMember} to die`;
   } else {
     message = `The town has decided to hang ${deadMember}`;
   }
 
-  let deathMessage = `The town has killed a **${
-    deadUser.is_vampire ? `vampire ${deathCharacter}` : deathCharacter
-  }**`;
+  let deathMessage = `The town has killed a **${deathCharacter}**`;
 
-  if (deathCharacter === characters.HUNTER) {
-    deathMessage = `The town has injured the **${
-      deadUser.is_vampire ? `vampire ${deathCharacter}` : deathCharacter
-    }**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.`;
+  if (deadUser.character === characters.HUNTER) {
+    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.`;
   }
 
   await updateGame(guildId, {

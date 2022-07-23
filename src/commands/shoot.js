@@ -117,9 +117,7 @@ module.exports = {
     }
 
     await interaction.editReply(
-      `${interaction.user} took aim and shot the ${
-        targetDbUser.is_vampire ? `vampire ${deadCharacter}` : deadCharacter
-      } named ${targetedUser}\n${message}`
+      `${interaction.user} took aim and shot the ${deadCharacter} named ${targetedUser}\n${message}`
     );
 
     await checkGame(interaction);

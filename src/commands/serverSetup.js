@@ -35,8 +35,11 @@ module.exports = {
         night_time: "20:00",
         can_whisper: true,
         allow_reactions: false,
-        allow_vampires: false,
         extra_characters: false,
+        // vampire settings
+        allow_vampires: false,
+        allow_first_bite: false,
+        always_bite_two: false,
       });
     }
     await interaction.reply({
