@@ -94,6 +94,7 @@ module.exports = {
         allow_vampires: false,
         allow_first_bite: false,
         always_bite_two: false,
+        wolf_kills_witch: false,
       });
     }
     await interaction.editReply({
