@@ -20,7 +20,10 @@ async function calculateScores(interaction, { winner }) {
   const cursor = await findAllUsers(guildId);
   const dbUsers = await cursor.toArray();
   const usersPoints = await awardWinners(dbUsers, winner);
-  // await displayPoints(interaction, usersPoints);
+  const settings = await findSettings(guildId);
+  if (settings.show_scoreboard) {
+    await displayPoints(interaction, usersPoints);
+  }
 }
 
 async function awardWinners(dbUsers, winner) {

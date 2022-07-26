@@ -155,16 +155,21 @@ Commands are actions you can do in the game. To browse the commands type **/** i
 There are 5 values to set up in the env before the bot will work. Copy the `.env.example` file to `.env` and fill in the values.
 
 ### TOKEN
+
 This is the discord token that can be found after creating a bot in the discord developers application.
 
 ### CLIENT_ID
+
 The client id is also found in the discord developers application.
 
 ### MONGO_URI
+
 The uri to connect to mongodb
 
 ### MONGODB_NAME
+
 The name of the mongo database
 
 ### TIME_ZONE_TZ
+
 The time zone you for the bot day schedulers

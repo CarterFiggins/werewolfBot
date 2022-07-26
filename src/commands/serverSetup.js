@@ -95,6 +95,7 @@ module.exports = {
         allow_first_bite: false,
         always_bite_two: false,
         wolf_kills_witch: false,
+        show_scoreboard: false,
       });
     }
     await interaction.editReply({

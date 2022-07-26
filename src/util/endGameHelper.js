@@ -77,7 +77,6 @@ async function endGame(interaction, roles, members, scoreData) {
   // remove all discord roles from players
   await removeGameRolesFromMembers(members, roles);
 
-  // Currently not displaying points
   await calculateScores(interaction, scoreData);
 
   // delete all game info from database
