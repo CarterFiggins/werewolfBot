@@ -126,6 +126,45 @@ Commands are actions you can do in the game. To browse the commands type **/** i
 
 # Admin Commands
 
-# How to set up Discord bot
+**/server_setup**
+
+> This sets up the discord server. It adds the admin, playing, alive, and dead roles to discord and it adds the instructions on how to play. It also sets up the settings for the server.
+
+**/start_game**
+
+> When everyone who wants to play is marked with the playing role an admin may run this command to start the game. The bot will mark players from the playing role to the alive role. It will assign the players a character randomly and create all the channels and permissions for the game.
+
+**/end**
+
+> This will end the current game and delete all channels and permissions and remove Alive and Dead roles from players.
+
+**/day_time**
+
+> sets the game into day time and runs the day code to see if anyone died from the night.
+
+**/night_time**
+
+> sets the game into night time and runs the night code to see who had the most votes to kill.
+
+**/reset_scheduling**
+
+> When the bot goes offline the day and night schedulers get turned off. This will reset the scheduling so day and night time will happen according to the settings in the database.
 
 # Env set up
+
+There are 5 values to set up in the env before the bot will work. Copy the `.env.example` file to `.env` and fill in the values.
+
+### TOKEN
+This is the discord token that can be found after creating a bot in the discord developers application.
+
+### CLIENT_ID
+The client id is also found in the discord developers application.
+
+### MONGO_URI
+The uri to connect to mongodb
+
+### MONGODB_NAME
+The name of the mongo database
+
+### TIME_ZONE_TZ
+The time zone you for the bot day schedulers

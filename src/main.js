@@ -44,16 +44,5 @@ mongoUtil.connectToServer(function (err, mongoClient) {
   // *****************************
   // *****************************
 
-  client.on("messageCreate", (message) => {
-    if (message.author.bot) {
-      return;
-    }
-    if (message.content === "I love Anna") {
-      message.channel.send(
-        "ANNA IS SO BEAUTIFUL!!! SHE IS SUPER SMART AND KIND. I LOVE YOU ANNA <3"
-      );
-    }
-  });
-
   client.login(process.env.TOKEN);
 });
