@@ -9,7 +9,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SEE)
-    .setDescription("sees the player's character")
+    .setDescription("SEER COMMAND: sees the player's character")
     .addUserOption((option) =>
       option
         .setName("target")

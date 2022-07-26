@@ -20,7 +20,10 @@ async function calculateScores(interaction, { winner }) {
   const cursor = await findAllUsers(guildId);
   const dbUsers = await cursor.toArray();
   const usersPoints = await awardWinners(dbUsers, winner);
-  await displayPoints(interaction, usersPoints);
+  const settings = await findSettings(guildId);
+  if (settings.show_scoreboard) {
+    await displayPoints(interaction, usersPoints);
+  }
 }
 
 async function awardWinners(dbUsers, winner) {
@@ -83,36 +86,32 @@ async function displayPoints(interaction, usersPoints) {
     allow: ["ADMINISTRATOR"],
   };
 
-  const channelName = 'scoreboard'
+  const channelName = "scoreboard";
 
   const channels = await interaction.guild.channels.fetch();
-  let scoreboardChannel = null
+  let scoreboardChannel = null;
 
   channels.map(async (channel) => {
     if (channel.name === channelName) {
-      scoreboardChannel = channel
+      scoreboardChannel = channel;
     }
-  })
+  });
 
   if (!scoreboardChannel) {
     scoreboardChannel = await createChannel(interaction, channelName, [
       nonPlayersPermissions,
       adminPermissions,
     ]);
-
   }
 
-  await scoreboardChannel.bulkDelete(10)
+  await scoreboardChannel.bulkDelete(10);
 
   let scores = "**Scoreboard**\n";
 
-  _.forEach(
-    _.orderBy(usersPoints, ['points'], ['desc']),
-    (userPoints) => {
-      const member = members.get(userPoints.user_id);
-      scores += `${member}: ${userPoints.points} points\n`;
-    }
-  );
+  _.forEach(_.orderBy(usersPoints, ["points"], ["desc"]), (userPoints) => {
+    const member = members.get(userPoints.user_id);
+    scores += `${member}: ${userPoints.points} points\n`;
+  });
 
   scoreboardChannel.send(scores);
 }

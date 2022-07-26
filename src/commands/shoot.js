@@ -12,7 +12,7 @@ const { checkGame } = require("../util/endGameHelper");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.SHOOT)
-    .setDescription("shoots another player")
+    .setDescription("HUNTER COMMAND: shoots another player")
     .addUserOption((option) =>
       option
         .setName("target")
@@ -117,9 +117,7 @@ module.exports = {
     }
 
     await interaction.editReply(
-      `${interaction.user} took aim and shot the ${
-        targetDbUser.is_vampire ? `vampire ${deadCharacter}` : deadCharacter
-      } named ${targetedUser}\n${message}`
+      `${interaction.user} took aim and shot the ${deadCharacter} named ${targetedUser}\n${message}`
     );
 
     await checkGame(interaction);

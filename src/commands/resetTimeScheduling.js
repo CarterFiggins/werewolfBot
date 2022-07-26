@@ -7,7 +7,9 @@ const { timeScheduling } = require("../util/timeHelper");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.RESET_SCHEDULING)
-    .setDescription("Reset the time schedulers for day and nigh time"),
+    .setDescription(
+      "ADMIN COMMAND: Reset the time schedulers for day and nigh time"
+    ),
   async execute(interaction) {
     const deniedMessage = await permissionCheck({
       interaction,

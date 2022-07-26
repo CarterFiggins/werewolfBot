@@ -43,6 +43,13 @@ async function removesDeadPermissions(
       () => hunterShootingLimitJob(interaction, deadMember, organizedRoles)
     );
 
+    if (deadUser.is_vampire) {
+      if (deadUser.character === characters.VAMPIRE) {
+        return `${deadCharacter} vampire`;
+      }
+      return `${deadCharacter} (who was a vampire!)`;
+    }
+
     return deadCharacter;
   }
 
@@ -135,13 +142,11 @@ async function hunterShootingLimitJob(
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   let message = "";
-  if (deadCharacter === characters.HUNTER) {
+  if (shotUser.character === characters.HUNTER) {
     message = `${shotMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
   }
   await organizedChannels.townSquare.send(
-    `${deadHunterMember} didn't have time to shoot and died. They dropped their gun and it shot the ${
-      shotUser.is_vampire ? `vampire ${deadCharacter}` : deadCharacter
-    } named ${shotMember}\n${message}\n`
+    `${deadHunterMember} didn't have time to shoot and died. They dropped their gun and it shot the ${deadCharacter} named ${shotMember}\n${message}\n`
   );
   await checkGame(interaction);
 }

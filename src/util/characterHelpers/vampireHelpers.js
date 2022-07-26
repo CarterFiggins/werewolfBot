@@ -15,6 +15,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
   const allRoles = interaction.guild.roles.cache;
   const organizedRoles = await organizeRoles(allRoles);
   const guildId = interaction.guild.id;
+  const settings = await findSettings(guildId);
   const cursor = await findManyUsers({
     guild_id: guildId,
     is_vampire: true,
@@ -69,7 +70,11 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
       const vampireKilled = _.includes(werewolfKillIds, vampire.user_id);
       if (!victim.is_vampire && !vampireKilled) {
         if (bitePlayer(victim) && !werewolfAttacked) {
-          if (isVampireKing && vampire.first_bite) {
+          if (
+            isVampireKing &&
+            ((vampire.first_bite && settings.allow_first_bite) ||
+              settings.always_bite_two)
+          ) {
             biteCount += 2;
             await updateUser(vampire.user_id, guildId, { first_bite: false });
           } else {
@@ -86,7 +91,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
           if (isVampireKing && victim.character !== characters.WEREWOLF) {
             organizedChannels.vampires.send(protectedMemberMessage);
           } else {
-            await removesDeadPermissions(
+            const deadCharacter = await removesDeadPermissions(
               interaction,
               vampire,
               vampireMember,
@@ -94,11 +99,11 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             );
             if (werewolfAttacked) {
               if (victim.character === characters.CURSED) {
-                return `The vampire ${vampire.character} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
+                return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
               }
-              return `The vampire ${vampire.character} named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
+              return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
             } else {
-              return `The vampire ${vampire.character} named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
+              return `The ${deadCharacter} named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
             }
           }
         }

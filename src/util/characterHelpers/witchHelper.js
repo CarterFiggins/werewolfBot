@@ -57,13 +57,11 @@ async function castWitchCurse(interaction, organizedRoles) {
         organizedRoles
       );
       let hunterMessage = "";
-      if (deadVillager === characters.HUNTER) {
+      if (villager.character === characters.HUNTER) {
         hunterMessage =
           "you don't have long to live. Grab your gun and `/shoot` someone.";
       }
-      return `The ${
-        villager.is_vampire ? `vampire ${deadVillager}` : deadVillager
-      } named ${villagerMember}. ${hunterMessage}\n`;
+      return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}\n`;
     })
   );
 

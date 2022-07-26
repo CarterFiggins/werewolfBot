@@ -8,7 +8,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.GUARD)
-    .setDescription("guard a player for the night")
+    .setDescription("BODYGUARD COMMAND: guard a player for the night")
     .addUserOption((option) =>
       option
         .setName("target")

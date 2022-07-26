@@ -15,7 +15,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.REMOVE_GAME)
-    .setDescription("end the game"),
+    .setDescription("ADMIN COMMAND: end the game"),
   async execute(interaction) {
     const deniedMessage = await permissionCheck({
       interaction,

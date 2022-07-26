@@ -8,7 +8,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.NIGHT_TIME)
-    .setDescription("Runs the night job"),
+    .setDescription("ADMIN COMMAND: Runs the night job"),
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
 

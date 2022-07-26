@@ -3,7 +3,7 @@ const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 require("dotenv").config();
 
-const { TOKEN, CLIENT_ID, GUILD_ID } = process.env;
+const { TOKEN, CLIENT_ID } = process.env;
 
 const commands = [];
 const commandFiles = fs
@@ -19,11 +19,6 @@ const rest = new REST({ version: "9" }).setToken(TOKEN);
 (async () => {
   try {
     console.log("Started refreshing application (/) commands.");
-
-    // set guild commands
-    // await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
-    //   body: commands,
-    // });
 
     // Set Global Commands sometimes takes a hour to update
     await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });

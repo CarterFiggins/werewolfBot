@@ -9,7 +9,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.VAMPIRE_BITE)
-    .setDescription("bite a player")
+    .setDescription("VAMPIRE COMMAND: bite a player")
     .addUserOption((option) =>
       option
         .setName("target")

@@ -17,6 +17,7 @@ async function killPlayers(interaction, deathIds) {
   const organizedRoles = organizeRoles(roles);
   const cursor = await findUsersWithIds(guildId, deathIds);
   const deadUsers = await cursor.toArray();
+  const settings = await findSettings(guildId);
   let message = "";
 
   await Promise.all(
@@ -38,9 +39,17 @@ async function killPlayers(interaction, deathIds) {
           `${deadMember} did not die and has turned into a werewolf! :wolf:`
         );
         isDead = false;
-      } else if (deadUser.character === characters.WITCH) {
+      } else if (
+        deadUser.character === characters.WITCH &&
+        !settings.wolf_kills_witch
+      ) {
+        await giveChannelPermissions({
+          interaction,
+          user: deadMember,
+          character: characters.WEREWOLF,
+        });
         organizedChannels.werewolves.send(
-          `You did not kill ${deadMember} because they are the witch!`
+          `You did not kill ${deadMember} because they are the witch! They have joined the channel`
         );
         isDead = false;
       }
@@ -52,14 +61,10 @@ async function killPlayers(interaction, deathIds) {
           deadMember,
           organizedRoles
         );
-        if (deathCharacter === characters.HUNTER) {
-          message += `Last night the werewolves injured the **${
-            deadUser.is_vampire ? `vampire ${deathCharacter}` : deathCharacter
-          }**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+        if (deadUser.character === characters.HUNTER) {
+          message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
         } else {
-          message += `Last night the **${
-            deadUser.is_vampire ? `vampire ${deathCharacter}` : deathCharacter
-          }** named ${deadMember} was killed by the werewolves.\n`;
+          message += `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
         }
       }
     })
