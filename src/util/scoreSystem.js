@@ -4,6 +4,7 @@ const {
   findUserScore,
   createUserScore,
   updateUserScore,
+  findSettings,
 } = require("../werewolf_db");
 const { createChannel } = require("./channelHelpers");
 const { characters } = require("./commandHelpers");

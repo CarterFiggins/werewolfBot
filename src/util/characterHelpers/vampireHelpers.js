@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { findUser, findManyUsers, updateUser } = require("../../werewolf_db");
+const { findUser, findManyUsers, updateUser, findSettings } = require("../../werewolf_db");
 const { characters } = require("../commandHelpers");
 const { organizeRoles } = require("../rolesHelpers");
 const {
