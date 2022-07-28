@@ -44,12 +44,9 @@ async function removesDeadPermissions(
     );
 
     if (deadUser.is_vampire) {
-      if (deadUser.character === characters.VAMPIRE) {
-        return `${deadCharacter} vampire`;
-      }
       return `${deadCharacter} (who was a vampire!)`;
     }
-
+    // return early so the hunter doesn't die.
     return deadCharacter;
   }
 
@@ -74,6 +71,13 @@ async function removesDeadPermissions(
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
     await shuffleSeers(interaction, organizedChannels);
+  }
+
+  if (deadUser.is_vampire) {
+    if (deadUser.character === characters.VAMPIRE) {
+      return `${deadCharacter} vampire`;
+    }
+    return `${deadCharacter} (who was a vampire!)`;
   }
 
   return deadCharacter;
