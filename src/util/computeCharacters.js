@@ -23,15 +23,14 @@ const characterPoints = new Map([
 async function computeCharacters(numberOfPlayers, guildId) {
   const settings = await findSettings(guildId);
 
-  // subtracting the werewolfCubs and first werewolf
-  const allowVampiresAt = 15;
-  const divideWerewolvesBy = numberOfPlayers >= allowVampiresAt ? 5 : 4;
-  const divideCubBy = numberOfPlayers >= allowVampiresAt ? allowVampiresAt : 12;
-
   const oneEvery = (divNum) => Math.floor(numberOfPlayers / divNum);
 
+  const allowVampiresAt = 15;
   const maxVampires =
     oneEvery(25) + (numberOfPlayers >= allowVampiresAt ? 1 : 0);
+
+  const divideWerewolvesBy = maxVampires >= 1 ? 7 : 6;
+  const divideCubBy = 15;
   const maxWitches = oneEvery(28) + (numberOfPlayers >= 14 ? 1 : 0);
   const maxWerewolves = oneEvery(divideWerewolvesBy) - oneEvery(divideCubBy);
 

@@ -84,18 +84,21 @@ module.exports = {
 
     if (!settings) {
       await createSettings({
+        server_name: interaction.guild.name,
         guild_id: interaction.guild.id,
         day_time: "8:00",
         night_time: "20:00",
         can_whisper: true,
         allow_reactions: false,
         extra_characters: false,
+        show_scoreboard: false,
+        wolf_kills_witch: false,
         // vampire settings
         allow_vampires: false,
         allow_first_bite: false,
         always_bite_two: false,
-        wolf_kills_witch: false,
-        show_scoreboard: false,
+        king_bite_wolf_safe: false,
+        king_victim_attack_safe: true,
       });
     }
     await interaction.editReply({
@@ -156,10 +159,11 @@ ______`;
 const howToPlay4 = `**VAMPIRE** Vampire Team
 > _Vampires will be on their own team and they will have the ability to bite a player during the night. There are two types of vampires. The vampire king or a villager that is turned into a vampire. The starting vampire is a vampire king. If a cursed villager is turned they will also be a vampire king. A villager that is turned into a vampire will have the same abilities and be on the same channel. They will be added to the vampire chat and gain the ability to bite using the 'vampire_bite' command. A vampire will need to bite a player two times for the player to transform into a vampire. The players that can not be transform into a vampire are the bodyguard, witch, and the werewolves. If a vampire tries to bite a werewolf they will die. If a vampire ties to bite a player that will die from the werewolves they will also die. If the vampires bite a player that was guarded or players that can't be transformed it will say "They must have been protected or are able to defend your attacks"
 
-Settings for vampires.
-* The vampire kings first bite will transform a player into a vampire
-* Only one bite from a vampire king will transform a player into a vampire
-* The vampire king will not die when biting the same victim as the werewolves_
+Settings for vampires that can be turned off or on.
+* The vampire kings first bite will transform a player into a vampire.
+* Only one bite from a vampire king will transform a player into a vampire.
+* The vampire king will not die when biting the same victim as the werewolves. It will say they are protected or can defend their attacks._
+* The vampire king will not die when biting a werewolf. It will say they are protected or can defend their attacks.
 `;
 
 const commands1 = `

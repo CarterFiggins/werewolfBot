@@ -1,5 +1,10 @@
 const _ = require("lodash");
-const { findUser, findManyUsers, updateUser, findSettings } = require("../../werewolf_db");
+const {
+  findUser,
+  findManyUsers,
+  updateUser,
+  findSettings,
+} = require("../../werewolf_db");
 const { characters } = require("../commandHelpers");
 const { organizeRoles } = require("../rolesHelpers");
 const {
@@ -23,7 +28,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
   });
   const vampires = await cursor.toArray();
 
-  usersBittenById = new Map();
+  const usersBittenById = new Map();
 
   const vampireDeathMessages = await Promise.all(
     _.map(vampires, async (vampire) => {
@@ -35,18 +40,9 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
       const victimMember = members.get(vampire.bite_user_id);
       const vampireMember = members.get(vampire.user_id);
       const isVampireKing = vampire.character === characters.VAMPIRE;
-
       await updateUser(vampire.user_id, guildId, { bite_user_id: null });
 
-      let biteCount = usersBittenById.get(victim.user_id);
-
-      if (!biteCount) {
-        usersBittenById.set(victim.user_id, victim.vampire_bites);
-        biteCount = victim.vampire_bites;
-      }
-
       const guarded = _.includes(guardedIds, vampire.bite_user_id);
-
       const protectedMemberMessage = `${vampireMember} you were not able to bite ${victimMember}. They must have been protected or are able to defend your attacks.`;
 
       if (
@@ -61,6 +57,12 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
           );
         }
         return null;
+      }
+
+      let biteCount = usersBittenById.get(victim.user_id);
+      if (!biteCount) {
+        usersBittenById.set(victim.user_id, victim.vampire_bites);
+        biteCount = victim.vampire_bites;
       }
 
       const werewolfAttacked = _.includes(
@@ -87,24 +89,27 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
           if (biteCount >= 2) {
             await transformIntoVampire(interaction, victim, victimMember);
           }
+        } else if (
+          isVampireKing &&
+          (victim.character !== characters.WEREWOLF ||
+            settings.king_bite_wolf_safe) &&
+          (werewolfAttacked || settings.king_victim_attack_safe)
+        ) {
+          organizedChannels.vampires.send(protectedMemberMessage);
         } else {
-          if (isVampireKing && victim.character !== characters.WEREWOLF) {
-            organizedChannels.vampires.send(protectedMemberMessage);
-          } else {
-            const deadCharacter = await removesDeadPermissions(
-              interaction,
-              vampire,
-              vampireMember,
-              organizedRoles
-            );
-            if (werewolfAttacked) {
-              if (victim.character === characters.CURSED) {
-                return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
-              }
-              return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
-            } else {
-              return `The ${deadCharacter} named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
+          const deadCharacter = await removesDeadPermissions(
+            interaction,
+            vampire,
+            vampireMember,
+            organizedRoles
+          );
+          if (werewolfAttacked) {
+            if (victim.character === characters.CURSED) {
+              return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
             }
+            return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
+          } else {
+            return `The ${deadCharacter} named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
           }
         }
       }
