@@ -172,4 +172,4 @@ The name of the mongo database
 
 ### TIME_ZONE_TZ
 
-The time zone you for the bot day schedulers
+The time zone for the bot day schedulers
