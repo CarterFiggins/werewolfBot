@@ -93,6 +93,7 @@ module.exports = {
         extra_characters: false,
         show_scoreboard: false,
         wolf_kills_witch: false,
+        hard_mode: false,
         // vampire settings
         allow_vampires: false,
         allow_first_bite: false,

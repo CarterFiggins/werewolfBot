@@ -59,16 +59,16 @@ async function castWitchCurse(interaction, organizedRoles) {
       let hunterMessage = "";
       if (villager.character === characters.HUNTER) {
         hunterMessage =
-          "you don't have long to live. Grab your gun and `/shoot` someone.";
+          "you don't have long to live. Grab your gun and `/shoot` someone.\n";
       }
-      return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}\n`;
+      return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}`;
     })
   );
 
   if (deathCharacters) {
-    return `The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif`;
+    return `The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
   }
-  return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif";
+  return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";
 }
 
 module.exports = {
