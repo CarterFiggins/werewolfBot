@@ -25,9 +25,9 @@ async function computeCharacters(numberOfPlayers, guildId) {
 
   const oneEvery = (divNum) => Math.floor(numberOfPlayers / divNum);
 
-  const allowVampiresAt = 15;
+  const allowVampiresAt = 16;
   const maxVampires =
-    oneEvery(25) + (numberOfPlayers >= allowVampiresAt ? 1 : 0);
+    oneEvery(30) + (numberOfPlayers >= allowVampiresAt ? 1 : 0);
 
   const divideWerewolvesBy = maxVampires >= 1 ? 7 : 6;
   const divideCubBy = 15;
