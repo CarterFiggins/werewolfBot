@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const _ = require("lodash");
 const { commandNames, characters } = require("../util/commandHelpers");
-const { findUsersWithIds } = require("../werewolf_db");
+const { findUsersWithIds, findSettings } = require("../werewolf_db");
 const { getPlayingCount } = require("../util/userHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
 const { getAliveUsersIds } = require("../util/discordHelpers");
@@ -31,6 +31,7 @@ module.exports = {
 
     const cursor = await findUsersWithIds(interaction.guild.id, aliveUsersId);
     const dbUsers = await cursor.toArray();
+    const settings = await findSettings(interaction.guild.id);
 
     message = "Players Alive:\n";
     werewolfCount = 0;
@@ -59,8 +60,10 @@ module.exports = {
     const vampireMessage = vampireCount
       ? `Vampire Count: ${vampireCount}\n`
       : "";
-
-    message += `Werewolf Count: ${werewolfCount}\n${vampireMessage}Villager Count: ${villagerCount}`;
+    
+    if (!settings.hard_mode) {
+      message += `Werewolf Count: ${werewolfCount}\n${vampireMessage}Villager Count: ${villagerCount}`;
+    }
 
     await interaction.reply({
       content: message,

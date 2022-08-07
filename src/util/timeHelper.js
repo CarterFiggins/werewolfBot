@@ -169,6 +169,7 @@ async function nightTimeJob(interaction) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const game = await findGame(guildId);
+  const settings = await findSettings(guildId);
 
   if (game.first_night) {
     await updateGame(guildId, {
@@ -238,12 +239,12 @@ async function nightTimeJob(interaction) {
   );
 
   if (topVotes.length > 1) {
-    message = `There was a tie so I randomly picked ${deadMember} to die`;
+    message = `There was a tie so I randomly picked ${deadMember} to die\n`;
   } else {
-    message = `The town has decided to hang ${deadMember}`;
+    message = `The town has decided to hang ${deadMember}\n`;
   }
 
-  let deathMessage = `The town has killed a **${deathCharacter}**`;
+  let deathMessage = settings.hard_mode ? '' : `The town has killed a **${deathCharacter}**\n`;
 
   if (deadUser.character === characters.HUNTER) {
     deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.`;
@@ -254,7 +255,7 @@ async function nightTimeJob(interaction) {
   });
 
   organizedChannels.townSquare.send(
-    `${message}\n${deathMessage}\n${cursedMessage}\n**It is night time**`
+    `${message}${deathMessage}${cursedMessage}**It is night time**`
   );
 
   await checkGame(interaction);

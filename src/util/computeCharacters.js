@@ -113,7 +113,7 @@ async function computeCharacters(numberOfPlayers, guildId) {
   let masonInGame = false;
 
   const getNextCharacter = (cards) =>
-    _.isEmpty(cards) ? characters.DOPPELGANGER : cards.pop();
+    _.isEmpty(cards) ? characters.VILLAGER : cards.pop();
 
   _.forEach(_.range(playersLeftOver), (count) => {
     if (!skipLoop) {

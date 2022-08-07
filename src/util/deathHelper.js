@@ -6,6 +6,7 @@ const {
   findManyUsers,
   findUser,
   deleteManyVotes,
+  findSettings,
 } = require("../werewolf_db");
 const {
   organizeChannels,
@@ -25,6 +26,7 @@ async function removesDeadPermissions(
   let deadCharacter = deadUser.character;
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
+  const settings = await findSettings(guildId);
   if (deadCharacter === characters.HUNTER && !deadUser.is_dead) {
     await updateUser(deadUser.user_id, guildId, {
       can_shoot: true,
@@ -43,7 +45,7 @@ async function removesDeadPermissions(
       () => hunterShootingLimitJob(interaction, deadMember, organizedRoles)
     );
 
-    if (deadUser.is_vampire) {
+    if (deadUser.is_vampire && !settings.hard_mode) {
       return `${deadCharacter} (who was a vampire!)`;
     }
     // return early so the hunter doesn't die.
@@ -80,7 +82,7 @@ async function removesDeadPermissions(
     return `${deadCharacter} (who was a vampire!)`;
   }
 
-  return deadCharacter;
+  return settings.hard_mode ? 'player' : deadCharacter;
 }
 
 async function removeUserVotes(guildId, userId) {
