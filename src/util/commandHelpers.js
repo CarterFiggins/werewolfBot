@@ -19,6 +19,7 @@ const commandNames = {
   RESET_SCHEDULING: "reset_scheduling",
   DAY_TIME: "day_time",
   NIGHT_TIME: "night_time",
+  SETTINGS: 'settings',
   // Player game commands
   PLAYING: "playing",
   STOP_PLAYING: "stop_playing",

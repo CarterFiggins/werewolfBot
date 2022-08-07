@@ -83,9 +83,10 @@ async function getPlayingUsers(interaction) {
 }
 
 async function giveUserRoles(interaction, users) {
-  if (users.length < 5) {
+  const minPlayers = 7
+  if (users.length < minPlayers) {
     await interaction.editReply({
-      content: "Error: Not enough players (need at least 5)",
+      content: `Error: Not enough players (need at least ${minPlayers})`,
       ephemeral: true,
     });
     return;

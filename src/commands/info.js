@@ -7,12 +7,7 @@ module.exports = {
     .setName(commandNames.INFO)
     .setDescription("Get info about a user or a server!")
     .addSubcommand((subcommand) =>
-      subcommand
-        .setName("user")
-        .setDescription("Info about a user")
-        .addUserOption((option) =>
-          option.setName("target").setDescription("The user")
-        )
+      subcommand.setName("user").setDescription("Info about a user")
     )
     .addSubcommand((subcommand) =>
       subcommand.setName("server").setDescription("Info about the server")
