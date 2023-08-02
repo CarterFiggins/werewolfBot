@@ -8,7 +8,7 @@ const { removePermissionsFromMute } = require("../util/characterHelpers/grouchyG
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(commandNames.Mute)
+    .setName(commandNames.MUTE)
     .setDescription("mute a user out of the village for a day")
     .addUserOption((option) =>
       option
