@@ -3,19 +3,16 @@ const { updateUser, findAllUsers } = require("../../werewolf_db");
 const { characters } = require("../commandHelpers");
 const { organizeChannels, channelNames, giveChannelPermissions } = require("../channelHelpers");
 
-async function returnKickedPlayers(interaction, guildId) {
+async function returnMutedPlayers(interaction, guildId) {
   const cursor = await findAllUsers(guildId);
   const users = await cursor.toArray();
   const members = interaction.guild.members.cache;
 
-  const kickedUsers = []
-
   await Promise.all(
     users.map(async (user) => {
-      if (user.isKicked) {
-        await updateUser(user.user_id, guildId, { isKicked: false });
-        kickedUsers.push(user)
+      if (user.isMuted) {
         const member = members.get(user.user_id)
+        await updateUser(user.user_id, guildId, { isMuted: false, safeFromMutes: true });
         message = `${member} has return`
         giveChannelPermissions({
           interaction,
@@ -52,7 +49,17 @@ async function returnKickedPlayers(interaction, guildId) {
   );
 }
 
-async function removePermissionsFromKick(interaction, user) {
+async function removeSafeFromMutes(guildId) {
+  const cursor = await findAllUsers(guildId);
+  const users = await cursor.toArray();
+  await Promise.all(
+    users.map(async (user) => {
+      await updateUser(user.user_id, guildId, { safeFromMutes: false });
+    })
+  );
+}
+
+async function removePermissionsFromMute(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   await Promise.all(
@@ -70,6 +77,7 @@ async function removePermissionsFromKick(interaction, user) {
 }
 
 module.exports = {
-  returnKickedPlayers,
-  removePermissionsFromKick,
+  returnMutedPlayers,
+  removePermissionsFromMute,
+  removeSafeFromMutes,
 };

@@ -36,7 +36,7 @@ const commandNames = {
   CURSE: "curse",
   VAMPIRE_BITE: "vampire_bite",
   COPY: "copy",
-  KICK: "kick",
+  MUTE: "mute",
 };
 
 /* 
@@ -154,7 +154,7 @@ async function sendGreeting(member, user) {
         break;
       case characters.GROUCHY_GRANNY:
         await member.send(
-          `You are a **Grouchy Granny**\n${voteText}\nYou can kick someone out of town square using the \`/kick\` command for the rest of the day and night. They will come back tomorrow. This will not allow them to use their night power.`
+          `You are a **Grouchy Granny**\n${voteText}\nYou can mute someone out of town square using the \`/mute\` command for the rest of the day and night. They will come back tomorrow. This will not allow them to use their night power.`
         )
     }
   } catch (error) {
@@ -186,7 +186,7 @@ async function resetDayPowers(guildId) {
     users.map(async (user) => {
       switch (user.character) {
         case characters.GROUCHY_GRANNY:
-          await updateUser(user.user_id, guildId, { hasKicked: false });
+          await updateUser(user.user_id, guildId, { hasMuted: false });
           break;
       }
     })

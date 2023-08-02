@@ -163,7 +163,7 @@ async function giveUserRoles(interaction, users) {
           userInfo.holyWater = true;
           break;
         case characters.GROUCHY_GRANNY:
-          userInfo.hasKicked = false;
+          userInfo.hasMuted = false;
           break;
       }
       dbUsers.push(userInfo);

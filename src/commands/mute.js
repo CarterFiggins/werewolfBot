@@ -4,16 +4,16 @@ const { getRandomBotGif, channelNames } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
-const { removePermissionsFromKick } = require("../util/characterHelpers/grouchyGranny");
+const { removePermissionsFromMute } = require("../util/characterHelpers/grouchyGranny");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(commandNames.KICK)
-    .setDescription("kick a user out of the village for a day")
+    .setName(commandNames.Mute)
+    .setDescription("mute a user out of the village for a day")
     .addUserOption((option) =>
       option
-        .setName("kicked")
-        .setDescription("name of player to kick off")
+        .setName("muted")
+        .setDescription("name of player to mute")
         .setRequired(true)
     ),
   async execute(interaction) {
@@ -32,10 +32,11 @@ module.exports = {
       return;
     }
 
-    const kickedUser = interaction.options.getUser("kicked");
+    const mutedUser = interaction.options.getUser("muted");
+    const mutedDbUser = await findUser(mutedUser.id, interaction.guild.id);
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
-    const votedMember = interaction.guild.members.cache.get(kickedUser.id);
+    const votedMember = interaction.guild.members.cache.get(mutedUser.id);
     const mapRoles = votedMember.roles.cache;
     const roles = mapRoles.map((role) => {
       return role.name;
@@ -44,7 +45,7 @@ module.exports = {
     if (channel.name !== channelNames.TOWN_SQUARE) {
       await interaction.reply({
         content:
-          "Use kick in the town-square",
+          "Use mute in the town-square",
         ephemeral: true,
       });
       return;
@@ -52,7 +53,7 @@ module.exports = {
     if (game.first_night) {
       await interaction.reply({
         content:
-          "Can't kick before the first night wait until tomorrow\nhttps://tenor.com/VZNU.gif",
+          "Can't mute before the first night wait until tomorrow\nhttps://tenor.com/VZNU.gif",
         ephemeral: true,
       });
       return;
@@ -65,42 +66,56 @@ module.exports = {
       });
       return;
     }
-    if (kickedUser.bot) {
+    if (mutedUser.bot) {
       await interaction.reply({
-        content: `You can't kick me!\n${getRandomBotGif()}`,
+        content: `You can't mute me!\n${getRandomBotGif()}`,
         ephemeral: true,
       });
       return;
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content: `${kickedUser} can not be kicked. They are either dead or not playing this round`,
+        content: `${mutedUser} can not be muted. They are either dead or not playing this round`,
         ephemeral: true,
       });
       return;
     }
-    if (kickedUser.id === interaction.user.id) { 
+    if (mutedUser.id === interaction.user.id) { 
       await interaction.reply({
-        content: `Stop kicking yourself! try again!`,
+        content: `Stop muting yourself! try again!`,
         ephemeral: true,
       });
       return;
     }
+    if (mutedDbUser.isMuted === true) { 
+      await interaction.reply({
+        content: `Player already muted`,
+        ephemeral: true,
+      });
+      return;
+    }
+    if (mutedDbUser.safeFromMutes === true) { 
+      await interaction.reply({
+        content: `Player is safe from mutes for today. Go mute someone else`,
+        ephemeral: true,
+      });
+      return;
+    }
+
 
     await updateUser(interaction.user.id, interaction.guild.id, {
-      hasKicked: true,
+      hasMuted: true,
     });
-    await updateUser(kickedUser.id, interaction.guild.id, {
-      isKicked: true,
+    await updateUser(mutedUser.id, interaction.guild.id, {
+      isMuted: true,
     });
 
-    await removePermissionsFromKick(interaction, kickedUser)
+    await removePermissionsFromMute(interaction, mutedUser)
 
-    await channel.send(`Grouchy Granny has kicked out ${kickedUser}. They will be back tomorrow`)
-    // TODO: remove vote?
+    await channel.send(`Grouchy Granny has muted ${mutedUser}. They can talk tomorrow`)
 
     await interaction.reply({
-      content: `successfully kicked ${kickedUser}`,
+      content: `successfully muted ${mutedUser}`,
       ephemeral: true,
     });
   },
