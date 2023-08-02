@@ -162,6 +162,9 @@ async function giveUserRoles(interaction, users) {
           userInfo.last_user_protect_id = null;
           userInfo.holyWater = true;
           break;
+        case characters.GROUCHY_GRANNY:
+          userInfo.hasMuted = false;
+          break;
       }
       dbUsers.push(userInfo);
     })
@@ -204,23 +207,24 @@ async function createChannels(interaction, users) {
     (user) => user.character !== characters.WEREWOLF
   );
 
-  const guildSettings = await findSettings(interaction.guild.id);
+  const threadPermissions = ["CREATE_PRIVATE_THREADS", "CREATE_PUBLIC_THREADS", "SEND_MESSAGES_IN_THREADS"]
 
+  const guildSettings = await findSettings(interaction.guild.id);
   const nonPlayersPermissions = {
     id: interaction.guild.id,
-    deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
+    deny: ["SEND_MESSAGES", "ADD_REACTIONS", ...threadPermissions],
     allow: ["VIEW_CHANNEL"],
   };
 
   const deadPermissions = {
     id: deadRole.id,
-    deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
+    deny: ["SEND_MESSAGES", "ADD_REACTIONS", ...threadPermissions],
     allow: ["VIEW_CHANNEL"],
   };
 
   const denyAlivePermissions = {
     id: aliveRole.id,
-    deny: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+    deny: ["SEND_MESSAGES", "VIEW_CHANNEL", ...threadPermissions],
   };
 
   let allow = ["SEND_MESSAGES", "VIEW_CHANNEL"];
@@ -270,7 +274,7 @@ async function createChannels(interaction, users) {
     nonPlayersPermissions,
     {
       id: aliveRole.id,
-      deny: ["SEND_MESSAGES", "VIEW_CHANNEL"],
+      deny: ["SEND_MESSAGES", "VIEW_CHANNEL", ...threadPermissions],
     },
     {
       id: deadRole.id,

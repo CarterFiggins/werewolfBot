@@ -42,7 +42,7 @@ module.exports = {
     };
     const nonPlayersPermissions = {
       id: interaction.guild.id,
-      deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
+      deny: ["SEND_MESSAGES", "ADD_REACTIONS", "CREATE_PRIVATE_THREADS", "CREATE_PUBLIC_THREADS", "SEND_MESSAGES_IN_THREADS"],
       allow: ["VIEW_CHANNEL"],
     };
 
@@ -157,7 +157,10 @@ const howToPlay3 = `**CURSED VILLAGER** -5
 **WITCH** -5 Werewolf Team
 > _They are on the werewolf team but they don't know what players are the werewolves and the werewolves don't know which player is the witch. Every night they will be able to curse a player. The curse does nothing until the witch dies. If the villagers hang the witch everyone who is cursed dies. Werewolves do not die from the curse. If the werewolves try to target a witch they will not kill them and find out which player is the witch. The only way for the witches curse to fail is if they are shot by the hunter or if they starve. If the bodyguard guards the witch they will be told the witch is a vampire to help the witches changes of being lynched. The seer will see them as a villager_
 ______`;
-const howToPlay4 = `**VAMPIRE** Vampire Team
+const howToPlay4 = `**GROUCHY GRANNY** Villager Team
+> _Grouchy grannies are on the villager team but the villagers wish they were not. Every day a grouchy granny picks a player to remove from the game for the rest of the day and night. They are not allowed to talk but can still watch what is happening. They can use the \`/mute\` command only during the day. When a player is muted they will not be able to use commands so they lose their night ability if they have one.
+
+**VAMPIRE** Vampire Team
 > _Vampires will be on their own team and they will have the ability to bite a player during the night. There are two types of vampires. The vampire king or a villager that is turned into a vampire. The starting vampire is a vampire king. If a cursed villager is turned they will also be a vampire king. A villager that is turned into a vampire will have the same abilities and be on the same channel. They will be added to the vampire chat and gain the ability to bite using the 'vampire_bite' command. A vampire will need to bite a player two times for the player to transform into a vampire. The players that can not be transform into a vampire are the bodyguard, witch, and the werewolves. If a vampire tries to bite a werewolf they will die. If a vampire ties to bite a player that will die from the werewolves they will also die. If the vampires bite a player that was guarded or players that can't be transformed it will say "They must have been protected or are able to defend your attacks"
 
 Settings for vampires that can be turned off or on.
@@ -213,4 +216,7 @@ const commands3 = `
 
 **/copy** (target)
 > This is the **Doppelganger** command. Use it to copy a players character and become that charter the next day. This command only works on the first day/night and will not work after that. If the doppelganger does not use the bot will pick a character for them. This command can be used anywhere and will keep the bot reply private. You can change your target multiply times before the next day.
+
+**/mute** (player)
+> This is the **Grouchy Granny** command. Use it in the town square channel. Can be used any time during the day. It will last the rest of the day and through the night. The mute will be removed the next morning. This will stop a player from using a night power. eg (seer will not be able to use see or vampire will not be able to bite)
 `;

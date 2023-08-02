@@ -64,6 +64,8 @@ This bot will be the narrator for the game werwolf in a discord server. Players 
 
 > _They will be on their own team and they will have the ability to suck blood. If they try to bite a werewolf they will die. Every night they will be able to suck someones blood by using the 'vampire_bite' command. After 2 bites that villager will become a vampire. They can also suck blood and have the same role they use to have. If the werewolves pick the same villager that the vampire is feasting on the villager and vampire will die. If they are the vampire king (the first vampire) they will not die from getting in the way of the werewolves pray. The vampire kings first bite will transform a player into a vampire. Vampires will not be able to bite the witch or the bodyguard. It will say they are guarded or can defend your attacks_
 
+**GROUCHY GRANNY** Villager Team +4
+> _Grouchy grannies are on the villager team but the villagers wish they were not. Every day a grumpy granny picks a player to remove from the game for the rest of the day and night. They are not allowed to talk but can still watch what is happening. They can use the /mute command only during the day. When a player is muted they will not be able to use commands so they lose their night ability if they have one._
 # Commands
 
 Commands are actions you can do in the game. To browse the commands type **/** in discord at the start of your message. A list should pop up with all the commands. Continue to type to search for a command.
@@ -107,6 +109,9 @@ Commands are actions you can do in the game. To browse the commands type **/** i
 **/shoot** (target)
 
 > This is the **Hunters** command. When a hunter is injured they will be able to use this command to shoot someone. If they forget to shoot then the bot will shoot for them. After shooting the hunter will die along with the player they shot.
+
+**/mute** (player)
+> This is the Grouchy Granny command. Use it in the town square channel. Can be used any time during the day. It will last the rest of the day and through the night. The mute will be removed the next morning. This will stop a player from using a night power. eg (seer will not be able to use see or vampire will not be able to bite)
 
 **/whisper** (player) (message)
 

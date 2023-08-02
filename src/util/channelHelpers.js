@@ -132,6 +132,9 @@ async function removeChannelPermissions(interaction, user) {
       if (channel.name !== channelNames.AFTER_LIFE) {
         await channel.permissionOverwrites.edit(user, {
           SEND_MESSAGES: false,
+          CREATE_PRIVATE_THREADS: false,
+          CREATE_PUBLIC_THREADS: false,
+          SEND_MESSAGES_IN_THREADS: false,
           VIEW_CHANNEL: true,
         });
       }
@@ -170,6 +173,8 @@ async function giveChannelPermissions({
     case characters.FOOL:
       channel = organizedChannels.seer;
       break;
+    case characters.VILLAGER:
+      channel = organizedChannels.townSquare;
   }
 
   if (!channel) {

@@ -36,6 +36,7 @@ const commandNames = {
   CURSE: "curse",
   VAMPIRE_BITE: "vampire_bite",
   COPY: "copy",
+  MUTE: "mute",
 };
 
 /* 
@@ -64,6 +65,7 @@ const characters = {
   APPRENTICE_SEER: "apprentice seer",
   MASON: "mason",
   HUNTER: "hunter",
+  GROUCHY_GRANNY: "grouchy granny",
   // PRIEST: "priest",
   DOPPELGANGER: "doppelganger",
   // helps werewolves
@@ -150,6 +152,10 @@ async function sendGreeting(member, user) {
           `You are a **Doppelganger**\n${voteText}\nYou don't know what team you are on yet. Use the \`/copy\` command to copy another players character. If that player has a chat you will join them. If you do not choose by the next day the bot will choose for you.`
         );
         break;
+      case characters.GROUCHY_GRANNY:
+        await member.send(
+          `You are a **Grouchy Granny**\n${voteText}\nYou can mute someone out of town square using the \`/mute\` command for the rest of the day and night. They will come back tomorrow. This will not allow them to use their night power.`
+        )
     }
   } catch (error) {
     console.log(error);
@@ -173,8 +179,23 @@ async function resetNightPowers(guildId) {
   );
 }
 
+async function resetDayPowers(guildId) {
+  const cursor = await findAllUsers(guildId);
+  const users = await cursor.toArray();
+  await Promise.all(
+    users.map(async (user) => {
+      switch (user.character) {
+        case characters.GROUCHY_GRANNY:
+          await updateUser(user.user_id, guildId, { hasMuted: false });
+          break;
+      }
+    })
+  );
+}
+
 module.exports = {
   resetNightPowers,
+  resetDayPowers,
   sendGreeting,
   commandNames,
   characters,

@@ -18,6 +18,7 @@ const characterPoints = new Map([
   [characters.WITCH, 7],
   [characters.VAMPIRE, 50],
   [characters.DOPPELGANGER, 10],
+  [characters.GROUCHY_GRANNY, 4]
 ]);
 
 async function computeCharacters(numberOfPlayers, guildId) {
@@ -63,6 +64,7 @@ async function computeCharacters(numberOfPlayers, guildId) {
     villagerHelperCards = villagerHelperCards.concat([
       ...Array(oneEvery(10)).fill(characters.DOPPELGANGER),
       ...Array(oneEvery(25) + 1).fill(characters.APPRENTICE_SEER),
+      ...Array(oneEvery(20) + 1).fill(characters.GROUCHY_GRANNY),
     ]);
   }
 

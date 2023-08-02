@@ -3,7 +3,7 @@ const _ = require("lodash");
 const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
 const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
-const { resetNightPowers, characters } = require("./commandHelpers");
+const { resetNightPowers, characters, resetDayPowers } = require("./commandHelpers");
 const {
   findGame,
   updateGame,
@@ -25,6 +25,7 @@ const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
+const { returnMutedPlayers, removeSafeFromMutes } = require("./characterHelpers/grouchyGranny");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -124,6 +125,7 @@ async function dayTimeJob(interaction) {
 
   await copyCharacters(interaction);
   await cursePlayers(interaction);
+  await returnMutedPlayers(interaction, guildId);
 
   const guardedIds = await guardPlayers(interaction);
 
@@ -142,6 +144,8 @@ async function dayTimeJob(interaction) {
   if (game.is_baker_dead) {
     message += await starveUser(interaction, organizedRoles, deathIds);
   }
+
+  await resetDayPowers(guildId)
 
   await updateGame(guildId, {
     user_death_id: null,
@@ -212,7 +216,7 @@ async function nightTimeJob(interaction) {
   });
 
   const voteWinner = _.sample(topVotes);
-
+  await removeSafeFromMutes(guildId);
   await deleteManyVotes({ guild_id: guildId });
   await resetNightPowers(guildId);
   if (!voteWinner) {
