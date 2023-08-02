@@ -25,7 +25,7 @@ const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
-const { returnKickedPlayers } = require("./characterHelpers/grumpyGranny");
+const { returnKickedPlayers } = require("./characterHelpers/grouchyGranny");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
