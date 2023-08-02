@@ -210,7 +210,6 @@ async function createChannels(interaction, users) {
   const threadPermissions = ["CREATE_PRIVATE_THREADS", "CREATE_PUBLIC_THREADS", "SEND_MESSAGES_IN_THREADS"]
 
   const guildSettings = await findSettings(interaction.guild.id);
-nonPlayersPermissions
   const nonPlayersPermissions = {
     id: interaction.guild.id,
     deny: ["SEND_MESSAGES", "ADD_REACTIONS", ...threadPermissions],

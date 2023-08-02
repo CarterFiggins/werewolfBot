@@ -1,9 +1,10 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames, characters  } = require("../util/commandHelpers");
-const { getRandomBotGif, removeChannelPermissions } = require("../util/channelHelpers");
+const { getRandomBotGif, channelNames } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
+const { removePermissionsFromKick } = require("../util/characterHelpers/grouchyGranny");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -64,7 +65,7 @@ module.exports = {
       });
       return;
     }
-    if (votedUser.bot) {
+    if (kickedUser.bot) {
       await interaction.reply({
         content: `You can't kick me!\n${getRandomBotGif()}`,
         ephemeral: true,
@@ -73,7 +74,14 @@ module.exports = {
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content: `${votedUser} can not be kicked. They are either dead or not playing this round`,
+        content: `${kickedUser} can not be kicked. They are either dead or not playing this round`,
+        ephemeral: true,
+      });
+      return;
+    }
+    if (kickedUser.id === interaction.user.id) { 
+      await interaction.reply({
+        content: `Stop kicking yourself! try again!`,
         ephemeral: true,
       });
       return;
@@ -86,13 +94,13 @@ module.exports = {
       isKicked: true,
     });
 
-    await removeChannelPermissions(interaction, kickedUser)
+    await removePermissionsFromKick(interaction, kickedUser)
 
-    await channel.send(`Grouchy Granny has kicked out ${votedUser}. They will be back tomorrow`)
+    await channel.send(`Grouchy Granny has kicked out ${kickedUser}. They will be back tomorrow`)
     // TODO: remove vote?
 
     await interaction.reply({
-      content: `successfully kicked ${votedUser}`,
+      content: `successfully kicked ${kickedUser}`,
       ephemeral: true,
     });
   },

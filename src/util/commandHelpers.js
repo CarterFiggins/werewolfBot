@@ -152,6 +152,10 @@ async function sendGreeting(member, user) {
           `You are a **Doppelganger**\n${voteText}\nYou don't know what team you are on yet. Use the \`/copy\` command to copy another players character. If that player has a chat you will join them. If you do not choose by the next day the bot will choose for you.`
         );
         break;
+      case characters.GROUCHY_GRANNY:
+        await member.send(
+          `You are a **Grouchy Granny**\n${voteText}\nYou can kick someone out of town square using the \`/kick\` command for the rest of the day and night. They will come back tomorrow. This will not allow them to use their night power.`
+        )
     }
   } catch (error) {
     console.log(error);

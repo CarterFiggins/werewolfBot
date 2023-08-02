@@ -1,6 +1,7 @@
 const _ = require("lodash");
-const { updateUser } = require("../../werewolf_db");
+const { updateUser, findAllUsers } = require("../../werewolf_db");
 const { characters } = require("../commandHelpers");
+const { organizeChannels, channelNames, giveChannelPermissions } = require("../channelHelpers");
 
 async function returnKickedPlayers(interaction, guildId) {
   const cursor = await findAllUsers(guildId);
@@ -51,6 +52,24 @@ async function returnKickedPlayers(interaction, guildId) {
   );
 }
 
+async function removePermissionsFromKick(interaction, user) {
+  const channels = await interaction.guild.channels.fetch();
+  const organizedChannels = organizeChannels(channels);
+  await Promise.all(
+    _.map(organizedChannels, async (channel) => {
+      if (channel.name !== channelNames.AFTER_LIFE) {
+        await channel.permissionOverwrites.edit(user, {
+          SEND_MESSAGES: false,
+          CREATE_PRIVATE_THREADS: false,
+          CREATE_PUBLIC_THREADS: false,
+          SEND_MESSAGES_IN_THREADS: false,
+        });
+      }
+    })
+  );
+}
+
 module.exports = {
   returnKickedPlayers,
+  removePermissionsFromKick,
 };
