@@ -42,7 +42,7 @@ module.exports = {
     };
     const nonPlayersPermissions = {
       id: interaction.guild.id,
-      deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
+      deny: ["SEND_MESSAGES", "ADD_REACTIONS", "CREATE_PRIVATE_THREADS", "CREATE_PUBLIC_THREADS", "SEND_MESSAGES_IN_THREADS"],
       allow: ["VIEW_CHANNEL"],
     };
 
