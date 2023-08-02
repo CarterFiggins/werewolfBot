@@ -1,12 +1,12 @@
 const computeCharacters = require("../util/computeCharacters");
 jest.mock("../werewolf_db", () => {
   return {
-    findSettings: () => ({ extra_characters: false, allow_vampires: false }),
+    findSettings: () => ({ extra_characters: true, allow_vampires: true }),
   };
 });
 
 test("computing characters", async () => {
-  const amountOfPlayers = 100;
+  const amountOfPlayers = 20;
   const characterCards = await computeCharacters(amountOfPlayers, 1);
 
   console.log("characterCards in game");
@@ -31,5 +31,5 @@ test("computing characters", async () => {
     (w) => w === "werewolf" || w === "werewolf cub"
   );
 
-  expect(totalWerewolves.length).toBe(Math.floor(amountOfPlayers / 5));
+  expect(totalWerewolves.length).toBe(Math.floor(amountOfPlayers / 7));
 });

@@ -35,7 +35,7 @@ async function computeCharacters(numberOfPlayers, guildId) {
   const maxWerewolves = oneEvery(divideWerewolvesBy) - oneEvery(divideCubBy);
 
   let werewolfHelperCards = [
-    ...Array(oneEvery(10) + 1).fill(characters.LYCAN),
+    ...Array(oneEvery(10)).fill(characters.LYCAN),
     characters.BAKER,
   ];
 
@@ -55,12 +55,12 @@ async function computeCharacters(numberOfPlayers, guildId) {
 
   // EXTRA CARDS
   if (settings.extra_characters) {
-    werewolfHelperCards.concat([
-      ...Array(oneEvery(18) + 1).fill(characters.CURSED),
+    werewolfHelperCards = werewolfHelperCards.concat([
+      ...Array(oneEvery(9)).fill(characters.CURSED),
       ...Array(maxWitches).fill(characters.WITCH),
-      ...Array(oneEvery(20) + 1).fill(characters.FOOL),
+      ...Array(oneEvery(12)).fill(characters.FOOL),
     ]);
-    villagerHelperCards.concat([
+    villagerHelperCards = villagerHelperCards.concat([
       ...Array(oneEvery(10)).fill(characters.DOPPELGANGER),
       ...Array(oneEvery(25) + 1).fill(characters.APPRENTICE_SEER),
     ]);
@@ -100,11 +100,7 @@ async function computeCharacters(numberOfPlayers, guildId) {
   if (totalCards < playersLeftOver) {
     const cardsToMake = playersLeftOver - totalCards;
     _.forEach(_.range(cardsToMake), (num) => {
-      if (num % 4 === 0) {
-        werewolfHelperCards.push(characters.LYCAN);
-      } else {
-        villagerHelperCards.push(characters.VILLAGER);
-      }
+      villagerHelperCards.push(characters.VILLAGER);
     });
   }
 
