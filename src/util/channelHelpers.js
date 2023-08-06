@@ -12,6 +12,7 @@ const channelNames = {
   MASON: "mason",
   WITCH: "witch",
   VAMPIRES: "vampires",
+  OUT_CASTS: "out-casts"
 };
 
 async function sendStartMessages(interaction, users) {
@@ -74,6 +75,7 @@ async function sendStartMessages(interaction, users) {
   organizedChannels.bodyguard.send(bodyguardStart);
   organizedChannels.witch.send(witchStart);
   organizedChannels.vampires.send(vampireStart);
+  organizedChannels.outCasts.send(outCastStart);
 }
 
 function showUsersCharacter(users) {
@@ -118,6 +120,9 @@ function organizeChannels(channels) {
         break;
       case channelNames.VAMPIRES:
         channelObject.vampires = channel;
+        break;
+      case channelNames.OUT_CASTS:
+        channelObject.outCasts = channel;
         break;
     }
   });
@@ -270,6 +275,9 @@ const witchStart =
 
 const vampireStart =
   "You are a vampire! Use the '/vampire_bite' command to turn villagers into vampires. **Vampire king's first bite will transform a player into a vampire** after that it takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey.";
+
+const outCastStart =
+  "Welcome out casts! You may leave a message to talk to the other outcasts that will be cast out from the grouchy granny"
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

@@ -186,6 +186,7 @@ async function removeAllGameChannels(channels) {
         case channelNames.BODYGUARD:
         case channelNames.WITCH:
         case channelNames.VAMPIRES:
+        case channelNames.OUT_CASTS:
           await channel.delete();
       }
     })
@@ -329,6 +330,12 @@ async function createChannels(interaction, users) {
     interaction,
     channelNames.VAMPIRES,
     vampirePermissions,
+    category
+  );
+  await createChannel(
+    interaction,
+    channelNames.OUT_CASTS,
+    defaultPermissions,
     category
   );
 }

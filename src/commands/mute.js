@@ -4,7 +4,7 @@ const { getRandomBotGif, channelNames } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
-const { removePermissionsFromMute } = require("../util/characterHelpers/grouchyGranny");
+const { castOutUser } = require("../util/characterHelpers/grouchyGranny");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -110,7 +110,7 @@ module.exports = {
       isMuted: true,
     });
 
-    await removePermissionsFromMute(interaction, mutedUser)
+    await castOutUser(interaction, mutedUser)
 
     await channel.send(`Grouchy Granny has muted ${mutedUser}. They can talk tomorrow`)
 

@@ -154,7 +154,7 @@ async function sendGreeting(member, user) {
         break;
       case characters.GROUCHY_GRANNY:
         await member.send(
-          `You are a **Grouchy Granny**\n${voteText}\nYou can mute someone out of town square using the \`/mute\` command for the rest of the day and night. They will come back tomorrow. This will not allow them to use their night power.`
+          `You are a **Grouchy Granny**\n${voteText}\nYou can mute someone out of town square using the \`/mute\` command for the rest of the day and night. They will come back tomorrow but while they are gone they will be able to leave messages in the out cast channel. This will not allow them to use their night power.`
         )
     }
   } catch (error) {

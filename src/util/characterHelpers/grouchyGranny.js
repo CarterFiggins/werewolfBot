@@ -11,6 +11,8 @@ async function returnMutedPlayers(interaction, guildId) {
   await Promise.all(
     users.map(async (user) => {
       if (user.isMuted) {
+        const channels = await interaction.guild.channels.fetch();
+        const organizedChannels = organizeChannels(channels);
         const member = members.get(user.user_id)
         await updateUser(user.user_id, guildId, { isMuted: false, safeFromMutes: true });
         message = `${member} has returned`
@@ -44,6 +46,11 @@ async function returnMutedPlayers(interaction, guildId) {
             message,
           });
         }
+
+        await organizedChannels.outCasts.permissionOverwrites.edit(member, {
+          SEND_MESSAGES: false,
+          VIEW_CHANNEL: false,
+        });
       }
     })
   );
@@ -59,12 +66,17 @@ async function removeSafeFromMutes(guildId) {
   );
 }
 
-async function removePermissionsFromMute(interaction, user) {
+async function castOutUser(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   await Promise.all(
     _.map(organizedChannels, async (channel) => {
-      if (channel.name !== channelNames.AFTER_LIFE) {
+      if (channel.name === channelNames.OUT_CASTS) {
+        await channel.permissionOverwrites.edit(user, {
+          SEND_MESSAGES: true,
+          VIEW_CHANNEL: true,
+        });
+      } else {
         await channel.permissionOverwrites.edit(user, {
           SEND_MESSAGES: false,
           CREATE_PRIVATE_THREADS: false,
@@ -78,6 +90,6 @@ async function removePermissionsFromMute(interaction, user) {
 
 module.exports = {
   returnMutedPlayers,
-  removePermissionsFromMute,
+  castOutUser,
   removeSafeFromMutes,
 };
