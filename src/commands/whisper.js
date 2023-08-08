@@ -42,6 +42,17 @@ module.exports = {
       return;
     }
 
+    const channel = interaction.guild.channels.cache.get(interaction.channelId);
+
+    if (channel.name === channelNames.OUT_CASTS) {
+      await interaction.reply({
+        content:
+          "You are to far away! They can not hear you",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const messageSender = interaction.user;
     const senderMember = await interaction.guild.members.fetch(
       messageSender.id
