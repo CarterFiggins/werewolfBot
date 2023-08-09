@@ -25,7 +25,7 @@ const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
-const { returnMutedPlayers, removeSafeFromMutes } = require("./characterHelpers/grouchyGranny");
+const { returnMutedPlayers } = require("./characterHelpers/grouchyGranny");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -216,7 +216,6 @@ async function nightTimeJob(interaction) {
   });
 
   const voteWinner = _.sample(topVotes);
-  await removeSafeFromMutes(guildId);
   await deleteManyVotes({ guild_id: guildId });
   await resetNightPowers(guildId);
   if (!voteWinner) {

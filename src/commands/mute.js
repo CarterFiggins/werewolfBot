@@ -96,7 +96,7 @@ module.exports = {
     }
     if (mutedDbUser.safeFromMutes === true) { 
       await interaction.reply({
-        content: `Player is safe from mutes for today. Go mute someone else`,
+        content: `Player is safe from mutes. Go mute someone else`,
         ephemeral: true,
       });
       return;
