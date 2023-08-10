@@ -17,6 +17,9 @@ const teams = {
 };
 
 async function calculateScores(interaction, { winner }) {
+  if (!winner) {
+    return
+  }
   const guildId = interaction.guild.id;
   const cursor = await findAllUsers(guildId);
   const dbUsers = await cursor.toArray();

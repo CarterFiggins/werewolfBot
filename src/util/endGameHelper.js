@@ -23,22 +23,26 @@ async function checkGame(interaction) {
   let werewolfCount = 0;
   let villagerCount = 0;
   let vampireCount = 0;
+  let witchCount = 0;
 
   await Promise.all(
     aliveMembers.map(async (member) => {
       const dbUser = await findUser(member.user.id, guildId);
-      if (
-        dbUser.character === characters.WEREWOLF ||
-        dbUser.character === characters.WITCH
-      ) {
+      if (dbUser.character === characters.WEREWOLF) {
         werewolfCount += 1;
       } else if (dbUser.is_vampire) {
         vampireCount += 1;
+      } else if (dbUser.character === characters.WITCH) {
+        witchCount += 1;
       } else {
         villagerCount += 1;
       }
     })
   );
+
+  if (werewolfCount > 0) {
+    werewolfCount += witchCount;
+  }
 
   const game = await findGame(guildId);
 
@@ -46,6 +50,11 @@ async function checkGame(interaction) {
   let winner;
 
   if (villagerCount === 0 && werewolfCount === vampireCount && game.is_day) {
+  } else if (werewolfCount === 0 && vampireCount === 0 && villagerCount === 0 && witchCount === 0) {
+    organizedChannels.townSquare.send(
+      "I WIN! Everyone is dead!"
+    );
+    isGameOver = true;
   } else if (werewolfCount === 0 && vampireCount === 0) {
     organizedChannels.townSquare.send(
       "There are no more werewolves or vampires. **Villagers Win!**"
