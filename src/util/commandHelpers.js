@@ -37,6 +37,7 @@ const commandNames = {
   VAMPIRE_BITE: "vampire_bite",
   COPY: "copy",
   MUTE: "mute",
+  RANDOM_VOTE: "random_vote",
 };
 
 /* 
