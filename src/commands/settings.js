@@ -8,6 +8,7 @@ const { updateSettings, findSettings } = require("../werewolf_db");
 const SettingCommands = {
   DAY_TIME: "day_time",
   NIGHT_TIME: "night_time",
+  RANDOM_CARDS: "random_cards",
   CAN_WHISPER: "can_whisper",
   ALLOW_REACTIONS: "allow_reactions",
   EXTRA_CHARACTERS: "extra_characters",
@@ -68,7 +69,20 @@ module.exports = {
             .setRequired(true)
             .setDescription("A number from 0 - 59")
         )
+  )
+  .addSubcommand((subcommand) =>
+  subcommand
+    .setName(SettingCommands.RANDOM_CARDS)
+    .setDescription(
+      "ADMIN COMMAND: no set limit on any characters and chosen at random"
     )
+    .addBooleanOption((option) =>
+      option
+        .setName("activate")
+        .setRequired(true)
+        .setDescription("turn setting off or on")
+    )
+)
     .addSubcommand((subcommand) =>
       subcommand
         .setName(SettingCommands.CAN_WHISPER)

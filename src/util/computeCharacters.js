@@ -9,12 +9,12 @@ const characterPoints = new Map([
   [characters.APPRENTICE_SEER, 7],
   [characters.MASON, 4],
   [characters.HUNTER, 4],
-  [characters.WEREWOLF, 6],
+  [characters.WEREWOLF, 7],
   [characters.FOOL, 3],
   [characters.LYCAN, 4],
   [characters.BAKER, 6],
   [characters.CURSED, 4],
-  [characters.CUB, 7],
+  [characters.CUB, 8],
   [characters.WITCH, 7],
   [characters.VAMPIRE, 50],
   [characters.DOPPELGANGER, 5],
@@ -34,6 +34,21 @@ async function computeCharacters(numberOfPlayers, guildId) {
   const divideCubBy = 15;
   const maxWitches = oneEvery(28) + (numberOfPlayers >= 14 ? 1 : 0);
   const maxWerewolves = oneEvery(divideWerewolvesBy) - oneEvery(divideCubBy);
+
+  let wolfCards = [
+    characters.LYCAN,
+    characters.BAKER,
+    characters.WEREWOLF,
+    characters.CUB,
+  ]
+
+  let villagerCards = [
+    characters.SEER,
+    characters.BODYGUARD,
+    characters.MASON,
+    characters.HUNTER,
+    characters.VILLAGER,
+  ]
 
   let werewolfHelperCards = [
     ...Array(oneEvery(10)).fill(characters.LYCAN),
@@ -56,6 +71,12 @@ async function computeCharacters(numberOfPlayers, guildId) {
 
   // EXTRA CARDS
   if (settings.extra_characters) {
+    wolfCards.push(characters.CURSED)
+    wolfCards.push(characters.WITCH)
+    wolfCards.push(characters.FOOL)
+    villagerCards.push(characters.DOPPELGANGER)
+    villagerCards.push(characters.APPRENTICE_SEER)
+    villagerCards.push(characters.GROUCHY_GRANNY)
     werewolfHelperCards = werewolfHelperCards.concat([
       ...Array(oneEvery(9)).fill(characters.CURSED),
       ...Array(maxWitches).fill(characters.WITCH),
@@ -75,7 +96,12 @@ async function computeCharacters(numberOfPlayers, guildId) {
   const forceGoodCharacters = [characters.SEER, characters.BODYGUARD];
 
   let werewolfPoints = 0;
-  const currentCharacters = [
+  const currentCharacters = settings.random_cards ? [
+    ..._.map(_.range(1), () => {
+    werewolfPoints += characterPoints.get(characters.WEREWOLF);
+    return characters.WEREWOLF;
+    }),
+  ] : [
     ..._.map(_.range(maxWerewolves), () => {
       werewolfPoints += characterPoints.get(characters.WEREWOLF);
       return characters.WEREWOLF;
@@ -87,9 +113,12 @@ async function computeCharacters(numberOfPlayers, guildId) {
     ...forceGoodCharacters,
   ];
 
-  let villagerPoints = _.sumBy(forceGoodCharacters, (character) =>
-    characterPoints.get(character)
-  );
+  let villagerPoints = 0
+  if (!settings.random_cards) {
+    villagerPoints = _.sumBy(forceGoodCharacters, (character) =>
+      characterPoints.get(character)
+    );
+  }
   let vampirePoints = 20;
   // minus off players already added
   const playersLeftOver = numberOfPlayers - currentCharacters.length;
@@ -112,6 +141,19 @@ async function computeCharacters(numberOfPlayers, guildId) {
 
   const getNextCharacter = (cards) =>
     _.isEmpty(cards) ? characters.VILLAGER : cards.pop();
+  
+  const GetWerewolfHelperCard = () => {
+    if (settings.random_cards) {
+      return _.sample(wolfCards);
+    }
+    return _.isEmpty(werewolfHelperCards) ? characters.VILLAGER : werewolfHelperCards.pop();
+  }
+  const GetVillagerHelperCard = () => {
+    if (settings.random_cards) {
+      return _.sample(villagerCards);
+    }
+    _.isEmpty(villagerHelperCards) ? characters.VILLAGER : villagerHelperCards.pop();
+  }
 
   _.forEach(_.range(playersLeftOver), (count) => {
     if (!skipLoop) {
@@ -125,7 +167,7 @@ async function computeCharacters(numberOfPlayers, guildId) {
         settings.allow_vampires;
 
       if (applyWerewolfHelperCard) {
-        let newCharacter = getNextCharacter(werewolfHelperCards);
+        let newCharacter = GetWerewolfHelperCard();
         werewolfPoints += characterPoints.get(newCharacter);
         currentCharacters.push(newCharacter);
       } else if (applyVampireHelperCard) {
@@ -134,11 +176,11 @@ async function computeCharacters(numberOfPlayers, guildId) {
         vampirePoints += characterPoints.get(newCharacter);
       } else {
         // *** applyVillagerHelperCard  ***
-        let newCharacter = getNextCharacter(villagerHelperCards);
+        let newCharacter = GetVillagerHelperCard();
         if (newCharacter === characters.MASON && !masonInGame) {
           // Last player don't add masons
           if (count === playersLeftOver - 1) {
-            newCharacter = characters.VILLAGER;
+            newCharacter = characters.DOPPELGANGER;
             villagerPoints += characterPoints.get(newCharacter);
             currentCharacters.push(newCharacter);
           } else {
