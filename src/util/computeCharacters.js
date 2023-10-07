@@ -152,7 +152,7 @@ async function computeCharacters(numberOfPlayers, guildId) {
     if (settings.random_cards) {
       return _.sample(villagerCards);
     }
-    _.isEmpty(villagerHelperCards) ? characters.VILLAGER : villagerHelperCards.pop();
+    return _.isEmpty(villagerHelperCards) ? characters.VILLAGER : villagerHelperCards.pop();
   }
 
   _.forEach(_.range(playersLeftOver), (count) => {
