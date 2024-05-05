@@ -16,12 +16,16 @@ async function starveUser(interaction, organizedRoles, deathIds) {
       (user) =>
         !deathIds.includes(user.user_id) &&
         user.character !== characters.WEREWOLF &&
-        !user.is_vampire
+        !user.is_vampire &&
+        user.character !== characters.HUNTER
     );
   } else {
     aliveUsers = _.filter(
       aliveUsers,
-      (user) => user.character !== characters.WEREWOLF && !user.is_vampire
+      (user) =>
+        user.character !== characters.WEREWOLF &&
+        !user.is_vampire &&
+        user.character !== characters.HUNTER
     );
   }
 
