@@ -12,7 +12,7 @@ const channelNames = {
   MASON: "mason",
   WITCH: "witch",
   VAMPIRES: "vampires",
-  OUT_CASTS: "out-casts"
+  OUT_CASTS: "out-casts",
 };
 
 async function sendStartMessages(interaction, users) {
@@ -235,6 +235,26 @@ function onDmChannel(interaction) {
   return interaction.channel.type == "DM";
 }
 
+async function joinMasons({
+  interaction,
+  guardedUser,
+  player,
+  playerMember,
+  roleName,
+}) {
+  if (guardedUser.character === characters.MASON && !player.on_mason_channel) {
+    await updateUser(player.user_id, interaction.guild.id, {
+      on_mason_channel: true,
+    });
+    await giveChannelPermissions({
+      interaction,
+      user: playerMember,
+      character: characters.MASON,
+      message: `The ${roleName} ${playerMember} has joined!`,
+    });
+  }
+}
+
 function getRandomBotGif() {
   return _.sample(botGifs);
 }
@@ -249,6 +269,7 @@ module.exports = {
   removeChannelPermissions,
   onDmChannel,
   getRandomBotGif,
+  joinMasons,
   channelNames,
 };
 
@@ -277,7 +298,7 @@ const vampireStart =
   "You are a vampire! Use the '/vampire_bite' command to turn villagers into vampires. **Vampire king's first bite will transform a player into a vampire** after that it takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey.";
 
 const outCastStart =
-  "Welcome out casts! You may leave a message to talk to the other outcasts that will be cast out from the grouchy granny"
+  "Welcome out casts! You may leave a message to talk to the other outcasts that will be cast out from the grouchy granny";
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

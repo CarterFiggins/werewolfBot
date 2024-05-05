@@ -111,64 +111,63 @@ async function giveUserRoles(interaction, users) {
   const playerRole = await getRole(interaction, roleNames.PLAYING);
   const dbUsers = [];
 
-  await Promise.all(
-    _.map(shuffledUsers, async (user) => {
-      // add alive role and remove playing role
-      const member = interaction.guild.members.cache.get(user.id);
-      await member.roles.add(aliveRole);
-      await member.roles.remove(playerRole);
-      // add character
-      const newCharacter = _.isEmpty(currentCharacters)
-        ? characters.VILLAGER
-        : currentCharacters.pop();
+  for (let i = 0; i < shuffledUsers.length; i++) {
+    const user = shuffledUsers[i];
 
-      user.character = newCharacter;
+    // add alive role and remove playing role
+    const member = interaction.guild.members.cache.get(user.id);
+    await member.roles.add(aliveRole);
+    await member.roles.remove(playerRole);
+    // add character
+    const newCharacter = _.isEmpty(currentCharacters)
+      ? characters.VILLAGER
+      : currentCharacters.pop();
 
-      const userInfo = {
-        user_id: user.id,
-        name: user.username,
-        nickname: member.nickname,
-        character: newCharacter,
-        guild_id: interaction.guild.id,
-        is_vampire: false,
-        is_dead: false,
-        vampire_bites: 0,
-      };
-      switch (newCharacter) {
-        case characters.FOOL:
-        case characters.SEER:
-          userInfo.see = true;
-          break;
-        case characters.CUB:
-          userInfo.is_cub = true;
-          user.is_cub = true;
-          user.character = characters.WEREWOLF;
-          userInfo.character = characters.WEREWOLF;
-          break;
-        case characters.BODYGUARD:
-          userInfo.last_guarded_user_id = null;
-          break;
-        case characters.HUNTER:
-          userInfo.can_shoot = false;
-          break;
-        case characters.VAMPIRE:
-          userInfo.bite_user_id = null;
-          userInfo.is_vampire = true;
-          userInfo.first_bite = true;
-          user.is_vampire = true;
-          break;
-        case characters.PRIEST:
-          userInfo.protect = true;
-          userInfo.last_user_protect_id = null;
-          userInfo.holyWater = true;
-          break;
-        case characters.GROUCHY_GRANNY:
-          userInfo.hasMuted = false;
-          break;
-      }
-      dbUsers.push(userInfo);
-    })
-  );
+    user.character = newCharacter;
+    user.is_cub = false;
+    user.is_vampire = false;
+
+    const userInfo = {
+      user_id: user.id,
+      name: user.username,
+      nickname: member.nickname,
+      character: newCharacter,
+      guild_id: interaction.guild.id,
+      is_vampire: false,
+      is_cub: false,
+      is_dead: false,
+      vampire_bites: 0,
+    };
+    switch (newCharacter) {
+      case characters.FOOL:
+      case characters.SEER:
+        userInfo.see = true;
+        break;
+      case characters.CUB:
+        userInfo.is_cub = true;
+        user.is_cub = true;
+        user.character = characters.WEREWOLF;
+        userInfo.character = characters.WEREWOLF;
+        break;
+      case characters.BODYGUARD:
+        userInfo.last_guarded_user_id = null;
+        break;
+      case characters.HUNTER:
+        userInfo.can_shoot = false;
+        break;
+      case characters.VAMPIRE:
+        userInfo.bite_user_id = null;
+        userInfo.is_vampire = true;
+        userInfo.first_bite = true;
+        user.is_vampire = true;
+        break;
+
+      case characters.GROUCHY_GRANNY:
+        userInfo.hasMuted = false;
+        break;
+    }
+    dbUsers.push(userInfo);
+  }
   await createUsers(dbUsers);
   return shuffledUsers;
 }
@@ -208,7 +207,11 @@ async function createChannels(interaction, users) {
     (user) => user.character !== characters.WEREWOLF
   );
 
-  const threadPermissions = ["CREATE_PRIVATE_THREADS", "CREATE_PUBLIC_THREADS", "SEND_MESSAGES_IN_THREADS"]
+  const threadPermissions = [
+    "CREATE_PRIVATE_THREADS",
+    "CREATE_PUBLIC_THREADS",
+    "SEND_MESSAGES_IN_THREADS",
+  ];
 
   const guildSettings = await findSettings(interaction.guild.id);
   const nonPlayersPermissions = {

@@ -1,9 +1,11 @@
 const _ = require("lodash");
-const { findManyUsers, findUser, updateUser } = require("../../werewolf_db");
 const {
-  giveChannelPermissions,
-  organizeChannels,
-} = require("../channelHelpers");
+  findManyUsers,
+  findUser,
+  updateUser,
+  findSettings,
+} = require("../../werewolf_db");
+const { organizeChannels, joinMasons } = require("../channelHelpers");
 const { characters } = require("../commandHelpers");
 
 async function guardPlayers(interaction) {
@@ -13,6 +15,7 @@ async function guardPlayers(interaction) {
     guild_id: guildId,
     character: characters.BODYGUARD,
   });
+  const settings = await findSettings(guildId);
   const bodyGuards = await cursorBodyguards.toArray();
 
   const guardedIds = await Promise.all(
@@ -26,12 +29,15 @@ async function guardPlayers(interaction) {
       }
 
       const guardedUser = await findUser(guardedUserId, guildId);
-      await joinMasons({
-        interaction,
-        guardedUser,
-        bodyguard,
-        bodyguardMember: members.get(bodyguard.user_id),
-      });
+      if (settings.bodyguard_joins_masons) {
+        await joinMasons({
+          interaction,
+          guardedUser,
+          bodyguard,
+          bodyguardMember: members.get(bodyguard.user_id),
+          roleName: "bodyguard",
+        });
+      }
       await guardedVampireMessage({
         interaction,
         guardedUser,
@@ -48,28 +54,6 @@ async function guardPlayers(interaction) {
   );
 
   return guardedIds;
-}
-
-async function joinMasons({
-  interaction,
-  guardedUser,
-  bodyguard,
-  bodyguardMember,
-}) {
-  if (
-    guardedUser.character === characters.MASON &&
-    !bodyguard.on_mason_channel
-  ) {
-    await updateUser(bodyguard.user_id, interaction.guild.id, {
-      on_mason_channel: true,
-    });
-    await giveChannelPermissions({
-      interaction,
-      user: bodyguardMember,
-      character: characters.MASON,
-      message: `The bodyguard ${bodyguardMember} has joined!`,
-    });
-  }
 }
 
 async function guardedVampireMessage({

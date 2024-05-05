@@ -42,7 +42,13 @@ module.exports = {
     };
     const nonPlayersPermissions = {
       id: interaction.guild.id,
-      deny: ["SEND_MESSAGES", "ADD_REACTIONS", "CREATE_PRIVATE_THREADS", "CREATE_PUBLIC_THREADS", "SEND_MESSAGES_IN_THREADS"],
+      deny: [
+        "SEND_MESSAGES",
+        "ADD_REACTIONS",
+        "CREATE_PRIVATE_THREADS",
+        "CREATE_PUBLIC_THREADS",
+        "SEND_MESSAGES_IN_THREADS",
+      ],
       allow: ["VIEW_CHANNEL"],
     };
 
@@ -96,6 +102,7 @@ module.exports = {
         wolf_kills_witch: false,
         random_cards: false,
         hard_mode: false,
+        bodyguard_joins_masons: true,
         // vampire settings
         allow_vampires: false,
         allow_first_bite: false,

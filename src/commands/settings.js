@@ -21,6 +21,7 @@ const SettingCommands = {
   KING_BITE_WOLF_SAFE: "king_bite_wolf_safe",
   KING_VICTIM_ATTACK_SAFE: "king_victim_attack_safe",
   VIEW: "view",
+  BODYGUARD_JOINS_MASONS: "bodyguard_joins_masons",
 };
 
 module.exports = {
@@ -69,20 +70,20 @@ module.exports = {
             .setRequired(true)
             .setDescription("A number from 0 - 59")
         )
-  )
-  .addSubcommand((subcommand) =>
-  subcommand
-    .setName(SettingCommands.RANDOM_CARDS)
-    .setDescription(
-      "ADMIN COMMAND: no set limit on any characters and chosen at random"
     )
-    .addBooleanOption((option) =>
-      option
-        .setName("activate")
-        .setRequired(true)
-        .setDescription("turn setting off or on")
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName(SettingCommands.RANDOM_CARDS)
+        .setDescription(
+          "ADMIN COMMAND: no set limit on any characters and chosen at random"
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("activate")
+            .setRequired(true)
+            .setDescription("turn setting off or on")
+        )
     )
-)
     .addSubcommand((subcommand) =>
       subcommand
         .setName(SettingCommands.CAN_WHISPER)
@@ -215,6 +216,17 @@ module.exports = {
         .setDescription(
           "ADMIN COMMAND: The vampire king will not die if they bite the same player the werewolves kill"
         )
+        .addBooleanOption((option) =>
+          option
+            .setName("activate")
+            .setRequired(true)
+            .setDescription("Set setting true or false")
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName(SettingCommands.BODYGUARD_JOINS_MASONS)
+        .setDescription("ADMIN COMMAND: The Bodyguard can join the masons")
         .addBooleanOption((option) =>
           option
             .setName("activate")

@@ -19,7 +19,7 @@ const commandNames = {
   RESET_SCHEDULING: "reset_scheduling",
   DAY_TIME: "day_time",
   NIGHT_TIME: "night_time",
-  SETTINGS: 'settings',
+  SETTINGS: "settings",
   // Player game commands
   PLAYING: "playing",
   STOP_PLAYING: "stop_playing",
@@ -67,7 +67,6 @@ const characters = {
   MASON: "mason",
   HUNTER: "hunter",
   GROUCHY_GRANNY: "grouchy granny",
-  // PRIEST: "priest",
   DOPPELGANGER: "doppelganger",
   // helps werewolves
   WEREWOLF: "werewolf",
@@ -156,7 +155,7 @@ async function sendGreeting(member, user) {
       case characters.GROUCHY_GRANNY:
         await member.send(
           `You are a **Grouchy Granny**\n${voteText}\nYou can mute someone out of town square using the \`/mute\` command for the rest of the day and night. They will come back tomorrow but while they are gone they will be able to leave messages in the out cast channel. This will not allow them to use their night power. You will not be able to mute the same player for the rest of the game`
-        )
+        );
     }
   } catch (error) {
     console.log(error);

@@ -32,7 +32,6 @@ const characters = {
   APPRENTICE_SEER: "apprentice seer",
   MASON: "mason",
   HUNTER: "hunter",
-  // PRIEST: "priest",
   // helps werewolves
   WEREWOLF: "werewolf",
   FOOL: "fool",
