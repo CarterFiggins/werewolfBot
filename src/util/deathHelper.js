@@ -59,9 +59,7 @@ async function removesDeadPermissions(
   await removeUserVotes(guildId, deadUser.user_id);
   await updateUser(deadUser.user_id, guildId, { is_dead: true });
 
-  if (deadCharacter === characters.LYCAN) {
-    deadCharacter = characters.VILLAGER;
-  } else if (deadCharacter === characters.BAKER) {
+  if (deadCharacter === characters.BAKER) {
     await checkBakers(guildId, organizedChannels.townSquare);
   } else if (deadCharacter === characters.WEREWOLF && deadUser.is_cub) {
     await updateGame(guildId, {

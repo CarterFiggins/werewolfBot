@@ -24,9 +24,9 @@ This bot will be the narrator for the game werwolf in a discord server. Players 
 
 > _They are a secret group among the villagers. Everyone in this super cool group is not a werewolf. There can be up to two masons at the start. If a bodyguard uses the guard power on one of them they also join the super cool group. They want to help the villagers get rid of the werewolves but also keep there group a secret because no one else can be trusted._
 
-**LYCAN** -3 Villager Team
+**LYCAN** -4 Villager Team
 
-> _They have the lycan gene. When a seer investigates them the spirits are confused and mistake them as a werewolf instead of a villager. Only the player with this character will know they are the lycan. Even when they die it will say they died as a villager._
+> _They have the lycan gene. When a seer investigates them the spirits are confused and mistake them as a werewolf instead of a villager. OThe lycan is told they are a villager but when they died it will say they are a lycan._
 
 **APPRENTICE SEER** +6 Villager Team
 

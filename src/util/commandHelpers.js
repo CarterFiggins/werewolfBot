@@ -89,16 +89,16 @@ async function sendGreeting(member, user) {
     }
 
     const villagerMessage = `You are a **Villager!**\nYour job is to find out who is a werewolf and hang them for their crimes.\n${voteText}\nBe careful at night, the werewolves are hungry\n`;
-    const lycanMessage = `You are a **Lycan**.\nYou are a villager but you have the very rare lycan gene that confuses the spirits.\n${voteText}\nBecause of your cursed gene, if a seer investigates your character the spirits will tell them you are a werewolf when you really are a villager.\n`;
     const bakerMessage = `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`;
     const hunterMessage = `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`;
 
     switch (user.character) {
       case characters.CURSED:
         await member.send(
-          _.sample([villagerMessage, lycanMessage, bakerMessage, hunterMessage])
+          _.sample([villagerMessage, bakerMessage, hunterMessage])
         );
         break;
+      case characters.LYCAN:
       case characters.VILLAGER:
         await member.send(villagerMessage);
         break;
@@ -122,9 +122,6 @@ async function sendGreeting(member, user) {
         await member.send(
           `You are a **Mason**.\nYou belong to a super secret group.\nEveryone in the mason group is to be trusted and is not a werewolf.\n${voteText}\nIf the bodyguard protects one of the masons they get to join your super cool group.\n`
         );
-        break;
-      case characters.LYCAN:
-        await member.send(lycanMessage);
         break;
       case characters.APPRENTICE_SEER:
         await member.send(

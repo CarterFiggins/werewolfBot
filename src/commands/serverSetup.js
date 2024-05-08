@@ -140,7 +140,7 @@ const howToPlay1 = `**Villager** +2 Villager Team
 > _They are a secret group among the villagers. Everyone in this super cool group is not a werewolf. There can be up to two masons at the start. If a bodyguard uses the guard power on one of them they also join the super cool group. They want to help the villagers get rid of the werewolves but also keep there group a secret because no one else can be trusted._
 ______`;
 const howToPlay2 = `**LYCAN** -3 Villager Team
-> _They have the lycan gene. When a seer investigates them the spirits are confused and mistake them as a werewolf instead of a villager. Only the player with this character will know they are the lycan. Even when they die it will say they died as a villager._
+> _They have the lycan gene. When a seer investigates them the spirits are confused and mistake them as a werewolf instead of a villager. The lycan is told they are a villager but when they die it will say they are a lycan.
 
 **APPRENTICE SEER** +6 Villager Team
 > _They are a seer in training. They can't do much at first but when the seer dies they have a chance to replace them as the new seer and be able to pick up where they left off seeing all past investigations. If the fool is still alive when the seer dies the fool and seer character will be shuffled and the apprentice or the fool might become the seer and the other will become the fool._
@@ -155,7 +155,7 @@ const howToPlay2 = `**LYCAN** -3 Villager Team
 > _The hunter is a normal villager but when attacked or hanged they will get injured and have a small amount of time to live. During this time they will be able to shoot one other player using the \`/shoot\` command. Hopefully you shoot a werewolf._
 ______`;
 const howToPlay3 = `**CURSED VILLAGER** -5
-> _The cursed villager is told they are one of the following, normal villager, hunter, lycan, or baker but if they are killed by the werewolves they will turn into a werewolf themselves. They will have the same ability to kill like the werewolves. If they are bitten by a vampire they will turn into a vampire king. As a cursed Villager they are on the villager team_
+> _The cursed villager is told they are one of the following, normal villager, hunter, or baker but if they are killed by the werewolves they will turn into a werewolf themselves. They will have the same ability to kill like the werewolves. If they are bitten by a vampire they will turn into a vampire king. As a cursed Villager they are on the villager team_
 
 **WEREWOLF CUB** -7 Werewolf Team
 > _They are a baby werewolf and have the same abilities as a normal werewolf. The other werewolves will become enraged if you die and will be able to kill two villagers for the next night. The Werewolf Cub will be told they are a regular werewolf._
