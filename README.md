@@ -44,9 +44,9 @@ This bot will be the narrator for the game werwolf in a discord server. Players 
 
 > _The hunter is a normal villager but when attacked or hanged they will get injured and have a small amount of time to live. During this time they will be able to shoot one other player using the `/shoot` command. Hopefully you shoot a werewolf._
 
-**CURSED VILLAGER** -5
+**MUTATED VILLAGER** -5
 
-> _The cursed villager is told they are one of the following, normal villager, hunter, lycan, or baker but if they are killed by the werewolves they will turn into a werewolf themselves. They will have the same ability to kill like the werewolves. If they are bitten by a vampire they will turn into a vampire king. As a cursed Villager they are on the villager team_
+> _The mutated villager is told they are one of the following, normal villager, hunter, lycan, or baker but if they are killed by the werewolves they will turn into a werewolf themselves. They will have the same ability to kill like the werewolves. If they are bitten by a vampire they will turn into a vampire king. As a mutated Villager they are on the villager team_
 
 **WEREWOLF CUB** -7 Werewolf Team
 
