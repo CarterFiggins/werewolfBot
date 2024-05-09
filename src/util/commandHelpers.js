@@ -73,7 +73,7 @@ const characters = {
   FOOL: "fool",
   LYCAN: "lycan",
   BAKER: "baker",
-  CURSED: "cursed villager",
+  MUTATED: "mutated villager",
   CUB: "werewolf cub",
   WITCH: "witch",
   VAMPIRE: "king",
@@ -93,7 +93,7 @@ async function sendGreeting(member, user) {
     const hunterMessage = `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`;
 
     switch (user.character) {
-      case characters.CURSED:
+      case characters.MUTATED:
         await member.send(
           _.sample([villagerMessage, bakerMessage, hunterMessage])
         );

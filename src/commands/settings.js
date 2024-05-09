@@ -114,7 +114,7 @@ module.exports = {
       subcommand
         .setName(SettingCommands.EXTRA_CHARACTERS)
         .setDescription(
-          "ADMIN COMMAND: Characters added: cursed villager, witch, fool, doppelganger, and apprentice seer"
+          "ADMIN COMMAND: Characters added: mutated villager, witch, fool, doppelganger, and apprentice seer"
         )
         .addBooleanOption((option) =>
           option

@@ -25,7 +25,7 @@ async function killPlayers(interaction, deathIds) {
       const deadMember = members.get(deadUser.user_id);
       let isDead = true;
 
-      if (deadUser.character === characters.CURSED) {
+      if (deadUser.character === characters.MUTATED) {
         // join werewolf team
         await updateUser(deadUser.user_id, interaction.guild.id, {
           character: characters.WEREWOLF,

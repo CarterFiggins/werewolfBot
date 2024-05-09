@@ -104,7 +104,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             organizedRoles
           );
           if (werewolfAttacked) {
-            if (victim.character === characters.CURSED) {
+            if (victim.character === characters.MUTATED) {
               return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
             }
             return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
@@ -124,15 +124,15 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
 }
 
 async function transformIntoVampire(interaction, user, userMember) {
-  const is_cursed = user.character === characters.CURSED;
+  const is_mutated = user.character === characters.MUTATED;
 
   await updateUser(user.user_id, interaction.guild.id, {
     is_vampire: true,
-    first_bite: is_cursed,
-    character: is_cursed ? characters.VAMPIRE : user.character,
+    first_bite: is_mutated,
+    character: is_mutated ? characters.VAMPIRE : user.character,
   });
 
-  const vampireType = is_cursed
+  const vampireType = is_mutated
     ? "vampire king! Their first successful bite will transform a player into a vampire."
     : "vampire! It will take them two bites to transform a player into a vampire.";
 

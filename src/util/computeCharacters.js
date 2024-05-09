@@ -13,7 +13,7 @@ const characterPoints = new Map([
   [characters.FOOL, 3],
   [characters.LYCAN, 4],
   [characters.BAKER, 6],
-  [characters.CURSED, 4],
+  [characters.MUTATED, 4],
   [characters.CUB, 8],
   [characters.WITCH, 7],
   [characters.VAMPIRE, 50],
@@ -71,14 +71,14 @@ async function computeCharacters(numberOfPlayers, guildId) {
 
   // EXTRA CARDS
   if (settings.extra_characters) {
-    wolfCards.push(characters.CURSED)
+    wolfCards.push(characters.MUTATED)
     wolfCards.push(characters.WITCH)
     wolfCards.push(characters.FOOL)
     villagerCards.push(characters.DOPPELGANGER)
     villagerCards.push(characters.APPRENTICE_SEER)
     villagerCards.push(characters.GROUCHY_GRANNY)
     werewolfHelperCards = werewolfHelperCards.concat([
-      ...Array(oneEvery(9)).fill(characters.CURSED),
+      ...Array(oneEvery(9)).fill(characters.MUTATED),
       ...Array(maxWitches).fill(characters.WITCH),
       ...Array(oneEvery(12)).fill(characters.FOOL),
     ]);

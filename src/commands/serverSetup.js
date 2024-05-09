@@ -154,8 +154,8 @@ const howToPlay2 = `**LYCAN** -3 Villager Team
 **HUNTER** +4 Villager Team
 > _The hunter is a normal villager but when attacked or hanged they will get injured and have a small amount of time to live. During this time they will be able to shoot one other player using the \`/shoot\` command. Hopefully you shoot a werewolf._
 ______`;
-const howToPlay3 = `**CURSED VILLAGER** -5
-> _The cursed villager is told they are one of the following, normal villager, hunter, or baker but if they are killed by the werewolves they will turn into a werewolf themselves. They will have the same ability to kill like the werewolves. If they are bitten by a vampire they will turn into a vampire king. As a cursed Villager they are on the villager team_
+const howToPlay3 = `**MUTATED VILLAGER** -5
+> _The mutated villager is told they are one of the following, normal villager, hunter, or baker but if they are killed by the werewolves they will turn into a werewolf themselves. They will have the same ability to kill like the werewolves. If they are bitten by a vampire they will turn into a vampire king. As a mutated Villager they are on the villager team_
 
 **WEREWOLF CUB** -7 Werewolf Team
 > _They are a baby werewolf and have the same abilities as a normal werewolf. The other werewolves will become enraged if you die and will be able to kill two villagers for the next night. The Werewolf Cub will be told they are a regular werewolf._
@@ -172,7 +172,7 @@ ______
 `;
 const howToPlay5 = `
 **VAMPIRE** Vampire Team
-> _Vampires will be on their own team and they will have the ability to bite a player during the night. There are two types of vampires. The vampire king or a villager that is turned into a vampire. The starting vampire is a vampire king. If a cursed villager is turned they will also be a vampire king. A villager that is turned into a vampire will have the same abilities and be on the same channel. They will be added to the vampire chat and gain the ability to bite using the 'vampire_bite' command. A vampire will need to bite a player two times for the player to transform into a vampire. The players that can not be transform into a vampire are the bodyguard, witch, and the werewolves. If a vampire tries to bite a werewolf they will die. If a vampire ties to bite a player that will die from the werewolves they will also die. If the vampires bite a player that was guarded or players that can't be transformed it will say "They must have been protected or are able to defend your attacks"_
+> _Vampires will be on their own team and they will have the ability to bite a player during the night. There are two types of vampires. The vampire king or a villager that is turned into a vampire. The starting vampire is a vampire king. If a mutated villager is turned they will also be a vampire king. A villager that is turned into a vampire will have the same abilities and be on the same channel. They will be added to the vampire chat and gain the ability to bite using the 'vampire_bite' command. A vampire will need to bite a player two times for the player to transform into a vampire. The players that can not be transform into a vampire are the bodyguard, witch, and the werewolves. If a vampire tries to bite a werewolf they will die. If a vampire ties to bite a player that will die from the werewolves they will also die. If the vampires bite a player that was guarded or players that can't be transformed it will say "They must have been protected or are able to defend your attacks"_
 
 Settings for vampires that can be turned off or on.
 * The vampire kings first bite will transform a player into a vampire.
