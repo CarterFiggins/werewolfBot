@@ -8,7 +8,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(commandNames.SEE)
+    .setName(commandNames.INVESTIGATE)
     .setDescription("SEER COMMAND: sees the player's character")
     .addUserOption((option) =>
       option
@@ -43,14 +43,14 @@ module.exports = {
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
     const seerUser = await findUser(interaction.user.id, interaction.guild.id);
 
-    if (channel.name !== channelNames.SEER) {
+    if (channel.name !== channelNames.INVESTIGATE) {
       await interaction.reply({
         content: "Your magic only works in the seer channel",
         ephemeral: true,
       });
       return;
     }
-    if (!seerUser.see) {
+    if (!seerUser.canInvestigate) {
       await interaction.reply({
         content:
           "You are tired. Your gift only works once. Try again next night",
@@ -97,7 +97,7 @@ module.exports = {
       return;
     }
     await updateUser(interaction.user.id, interaction.guild.id, {
-      see: false,
+      canInvestigate: false,
     });
 
     let targetedCharacter = "Villager! Nice someone you can trust";

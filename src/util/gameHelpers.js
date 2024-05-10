@@ -141,7 +141,7 @@ async function giveUserRoles(interaction, users) {
     switch (newCharacter) {
       case characters.FOOL:
       case characters.SEER:
-        userInfo.see = true;
+        userInfo.canInvestigate = true;
         break;
       case characters.CUB:
         userInfo.is_cub = true;
@@ -178,7 +178,7 @@ async function removeAllGameChannels(channels) {
       switch (channel.name) {
         case channelNames.TOWN_SQUARE:
         case channelNames.WEREWOLVES:
-        case channelNames.SEER:
+        case channelNames.INVESTIGATE:
         case channelNames.MASON:
         case channelNames.AFTER_LIFE:
         case channelNames.THE_TOWN:
@@ -301,7 +301,7 @@ async function createChannels(interaction, users) {
   );
   await createChannel(
     interaction,
-    channelNames.SEER,
+    channelNames.INVESTIGATE,
     seerPermissions,
     category
   );

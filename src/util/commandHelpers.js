@@ -28,7 +28,7 @@ const commandNames = {
   SHOW_VOTERS_FOR: "voters_for",
   VOTE: "vote",
   KILL: "kill",
-  SEE: "see",
+  INVESTIGATE: "investigate",
   GUARD: "guard",
   SHOOT: "shoot",
   WHISPER: "whisper",
@@ -110,7 +110,7 @@ async function sendGreeting(member, user) {
       case characters.SEER:
       case characters.FOOL:
         await member.send(
-          `You are a **Seer!**\nYou have been chosen by the spirits to help the villagers get rid of the werewolves.\n${voteText}\nAt night use the \`/see\` command to see if a player's character is a werewolf or a villager.\n If there are two of you here one is the fool.`
+          `You are a **Seer!**\nYou have been chosen by the spirits to help the villagers get rid of the werewolves.\n${voteText}\nAt night use the \`/investigate\` command to see if a player's character is a werewolf or a villager.\n If there are two of you here one is the fool.`
         );
         break;
       case characters.BODYGUARD:
@@ -125,7 +125,7 @@ async function sendGreeting(member, user) {
         break;
       case characters.APPRENTICE_SEER:
         await member.send(
-          `You are the **Apprentice Seer**.\n${voteText}\nYou start as a regular villager but, if the seer dies you become the new seer and pick up where they left off.\nWhen that day comes use the \`/see\` command at night to see if a player's character is a werewolf or a villager.\n`
+          `You are the **Apprentice Seer**.\n${voteText}\nYou start as a regular villager but, if the seer dies you become the new seer and pick up where they left off.\nWhen that day comes use the \`/investigate\` command at night to see if a player's character is a werewolf or a villager.\n`
         );
         break;
       case characters.BAKER:
@@ -169,7 +169,7 @@ async function resetNightPowers(guildId) {
       switch (user.character) {
         case characters.SEER:
         case characters.FOOL:
-          await updateUser(user.user_id, guildId, { see: true });
+          await updateUser(user.user_id, guildId, { canInvestigate: true });
           break;
       }
     })

@@ -186,7 +186,7 @@ async function nightTimeJob(interaction) {
       "This is the first night. Choose someone to guard with the `/guard` command"
     );
     organizedChannels.seer.send(
-      "This is the first night. Choose someone to see with the `/see` command"
+      "This is the first night. Choose someone to see with the `/investigate` command"
     );
     organizedChannels.witch.send(
       "This is the first night. Choose someone to curse with the `/curse` command"

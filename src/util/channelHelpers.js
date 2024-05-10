@@ -103,7 +103,7 @@ function organizeChannels(channels) {
       case channelNames.WEREWOLVES:
         channelObject.werewolves = channel;
         break;
-      case channelNames.SEER:
+      case channelNames.INVESTIGATE:
         channelObject.seer = channel;
         break;
       case channelNames.AFTER_LIFE:
@@ -280,7 +280,7 @@ const werewolfStart =
   "Welcome to the werewolf channel! Talk to your fellow werewolves and mark your next target with the `/kill` command at night to kill the villagers";
 
 const seerStart =
-  "Welcome to the seer channel! At night use the command `/see` to pick a player to find out if they are a werewolf or villager.";
+  "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager.";
 
 const afterLifeStart =
   "You are dead... There not much to do except talk to other dead players and watch the game";
