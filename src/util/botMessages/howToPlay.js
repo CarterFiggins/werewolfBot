@@ -14,7 +14,7 @@ Villagers win when all werewolves and vampires are dead. Werewolves and vampires
 
   howToPlayRoles: `# Roles
 
-All alive players can communicate in the town square and vote to lynch a player during the day. Dead players can see all channels but only communicate in the afterlife.
+_All alive players can communicate in the town square and vote to lynch a player during the day. Dead players can see all channels but only communicate in the afterlife._
   `,
 
   villagerTeam: `## Villager Team
