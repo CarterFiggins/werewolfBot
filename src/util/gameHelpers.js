@@ -273,6 +273,9 @@ async function createChannels(interaction, users) {
   const bodyguardPermissions = (
     await createPermissions(users, characters.BODYGUARD, guildSettings)
   ).concat(defaultPermissions);
+  const grouchyGrannyPermissions = (
+    await createPermissions(users, characters.GROUCHY_GRANNY, guildSettings)
+  ).concat(defaultPermissions);
 
   afterLifePermissions = [
     nonPlayersPermissions,
@@ -338,7 +341,7 @@ async function createChannels(interaction, users) {
   await createChannel(
     interaction,
     channelNames.OUT_CASTS,
-    defaultPermissions,
+    grouchyGrannyPermissions,
     category
   );
 }

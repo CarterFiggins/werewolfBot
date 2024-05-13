@@ -47,10 +47,12 @@ async function returnMutedPlayers(interaction, guildId) {
           });
         }
 
-        await organizedChannels.outCasts.permissionOverwrites.edit(member, {
-          SEND_MESSAGES: false,
-          VIEW_CHANNEL: false,
-        });
+        if (user.character !== characters.GROUCHY_GRANNY) {
+          await organizedChannels.outCasts.permissionOverwrites.edit(member, {
+            SEND_MESSAGES: false,
+            VIEW_CHANNEL: false,
+          });
+        }
       }
     })
   );

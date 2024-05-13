@@ -42,10 +42,10 @@ module.exports = {
       return role.name;
     });
 
-    if (channel.name !== channelNames.TOWN_SQUARE) {
+    if (channel.name !== channelNames.OUT_CASTS) {
       await interaction.reply({
         content:
-          "Use mute in the town-square",
+          "Use mute in the out_cast channel",
         ephemeral: true,
       });
       return;
