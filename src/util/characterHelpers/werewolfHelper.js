@@ -59,10 +59,25 @@ async function killPlayers(interaction, deathIds) {
           interaction,
           deadUser,
           deadMember,
-          organizedRoles
+          organizedRoles,
+          settings.hunter_guard
         );
-        if (deadUser.character === characters.HUNTER) {
-          message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+        if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
+          const cursorWerewolf = await findManyUsers({
+            guild_id: interaction.guild.id,
+            character: characters.WEREWOLF,
+          });
+          const werewolves = await cursorWerewolf.toArray();
+          const deadWerewolfMember = members.get(_.sample(werewolves).user_id);
+          const deadWerewolfCharacter = await removesDeadPermissions(
+            interaction,
+            deadUser,
+            deadWerewolfMember,
+            organizedRoles,
+          );
+          message += `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they were able to kill the ${deadWerewolfCharacter} named ${deadWerewolfMember}\n`;
+        } else if (deadUser.character === characters.HUNTER) { 
+           message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
         } else {
           message += `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
         }
