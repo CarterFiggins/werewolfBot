@@ -52,6 +52,11 @@ async function killPlayers(interaction, deathIds) {
           `You did not kill ${deadMember} because they are the witch! They have joined the channel`
         );
         isDead = false;
+      } else if (deadUser.has_guard) {
+        await updateUser(deadUser.user_id, interaction.guild.id, {
+          has_guard: false,
+        });
+        isDead = false;
       }
 
       if (isDead) {

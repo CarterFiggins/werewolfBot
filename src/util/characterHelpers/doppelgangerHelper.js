@@ -28,6 +28,13 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     copiedCharacter = originalUser.character;
   }
 
+  displayInGameCharacter = copiedCharacter
+  if (displayInGameCharacter === characters.LYCAN || displayInGameCharacter === characters.MUTATED ) {
+    displayInGameCharacter = characters.VILLAGER
+  } else if (displayInGameCharacter === characters.FOOL) {
+    displayInGameCharacter = characters.SEER
+  }
+
   copiedCharacter =
     copiedCharacter === characters.DOPPELGANGER
       ? characters.VILLAGER
@@ -45,7 +52,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     interaction,
     user: doppelgangerMember,
     character: copiedCharacter,
-    message: `The doppelganger ${doppelgangerMember} has joined`,
+    message: characters.VILLAGER === copiedCharacter ? null : `The doppelganger ${doppelgangerMember} has joined`,
   });
 
   let isVampire = "";
@@ -59,7 +66,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
 
   try {
     await doppelgangerMember.send(
-      `You are now a ${isVampire}${copiedCharacter}`
+      `You are now a ${isVampire} ${displayInGameCharacter}`
     );
   } catch (e) {
     console.log(e);

@@ -13,30 +13,30 @@ const { sendGreeting, characters } = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
 
 async function startGame(interaction) {
-  const playingUsers = await getPlayingUsers(interaction);
-  if (!playingUsers) {
+  const playingDiscordUsers = await getPlayingDiscordUsers(interaction);
+  if (!playingDiscordUsers) {
     return;
   }
-  const users = await giveUserRoles(interaction, playingUsers);
+  const usersWithRoles = await giveUserRoles(interaction, playingDiscordUsers);
   // if start game returns falsy the bot will reply with an error
   if (!users) {
     return;
   }
 
-  await sendUsersMessage(interaction, users);
-  await createChannels(interaction, users);
+  await sendUsersMessage(interaction, usersWithRoles);
+  await createChannels(interaction, usersWithRoles);
   // give users character command permissions
   await createGameDocument(interaction);
   await timeScheduling(interaction);
-  await sendStartMessages(interaction, users);
+  await sendStartMessages(interaction, usersWithRoles);
 
   // successfully created game
   return true;
 }
 
-async function sendUsersMessage(interaction, users) {
+async function sendUsersMessage(interaction, discordUsers) {
   await Promise.all(
-    users.map(async (user) => {
+    discordUsers.map(async (user) => {
       member = await interaction.guild.members.fetch(user.id);
       sendGreeting(member, user);
     })
@@ -55,7 +55,7 @@ async function createGameDocument(interaction) {
   });
 }
 
-async function getPlayingUsers(interaction) {
+async function getPlayingDiscordUsers(interaction) {
   let playingRole = await getRole(interaction, roleNames.PLAYING);
 
   if (!playingRole) {
@@ -63,7 +63,7 @@ async function getPlayingUsers(interaction) {
   }
 
   const members = await interaction.guild.members.fetch();
-  const playingUsers = members
+  const playingDiscordUsers = members
     .map((member) => {
       if (member._roles.includes(playingRole.id)) {
         return member.user;
@@ -71,7 +71,7 @@ async function getPlayingUsers(interaction) {
     })
     .filter((m) => m);
 
-  if (_.isEmpty(playingUsers)) {
+  if (_.isEmpty(playingDiscordUsers)) {
     await interaction.editReply({
       content: "ERROR: No Players",
       ephemeral: true,
@@ -79,12 +79,12 @@ async function getPlayingUsers(interaction) {
     return;
   }
 
-  return playingUsers;
+  return playingDiscordUsers;
 }
 
-async function giveUserRoles(interaction, users) {
+async function giveUserRoles(interaction, discordUsers) {
   const minPlayers = 7
-  if (users.length < minPlayers) {
+  if (discordUsers.length < minPlayers) {
     await interaction.editReply({
       content: `Error: Not enough players (need at least ${minPlayers})`,
       ephemeral: true,
@@ -93,14 +93,14 @@ async function giveUserRoles(interaction, users) {
   }
 
   const currentCharacters = await computeCharacters(
-    users.length,
+    discordUsers.length,
     interaction.guild.id
   );
-  const shuffledUsers = _.shuffle(users);
+  const shuffledUsers = _.shuffle(discordUsers);
 
-  if (currentCharacters.length !== users.length) {
+  if (currentCharacters.length !== discordUsers.length) {
     await interaction.editReply({
-      content: "ERROR: Characters do not match users",
+      content: "ERROR: Characters do not match discordUsers",
       ephemeral: true,
     });
     return;
@@ -137,6 +137,7 @@ async function giveUserRoles(interaction, users) {
       is_cub: false,
       is_dead: false,
       vampire_bites: 0,
+      has_guard: false,
     };
     switch (newCharacter) {
       case characters.FOOL:
@@ -144,9 +145,9 @@ async function giveUserRoles(interaction, users) {
         userInfo.see = true;
         break;
       case characters.CUB:
-        userInfo.is_cub = true;
         user.is_cub = true;
         user.character = characters.WEREWOLF;
+        userInfo.is_cub = true;
         userInfo.character = characters.WEREWOLF;
         break;
       case characters.BODYGUARD:
@@ -161,7 +162,9 @@ async function giveUserRoles(interaction, users) {
         userInfo.first_bite = true;
         user.is_vampire = true;
         break;
-
+      case characters.LYCAN:
+        userInfo.has_guard = true;
+        break;
       case characters.GROUCHY_GRANNY:
         userInfo.hasMuted = false;
         break;
@@ -349,7 +352,7 @@ async function createChannels(interaction, users) {
 module.exports = {
   startGame,
   removeAllGameChannels,
-  getPlayingUsers,
+  getPlayingDiscordUsers,
   channelNames,
   characters,
 };

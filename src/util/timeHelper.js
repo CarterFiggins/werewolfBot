@@ -140,9 +140,9 @@ async function dayTimeJob(interaction) {
   );
 
   message += await killPlayers(interaction, deathIds);
-
+  let starveMessage = ""
   if (game.is_baker_dead) {
-    message += await starveUser(interaction, organizedRoles, deathIds);
+    starveMessage = await starveUser(interaction, organizedRoles, deathIds);
   }
 
   await resetDayPowers(guildId)
@@ -158,7 +158,7 @@ async function dayTimeJob(interaction) {
   const backUpMessage = "No one died from a werewolf last night.\n";
 
   organizedChannels.townSquare.send(
-    `${message || backUpMessage}${vampireDeathMessages}**It is day time**`
+    `${message || backUpMessage}${starveMessage}${vampireDeathMessages}**It is day time**`
   );
 
   await checkGame(interaction);
