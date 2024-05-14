@@ -28,7 +28,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     copiedCharacter = originalUser.character;
   }
 
-  displayInGameCharacter = copiedCharacter
+  let displayInGameCharacter = copiedCharacter
   if (displayInGameCharacter === characters.LYCAN || displayInGameCharacter === characters.MUTATED ) {
     displayInGameCharacter = characters.VILLAGER
   } else if (displayInGameCharacter === characters.FOOL) {
