@@ -1,7 +1,26 @@
 const _ = require("lodash");
-const { updateUser, findAllUsers } = require("../../werewolf_db");
+const { updateUser, findAllUsers, findManyUsers } = require("../../werewolf_db");
 const { characters } = require("../commandHelpers");
 const { organizeChannels, channelNames, giveChannelPermissions } = require("../channelHelpers");
+
+async function mutePlayers(interaction) {
+  const cursorGrannies = await findManyUsers({
+    guild_id: interaction.guild.id,
+    is_dead: false,
+    character: characters.GROUCHY_GRANNY,
+  });
+  const members = interaction.guild.members.cache;
+  const grannies = await cursorGrannies.toArray()
+  for (const granny of grannies) {
+    if (granny.muteUserId) {
+      const muteMember = members.get(granny.muteUserId)
+      await castOutUser(interaction, muteMember)
+      await updateUser(granny.user_id, interaction.guild.id, {
+        muteUserId: null,
+      });
+    }
+  }
+}
 
 async function returnMutedPlayers(interaction, guildId) {
   const cursor = await findAllUsers(guildId);
@@ -15,7 +34,7 @@ async function returnMutedPlayers(interaction, guildId) {
         const organizedChannels = organizeChannels(channels);
         const member = members.get(user.user_id)
         await updateUser(user.user_id, guildId, { isMuted: false, safeFromMutes: true });
-        message = `${member} has returned`
+        message = `${member} has returned from being muted.`
         giveChannelPermissions({
           interaction,
           user: member,
@@ -68,23 +87,29 @@ async function removeSafeFromMutes(guildId) {
   );
 }
 
-async function castOutUser(interaction, user) {
+async function castOutUser(interaction, member) {
+  await updateUser(member.id, interaction.guild.id, {
+    isMuted: true,
+  });
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   await Promise.all(
     _.map(organizedChannels, async (channel) => {
       if (channel.name === channelNames.OUT_CASTS) {
-        await channel.permissionOverwrites.edit(user, {
+        await channel.permissionOverwrites.edit(member, {
           SEND_MESSAGES: true,
           VIEW_CHANNEL: true,
         });
       } else {
-        await channel.permissionOverwrites.edit(user, {
+        await channel.permissionOverwrites.edit(member, {
           SEND_MESSAGES: false,
           CREATE_PRIVATE_THREADS: false,
           CREATE_PUBLIC_THREADS: false,
           SEND_MESSAGES_IN_THREADS: false,
         });
+        if (channel.name === channelNames.TOWN_SQUARE) {
+          channel.send(`Grouchy Granny has muted ${member}. They can talk tomorrow`)
+        }
       }
     })
   );
@@ -94,4 +119,5 @@ module.exports = {
   returnMutedPlayers,
   castOutUser,
   removeSafeFromMutes,
+  mutePlayers,
 };

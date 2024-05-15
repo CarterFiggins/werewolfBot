@@ -238,7 +238,7 @@ module.exports = {
     .addSubcommand((subcommand) =>
       subcommand
         .setName(SettingCommands.HUNTER_GUARD)
-        .setDescription("ADMIN COMMAND: When hunter is attacked by werewolves it will kill one before they die and not use their shoot command.")
+        .setDescription("ADMIN COMMAND: Hunter will kill one werewolf when attacked by werewolves")
         .addBooleanOption((option) =>
           option
             .setName("activate")

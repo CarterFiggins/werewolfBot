@@ -155,7 +155,7 @@ async function sendGreeting(member, user) {
         );
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     console.log(member);
     console.log(user);
   }

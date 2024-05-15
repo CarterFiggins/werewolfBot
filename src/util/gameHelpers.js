@@ -19,7 +19,7 @@ async function startGame(interaction) {
   }
   const usersWithRoles = await giveUserRoles(interaction, playingDiscordUsers);
   // if start game returns falsy the bot will reply with an error
-  if (!users) {
+  if (!usersWithRoles) {
     return;
   }
 

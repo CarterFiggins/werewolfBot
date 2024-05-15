@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { findUsersWithIds, updateUser, findSettings } = require("../../werewolf_db");
+const { findUsersWithIds, updateUser, findSettings, findManyUsers } = require("../../werewolf_db");
 const {
   giveChannelPermissions,
   organizeChannels,
@@ -73,10 +73,11 @@ async function killPlayers(interaction, deathIds) {
             character: characters.WEREWOLF,
           });
           const werewolves = await cursorWerewolf.toArray();
-          const deadWerewolfMember = members.get(_.sample(werewolves).user_id);
+          const deadWerewolf = _.sample(werewolves)
+          const deadWerewolfMember = members.get(deadWerewolf.user_id);
           const deadWerewolfCharacter = await removesDeadPermissions(
             interaction,
-            deadUser,
+            deadWerewolf,
             deadWerewolfMember,
             organizedRoles,
           );

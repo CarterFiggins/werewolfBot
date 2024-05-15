@@ -4,7 +4,6 @@ const { getRandomBotGif, channelNames } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
-const { castOutUser } = require("../util/characterHelpers/grouchyGranny");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -32,11 +31,11 @@ module.exports = {
       return;
     }
 
-    const mutedUser = interaction.options.getUser("muted");
-    const mutedDbUser = await findUser(mutedUser.id, interaction.guild.id);
+    const muteUser = interaction.options.getUser("muted");
+    const mutedDbUser = await findUser(muteUser.id, interaction.guild.id);
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
-    const votedMember = interaction.guild.members.cache.get(mutedUser.id);
+    const votedMember = interaction.guild.members.cache.get(muteUser.id);
     const mapRoles = votedMember.roles.cache;
     const roles = mapRoles.map((role) => {
       return role.name;
@@ -45,7 +44,7 @@ module.exports = {
     if (channel.name !== channelNames.OUT_CASTS) {
       await interaction.reply({
         content:
-          "Use mute in the out_cast channel",
+          "Use mute in the out_casts channel",
         ephemeral: true,
       });
       return;
@@ -58,15 +57,15 @@ module.exports = {
       });
       return;
     }
-    if (!game.is_day) {
+    if (game.is_day) {
       await interaction.reply({
         content:
-          "It is night time. You are old and need sleep\nhttps://tenor.com/view/angry-grandpa-funny-im-old-and-i-need-sleep-gif-13658228",
+          "It is day time. You can only mute at night",
         ephemeral: true,
       });
       return;
     }
-    if (mutedUser.bot) {
+    if (muteUser.bot) {
       await interaction.reply({
         content: `You can't mute me!\n${getRandomBotGif()}`,
         ephemeral: true,
@@ -75,12 +74,12 @@ module.exports = {
     }
     if (!roles.includes(roleNames.ALIVE)) {
       await interaction.reply({
-        content: `${mutedUser} can not be muted. They are either dead or not playing this round`,
+        content: `${muteUser} can not be muted. They are either dead or not playing this round`,
         ephemeral: true,
       });
       return;
     }
-    if (mutedUser.id === interaction.user.id) { 
+    if (muteUser.id === interaction.user.id) { 
       await interaction.reply({
         content: `Stop muting yourself! try again!`,
         ephemeral: true,
@@ -89,14 +88,14 @@ module.exports = {
     }
     if (mutedDbUser.isMuted === true) { 
       await interaction.reply({
-        content: `Player already muted`,
+        content: `Player currently muted`,
         ephemeral: true,
       });
       return;
     }
     if (mutedDbUser.safeFromMutes === true) { 
       await interaction.reply({
-        content: `Player is safe from mutes. Go mute someone else`,
+        content: `Player has already been muted this game. Try again`,
         ephemeral: true,
       });
       return;
@@ -104,18 +103,11 @@ module.exports = {
 
 
     await updateUser(interaction.user.id, interaction.guild.id, {
-      hasMuted: true,
-    });
-    await updateUser(mutedUser.id, interaction.guild.id, {
-      isMuted: true,
-    });
-
-    await castOutUser(interaction, mutedUser)
-
-    await channel.send(`Grouchy Granny has muted ${mutedUser}. They can talk tomorrow`)
+      muteUserId: muteUser.id
+    })
 
     await interaction.reply({
-      content: `successfully muted ${mutedUser}`,
+      content: `You are going to mute ${muteUser}`,
       ephemeral: true,
     });
   },

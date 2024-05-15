@@ -25,7 +25,7 @@ const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
-const { returnMutedPlayers } = require("./characterHelpers/grouchyGranny");
+const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -126,6 +126,7 @@ async function dayTimeJob(interaction) {
   await copyCharacters(interaction);
   await cursePlayers(interaction);
   await returnMutedPlayers(interaction, guildId);
+  await mutePlayers(interaction, guildId)
 
   const guardedIds = await guardPlayers(interaction);
 
