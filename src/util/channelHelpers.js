@@ -1,6 +1,7 @@
 const _ = require("lodash");
 const { findSettings } = require("../werewolf_db");
 const { characters } = require("./commandHelpers");
+const { ChannelType, PermissionsBitField } = require("discord.js");
 
 const channelNames = {
   THE_TOWN: "the-town",
@@ -103,7 +104,7 @@ function organizeChannels(channels) {
       case channelNames.WEREWOLVES:
         channelObject.werewolves = channel;
         break;
-      case channelNames.INVESTIGATE:
+      case channelNames.SEER:
         channelObject.seer = channel;
         break;
       case channelNames.AFTER_LIFE:
@@ -136,11 +137,11 @@ async function removeChannelPermissions(interaction, user) {
     _.map(organizedChannels, async (channel) => {
       if (channel.name !== channelNames.AFTER_LIFE) {
         await channel.permissionOverwrites.edit(user, {
-          SEND_MESSAGES: false,
-          CREATE_PRIVATE_THREADS: false,
-          CREATE_PUBLIC_THREADS: false,
-          SEND_MESSAGES_IN_THREADS: false,
-          VIEW_CHANNEL: true,
+          SendMessages: false,
+          CreatePrivateThreads: false,
+          CreatePublicThreads: false,
+          SendMessagesInThreads: false,
+          ViewChannel: true,
         });
       }
     })
@@ -191,9 +192,9 @@ async function giveChannelPermissions({
   }
 
   await channel.permissionOverwrites.edit(user, {
-    SEND_MESSAGES: true,
-    VIEW_CHANNEL: true,
-    ADD_REACTIONS: guildSettings.allow_reactions,
+    SendMessages: true,
+    ViewChannel: true,
+    AddReactions: guildSettings.allow_reactions,
   });
 
   if (message) {
@@ -203,24 +204,26 @@ async function giveChannelPermissions({
 }
 
 async function createChannel(interaction, name, permissionOverwrites, parent) {
-  return await interaction.guild.channels.create(name, {
+  return await interaction.guild.channels.create({
+    name,
     parent,
-    type: "GUILD_TEXT",
+    type: ChannelType.GuildText,
     permissionOverwrites,
   });
 }
 
 async function createCategory(interaction, name) {
-  return await interaction.guild.channels.create(name, {
-    type: "GUILD_CATEGORY",
+  return await interaction.guild.channels.create({
+    name,
+    type: ChannelType.GuildCategory,
   });
 }
 
 async function createPermissions(users, character, guildSettings) {
-  let allow = ["SEND_MESSAGES", "VIEW_CHANNEL"];
+  let allow = [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel];
 
   if (guildSettings.allow_reactions) {
-    allow.push("ADD_REACTIONS");
+    allow.push(PermissionsBitField.Flags.AddReactions);
   }
 
   return users

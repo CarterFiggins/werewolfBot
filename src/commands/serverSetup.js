@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
@@ -9,7 +10,8 @@ const {
 } = require("../util/rolesHelpers");
 const { findSettings, createSettings } = require("../werewolf_db");
 const { createChannel } = require("../util/channelHelpers");
-const { howToPlayIntro, howToPlayRoles, villagerTeam, villagerRoleList, werewolfTeam, vampireTeam, undeterminedTeam } = require("../util/botMessages/howToPlay");
+const { howToPlayIntro, howToPlayRoles, villagerTeam, villagerRoleList, werewolfTeam, vampireTeam, undeterminedTeam, otherRoleList } = require("../util/botMessages/howToPlay");
+const { PermissionsBitField } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -39,18 +41,18 @@ module.exports = {
     const adminRole = await getRole(interaction, roleNames.ADMIN);
     const adminPermissions = {
       id: adminRole.id,
-      allow: ["ADMINISTRATOR"],
+      allow: [PermissionsBitField.Flags.Administrator],
     };
     const nonPlayersPermissions = {
       id: interaction.guild.id,
       deny: [
-        "SEND_MESSAGES",
-        "ADD_REACTIONS",
-        "CREATE_PRIVATE_THREADS",
-        "CREATE_PUBLIC_THREADS",
-        "SEND_MESSAGES_IN_THREADS",
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.AddReactions,
+        PermissionsBitField.Flags. CreatePrivateThreads,
+        PermissionsBitField.Flags. CreatePublicThreads,
+        PermissionsBitField.Flags. SendMessagesInThreads,
       ],
-      allow: ["VIEW_CHANNEL"],
+      allow: [PermissionsBitField.Flags.ViewChannel],
     };
 
     const howToPlayChannelName = "how-to-play";
@@ -76,16 +78,25 @@ module.exports = {
       await howToPlayChannel.send(howToPlayRoles);
       await howToPlayChannel.send(villagerTeam);
 
-      const rolesThread = await howToPlayChannel.threads.create({
+      const villagerRolesThread = await howToPlayChannel.threads.create({
         name: 'Villager Team Roles',
       });
-      for(role of villagerRoleList) {
-        await rolesThread.send(role)
-      }
+      
+      await Promise.all(_.map(villagerRoleList, async (role) => {
+        await villagerRolesThread.send(role)
+      }));
 
       await howToPlayChannel.send(werewolfTeam);
       await howToPlayChannel.send(vampireTeam);
       await howToPlayChannel.send(undeterminedTeam);
+
+      const otherRolesThread = await howToPlayChannel.threads.create({
+        name: 'Other Roles',
+      });
+      
+      await Promise.all(_.map(otherRoleList, async (role) => {
+        await otherRolesThread.send(role)
+      }));
     }
 
     if (!commandsChannel) {

@@ -43,7 +43,7 @@ module.exports = {
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
     const seerUser = await findUser(interaction.user.id, interaction.guild.id);
 
-    if (channel.name !== channelNames.INVESTIGATE) {
+    if (channel.name !== channelNames.SEER) {
       await interaction.reply({
         content: "Your magic only works in the seer channel",
         ephemeral: true,

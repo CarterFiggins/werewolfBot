@@ -251,7 +251,7 @@ async function nightTimeJob(interaction) {
   let deathMessage = settings.hard_mode ? '' : `The town has killed a **${deathCharacter}**\n`;
 
   if (deadUser.character === characters.HUNTER) {
-    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.`;
+    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
   }
 
   await updateGame(guildId, {

@@ -68,8 +68,8 @@ async function returnMutedPlayers(interaction, guildId) {
 
         if (user.character !== characters.GROUCHY_GRANNY) {
           await organizedChannels.outCasts.permissionOverwrites.edit(member, {
-            SEND_MESSAGES: false,
-            VIEW_CHANNEL: false,
+            SendMessages: false,
+            ViewChannel: false,
           });
         }
       }
@@ -97,15 +97,15 @@ async function castOutUser(interaction, member) {
     _.map(organizedChannels, async (channel) => {
       if (channel.name === channelNames.OUT_CASTS) {
         await channel.permissionOverwrites.edit(member, {
-          SEND_MESSAGES: true,
-          VIEW_CHANNEL: true,
+          SendMessages: true,
+          ViewChannel: true,
         });
       } else {
         await channel.permissionOverwrites.edit(member, {
-          SEND_MESSAGES: false,
-          CREATE_PRIVATE_THREADS: false,
-          CREATE_PUBLIC_THREADS: false,
-          SEND_MESSAGES_IN_THREADS: false,
+          SendMessages: false,
+          CreatePrivateThreads: false,
+          CreatePublicThreads: false,
+          SendMessagesInThreads: false,
         });
         if (channel.name === channelNames.TOWN_SQUARE) {
           channel.send(`Grouchy Granny has muted ${member}. They can talk tomorrow`)

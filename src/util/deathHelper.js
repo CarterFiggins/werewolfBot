@@ -148,7 +148,7 @@ async function hunterShootingLimitJob(
   const organizedChannels = organizeChannels(channels);
   let message = "";
   if (shotUser.character === characters.HUNTER) {
-    message = `${shotMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
+    message = `${shotMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.\n`;
   }
   await organizedChannels.townSquare.send(
     `${deadHunterMember} didn't have time to shoot and died. They dropped their gun and it shot the ${deadCharacter} named ${shotMember}\n${message}\n`

@@ -46,56 +46,61 @@ _All alive players can communicate in the town square and vote to lynch a player
   `,
 
 
-  villagerRoleList: [`### Villager
+  villagerRoleList: {
+    villager: `### Villager
 * A regular villager.
 * Channels: none
-* Commands: none
-  
-### Bodyguard
+* Commands: none`,
+
+    bodyguard:`### Bodyguard
 * At night, the bodyguard may guard a player. If the guarded player is targeted, the attack will fail. If the bodyguard protects a vampire, (s)he will find out that the player is a vampire. If a bodyguard protects a player from an attack, (s)he will know the vampire who tried to attack the player. If the bodyguard guards the witch, (s)he will be told the witch is a vampire.
 * Channels: bodyguard (potentially mason)
-* Commands: \`/guard\`
+* Commands: \`/guard\``,
 
-### Seer
+    seer: `### Seer
 * At night the seer may choose someone to investigate. Lycans and werewolves will appear as werewolves and vampires and villagers will appear as villagers.
 * Channels: seer
-* Commands: \`/investigate\`
+* Commands: \`/investigate\``,
 
-### Fool 
+    fool: `### Fool 
 * The fool is told (s)he is the seer but when investigating, (s)he will receive a random answer. The fool and the seer are in the same channel, and together they figure out which of them is the real seer.
 * Channels: seer
-* Commands: \`/investigate\`
+* Commands: \`/investigate\``,
 
-### Apprentice Seer
+    apprenticeSeer: `### Apprentice Seer
 * The apprentice seer takes over the seer role if the seer is killed. If the fool is still alive when the seer dies, the fool and seer characters will be shuffled. The apprentice may become the fool or the seer, and the former fool will take the other role.
 * Channels: seer
-* Commands \`/investigate\`
+* Commands \`/investigate\``,
 
-### Mason
+    mason: `### Mason
 * The masons are a secret group of villagers with no powers aside from being in this exclusive club. If the bodyguard guards a mason, the bodyguard will join the group. They work together to determine which other villagers can be trusted.
 * Channels: mason
-* Commands: none
-`,
-`
-### Baker
+* Commands: none`,
+    baker: `### Baker
 * The baker makes bread for the village. If the baker dies, the villagers start to starve to death. After the death of the baker, one villager will die every morning. The werewolves, the witch, the vampires, and the hunter(s) will not starve.
 * Channels: none
-* Commands: none
+* Commands: none`,
 
-### Hunter
+    hunter: `### Hunter
 * When the hunter is killed, whoever they have been targeting will be shot and killed. The hunter is immune to starvation.
 * Channels: hunting-party
-* Commands: /shoot
+* Commands: /shoot`,
 
-### Lycan
+    lycaon: `### Lycan
 * Lycans will be told they are regular villagers. However, they will appear to the seer as werewolves.
 * Channels: none
-* Commands: none
+* Commands: none`,
 
-### Cursed Villager
+    mutatedVillager: `### Mutated Villager
 * A cursed villager will be told (s)he is a regular villager and is initially on the villager team. If attacked by a werewolf, the cursed villager will turn into a werewolf. If bitten by a vampire, the cursed villager will turn into a vampire king.
 * Channels: none
-* Commands: none
-`,
-],
+* Commands: none`,
+  },
+
+  otherRoleList: {
+    werewolf: `### Werewolf
+* A wolf.
+* Channels: werewolf
+* Commands: kill`,
+  },
 }
