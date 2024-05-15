@@ -25,7 +25,7 @@ const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
-const { returnMutedPlayers } = require("./characterHelpers/grouchyGranny");
+const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -126,6 +126,7 @@ async function dayTimeJob(interaction) {
   await copyCharacters(interaction);
   await cursePlayers(interaction);
   await returnMutedPlayers(interaction, guildId);
+  await mutePlayers(interaction, guildId)
 
   const guardedIds = await guardPlayers(interaction);
 
@@ -140,9 +141,9 @@ async function dayTimeJob(interaction) {
   );
 
   message += await killPlayers(interaction, deathIds);
-
+  let starveMessage = ""
   if (game.is_baker_dead) {
-    message += await starveUser(interaction, organizedRoles, deathIds);
+    starveMessage = await starveUser(interaction, organizedRoles, deathIds);
   }
 
   await resetDayPowers(guildId)
@@ -158,7 +159,7 @@ async function dayTimeJob(interaction) {
   const backUpMessage = "No one died from a werewolf last night.\n";
 
   organizedChannels.townSquare.send(
-    `${message || backUpMessage}${vampireDeathMessages}**It is day time**`
+    `${message || backUpMessage}${starveMessage}${vampireDeathMessages}**It is day time**`
   );
 
   await checkGame(interaction);

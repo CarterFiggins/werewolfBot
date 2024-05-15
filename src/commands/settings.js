@@ -22,6 +22,7 @@ const SettingCommands = {
   KING_VICTIM_ATTACK_SAFE: "king_victim_attack_safe",
   VIEW: "view",
   BODYGUARD_JOINS_MASONS: "bodyguard_joins_masons",
+  HUNTER_GUARD: "hunter_guard"
 };
 
 module.exports = {
@@ -227,6 +228,17 @@ module.exports = {
       subcommand
         .setName(SettingCommands.BODYGUARD_JOINS_MASONS)
         .setDescription("ADMIN COMMAND: The Bodyguard can join the masons")
+        .addBooleanOption((option) =>
+          option
+            .setName("activate")
+            .setRequired(true)
+            .setDescription("Set setting true or false")
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName(SettingCommands.HUNTER_GUARD)
+        .setDescription("ADMIN COMMAND: Hunter will kill one werewolf when attacked by werewolves")
         .addBooleanOption((option) =>
           option
             .setName("activate")

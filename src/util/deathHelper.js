@@ -20,14 +20,15 @@ async function removesDeadPermissions(
   interaction,
   deadUser,
   deadMember,
-  organizedRoles
+  organizedRoles,
+  hunterGuard,
 ) {
   const guildId = interaction.guild.id;
   let deadCharacter = deadUser.character;
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const settings = await findSettings(guildId);
-  if (deadCharacter === characters.HUNTER && !deadUser.is_dead) {
+  if (deadCharacter === characters.HUNTER && !deadUser.is_dead && !hunterGuard) {
     await updateUser(deadUser.user_id, guildId, {
       can_shoot: true,
       is_dead: true,

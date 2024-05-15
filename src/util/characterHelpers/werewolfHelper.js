@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { findUsersWithIds, updateUser, findSettings } = require("../../werewolf_db");
+const { findUsersWithIds, updateUser, findSettings, findManyUsers } = require("../../werewolf_db");
 const {
   giveChannelPermissions,
   organizeChannels,
@@ -52,6 +52,11 @@ async function killPlayers(interaction, deathIds) {
           `You did not kill ${deadMember} because they are the witch! They have joined the channel`
         );
         isDead = false;
+      } else if (deadUser.has_guard) {
+        await updateUser(deadUser.user_id, interaction.guild.id, {
+          has_guard: false,
+        });
+        isDead = false;
       }
 
       if (isDead) {
@@ -59,10 +64,26 @@ async function killPlayers(interaction, deathIds) {
           interaction,
           deadUser,
           deadMember,
-          organizedRoles
+          organizedRoles,
+          settings.hunter_guard
         );
-        if (deadUser.character === characters.HUNTER) {
-          message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+        if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
+          const cursorWerewolf = await findManyUsers({
+            guild_id: interaction.guild.id,
+            character: characters.WEREWOLF,
+          });
+          const werewolves = await cursorWerewolf.toArray();
+          const deadWerewolf = _.sample(werewolves)
+          const deadWerewolfMember = members.get(deadWerewolf.user_id);
+          const deadWerewolfCharacter = await removesDeadPermissions(
+            interaction,
+            deadWerewolf,
+            deadWerewolfMember,
+            organizedRoles,
+          );
+          message += `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they were able to kill the ${deadWerewolfCharacter} named ${deadWerewolfMember}\n`;
+        } else if (deadUser.character === characters.HUNTER) { 
+           message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
         } else {
           message += `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
         }
