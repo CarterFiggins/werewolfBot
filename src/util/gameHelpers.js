@@ -11,6 +11,7 @@ const { timeScheduling } = require("./timeHelper");
 const computeCharacters = require("./computeCharacters");
 const { sendGreeting, characters } = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
+const { PermissionsBitField } = require("discord.js");
 
 async function startGame(interaction) {
   const playingDiscordUsers = await getPlayingDiscordUsers(interaction);
@@ -181,7 +182,7 @@ async function removeAllGameChannels(channels) {
       switch (channel.name) {
         case channelNames.TOWN_SQUARE:
         case channelNames.WEREWOLVES:
-        case channelNames.INVESTIGATE:
+        case channelNames.SEER:
         case channelNames.MASON:
         case channelNames.AFTER_LIFE:
         case channelNames.THE_TOWN:
@@ -211,33 +212,33 @@ async function createChannels(interaction, users) {
   );
 
   const threadPermissions = [
-    "CREATE_PRIVATE_THREADS",
-    "CREATE_PUBLIC_THREADS",
-    "SEND_MESSAGES_IN_THREADS",
+    PermissionsBitField.Flags. CreatePrivateThreads,
+    PermissionsBitField.Flags. CreatePublicThreads,
+    PermissionsBitField.Flags. SendMessagesInThreads,
   ];
 
   const guildSettings = await findSettings(interaction.guild.id);
   const nonPlayersPermissions = {
     id: interaction.guild.id,
-    deny: ["SEND_MESSAGES", "ADD_REACTIONS", ...threadPermissions],
-    allow: ["VIEW_CHANNEL"],
+    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AddReactions, ...threadPermissions],
+    allow: [PermissionsBitField.Flags.ViewChannel],
   };
 
   const deadPermissions = {
     id: deadRole.id,
-    deny: ["SEND_MESSAGES", "ADD_REACTIONS", ...threadPermissions],
-    allow: ["VIEW_CHANNEL"],
+    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AddReactions, ...threadPermissions],
+    allow: [PermissionsBitField.Flags.ViewChannel],
   };
 
   const denyAlivePermissions = {
     id: aliveRole.id,
-    deny: ["SEND_MESSAGES", "VIEW_CHANNEL", ...threadPermissions],
+    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, ...threadPermissions],
   };
 
-  let allow = ["SEND_MESSAGES", "VIEW_CHANNEL"];
+  let allow = [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel];
 
   if (guildSettings.allow_reactions) {
-    allow.push("ADD_REACTIONS");
+    allow.push(PermissionsBitField.Flags.AddReactions);
   }
   townSquarePermissions = [
     nonPlayersPermissions,
@@ -284,11 +285,11 @@ async function createChannels(interaction, users) {
     nonPlayersPermissions,
     {
       id: aliveRole.id,
-      deny: ["SEND_MESSAGES", "VIEW_CHANNEL", ...threadPermissions],
+      deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, ...threadPermissions],
     },
     {
       id: deadRole.id,
-      allow: ["SEND_MESSAGES", "VIEW_CHANNEL", "ADD_REACTIONS"],
+      allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AddReactions],
     },
   ];
 
@@ -307,7 +308,7 @@ async function createChannels(interaction, users) {
   );
   await createChannel(
     interaction,
-    channelNames.INVESTIGATE,
+    channelNames.SEER,
     seerPermissions,
     category
   );
