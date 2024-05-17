@@ -11,7 +11,7 @@ const {
 const { findSettings, createSettings } = require("../werewolf_db");
 const { createChannel } = require("../util/channelHelpers");
 const { howToPlayIntro, howToPlayRoles, villagerTeam, villagerRoleList, werewolfTeam, vampireTeam, undeterminedTeam, otherRoleList } = require("../util/botMessages/howToPlay");
-const { PermissionsBitField } = require("discord.js");
+const { PermissionsBitField, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -76,6 +76,24 @@ module.exports = {
       );
       await howToPlayChannel.send(howToPlayIntro);
       await howToPlayChannel.send(howToPlayRoles);
+
+      const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId(interaction.id)
+        .setPlaceholder("Select Role")
+        .setMinValues(0)
+        .setMaxValues(1)
+        .addOptions(_.map(villagerRoleList, (role) => new StringSelectMenuOptionBuilder()
+          .setLabel(role.label)
+          .setDescription("get role description")
+          .setValue(role.label)
+          .setEmoji(role.emoji)
+        ))
+      
+      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
+      await howToPlayChannel.send({
+        components: [actionRow],
+      })
+
       await howToPlayChannel.send(villagerTeam);
 
       const villagerRolesThread = await howToPlayChannel.threads.create({
@@ -83,7 +101,7 @@ module.exports = {
       });
       
       await Promise.all(_.map(villagerRoleList, async (role) => {
-        await villagerRolesThread.send(role)
+        await villagerRolesThread.send(role.description)
       }));
 
       await howToPlayChannel.send(werewolfTeam);
@@ -93,9 +111,9 @@ module.exports = {
       const otherRolesThread = await howToPlayChannel.threads.create({
         name: 'Other Roles',
       });
-      
+
       await Promise.all(_.map(otherRoleList, async (role) => {
-        await otherRolesThread.send(role)
+        await otherRolesThread.send(role.description)
       }));
     }
 

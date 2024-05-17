@@ -13,6 +13,7 @@ mongoUtil.connectToServer(function (err, mongoClient) {
       GatewayIntentBits.GuildMessages,
       GatewayIntentBits.DirectMessages,
       GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.MessageContent,
     ],
     partials: ["CHANNEL"],
   });
