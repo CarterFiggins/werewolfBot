@@ -102,7 +102,7 @@ _All alive players can communicate in the town square and vote to lynch a player
       emoji: '🧑‍🍳',
       team: 'villager',
       description: `### Baker
-* The baker makes bread for the village. If the baker dies, the villagers start to starve to death. After the death of the baker, one villager will die every morning. The werewolves, the witch, the vampires, and the hunter(s) will not starve.
+* The baker makes bread for the village. If the baker dies, the villagers start to starve to death. After the death of the baker, one villager will die every morning. The werewolves, the vampires, and the hunter(s) will not starve.
 * Channels: none
 * Commands: none`
     },
