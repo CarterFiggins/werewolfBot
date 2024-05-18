@@ -16,6 +16,12 @@ const channelNames = {
   OUT_CASTS: "out-casts",
 };
 
+const setupChannelNames = {
+  HOW_TO_PLAY: "how-to-play",
+  PLAYER_ROLES: "player-roles",
+  COMMANDS: "commands",
+}
+
 async function sendStartMessages(interaction, users) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
@@ -278,6 +284,7 @@ module.exports = {
   getRandomBotGif,
   joinMasons,
   channelNames,
+  setupChannelNames,
 };
 
 const townSquareStart =

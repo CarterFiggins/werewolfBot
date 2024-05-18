@@ -32,6 +32,17 @@ mongoUtil.connectToServer(function (err, mongoClient) {
     // With the key as the command name and the value as the exported module
     client.commands.set(command.data.name, command);
   }
+  // ****************************
+  // *** Select Menu Handling ***
+  // ****************************
+  client.selectMenus = new Collection();
+  const menuFiles = fs
+  .readdirSync("./src/menus")
+  .filter((file) => file.endsWith(".js"));
+  for (const file of menuFiles) {
+    const menu = require(`./menus/${file}`);
+    client.selectMenus.set(menu.name, menu);
+  }
   // **************************
   // ***** Event Handling *****
   // **************************

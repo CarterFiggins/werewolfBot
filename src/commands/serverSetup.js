@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { PermissionsBitField, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require("discord.js");
 const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
 const {
@@ -9,9 +10,8 @@ const {
   roleNames,
 } = require("../util/rolesHelpers");
 const { findSettings, createSettings } = require("../werewolf_db");
-const { createChannel } = require("../util/channelHelpers");
-const { howToPlayIntro, howToPlayRoles, villagerTeam, villagerRoleList, werewolfTeam, vampireTeam, undeterminedTeam, otherRoleList } = require("../util/botMessages/howToPlay");
-const { PermissionsBitField, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require("discord.js");
+const { createChannel, setupChannelNames } = require("../util/channelHelpers");
+const { howToPlayIntro, howToPlayRoles, villagerTeam, roleList, werewolfTeam, vampireTeam, undeterminedTeam } = require("../util/botMessages/howToPlay");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -55,76 +55,68 @@ module.exports = {
       allow: [PermissionsBitField.Flags.ViewChannel],
     };
 
-    const howToPlayChannelName = "how-to-play";
-    const commandsChannelName = "commands";
-    let howToPlayChannel;
-    let commandsChannel;
+    const setupChannels = {}
 
     channels.map(async (channel) => {
-      if (channel.name === howToPlayChannelName) {
-        howToPlayChannel = channel;
-      } else if (channel.name === commandsChannelName) {
-        commandsChannel = channel;
+      if (channel.name === setupChannelNames.HOW_TO_PLAY) {
+        setupChannels.howToPlay = channel;
+      } else if (channel.name === setupChannelNames.COMMANDS) {
+        setupChannels.commands = channel;
+      } else if (channel.name === setupChannelNames.PLAYER_ROLES) {
+        setupChannels.playerRoles = channel
       }
     });
 
-    if (!howToPlayChannel) {
-      howToPlayChannel = await createChannel(
+    if (!setupChannels.howToPlay) {
+      setupChannels.howToPlay = await createChannel(
         interaction,
-        howToPlayChannelName,
+        setupChannelNames.HOW_TO_PLAY,
         [adminPermissions, nonPlayersPermissions]
       );
-      await howToPlayChannel.send(howToPlayIntro);
-      await howToPlayChannel.send(howToPlayRoles);
+      await setupChannels.howToPlay.send(howToPlayIntro);
+      await setupChannels.howToPlay.send(howToPlayRoles);
+      await setupChannels.howToPlay.send(villagerTeam);
+      await setupChannels.howToPlay.send(werewolfTeam);
+      await setupChannels.howToPlay.send(vampireTeam);
+      await setupChannels.howToPlay.send(undeterminedTeam);
 
       const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId(interaction.id)
-        .setPlaceholder("Select Role")
-        .setMinValues(0)
-        .setMaxValues(1)
-        .addOptions(_.map(villagerRoleList, (role) => new StringSelectMenuOptionBuilder()
-          .setLabel(role.label)
-          .setDescription("get role description")
-          .setValue(role.label)
-          .setEmoji(role.emoji)
-        ))
-      
-      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
-      await howToPlayChannel.send({
-        components: [actionRow],
-      })
-
-      await howToPlayChannel.send(villagerTeam);
-
-      const villagerRolesThread = await howToPlayChannel.threads.create({
-        name: 'Villager Team Roles',
-      });
-      
-      await Promise.all(_.map(villagerRoleList, async (role) => {
-        await villagerRolesThread.send(role.description)
-      }));
-
-      await howToPlayChannel.send(werewolfTeam);
-      await howToPlayChannel.send(vampireTeam);
-      await howToPlayChannel.send(undeterminedTeam);
-
-      const otherRolesThread = await howToPlayChannel.threads.create({
-        name: 'Other Roles',
-      });
-
-      await Promise.all(_.map(otherRoleList, async (role) => {
-        await otherRolesThread.send(role.description)
-      }));
+      .setCustomId("roles")
+      .setPlaceholder("Select Role")
+      .setMinValues(1)
+      .setMaxValues(1)
+      .addOptions(_.map(roleList, (role) => new StringSelectMenuOptionBuilder()
+        .setLabel(role.label)
+        .setDescription(`team ${role.team}`)
+        .setValue(role.label)
+        .setEmoji(role.emoji)
+      ))
+    
+    const actionRow = new ActionRowBuilder().addComponents(selectMenu)
+    await setupChannels.howToPlay.send({
+      components: [actionRow],
+    })
     }
 
-    if (!commandsChannel) {
-      commandsChannel = await createChannel(interaction, commandsChannelName, [
+    if (!setupChannels.playerRoles) {
+        setupChannels.playerRoles = await createChannel(interaction, setupChannelNames.PLAYER_ROLES, [
         adminPermissions,
         nonPlayersPermissions,
       ]);
-      await commandsChannel.send(commands1);
-      await commandsChannel.send(commands2);
-      await commandsChannel.send(commands3);
+      
+      await Promise.all(_.map(roleList, async (role) => {
+        await setupChannels.playerRoles.send(role.description)
+      }));
+    }
+
+    if (!setupChannels.commands) {
+      setupChannels.commands = await createChannel(interaction, setupChannelNames.COMMANDS, [
+        adminPermissions,
+        nonPlayersPermissions,
+      ]);
+      await setupChannels.commands.send(commands1);
+      await setupChannels.commands.send(commands2);
+      await setupChannels.commands.send(commands3);
     }
 
     if (!settings) {
