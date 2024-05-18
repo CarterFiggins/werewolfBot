@@ -176,23 +176,8 @@ async function resetNightPowers(guildId) {
   );
 }
 
-async function resetDayPowers(guildId) {
-  const cursor = await findAllUsers(guildId);
-  const users = await cursor.toArray();
-  await Promise.all(
-    users.map(async (user) => {
-      switch (user.character) {
-        case characters.GROUCHY_GRANNY:
-          await updateUser(user.user_id, guildId, { hasMuted: false });
-          break;
-      }
-    })
-  );
-}
-
 module.exports = {
   resetNightPowers,
-  resetDayPowers,
   sendGreeting,
   commandNames,
   characters,

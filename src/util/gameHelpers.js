@@ -166,9 +166,6 @@ async function giveUserRoles(interaction, discordUsers) {
       case characters.LYCAN:
         userInfo.has_guard = true;
         break;
-      case characters.GROUCHY_GRANNY:
-        userInfo.hasMuted = false;
-        break;
     }
     dbUsers.push(userInfo);
   }

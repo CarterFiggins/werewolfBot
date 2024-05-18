@@ -3,7 +3,7 @@ const _ = require("lodash");
 const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
 const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
-const { resetNightPowers, characters, resetDayPowers } = require("./commandHelpers");
+const { resetNightPowers, characters } = require("./commandHelpers");
 const {
   findGame,
   updateGame,
@@ -26,6 +26,7 @@ const {
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
+const { investigatePlayers } = require("./characterHelpers/seerHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -146,7 +147,7 @@ async function dayTimeJob(interaction) {
     starveMessage = await starveUser(interaction, organizedRoles, deathIds);
   }
 
-  await resetDayPowers(guildId)
+  await investigatePlayers(interaction)
 
   await updateGame(guildId, {
     user_death_id: null,

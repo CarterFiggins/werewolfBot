@@ -116,7 +116,11 @@ module.exports = {
         targetedCharacter = "Werewolf! watch out for this guy.";
       }
 
-      await interaction.reply(`${targetedUser} is a ${targetedCharacter}`);
+      await updateUser(interaction.user.id, interaction.guild.id, {
+        investigateUserId: targetedUser.id
+      })
+
+      await interaction.reply(`You are going to investigate ${targetedUser}`);
     }
   },
 };
