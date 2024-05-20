@@ -133,6 +133,7 @@ module.exports = {
         random_cards: false,
         hard_mode: false,
         bodyguard_joins_masons: true,
+        seer_joins_masons: false,
         // vampire settings
         allow_vampires: false,
         allow_first_bite: false,

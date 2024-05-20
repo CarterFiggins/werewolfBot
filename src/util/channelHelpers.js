@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { findSettings } = require("../werewolf_db");
+const { findSettings, updateUser } = require("../werewolf_db");
 const { characters } = require("./commandHelpers");
 const { ChannelType, PermissionsBitField } = require("discord.js");
 
@@ -250,12 +250,12 @@ function onDmChannel(interaction) {
 
 async function joinMasons({
   interaction,
-  guardedUser,
+  targetUser,
   player,
   playerMember,
   roleName,
 }) {
-  if (guardedUser.character === characters.MASON && !player.on_mason_channel) {
+  if (targetUser.character === characters.MASON && !player.on_mason_channel) {
     await updateUser(player.user_id, interaction.guild.id, {
       on_mason_channel: true,
     });

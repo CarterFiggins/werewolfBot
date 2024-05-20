@@ -32,9 +32,9 @@ async function guardPlayers(interaction) {
       if (settings.bodyguard_joins_masons) {
         await joinMasons({
           interaction,
-          guardedUser,
-          bodyguard,
-          bodyguardMember: members.get(bodyguard.user_id),
+          targetUser: guardedUser,
+          player: bodyguard,
+          playerMember: members.get(bodyguard.user_id),
           roleName: "bodyguard",
         });
       }

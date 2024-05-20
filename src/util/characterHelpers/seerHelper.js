@@ -1,6 +1,6 @@
 const _ = require("lodash");
-const { updateUser, findManyUsers, findUser } = require("../../werewolf_db");
-const { giveChannelPermissions, organizeChannels } = require("../channelHelpers");
+const { updateUser, findManyUsers, findUser, findSettings } = require("../../werewolf_db");
+const { giveChannelPermissions, organizeChannels, joinMasons } = require("../channelHelpers");
 const { characters } = require("../commandHelpers");
 
 async function shuffleSeers(interaction, organizedChannels) {
@@ -98,6 +98,7 @@ async function sendInvestigateMessage(interaction, seer) {
   const member = members.get(seer.investigateUserId)
   const seerMember = members.get(seer.user_id)
   const targetDbUser = await findUser(seer.investigateUserId, interaction.guild?.id);
+  const guildSettings = await findSettings(interaction.guild.id);
   let revealedCharacter = "villager!"
   if (seer.character === characters.FOOL) {
     const randomNumber = _.random(1, 3);
@@ -111,6 +112,15 @@ async function sendInvestigateMessage(interaction, seer) {
       targetDbUser.character === characters.LYCAN
     ) {
       revealedCharacter = "werewolf!";
+    }
+    if (guildSettings.seer_joins_masons) {
+      await joinMasons({
+        interaction,
+        targetUser: targetDbUser,
+        player: seer,
+        playerMember: seerMember,
+        roleName: characters.SEER,
+      });
     }
   }
 
