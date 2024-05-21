@@ -113,7 +113,7 @@ _All alive players can communicate in the town square and vote to lynch a player
       description: `### Hunter
 * When the hunter is killed, whoever they have been targeting will be shot and killed. The hunter is immune to starvation.
 * Channels: hunting-party
-* Commands: /shoot`
+* Commands: \`/shoot\``
     },
     {
       label: 'Lycan',
@@ -129,16 +129,16 @@ _All alive players can communicate in the town square and vote to lynch a player
       emoji: '👵',
       team: 'villager',
       description: `### Grouchy Granny
-    * A cursed grouchy granny
+    * The grouchy granny is a villager with a sharp tongue. Each night, she can choose to mute one player, preventing them from speaking the next day.
     * Channels: out-casts
-    * Commands: mute`
+    * Commands: \`/mute\``
     },
     {
       label: 'Mutated Villager',
       emoji: '☣️',
       team: 'villager/werewolf',
       description: `### Mutated Villager
-* A cursed villager will be told (s)he is a regular villager and is initially on the villager team. If attacked by a werewolf, the cursed villager will turn into a werewolf. If bitten by a vampire, the cursed villager will turn into a vampire king.
+* A mutated villager will be told (s)he is a regular villager and is initially on the villager team. If attacked by a werewolf, the mutated villager will turn into a werewolf. If bitten by a vampire, the mutated villager will turn into a vampire king.
 * Channels: none
 * Commands: none`
     },
@@ -147,45 +147,45 @@ _All alive players can communicate in the town square and vote to lynch a player
       emoji: '🐺',
       team: 'werewolf',
       description: `### Werewolf
-* A wolf.
+* At night, werewolves will target one player to kill. They can communicate with each other and strategize their attacks.
 * Channels: werewolf
-* Commands: kill`,
+* Commands: \`kill\``,
     },
     {
       label: 'Werewolf Cub',
       emoji: '🐺',
       team: 'werewolf',
       description: `### Werewolf Cub
-* A wolf cub.
+* The werewolf cub is a younger werewolf. If the werewolf cub is killed, the werewolves will be enraged and can make two kills the following night.
 * Channels: werewolf
-* Commands: kill`,
+* Commands: \`kill\``,
     },
     {
       label: 'Doppelganger',
       emoji: '©️',
       team: 'unknown',
       description: `### Doppelganger
-* A doppelganger.
-* Channels: unknown
-* Commands: unknown`,
+* The doppelganger can choose a player at the start of the game to copy. The next day they will takes on their role and abilities.
+* Channels: same as the copied player
+* Commands: \`copy\` after same as the copied player`,
     },
     {
       label: 'Witch',
       emoji: '🧙',
       team: 'werewolf',
       description: `### Witch
-* A Witch.
+* The witch has the power to cast a curse on a player each night. If the witch is hanged all cursed players will also die.
 * Channels: witch
-* Commands: curse`,
+* Commands: \`/curse\``,
     },
     {
       label: 'Vampire',
       emoji: '🧛',
       team: 'vampire',
       description: `### Vampire
-* A Vampire.
+* The vampire can choose a player each night to bite. If the player is bitten twice, they become a vampire. If they bite a werewolf they will die.
 * Channels: vampires
-* Commands: vampire_bite`,
+* Commands: \`/vampire_bite\``,
     },
   ],
 }
