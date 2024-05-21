@@ -129,7 +129,7 @@ _All alive players can communicate in the town square and vote to lynch a player
       emoji: '👵',
       team: 'villager',
       description: `### Grouchy Granny
-    * The grouchy granny is a villager with a sharp tongue. Each night, she can choose to mute one player, preventing them from speaking the next day.
+    * The grouchy granny is a villager. Each night, she can choose to mute one player, preventing them from speaking the next day and stops them from using their power.
     * Channels: out-casts
     * Commands: \`/mute\``
     },
@@ -147,8 +147,8 @@ _All alive players can communicate in the town square and vote to lynch a player
       emoji: '🐺',
       team: 'werewolf',
       description: `### Werewolf
-* At night, werewolves will target one player to kill. They can communicate with each other and strategize their attacks.
-* Channels: werewolf
+* Werewolves appear as regular villagers during the day, but turn into bloodthirsty monsters at night. Each night, the pack of werewolves decide amongst themselves who to target that night. One werewolf uses the command.
+* Channels: werewolves
 * Commands: \`kill\``,
     },
     {
@@ -156,8 +156,8 @@ _All alive players can communicate in the town square and vote to lynch a player
       emoji: '🐺',
       team: 'werewolf',
       description: `### Werewolf Cub
-* The werewolf cub is a younger werewolf. If the werewolf cub is killed, the werewolves will be enraged and can make two kills the following night.
-* Channels: werewolf
+* The werewolf cub is a baby werewolf. When the werewolf cub is lynched, the remaining werewolves can use the kill command twice the following night.
+* Channels: werewolves
 * Commands: \`kill\``,
     },
     {
@@ -165,25 +165,34 @@ _All alive players can communicate in the town square and vote to lynch a player
       emoji: '©️',
       team: 'unknown',
       description: `### Doppelganger
-* The doppelganger can choose a player at the start of the game to copy. The next day they will takes on their role and abilities.
+* During the first night, the doppelganger may copy another player and become that role. The player copied is unaware (s)he was copied
 * Channels: same as the copied player
-* Commands: \`copy\` after same as the copied player`,
+* Commands: \`copy\``,
     },
     {
       label: 'Witch',
       emoji: '🧙',
       team: 'werewolf',
       description: `### Witch
-* The witch has the power to cast a curse on a player each night. If the witch is hanged all cursed players will also die.
-* Channels: witch
+* Each night, the witch chooses someone to curse. If the witch is lynched, all players that the witch has cursed will die. The curse will not affect werewolves. The witch will appear as a vampire to the bodyguard. If the werewolves try to target the witch the witch will join werewolves.
+* Channels: witch (potentially werewolves)
 * Commands: \`/curse\``,
+    },
+    {
+      label: 'Vampire King',
+      emoji: '🧛',
+      team: 'vampire',
+      description: `### Vampire King
+* The Vampire King is the first vampire. The first night, (s)he chooses someone to bite. That player is immediately turned into a vampire. After that, each player will take two successful bites to turn into a vampire. If the Vampire King tries to bite a werewolf, the attack will fail.
+* Channels: vampires
+* Commands: \`/vampire_bite\``,
     },
     {
       label: 'Vampire',
       emoji: '🧛',
       team: 'vampire',
       description: `### Vampire
-* The vampire can choose a player each night to bite. If the player is bitten twice, they become a vampire. If they bite a werewolf they will die.
+* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. If a vampire attacks a werewolf, (s)he will die.
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
     },
