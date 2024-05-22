@@ -10,8 +10,9 @@ const {
   roleNames,
 } = require("../util/rolesHelpers");
 const { findSettings, createSettings } = require("../werewolf_db");
-const { createChannel, setupChannelNames } = require("../util/channelHelpers");
+const { createChannel, setupChannelNames, createCategory } = require("../util/channelHelpers");
 const { howToPlayIntro, howToPlayRoles, villagerTeam, roleList, werewolfTeam, vampireTeam, undeterminedTeam } = require("../util/botMessages/howToPlay");
+const { commandList, commandsIntro } = require("../util/botMessages/commandsDescriptions");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -64,14 +65,22 @@ module.exports = {
         setupChannels.commands = channel;
       } else if (channel.name === setupChannelNames.PLAYER_ROLES) {
         setupChannels.playerRoles = channel
+      } else if (channel.name === setupChannelNames.GAME_INSTRUCTIONS) {
+        setupChannels.gameInstructions = channel
       }
     });
+
+    if (!setupChannels.gameInstructions) {
+      setupChannels.gameInstructions = await createCategory(interaction, setupChannelNames.GAME_INSTRUCTIONS);
+    }
+
 
     if (!setupChannels.howToPlay) {
       setupChannels.howToPlay = await createChannel(
         interaction,
         setupChannelNames.HOW_TO_PLAY,
-        [adminPermissions, nonPlayersPermissions]
+        [adminPermissions, nonPlayersPermissions],
+        setupChannels.gameInstructions
       );
       await setupChannels.howToPlay.send(howToPlayIntro);
       await setupChannels.howToPlay.send(howToPlayRoles);
@@ -99,10 +108,12 @@ module.exports = {
     }
 
     if (!setupChannels.playerRoles) {
-        setupChannels.playerRoles = await createChannel(interaction, setupChannelNames.PLAYER_ROLES, [
-        adminPermissions,
-        nonPlayersPermissions,
-      ]);
+      setupChannels.playerRoles = await createChannel(
+        interaction,
+        setupChannelNames.PLAYER_ROLES,
+        [adminPermissions, nonPlayersPermissions],
+        setupChannels.gameInstructions
+      );
       
       await Promise.all(_.map(roleList, async (role) => {
         await setupChannels.playerRoles.send(role.description)
@@ -110,13 +121,30 @@ module.exports = {
     }
 
     if (!setupChannels.commands) {
-      setupChannels.commands = await createChannel(interaction, setupChannelNames.COMMANDS, [
-        adminPermissions,
-        nonPlayersPermissions,
-      ]);
-      await setupChannels.commands.send(commands1);
-      await setupChannels.commands.send(commands2);
-      await setupChannels.commands.send(commands3);
+      setupChannels.commands = await createChannel(
+        interaction,
+        setupChannelNames.COMMANDS,
+        [adminPermissions, nonPlayersPermissions],
+        setupChannels.gameInstructions
+      );
+
+      await setupChannels.commands.send(commandsIntro);
+      const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId("commands")
+        .setPlaceholder("Select command")
+        .setMinValues(1)
+        .setMaxValues(1)
+        .addOptions(_.map(commandList, (command) => new StringSelectMenuOptionBuilder()
+          .setLabel(command.label)
+          .setDescription(command.role)
+          .setValue(command.label)
+          .setEmoji(command.emoji)
+        ))
+
+      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
+      await setupChannels.commands.send({
+        components: [actionRow],
+      })
     }
 
     if (!settings) {
