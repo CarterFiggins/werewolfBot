@@ -139,11 +139,13 @@ async function giveUserRoles(interaction, discordUsers) {
       is_dead: false,
       vampire_bites: 0,
       has_guard: false,
+      assigned_identity: newCharacter,
     };
     switch (newCharacter) {
       case characters.FOOL:
       case characters.SEER:
-        userInfo.canInvestigate = true;
+        userInfo.can_investigate = true;
+        userInfo.assigned_identity = characters.SEER;
         break;
       case characters.CUB:
         user.is_cub = true;
@@ -165,8 +167,13 @@ async function giveUserRoles(interaction, discordUsers) {
         break;
       case characters.LYCAN:
         userInfo.has_guard = true;
+        userInfo.assigned_identity = characters.VILLAGER
+        break;
+      case characters.MUTATED:
+        userInfo.assigned_identity = _.sample([characters.VILLAGER, characters.BAKER, characters.HUNTER])
         break;
     }
+    user.assignedIdentity = userInfo.assigned_identity
     dbUsers.push(userInfo);
   }
   await createUsers(dbUsers);

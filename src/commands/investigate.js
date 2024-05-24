@@ -50,7 +50,7 @@ module.exports = {
       });
       return;
     }
-    if (!seerUser.canInvestigate) {
+    if (!seerUser.can_investigate) {
       await interaction.reply({
         content:
           "You are tired. Your gift only works once. Try again next night",
@@ -97,7 +97,7 @@ module.exports = {
       return;
     }
     await updateUser(interaction.user.id, interaction.guild.id, {
-      canInvestigate: false,
+      can_investigate: false,
     });
 
     let targetedCharacter = "Villager! Nice someone you can trust";

@@ -24,7 +24,7 @@ _All alive players can communicate in the town square and vote to lynch a player
 * Hunter
 * Grouchy Granny
 * Lycan
-* Cursed Villager
+* Mutated Villager
   `,
 
   werewolfTeam: `## WerewolfTeam

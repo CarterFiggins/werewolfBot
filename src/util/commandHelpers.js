@@ -24,6 +24,7 @@ const commandNames = {
   PLAYING: "playing",
   STOP_PLAYING: "stop_playing",
   WHO_IS_ALIVE: "who_is_alive",
+  WHO_AM_I: "who_am_i",
   SHOW_VOTES: "votes",
   SHOW_VOTERS_FOR: "voters_for",
   VOTE: "vote",
@@ -92,13 +93,7 @@ async function sendGreeting(member, user) {
     const bakerMessage = `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`;
     const hunterMessage = `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`;
 
-    switch (user.character) {
-      case characters.MUTATED:
-        await member.send(
-          _.sample([villagerMessage, bakerMessage, hunterMessage])
-        );
-        break;
-      case characters.LYCAN:
+    switch (user.assignedIdentity) {
       case characters.VILLAGER:
         await member.send(villagerMessage);
         break;
@@ -108,7 +103,6 @@ async function sendGreeting(member, user) {
         );
         break;
       case characters.SEER:
-      case characters.FOOL:
         await member.send(
           `You are a **Seer!**\nYou have been chosen by the spirits to help the villagers get rid of the werewolves.\n${voteText}\nAt night use the \`/investigate\` command to see if a player's character is a werewolf or a villager.\n If there are two of you here one is the fool.`
         );
@@ -169,7 +163,7 @@ async function resetNightPowers(guildId) {
       switch (user.character) {
         case characters.SEER:
         case characters.FOOL:
-          await updateUser(user.user_id, guildId, { canInvestigate: true });
+          await updateUser(user.user_id, guildId, { can_investigate: true });
           break;
       }
     })
