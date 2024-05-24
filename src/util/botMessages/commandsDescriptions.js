@@ -48,6 +48,13 @@ Shows who voted for who. Can target a user or run without a target to see who ev
     {
       label: '/who_is_alive',
       role: 'everyone',
+      emoji: '🥸',
+      description: `### /who_is_alive
+Shows you your character in the game`
+    },
+    {
+      label: '/who_am_i',
+      role: 'everyone',
       emoji: '❤️',
       description: `### /who_is_alive
 Shows who is alive in the game. This will also show the number of werewolf and villagers left in the game.`
