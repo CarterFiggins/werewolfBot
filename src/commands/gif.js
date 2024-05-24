@@ -11,9 +11,9 @@ module.exports = {
         .setName("category")
         .setDescription("The gif category")
         .setRequired(true)
-        .addChoice("fire", "fire")
-        .addChoice("sad", "sad")
-        .addChoice("death", "death")
+        .addChoices({ name: "fire", value: "fire" })
+        .addChoices({ name: "sad", value: "sad" })
+        .addChoices({ name: "death", value: "death" })
     ),
   async execute(interaction) {
     const category = interaction.options.getString("category");

@@ -1,14 +1,20 @@
 require("dotenv").config();
 const mongoUtil = require("./mongoUtil");
 const fs = require("fs");
-const { Client, Collection } = require("discord.js");
+const { Client, Collection, GatewayIntentBits } = require("discord.js");
 
 mongoUtil.connectToServer(function (err, mongoClient) {
   if (err) console.log(err);
   console.log("connected to Mongo DB");
 
   const client = new Client({
-    intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES", "GUILD_MEMBERS"],
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.DirectMessages,
+      GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.MessageContent,
+    ],
     partials: ["CHANNEL"],
   });
 
@@ -25,6 +31,17 @@ mongoUtil.connectToServer(function (err, mongoClient) {
     // Set a new item in the Collection
     // With the key as the command name and the value as the exported module
     client.commands.set(command.data.name, command);
+  }
+  // ****************************
+  // *** Select Menu Handling ***
+  // ****************************
+  client.selectMenus = new Collection();
+  const menuFiles = fs
+  .readdirSync("./src/menus")
+  .filter((file) => file.endsWith(".js"));
+  for (const file of menuFiles) {
+    const menu = require(`./menus/${file}`);
+    client.selectMenus.set(menu.name, menu);
   }
   // **************************
   // ***** Event Handling *****

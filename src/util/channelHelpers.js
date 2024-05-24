@@ -1,6 +1,7 @@
 const _ = require("lodash");
-const { findSettings } = require("../werewolf_db");
+const { findSettings, updateUser } = require("../werewolf_db");
 const { characters } = require("./commandHelpers");
+const { ChannelType, PermissionsBitField } = require("discord.js");
 
 const channelNames = {
   THE_TOWN: "the-town",
@@ -14,6 +15,13 @@ const channelNames = {
   VAMPIRES: "vampires",
   OUT_CASTS: "out-casts",
 };
+
+const setupChannelNames = {
+  HOW_TO_PLAY: "how-to-play",
+  PLAYER_ROLES: "player-roles",
+  COMMANDS: "commands",
+  GAME_INSTRUCTIONS: "game-instructions"
+}
 
 async function sendStartMessages(interaction, users) {
   const channels = await interaction.guild.channels.fetch();
@@ -136,11 +144,11 @@ async function removeChannelPermissions(interaction, user) {
     _.map(organizedChannels, async (channel) => {
       if (channel.name !== channelNames.AFTER_LIFE) {
         await channel.permissionOverwrites.edit(user, {
-          SEND_MESSAGES: false,
-          CREATE_PRIVATE_THREADS: false,
-          CREATE_PUBLIC_THREADS: false,
-          SEND_MESSAGES_IN_THREADS: false,
-          VIEW_CHANNEL: true,
+          SendMessages: false,
+          CreatePrivateThreads: false,
+          CreatePublicThreads: false,
+          SendMessagesInThreads: false,
+          ViewChannel: true,
         });
       }
     })
@@ -191,9 +199,9 @@ async function giveChannelPermissions({
   }
 
   await channel.permissionOverwrites.edit(user, {
-    SEND_MESSAGES: true,
-    VIEW_CHANNEL: true,
-    ADD_REACTIONS: guildSettings.allow_reactions,
+    SendMessages: true,
+    ViewChannel: true,
+    AddReactions: guildSettings.allow_reactions,
   });
 
   if (message) {
@@ -203,24 +211,26 @@ async function giveChannelPermissions({
 }
 
 async function createChannel(interaction, name, permissionOverwrites, parent) {
-  return await interaction.guild.channels.create(name, {
+  return await interaction.guild.channels.create({
+    name,
     parent,
-    type: "GUILD_TEXT",
+    type: ChannelType.GuildText,
     permissionOverwrites,
   });
 }
 
 async function createCategory(interaction, name) {
-  return await interaction.guild.channels.create(name, {
-    type: "GUILD_CATEGORY",
+  return await interaction.guild.channels.create({
+    name,
+    type: ChannelType.GuildCategory,
   });
 }
 
 async function createPermissions(users, character, guildSettings) {
-  let allow = ["SEND_MESSAGES", "VIEW_CHANNEL"];
+  let allow = [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel];
 
   if (guildSettings.allow_reactions) {
-    allow.push("ADD_REACTIONS");
+    allow.push(PermissionsBitField.Flags.AddReactions);
   }
 
   return users
@@ -241,12 +251,12 @@ function onDmChannel(interaction) {
 
 async function joinMasons({
   interaction,
-  guardedUser,
+  targetUser,
   player,
   playerMember,
   roleName,
 }) {
-  if (guardedUser.character === characters.MASON && !player.on_mason_channel) {
+  if (targetUser.character === characters.MASON && !player.on_mason_channel) {
     await updateUser(player.user_id, interaction.guild.id, {
       on_mason_channel: true,
     });
@@ -275,6 +285,7 @@ module.exports = {
   getRandomBotGif,
   joinMasons,
   channelNames,
+  setupChannelNames,
 };
 
 const townSquareStart =
@@ -284,7 +295,7 @@ const werewolfStart =
   "Welcome to the werewolf channel! Talk to your fellow werewolves and mark your next target with the `/kill` command at night to kill the villagers";
 
 const seerStart =
-  "Welcome to the seer channel! At night use the command `/see` to pick a player to find out if they are a werewolf or villager.";
+  "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager.";
 
 const afterLifeStart =
   "You are dead... There not much to do except talk to other dead players and watch the game";

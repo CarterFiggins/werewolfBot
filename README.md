@@ -34,7 +34,7 @@ This bot will be the narrator for the game werwolf in a discord server. Players 
 
 **FOOL** +2 Villager Team
 
-> _The fool is told they are the seer but they are the fool. When they use the `/see` command they will get a random answer back. The fool and the seer will be in the same channel. Together they will have to decide who is right and who is wrong. The fool is on the villager side._
+> _The fool is told they are the seer but they are the fool. When they use the `/investigate` command they will get a random answer back. The fool and the seer will be in the same channel. Together they will have to decide who is right and who is wrong. The fool is on the villager side._
 
 **BAKER** -6 Villager Team
 
@@ -102,7 +102,7 @@ Commands are actions you can do in the game. To browse the commands type **/** i
 
 > This is a **Bodyguard** command. It is used at night in the bodyguard channel to guard an alive player. If a werewolf targets this player they will not die. If someone is going to get hanged the guard can not save them. Use by type the command and hitting enter and choosing a player to guard.
 
-**/see** (target)
+**/investigate** (target)
 
 > This is a **Seer** command. It is used at night in the seer channel to investigate an alive player. After selecting a player the Werewolf Bot will tell you if that player is a werewolf or not. Use by type the command and hitting enter and choosing a player to investigate
 

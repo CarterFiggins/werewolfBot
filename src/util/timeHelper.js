@@ -3,7 +3,7 @@ const _ = require("lodash");
 const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
 const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
-const { resetNightPowers, characters, resetDayPowers } = require("./commandHelpers");
+const { resetNightPowers, characters } = require("./commandHelpers");
 const {
   findGame,
   updateGame,
@@ -26,6 +26,7 @@ const {
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
+const { investigatePlayers } = require("./characterHelpers/seerHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -146,7 +147,7 @@ async function dayTimeJob(interaction) {
     starveMessage = await starveUser(interaction, organizedRoles, deathIds);
   }
 
-  await resetDayPowers(guildId)
+  await investigatePlayers(interaction)
 
   await updateGame(guildId, {
     user_death_id: null,
@@ -187,7 +188,7 @@ async function nightTimeJob(interaction) {
       "This is the first night. Choose someone to guard with the `/guard` command"
     );
     organizedChannels.seer.send(
-      "This is the first night. Choose someone to see with the `/see` command"
+      "This is the first night. Choose someone to see with the `/investigate` command"
     );
     organizedChannels.witch.send(
       "This is the first night. Choose someone to curse with the `/curse` command"
@@ -251,7 +252,7 @@ async function nightTimeJob(interaction) {
   let deathMessage = settings.hard_mode ? '' : `The town has killed a **${deathCharacter}**\n`;
 
   if (deadUser.character === characters.HUNTER) {
-    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.`;
+    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
   }
 
   await updateGame(guildId, {

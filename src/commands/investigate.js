@@ -8,7 +8,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(commandNames.SEE)
+    .setName(commandNames.INVESTIGATE)
     .setDescription("SEER COMMAND: sees the player's character")
     .addUserOption((option) =>
       option
@@ -50,7 +50,7 @@ module.exports = {
       });
       return;
     }
-    if (!seerUser.see) {
+    if (!seerUser.canInvestigate) {
       await interaction.reply({
         content:
           "You are tired. Your gift only works once. Try again next night",
@@ -97,7 +97,7 @@ module.exports = {
       return;
     }
     await updateUser(interaction.user.id, interaction.guild.id, {
-      see: false,
+      canInvestigate: false,
     });
 
     let targetedCharacter = "Villager! Nice someone you can trust";
@@ -116,7 +116,11 @@ module.exports = {
         targetedCharacter = "Werewolf! watch out for this guy.";
       }
 
-      await interaction.reply(`${targetedUser} is a ${targetedCharacter}`);
+      await updateUser(interaction.user.id, interaction.guild.id, {
+        investigateUserId: targetedUser.id
+      })
+
+      await interaction.reply(`You are going to investigate ${targetedUser}`);
     }
   },
 };

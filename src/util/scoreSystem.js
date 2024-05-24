@@ -9,6 +9,7 @@ const {
 const { createChannel } = require("./channelHelpers");
 const { characters } = require("./commandHelpers");
 const { roleNames, getRole } = require("./rolesHelpers");
+const { PermissionsBitField } = require("discord.js");
 
 const teams = {
   VILLAGERS: "villagers",
@@ -82,12 +83,12 @@ async function displayPoints(interaction, usersPoints) {
   const adminRole = await getRole(interaction, roleNames.ADMIN);
   const nonPlayersPermissions = {
     id: interaction.guild.id,
-    deny: ["SEND_MESSAGES", "ADD_REACTIONS", "CREATE_PRIVATE_THREADS", "CREATE_PUBLIC_THREADS", "SEND_MESSAGES_IN_THREADS"],
-    allow: ["VIEW_CHANNEL"],
+    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AddReactions, PermissionsBitField.Flags. CreatePrivateThreads, PermissionsBitField.Flags. CreatePublicThreads, PermissionsBitField.Flags. SendMessagesInThreads],
+    allow: [PermissionsBitField.Flags.ViewChannel],
   };
   const adminPermissions = {
     id: adminRole.id,
-    allow: ["ADMINISTRATOR"],
+    allow: [PermissionsBitField.Flags.Administrator],
   };
 
   const channelName = "scoreboard";
