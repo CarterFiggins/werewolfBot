@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { findSettings, updateUser } = require("../werewolf_db");
-const { characters } = require("./commandHelpers");
+const { characters } = require("./characterHelpers/characterUtil");
 const { ChannelType, PermissionsBitField } = require("discord.js");
 
 const channelNames = {

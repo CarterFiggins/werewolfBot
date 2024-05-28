@@ -3,7 +3,8 @@ const _ = require("lodash");
 const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
 const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
-const { resetNightPowers, characters } = require("./commandHelpers");
+const { resetNightPowers } = require("./commandHelpers");
+const { characters } = require("./characterHelpers/characterUtil");
 const {
   findGame,
   updateGame,

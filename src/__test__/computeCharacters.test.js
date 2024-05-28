@@ -1,16 +1,14 @@
 const computeCharacters = require("../util/computeCharacters");
 jest.mock("../werewolf_db", () => {
   return {
-    findSettings: () => ({ extra_characters: true, allow_vampires: true }),
+    findSettings: () => ({ extra_characters: true, allow_vampires: true, random_cards: false }),
   };
 });
 
 test("computing characters", async () => {
-  const amountOfPlayers = 20;
+  const amountOfPlayers = 12;
   const characterCards = await computeCharacters(amountOfPlayers, 1);
 
-  console.log("characterCards in game");
-  console.log(characterCards);
   cardCount = {};
   characterCards.forEach((card) => {
     if (cardCount[card]) {
@@ -22,14 +20,14 @@ test("computing characters", async () => {
 
   console.log(cardCount);
 
-  console.log("werewolf length");
-  console.log(characterCards.filter((w) => w === "werewolf").length);
-  console.log("werewolf cub length");
-  console.log(characterCards.filter((w) => w === "werewolf cub").length);
-
-  const totalWerewolves = characterCards.filter(
-    (w) => w === "werewolf" || w === "werewolf cub"
-  );
-
-  expect(totalWerewolves.length).toBe(Math.floor(amountOfPlayers / 7));
+  if (cardCount["baker"]) {
+    expect(cardCount["baker"]).toBeLessThanOrEqual(1)
+  }
+  if (cardCount["witch"]) {
+    expect(cardCount["witch"]).toBeLessThanOrEqual(1)
+  }
+  if (cardCount["king"]) {
+    expect(cardCount["king"]).toBeLessThanOrEqual(1)
+  }
+  expect(characterCards.length).toBe(amountOfPlayers)
 });

@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { findUsersWithIds } = require("../../werewolf_db");
-const { characters } = require("../commandHelpers");
+const { characters } = require("./characterUtil");
 const { removesDeadPermissions } = require("../deathHelper");
 const { getAliveUsersIds } = require("../discordHelpers");
 

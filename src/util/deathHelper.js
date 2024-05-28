@@ -13,7 +13,7 @@ const {
   removeChannelPermissions,
 } = require("./channelHelpers");
 const { shuffleSeers } = require("./characterHelpers/seerHelper");
-const { characters } = require("./commandHelpers");
+const { characters } = require("./characterHelpers/characterUtil");
 const { getAliveUsersIds } = require("./discordHelpers");
 
 async function removesDeadPermissions(

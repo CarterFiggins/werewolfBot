@@ -7,7 +7,7 @@ const {
   findSettings,
 } = require("../werewolf_db");
 const { createChannel } = require("./channelHelpers");
-const { characters } = require("./commandHelpers");
+const { characters } = require("./characterHelpers/characterUtil");
 const { roleNames, getRole } = require("./rolesHelpers");
 const { PermissionsBitField } = require("discord.js");
 

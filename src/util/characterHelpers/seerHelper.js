@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { updateUser, findManyUsers, findUser, findSettings } = require("../../werewolf_db");
 const { giveChannelPermissions, organizeChannels, joinMasons } = require("../channelHelpers");
-const { characters } = require("../commandHelpers");
+const { characters } = require("./characterUtil");
 
 async function shuffleSeers(interaction, organizedChannels) {
   const guildId = interaction.guild.id;

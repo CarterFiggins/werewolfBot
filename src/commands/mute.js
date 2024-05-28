@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { commandNames, characters  } = require("../util/commandHelpers");
+const { commandNames } = require("../util/commandHelpers");
+const { characters } = require("../util/characterHelpers/characterUtil")
 const { getRandomBotGif, channelNames } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");

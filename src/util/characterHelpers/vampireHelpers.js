@@ -5,7 +5,7 @@ const {
   updateUser,
   findSettings,
 } = require("../../werewolf_db");
-const { characters } = require("../commandHelpers");
+const { characters } = require("./characterUtil");
 const { organizeRoles } = require("../rolesHelpers");
 const {
   organizeChannels,

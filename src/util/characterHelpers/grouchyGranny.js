@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { updateUser, findAllUsers, findManyUsers } = require("../../werewolf_db");
-const { characters } = require("../commandHelpers");
+const { characters } = require("./characterUtil");
 const { organizeChannels, channelNames, giveChannelPermissions } = require("../channelHelpers");
 
 async function mutePlayers(interaction) {

@@ -6,7 +6,7 @@ const {
   findGame,
 } = require("../werewolf_db");
 const { organizeChannels } = require("./channelHelpers");
-const { characters } = require("./commandHelpers");
+const { characters } = require("./characterHelpers/characterUtil");
 const { getAliveMembers } = require("./discordHelpers");
 const { removeGameRolesFromMembers } = require("./rolesHelpers");
 const { endGuildJobs } = require("./schedulHelper");

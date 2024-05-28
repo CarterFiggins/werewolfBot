@@ -1,6 +1,7 @@
 const _ = require("lodash");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { commandNames, characters } = require("../util/commandHelpers");
+const { commandNames } = require("../util/commandHelpers");
+const { characters } = require("../util/characterHelpers/characterUtil")
 const { channelNames } = require("../util/channelHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { findUser, updateUser } = require("../werewolf_db");

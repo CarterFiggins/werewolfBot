@@ -1,6 +1,7 @@
 require("dotenv").config();
 const _ = require("lodash");
 const { updateUser, findAllUsers } = require("../werewolf_db");
+const { characters } = require("./characterHelpers/characterUtil");
 
 /* 
 To add a new game command add it to the
@@ -39,45 +40,6 @@ const commandNames = {
   COPY: "copy",
   MUTE: "mute",
   RANDOM_VOTE: "random_vote",
-};
-
-/* 
-To add a new character add it to these
-  1. characters list below
-  2. resetNightPowers
-  3. add a channel for character?
-gameHelpers
-  1. add character to leftOverRoles
-  2. add characters powers in the newCharacter switch statement
-  3. add permissions for character in createChannels
-Computing characters
-  1. add max character amount
-
-making a channel for character
- 1. removeAllGameChannels
- 2. createChannel in gameHelpers
- 3. add the channel to the channelHelpers
-*/
-
-const characters = {
-  //helps villagers
-  VILLAGER: "villager",
-  SEER: "seer",
-  BODYGUARD: "bodyguard",
-  APPRENTICE_SEER: "apprentice seer",
-  MASON: "mason",
-  HUNTER: "hunter",
-  GROUCHY_GRANNY: "grouchy granny",
-  DOPPELGANGER: "doppelganger",
-  // helps werewolves
-  WEREWOLF: "werewolf",
-  FOOL: "fool",
-  LYCAN: "lycan",
-  BAKER: "baker",
-  MUTATED: "mutated villager",
-  CUB: "werewolf cub",
-  WITCH: "witch",
-  VAMPIRE: "king",
 };
 
 const voteText =

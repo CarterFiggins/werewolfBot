@@ -4,7 +4,7 @@ const {
   giveChannelPermissions,
   organizeChannels,
 } = require("../channelHelpers");
-const { characters } = require("../commandHelpers");
+const { characters } = require("./characterUtil");
 const { removesDeadPermissions } = require("../deathHelper");
 const { organizeRoles } = require("../rolesHelpers");
 

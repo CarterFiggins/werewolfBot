@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { findUser, updateUser, findManyUsers } = require("../../werewolf_db");
 const { giveChannelPermissions } = require("../channelHelpers");
-const { characters } = require("../commandHelpers");
+const { characters } = require("./characterUtil");
 
 async function copyCharacters(interaction) {
   const cursorDoppelganger = await findManyUsers({

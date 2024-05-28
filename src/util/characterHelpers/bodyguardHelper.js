@@ -6,7 +6,7 @@ const {
   findSettings,
 } = require("../../werewolf_db");
 const { organizeChannels, joinMasons } = require("../channelHelpers");
-const { characters } = require("../commandHelpers");
+const { characters } = require("./characterUtil");
 
 async function guardPlayers(interaction) {
   const guildId = interaction.guild.id;

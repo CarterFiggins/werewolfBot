@@ -33,6 +33,12 @@ module.exports = {
       });
       return;
     }
+    if (dbUser.is_dead) {
+      await interaction.reply({
+        content: `Your WERE ${dbUser.assigned_identity}, but now you're dead lol`,
+        ephemeral: true,
+      });
+    }
     await interaction.reply({
       content: `Your character is: ${dbUser.assigned_identity}`,
       ephemeral: true,
