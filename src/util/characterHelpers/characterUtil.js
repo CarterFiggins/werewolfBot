@@ -62,9 +62,38 @@ const characterInfoMap = new Map([
   [characters.GROUCHY_GRANNY, { frequency: 8, points: 4, helpsTeam: teams.VILLAGER }]
 ]);
 
+function getCards(settings) {
+  const wolfCards = [
+    characters.LYCAN,
+    characters.BAKER,
+    characters.WEREWOLF,
+    characters.CUB,
+  ];
+  const villagerCards = [
+    characters.SEER,
+    characters.BODYGUARD,
+    characters.MASON,
+    characters.HUNTER,
+    characters.VILLAGER,
+  ];
+  const vampireCards = [
+    characters.VAMPIRE,
+  ];
+  if (settings.extra_characters) {
+    wolfCards.push(characters.MUTATED);
+    wolfCards.push(characters.WITCH);
+    wolfCards.push(characters.FOOL);
+    villagerCards.push(characters.DOPPELGANGER);
+    villagerCards.push(characters.APPRENTICE_SEER);
+    villagerCards.push(characters.GROUCHY_GRANNY);
+  }
+  return {wolfCards, villagerCards, vampireCards}
+}
+
 
 module.exports = {
   characterInfoMap,
   characters,
   teams,
+  getCards,
 };

@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { findSettings } = require("../werewolf_db");
-const { characterInfoMap, characters, teams} = require("./characterHelpers/characterUtil");
+const { characterInfoMap, characters, teams, getCards} = require("./characterHelpers/characterUtil");
 const { DeckBalancer } = require("./characterHelpers/deckBalancer");
 
 
@@ -28,38 +28,11 @@ function startingCharacters(settings) {
 
 async function computeCharacters(numberOfPlayers, guildId) {
   const settings = await findSettings(guildId);
+  const playingCards = getCards(settings)
 
-  const wolfCards = [
-    characters.LYCAN,
-    characters.BAKER,
-    characters.WEREWOLF,
-    characters.CUB,
-  ];
-
-  const villagerCards = [
-    characters.SEER,
-    characters.BODYGUARD,
-    characters.MASON,
-    characters.HUNTER,
-    characters.VILLAGER,
-  ];
-
-  const vampireCards = [
-    characters.VAMPIRE,
-  ];
-
-  if (settings.extra_characters) {
-    wolfCards.push(characters.MUTATED);
-    wolfCards.push(characters.WITCH);
-    wolfCards.push(characters.FOOL);
-    villagerCards.push(characters.DOPPELGANGER);
-    villagerCards.push(characters.APPRENTICE_SEER);
-    villagerCards.push(characters.GROUCHY_GRANNY);
-  }
-
-  let werewolfDeck = createDeck(wolfCards, numberOfPlayers);
-  let villagerDeck = createDeck(villagerCards, numberOfPlayers);
-  let vampireDeck = createDeck(vampireCards, numberOfPlayers);
+  let werewolfDeck = createDeck(playingCards.wolfCards, numberOfPlayers);
+  let villagerDeck = createDeck(playingCards.villagerCards, numberOfPlayers);
+  let vampireDeck = createDeck(playingCards.vampireCards, numberOfPlayers);
   if (settings.random_cards) {
     // make sure seer, bodyguard can be picked
     villagerDeck.concat(characters.SEER, characters.BODYGUARD);
