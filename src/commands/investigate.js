@@ -51,14 +51,6 @@ module.exports = {
       });
       return;
     }
-    if (!seerUser.can_investigate) {
-      await interaction.reply({
-        content:
-          "You are tired. Your gift only works once. Try again next night",
-        ephemeral: false,
-      });
-      return;
-    }
     if (game.is_day) {
       await interaction.reply({
         content: "It is day time. Your power works at night.",
@@ -97,31 +89,11 @@ module.exports = {
       });
       return;
     }
+
     await updateUser(interaction.user.id, interaction.guild.id, {
-      can_investigate: false,
-    });
+      investigateUserId: targetedUser.id
+    })
 
-    let targetedCharacter = "Villager! Nice someone you can trust";
-    if (seerUser.character === characters.FOOL) {
-      const randomNumber = _.random(1, 3);
-      // 33% chance of fool getting a werewolf
-      if (randomNumber === 1) {
-        targetedCharacter = "Werewolf! watch out for this guy.";
-      }
-      await interaction.reply(`${targetedUser} is a ${targetedCharacter}`);
-    } else {
-      if (
-        targetDbUser.character === characters.WEREWOLF ||
-        targetDbUser.character === characters.LYCAN
-      ) {
-        targetedCharacter = "Werewolf! watch out for this guy.";
-      }
-
-      await updateUser(interaction.user.id, interaction.guild.id, {
-        investigateUserId: targetedUser.id
-      })
-
-      await interaction.reply(`You are going to investigate ${targetedUser}`);
-    }
+    await interaction.reply(`You are going to investigate ${targetedUser}`);
   },
 };
