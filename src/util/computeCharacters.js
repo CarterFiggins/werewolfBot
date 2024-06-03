@@ -17,11 +17,11 @@ function createDeck(characterCards, numberOfPlayers) {
 
 function startingCharacters(settings) {
   const standardCharacters = [characters.WEREWOLF];
-  if (settings.random_cards) {
-    return standardCharacters
-  }
   if (settings.allow_vampires) {
     standardCharacters.push(characters.VAMPIRE)
+  }
+  if (settings.random_cards) {
+    return standardCharacters
   }
   return _.concat(standardCharacters, characters.SEER, characters.BODYGUARD, characters.MASON);
 }
