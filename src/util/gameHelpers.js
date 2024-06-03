@@ -84,7 +84,7 @@ async function getPlayingDiscordUsers(interaction) {
 }
 
 async function giveUserRoles(interaction, discordUsers) {
-  const minPlayers = 7
+  const minPlayers = 3
   if (discordUsers.length < minPlayers) {
     await interaction.editReply({
       content: `Error: Not enough players (need at least ${minPlayers})`,
