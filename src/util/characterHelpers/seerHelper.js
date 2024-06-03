@@ -131,7 +131,7 @@ async function investigatePlayers(interaction) {
   const cursorSeers = await findManyUsers({
     guild_id: interaction.guild.id,
     is_dead: false,
-    character: { $in: [characters.SEER, characters.Fool] }
+    character: { $in: [characters.SEER, characters.FOOL] }
   });
   const seers = await cursorSeers.toArray();
 
