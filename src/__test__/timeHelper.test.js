@@ -37,7 +37,7 @@ const characters = {
   FOOL: "fool",
   LYCAN: "lycan",
   BAKER: "baker",
-  CURSED: "cursed villager",
+  MUTATED: "mutated villager",
 };
 
 test("starve user", async () => {

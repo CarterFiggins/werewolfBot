@@ -160,6 +160,7 @@ module.exports = {
         hard_mode: false,
         bodyguard_joins_masons: true,
         seer_joins_masons: false,
+        enable_power_ups: false,
         // vampire settings
         allow_vampires: false,
         allow_first_bite: false,

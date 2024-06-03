@@ -2,6 +2,7 @@ const _ = require("lodash");
 const { findSettings, updateUser } = require("../werewolf_db");
 const { characters } = require("./characterHelpers/characterUtil");
 const { ChannelType, PermissionsBitField } = require("discord.js");
+const { getRole, roleNames } = require("./rolesHelpers");
 
 const channelNames = {
   THE_TOWN: "the-town",
@@ -32,7 +33,7 @@ async function sendStartMessages(interaction, users) {
   const seers = [];
 
   _.forEach(users, (user) => {
-    switch (user.character) {
+    switch (user.info.character) {
       case characters.WEREWOLF:
         werewolves.push(user);
         break;
@@ -49,12 +50,12 @@ async function sendStartMessages(interaction, users) {
   const characterCount = new Map();
 
   _.forEach(users, (user) => {
-    let currentCount = characterCount.get(user.character);
+    let currentCount = characterCount.get(user.info.character);
 
     if (currentCount) {
-      characterCount.set(user.character, currentCount + 1);
+      characterCount.set(user.info.character, currentCount + 1);
     } else {
-      characterCount.set(user.character, 1);
+      characterCount.set(user.info.character, 1);
     }
   });
 
@@ -66,34 +67,34 @@ async function sendStartMessages(interaction, users) {
   // Option to show what characters will be playing
   const printPlayers = false;
   if (printPlayers) {
-    organizedChannels.townSquare.send(
+    await organizedChannels.townSquare.send(
       `${townSquareStart}\nCharacters in game:\n${printCharacters}`
     );
   } else {
-    organizedChannels.townSquare.send(townSquareStart);
+    await organizedChannels.townSquare.send(townSquareStart);
   }
-  organizedChannels.werewolves.send(
+  await organizedChannels.werewolves.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );
-  organizedChannels.seer.send(`${seerStart}\nSeers:\n${seers}`);
-  organizedChannels.afterLife.send(
+  await organizedChannels.seer.send(`${seerStart}\nSeers:\n${seers}`);
+  await organizedChannels.afterLife.send(
     `${afterLifeStart}\n${showUsersCharacter(users)}`
   );
-  organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
-  organizedChannels.bodyguard.send(bodyguardStart);
-  organizedChannels.witch.send(witchStart);
-  organizedChannels.vampires.send(vampireStart);
-  organizedChannels.outCasts.send(outCastStart);
+  await organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
+  await organizedChannels.bodyguard.send(bodyguardStart);
+  await organizedChannels.witch.send(witchStart);
+  await organizedChannels.vampires.send(vampireStart);
+  await organizedChannels.outCasts.send(outCastStart);
 }
 
 function showUsersCharacter(users) {
   let message = "";
 
   _.shuffle(users).forEach((user) => {
-    let character = user.character;
-    if (user.is_cub) {
+    let character = user.info.character;
+    if (user.info.is_cub) {
       character = characters.CUB;
-    } else if (user.is_vampire) {
+    } else if (user.info.is_vampire) {
       character = `vampire ${characters.VAMPIRE}`;
     }
     message += `${user} is a ${character}\n`;
@@ -226,7 +227,7 @@ async function createCategory(interaction, name) {
   });
 }
 
-async function createPermissions(users, character, guildSettings) {
+async function createPermissions(users, characters, guildSettings) {
   let allow = [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel];
 
   if (guildSettings.allow_reactions) {
@@ -235,7 +236,7 @@ async function createPermissions(users, character, guildSettings) {
 
   return users
     .map((user) => {
-      if (user.character === character) {
+      if (characters.includes(user.info.character)) {
         return {
           id: user.id,
           allow,
@@ -273,10 +274,152 @@ function getRandomBotGif() {
   return _.sample(botGifs);
 }
 
+async function removeAllGameChannels(channels) {
+  await Promise.all(
+    channels.map(async (channel) => {
+      switch (channel.name) {
+        case channelNames.TOWN_SQUARE:
+        case channelNames.WEREWOLVES:
+        case channelNames.SEER:
+        case channelNames.MASON:
+        case channelNames.AFTER_LIFE:
+        case channelNames.THE_TOWN:
+        case channelNames.BODYGUARD:
+        case channelNames.WITCH:
+        case channelNames.VAMPIRES:
+        case channelNames.OUT_CASTS:
+          await channel.delete();
+      }
+    })
+  );
+}
+
+async function createChannels(interaction, users) {
+  const currentChannels = await interaction.guild.channels.fetch();
+  await removeAllGameChannels(currentChannels);
+
+  const aliveRole = await getRole(interaction, roleNames.ALIVE);
+  const deadRole = await getRole(interaction, roleNames.DEAD);
+
+  const threadPermissions = [
+    PermissionsBitField.Flags. CreatePrivateThreads,
+    PermissionsBitField.Flags. CreatePublicThreads,
+    PermissionsBitField.Flags. SendMessagesInThreads,
+  ];
+
+  const guildSettings = await findSettings(interaction.guild.id);
+  const nonPlayersPermissions = {
+    id: interaction.guild.id,
+    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AddReactions, ...threadPermissions],
+    allow: [PermissionsBitField.Flags.ViewChannel],
+  };
+
+  const deadPermissions = {
+    id: deadRole.id,
+    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AddReactions, ...threadPermissions],
+    allow: [PermissionsBitField.Flags.ViewChannel],
+  };
+
+  const denyAlivePermissions = {
+    id: aliveRole.id,
+    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, ...threadPermissions],
+  };
+
+  let allow = [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel];
+
+  if (guildSettings.allow_reactions) {
+    allow.push(PermissionsBitField.Flags.AddReactions);
+  }
+
+  const defaultPermissions = [
+    deadPermissions,
+    denyAlivePermissions,
+    nonPlayersPermissions,
+  ];
+
+  const townSquarePermissions = [
+    nonPlayersPermissions,
+    deadPermissions,
+    {
+      id: aliveRole.id,
+      allow,
+    },
+  ];
+
+  const afterLifePermissions = [
+    nonPlayersPermissions,
+    {
+      id: aliveRole.id,
+      deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, ...threadPermissions],
+    },
+    {
+      id: deadRole.id,
+      allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AddReactions],
+    },
+  ];
+
+  const createChannelsData = [
+    {
+      channelName: channelNames.TOWN_SQUARE,
+      permissions: townSquarePermissions,
+    },
+    {
+      channelName: channelNames.WEREWOLVES,
+      characterNames: [characters.WEREWOLF],
+    },
+    {
+      channelName: channelNames.SEER,
+      characterNames: [characters.SEER, characters.FOOL]
+    },
+    {
+      channelName: channelNames.AFTER_LIFE,
+      permissions: afterLifePermissions,
+    },
+    {
+      channelName: channelNames.MASON,
+      characterNames: [characters.MASON],
+    },
+    {
+      channelName: channelNames.BODYGUARD,
+      characterNames: [characters.BODYGUARD],
+    },
+    {
+      channelName: channelNames.WITCH,
+      characterNames: [characters.WITCH],
+    },
+    {
+      channelName: channelNames.VAMPIRES,
+      characterNames: [characters.VAMPIRE],
+    },
+    {
+      channelName: channelNames.OUT_CASTS,
+      characterNames: [characters.GROUCHY_GRANNY],
+    },
+  ];
+
+  const category = await createCategory(interaction, channelNames.THE_TOWN);
+
+  for (const channelData of createChannelsData) {
+    let permissions = channelData.permissions;
+    if (!permissions) {
+      permissions = defaultPermissions
+    }
+    if (!_.isEmpty(channelData.characterNames)) {
+      const characterPermissions = await createPermissions(users, channelData.characterNames, guildSettings)
+      permissions = permissions.concat(characterPermissions)
+    }
+    await createChannel(
+      interaction,
+      channelData.channelName,
+      permissions,
+      category
+    );
+  }
+}
+
 module.exports = {
   createChannel,
   createCategory,
-  createPermissions,
   sendStartMessages,
   organizeChannels,
   giveChannelPermissions,
@@ -284,6 +427,8 @@ module.exports = {
   onDmChannel,
   getRandomBotGif,
   joinMasons,
+  createChannels,
+  removeAllGameChannels,
   channelNames,
   setupChannelNames,
 };

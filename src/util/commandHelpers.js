@@ -1,7 +1,8 @@
 require("dotenv").config();
 const _ = require("lodash");
-const { updateUser, findAllUsers } = require("../werewolf_db");
+const { findSettings } = require("../werewolf_db");
 const { characters } = require("./characterHelpers/characterUtil");
+const { PowerUpNames } = require("./powerUpHelpers");
 
 /* 
 To add a new game command add it to the
@@ -45,8 +46,15 @@ const commandNames = {
 const voteText =
   "Every day you may vote to hang someone by using the `/vote` command in the town square.";
 
-async function sendGreeting(member, user) {
+const powerUpMessages = new Map([
+  [PowerUpNames.GUN, "POWER UP! You have a gun with one bullet. You can use the `/shoot` command once this game at any time. People will know it was you who fired the gun"],
+  [PowerUpNames.SHIELD, "POWER UP! You have a shield. It will protect you once from death."],
+])
+
+async function sendGreeting(interaction, user) {
   try {
+    const member = await interaction.guild.members.fetch(user.id);
+    const settings = await findSettings(interaction.guild.id);
     if (member.user.bot) {
       return;
     }
@@ -55,7 +63,7 @@ async function sendGreeting(member, user) {
     const bakerMessage = `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`;
     const hunterMessage = `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`;
 
-    switch (user.assignedIdentity) {
+    switch (user.info.assigned_identity) {
       case characters.VILLAGER:
         await member.send(villagerMessage);
         break;
@@ -110,6 +118,14 @@ async function sendGreeting(member, user) {
           `You are a **Grouchy Granny**\n${voteText}\nYou can mute someone out of town square using the \`/mute\` command for the rest of the day and night. They will come back tomorrow but while they are gone they will be able to leave messages in the out cast channel. This will not allow them to use their night power. You will not be able to mute the same player for the rest of the game`
         );
     }
+
+    if (settings.enable_power_ups) {
+      for (const powerKey in user.info.power_ups) {
+        if (user.info.power_ups[powerKey]) {
+          member.send(powerUpMessages.get(powerKey))
+        }
+      }
+    }
   } catch (error) {
     console.error(error);
     console.log(member);
@@ -117,23 +133,7 @@ async function sendGreeting(member, user) {
   }
 }
 
-async function resetNightPowers(guildId) {
-  const cursor = await findAllUsers(guildId);
-  const users = await cursor.toArray();
-  await Promise.all(
-    users.map(async (user) => {
-      switch (user.character) {
-        case characters.SEER:
-        case characters.FOOL:
-          await updateUser(user.user_id, guildId, { can_investigate: true });
-          break;
-      }
-    })
-  );
-}
-
 module.exports = {
-  resetNightPowers,
   sendGreeting,
   commandNames,
   characters,

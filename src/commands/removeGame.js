@@ -1,8 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { removeAllGameChannels } = require("../util/gameHelpers");
 const { removeGameRolesFromMembers, isAdmin } = require("../util/rolesHelpers");
-const { channelNames } = require("../util/channelHelpers");
-const schedule = require("node-schedule");
+const { channelNames, removeAllGameChannels } = require("../util/channelHelpers");
 const {
   deleteAllUsers,
   deleteGame,

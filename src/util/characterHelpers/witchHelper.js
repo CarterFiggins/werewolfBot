@@ -24,7 +24,7 @@ async function cursePlayers(interaction) {
         await updateUser(witch.user_id, guildId, {
           target_cursed_user_id: null,
         });
-        organizedChannels.witch.send(
+        await organizedChannels.witch.send(
           `${members.get(witch.user_id)} have successfully cursed ${members.get(
             witch.target_cursed_user_id
           )}`
@@ -56,12 +56,7 @@ async function castWitchCurse(interaction, organizedRoles) {
         villagerMember,
         organizedRoles
       );
-      let hunterMessage = "";
-      if (villager.character === characters.HUNTER) {
-        hunterMessage =
-          "you don't have long to live. Grab your gun and `/shoot` someone.\n";
-      }
-      return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}`;
+      return await witchCurseDeathMessage({ villager, deadVillager, villagerMember })
     })
   );
 

@@ -83,7 +83,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             biteCount += 1;
           }
           usersBittenById.set(victim.user_id, biteCount);
-          organizedChannels.vampires.send(
+          await organizedChannels.vampires.send(
             `${vampireMember} you have successfully bitten ${victimMember}`
           );
           if (biteCount >= 2) {
@@ -95,7 +95,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             settings.king_bite_wolf_safe) &&
           (werewolfAttacked || settings.king_victim_attack_safe)
         ) {
-          organizedChannels.vampires.send(protectedMemberMessage);
+          await organizedChannels.vampires.send(protectedMemberMessage);
         } else {
           const deadCharacter = await removesDeadPermissions(
             interaction,
@@ -103,14 +103,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             vampireMember,
             organizedRoles
           );
-          if (werewolfAttacked) {
-            if (victim.character === characters.MUTATED) {
-              return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
-            }
-            return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
-          } else {
-            return `The ${deadCharacter} named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
-          }
+          return await vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, vampireMember })
         }
       }
     })

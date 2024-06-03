@@ -51,26 +51,26 @@ async function checkGame(interaction) {
 
   if (villagerCount === 0 && werewolfCount === vampireCount && game.is_day) {
   } else if (werewolfCount === 0 && vampireCount === 0 && villagerCount === 0 && witchCount === 0) {
-    organizedChannels.townSquare.send(
+    await organizedChannels.townSquare.send(
       "# I WIN! Everyone is dead!"
     );
     isGameOver = true;
   } else if (werewolfCount === 0 && vampireCount === 0) {
-    organizedChannels.townSquare.send(
+    await organizedChannels.townSquare.send(
       `# Villagers Win!
       There are no more werewolves or vampires.`
     );
     isGameOver = true;
     winner = teams.VILLAGERS;
   } else if (werewolfCount >= villagerCount + vampireCount) {
-    organizedChannels.townSquare.send(
+    await organizedChannels.townSquare.send(
       `# Werewolves Win!
       Werewolves out number the villagers and vampires.`
     );
     isGameOver = true;
     winner = teams.WEREWOLVES;
   } else if (vampireCount >= villagerCount + werewolfCount) {
-    organizedChannels.townSquare.send(
+    await organizedChannels.townSquare.send(
       `# Vampires Win!
       Vampires out number the villagers and werewolves.`
     );

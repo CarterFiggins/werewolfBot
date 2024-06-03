@@ -3,8 +3,6 @@ const _ = require("lodash");
 const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
 const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
-const { resetNightPowers } = require("./commandHelpers");
-const { characters } = require("./characterHelpers/characterUtil");
 const {
   findGame,
   updateGame,
@@ -19,10 +17,9 @@ const { endGuildJobs } = require("./schedulHelper");
 const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
-const { removesDeadPermissions } = require("./deathHelper");
+const { removesDeadPermissions, votingDeathMessage } = require("./deathHelper");
 const { guardPlayers } = require("./characterHelpers/bodyguardHelper");
 const {
-  castWitchCurse,
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
@@ -160,7 +157,7 @@ async function dayTimeJob(interaction) {
 
   const backUpMessage = "No one died from a werewolf last night.\n";
 
-  organizedChannels.townSquare.send(
+  await organizedChannels.townSquare.send(
     `${message || backUpMessage}${starveMessage}${vampireDeathMessages}**It is day time**`
   );
 
@@ -176,25 +173,24 @@ async function nightTimeJob(interaction) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const game = await findGame(guildId);
-  const settings = await findSettings(guildId);
 
   if (game.first_night) {
     await updateGame(guildId, {
       is_day: false,
     });
-    organizedChannels.werewolves.send(
+    await organizedChannels.werewolves.send(
       "This is the first night. Choose someone to kill with the `/kill` command"
     );
-    organizedChannels.bodyguard.send(
+    await organizedChannels.bodyguard.send(
       "This is the first night. Choose someone to guard with the `/guard` command"
     );
-    organizedChannels.seer.send(
+    await organizedChannels.seer.send(
       "This is the first night. Choose someone to see with the `/investigate` command"
     );
-    organizedChannels.witch.send(
+    await organizedChannels.witch.send(
       "This is the first night. Choose someone to curse with the `/curse` command"
     );
-    organizedChannels.vampires.send(
+    await organizedChannels.vampires.send(
       "This is the first night. Choose someone to bite with the `/vampire_bite` command"
     );
     return;
@@ -203,7 +199,6 @@ async function nightTimeJob(interaction) {
     console.log("It is currently night skip");
     return;
   }
-  let message;
 
   const cursor = await getCountedVotes(guildId);
   const allVotes = await cursor.toArray();
@@ -220,22 +215,15 @@ async function nightTimeJob(interaction) {
 
   const voteWinner = _.sample(topVotes);
   await deleteManyVotes({ guild_id: guildId });
-  await resetNightPowers(guildId);
   if (!voteWinner) {
     await updateGame(guildId, {
       is_day: false,
     });
-    organizedChannels.townSquare.send("No one has voted...\nIt is night");
+    await organizedChannels.townSquare.send("No one has voted...\nIt is night");
     return;
   }
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
   const deadMember = members.get(voteWinner._id.voted_user_id);
-
-  let cursedMessage = "";
-
-  if (deadUser.character === characters.WITCH) {
-    cursedMessage = await castWitchCurse(interaction, organizedRoles);
-  }
 
   const deathCharacter = await removesDeadPermissions(
     interaction,
@@ -243,27 +231,7 @@ async function nightTimeJob(interaction) {
     deadMember,
     organizedRoles
   );
-
-  if (topVotes.length > 1) {
-    message = `There was a tie so I randomly picked ${deadMember} to die\n`;
-  } else {
-    message = `The town has decided to hang ${deadMember}\n`;
-  }
-
-  let deathMessage = settings.hard_mode ? '' : `The town has killed a **${deathCharacter}**\n`;
-
-  if (deadUser.character === characters.HUNTER) {
-    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
-  }
-
-  await updateGame(guildId, {
-    is_day: false,
-  });
-
-  organizedChannels.townSquare.send(
-    `${message}${deathMessage}${cursedMessage}**It is night time**`
-  );
-
+  await votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes })
   await checkGame(interaction);
 }
 

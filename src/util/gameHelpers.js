@@ -1,35 +1,29 @@
 const _ = require("lodash");
-const { createUsers, createGame, findSettings } = require("../werewolf_db");
+const { createGame } = require("../werewolf_db");
 const {
   sendStartMessages,
   channelNames,
-  createChannel,
-  createCategory,
-  createPermissions,
+  createChannels,
 } = require("./channelHelpers");
 const { timeScheduling } = require("./timeHelper");
 const computeCharacters = require("./computeCharacters");
 const { sendGreeting, characters } = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
-const { PermissionsBitField } = require("discord.js");
+const { crateUserData } = require("./userHelpers");
 
 async function startGame(interaction) {
   const playingDiscordUsers = await getPlayingDiscordUsers(interaction);
   if (!playingDiscordUsers) {
     return;
   }
-  const usersWithRoles = await giveUserRoles(interaction, playingDiscordUsers);
-  // if start game returns falsy the bot will reply with an error
-  if (!usersWithRoles) {
-    return;
-  }
+  const discordUsers = await giveUserRoles(interaction, playingDiscordUsers);
 
-  await sendUsersMessage(interaction, usersWithRoles);
-  await createChannels(interaction, usersWithRoles);
+  await sendUsersMessage(interaction, discordUsers);
+  await createChannels(interaction, discordUsers);
   // give users character command permissions
   await createGameDocument(interaction);
   await timeScheduling(interaction);
-  await sendStartMessages(interaction, usersWithRoles);
+  await sendStartMessages(interaction, discordUsers);
 
   // successfully created game
   return true;
@@ -38,8 +32,7 @@ async function startGame(interaction) {
 async function sendUsersMessage(interaction, discordUsers) {
   await Promise.all(
     discordUsers.map(async (user) => {
-      member = await interaction.guild.members.fetch(user.id);
-      sendGreeting(member, user);
+      sendGreeting(interaction, user);
     })
   );
 }
@@ -84,7 +77,10 @@ async function getPlayingDiscordUsers(interaction) {
 }
 
 async function giveUserRoles(interaction, discordUsers) {
-  const minPlayers = 7
+  let minPlayers = 7;
+  if (process.env.TESTING_MODE) { 
+    minPlayers = 5;
+  }
   if (discordUsers.length < minPlayers) {
     await interaction.editReply({
       content: `Error: Not enough players (need at least ${minPlayers})`,
@@ -97,266 +93,12 @@ async function giveUserRoles(interaction, discordUsers) {
     discordUsers.length,
     interaction.guild.id
   );
-  const shuffledUsers = _.shuffle(discordUsers);
 
-  if (currentCharacters.length !== discordUsers.length) {
-    await interaction.editReply({
-      content: "ERROR: Characters do not match discordUsers",
-      ephemeral: true,
-    });
-    return;
-  }
-
-  // This could be done better fetching for roles twice
-  const aliveRole = await getRole(interaction, roleNames.ALIVE);
-  const playerRole = await getRole(interaction, roleNames.PLAYING);
-  const dbUsers = [];
-
-  for (let i = 0; i < shuffledUsers.length; i++) {
-    const user = shuffledUsers[i];
-
-    // add alive role and remove playing role
-    const member = interaction.guild.members.cache.get(user.id);
-    await member.roles.add(aliveRole);
-    await member.roles.remove(playerRole);
-    // add character
-    const newCharacter = _.isEmpty(currentCharacters)
-      ? characters.VILLAGER
-      : currentCharacters.pop();
-
-    user.character = newCharacter;
-    user.is_cub = false;
-    user.is_vampire = false;
-
-    const userInfo = {
-      user_id: user.id,
-      name: user.username,
-      nickname: member.nickname,
-      character: newCharacter,
-      guild_id: interaction.guild.id,
-      is_vampire: false,
-      is_cub: false,
-      is_dead: false,
-      vampire_bites: 0,
-      has_guard: false,
-      assigned_identity: newCharacter,
-    };
-    switch (newCharacter) {
-      case characters.FOOL:
-      case characters.SEER:
-        userInfo.can_investigate = true;
-        userInfo.assigned_identity = characters.SEER;
-        break;
-      case characters.CUB:
-        user.is_cub = true;
-        user.character = characters.WEREWOLF;
-        userInfo.is_cub = true;
-        userInfo.character = characters.WEREWOLF;
-        break;
-      case characters.BODYGUARD:
-        userInfo.last_guarded_user_id = null;
-        break;
-      case characters.HUNTER:
-        userInfo.can_shoot = false;
-        break;
-      case characters.VAMPIRE:
-        userInfo.bite_user_id = null;
-        userInfo.is_vampire = true;
-        userInfo.first_bite = true;
-        user.is_vampire = true;
-        break;
-      case characters.LYCAN:
-        userInfo.has_guard = true;
-        userInfo.assigned_identity = characters.VILLAGER
-        break;
-      case characters.MUTATED:
-        userInfo.assigned_identity = _.sample([characters.VILLAGER, characters.BAKER, characters.HUNTER])
-        break;
-    }
-    user.assignedIdentity = userInfo.assigned_identity
-    dbUsers.push(userInfo);
-  }
-  await createUsers(dbUsers);
-  return shuffledUsers;
-}
-
-async function removeAllGameChannels(channels) {
-  await Promise.all(
-    channels.map(async (channel) => {
-      switch (channel.name) {
-        case channelNames.TOWN_SQUARE:
-        case channelNames.WEREWOLVES:
-        case channelNames.SEER:
-        case channelNames.MASON:
-        case channelNames.AFTER_LIFE:
-        case channelNames.THE_TOWN:
-        case channelNames.BODYGUARD:
-        case channelNames.WITCH:
-        case channelNames.VAMPIRES:
-        case channelNames.OUT_CASTS:
-          await channel.delete();
-      }
-    })
-  );
-}
-
-async function createChannels(interaction, users) {
-  const currentChannels = await interaction.guild.channels.fetch();
-  // remove old channels
-  await removeAllGameChannels(currentChannels);
-
-  aliveRole = await getRole(interaction, roleNames.ALIVE);
-  deadRole = await getRole(interaction, roleNames.DEAD);
-
-  werewolfUsers = users.filter(
-    (user) => user.character === characters.WEREWOLF
-  );
-  notWerewolfUsers = users.filter(
-    (user) => user.character !== characters.WEREWOLF
-  );
-
-  const threadPermissions = [
-    PermissionsBitField.Flags. CreatePrivateThreads,
-    PermissionsBitField.Flags. CreatePublicThreads,
-    PermissionsBitField.Flags. SendMessagesInThreads,
-  ];
-
-  const guildSettings = await findSettings(interaction.guild.id);
-  const nonPlayersPermissions = {
-    id: interaction.guild.id,
-    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AddReactions, ...threadPermissions],
-    allow: [PermissionsBitField.Flags.ViewChannel],
-  };
-
-  const deadPermissions = {
-    id: deadRole.id,
-    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.AddReactions, ...threadPermissions],
-    allow: [PermissionsBitField.Flags.ViewChannel],
-  };
-
-  const denyAlivePermissions = {
-    id: aliveRole.id,
-    deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, ...threadPermissions],
-  };
-
-  let allow = [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel];
-
-  if (guildSettings.allow_reactions) {
-    allow.push(PermissionsBitField.Flags.AddReactions);
-  }
-  townSquarePermissions = [
-    nonPlayersPermissions,
-    deadPermissions,
-    {
-      id: aliveRole.id,
-      allow,
-    },
-  ];
-
-  defaultPermissions = [
-    deadPermissions,
-    denyAlivePermissions,
-    nonPlayersPermissions,
-  ];
-
-  const werewolvesPermissions = (
-    await createPermissions(users, characters.WEREWOLF, guildSettings)
-  ).concat(defaultPermissions);
-  const witchesPermissions = (
-    await createPermissions(users, characters.WITCH, guildSettings)
-  ).concat(defaultPermissions);
-  const vampirePermissions = (
-    await createPermissions(users, characters.VAMPIRE, guildSettings)
-  ).concat(defaultPermissions);
-  let seerPermissions = (
-    await createPermissions(users, characters.SEER, guildSettings)
-  ).concat(defaultPermissions);
-  // TODO: create createPermissions with an array?
-  seerPermissions = seerPermissions.concat(
-    await createPermissions(users, characters.FOOL, guildSettings)
-  );
-  const masonPermissions = (
-    await createPermissions(users, characters.MASON, guildSettings)
-  ).concat(defaultPermissions);
-  const bodyguardPermissions = (
-    await createPermissions(users, characters.BODYGUARD, guildSettings)
-  ).concat(defaultPermissions);
-  const grouchyGrannyPermissions = (
-    await createPermissions(users, characters.GROUCHY_GRANNY, guildSettings)
-  ).concat(defaultPermissions);
-
-  afterLifePermissions = [
-    nonPlayersPermissions,
-    {
-      id: aliveRole.id,
-      deny: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, ...threadPermissions],
-    },
-    {
-      id: deadRole.id,
-      allow: [PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.AddReactions],
-    },
-  ];
-
-  const category = await createCategory(interaction, channelNames.THE_TOWN);
-  await createChannel(
-    interaction,
-    channelNames.TOWN_SQUARE,
-    townSquarePermissions,
-    category
-  );
-  await createChannel(
-    interaction,
-    channelNames.WEREWOLVES,
-    werewolvesPermissions,
-    category
-  );
-  await createChannel(
-    interaction,
-    channelNames.SEER,
-    seerPermissions,
-    category
-  );
-  await createChannel(
-    interaction,
-    channelNames.AFTER_LIFE,
-    afterLifePermissions,
-    category
-  );
-  await createChannel(
-    interaction,
-    channelNames.MASON,
-    masonPermissions,
-    category
-  );
-  await createChannel(
-    interaction,
-    channelNames.BODYGUARD,
-    bodyguardPermissions,
-    category
-  );
-  await createChannel(
-    interaction,
-    channelNames.WITCH,
-    witchesPermissions,
-    category
-  );
-  await createChannel(
-    interaction,
-    channelNames.VAMPIRES,
-    vampirePermissions,
-    category
-  );
-  await createChannel(
-    interaction,
-    channelNames.OUT_CASTS,
-    grouchyGrannyPermissions,
-    category
-  );
+  return await crateUserData(interaction, currentCharacters, discordUsers) 
 }
 
 module.exports = {
   startGame,
-  removeAllGameChannels,
   getPlayingDiscordUsers,
   channelNames,
   characters,

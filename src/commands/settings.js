@@ -23,7 +23,8 @@ const SettingCommands = {
   VIEW: "view",
   BODYGUARD_JOINS_MASONS: "bodyguard_joins_masons",
   SEER_JOINS_MASONS: "seer_joins_masons",
-  HUNTER_GUARD: "hunter_guard"
+  HUNTER_GUARD: "hunter_guard",
+  ENABLE_POWER_UPS: "enable_power_ups",
 };
 
 module.exports = {
@@ -235,22 +236,33 @@ module.exports = {
             .setRequired(true)
             .setDescription("Set setting true or false")
         )
-  )
-  .addSubcommand((subcommand) =>
-    subcommand
-      .setName(SettingCommands.SEER_JOINS_MASONS)
-      .setDescription("ADMIN COMMAND: The Seer can join the masons")
-      .addBooleanOption((option) =>
-        option
-          .setName("activate")
-          .setRequired(true)
-          .setDescription("Set setting true or false")
-      )
-  )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName(SettingCommands.SEER_JOINS_MASONS)
+        .setDescription("ADMIN COMMAND: The Seer can join the masons")
+        .addBooleanOption((option) =>
+          option
+            .setName("activate")
+            .setRequired(true)
+            .setDescription("Set setting true or false")
+        )
+    )
     .addSubcommand((subcommand) =>
       subcommand
         .setName(SettingCommands.HUNTER_GUARD)
         .setDescription("ADMIN COMMAND: Hunter will kill one werewolf when attacked by werewolves")
+        .addBooleanOption((option) =>
+          option
+            .setName("activate")
+            .setRequired(true)
+            .setDescription("Set setting true or false")
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName(SettingCommands.ENABLE_POWER_UPS)
+        .setDescription("ADMIN COMMAND: players will also get one power up at the start of the game")
         .addBooleanOption((option) =>
           option
             .setName("activate")
