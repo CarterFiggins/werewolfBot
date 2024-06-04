@@ -11,7 +11,7 @@ const {
   organizeChannels,
   giveChannelPermissions,
 } = require("../channelHelpers");
-const { removesDeadPermissions } = require("../deathHelper");
+const { removesDeadPermissions, vampireDeathMessage } = require("../deathHelper");
 
 async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
   const members = interaction.guild.members.cache;

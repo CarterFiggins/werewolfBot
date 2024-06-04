@@ -5,6 +5,7 @@ const {
   organizeChannels,
 } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
+const { werewolfKillDeathMessage } = require("../deathHelper");
 
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;

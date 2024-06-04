@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { findUsersWithIds } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
-const { removesDeadPermissions } = require("../deathHelper");
+const { removesDeadPermissions, starveDeathMessage } = require("../deathHelper");
 const { getAliveUsersIds } = require("../discordHelpers");
 
 async function starveUser(interaction, organizedRoles, deathIds) {

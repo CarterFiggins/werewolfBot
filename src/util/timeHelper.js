@@ -158,7 +158,7 @@ async function dayTimeJob(interaction) {
   const backUpMessage = "No one died from a werewolf last night.\n";
 
   await organizedChannels.townSquare.send(
-    `${message || backUpMessage}${starveMessage}${vampireDeathMessages}**It is day time**`
+    `${message || backUpMessage}${starveMessage}${vampireDeathMessages}\n**It is day time**`
   );
 
   await checkGame(interaction);

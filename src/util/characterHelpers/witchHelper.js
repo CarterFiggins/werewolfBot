@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { updateUser, findManyUsers } = require("../../werewolf_db");
 const { organizeChannels } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
-const { removesDeadPermissions } = require("../deathHelper");
+const { removesDeadPermissions, witchCurseDeathMessage } = require("../deathHelper");
 
 async function cursePlayers(interaction) {
   const guildId = interaction.guild.id;

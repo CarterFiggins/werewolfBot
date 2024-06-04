@@ -31,8 +31,8 @@ async function removesDeadPermissions(
   const settings = await findSettings(guildId);
 
   if (deadUser.power_ups[PowerUpNames.SHIELD]) {
-    await updateUser(userWhoShot.user_id, interaction.guild.id, {
-      [PowerUpNames.SHIELD]: false,
+    await updateUser(deadUser.user_id, interaction.guild.id, {
+      power_ups: { [PowerUpNames.SHIELD]: false },
     });
     await deadMember.send("Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again")
     return PowerUpNames.SHIELD
@@ -149,7 +149,7 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
     });
   } else {
     await updateUser(userWhoShot.user_id, interaction.guild.id, {
-      [PowerUpNames.GUN]: false,
+      power_ups: { [PowerUpNames.GUN]: false },
     });
   }
 
@@ -235,7 +235,7 @@ async function votingDeathMessage({ interaction, deathCharacter, deadMember, dea
     deathMessage = `However, ${deadMember} had a protective shield, sparing them from this fate! The shield is now used up and will not offer protection again.`
   }
 
-  await updateGame(guildId, {
+  await updateGame(interaction.guild.id, {
     is_day: false,
   });
 
@@ -260,7 +260,7 @@ async function vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, va
 
 async function starveDeathMessage({ starvedCharacter, starvedMember, starvedUser }) {
   if (starvedCharacter === PowerUpNames.SHIELD) {
-    return `${starvedMember} was about to starve! But surprise ${starvedMember}'s shield turned into a sandwich and saved the day! The shield (now a tasty snack) is gone.`
+    return `A villager was about to starve! But surprise the villager's shield turned into a sandwich and saved the day! The shield (now a tasty snack) is gone.`
   }
 
   let deadMessage = "has died from starvation";
@@ -275,7 +275,7 @@ async function starveDeathMessage({ starvedCharacter, starvedMember, starvedUser
 
 async function witchCurseDeathMessage({ villager, deadVillager, villagerMember }) {
   if (deadVillager === PowerUpNames.SHIELD) {
-    return `${villagerMember} shield absorbed the curse, turning it into a puff of smoke.`
+    return `A villager's shield absorbed the curse, turning it into a puff of smoke.`
   }
   let hunterMessage = "";
   if (villager.character === characters.HUNTER) {
@@ -298,7 +298,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     organizedRoles
   );
   if (deathCharacter === PowerUpNames.SHIELD) { 
-    return `Last night the werewolves attacked ${deadMember}. However, ${deadMember} had a shield that protected them from the werwolves attack. Their shield has been consumed`
+    return `Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werwolf attack. Their shield has been consumed`
   }
   
   if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
