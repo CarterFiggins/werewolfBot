@@ -17,7 +17,7 @@ const { endGuildJobs } = require("./schedulHelper");
 const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
-const { removesDeadPermissions, votingDeathMessage } = require("./deathHelper");
+const { removesDeadPermissions } = require("./deathHelper");
 const { guardPlayers } = require("./characterHelpers/bodyguardHelper");
 const {
   cursePlayers,
@@ -25,6 +25,7 @@ const {
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
+const { votingDeathMessage } = require("./deathMessages");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
