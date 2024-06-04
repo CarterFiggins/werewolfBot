@@ -92,8 +92,10 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
     }
 
     if (settings.enable_power_ups) {
-      const randomPowerUp = _.sample(PowerUpNames)
-      user.info.power_ups[randomPowerUp] = true;
+      // const randomPowerUp = _.sample(PowerUpNames)
+      // user.info.power_ups[randomPowerUp] = true;
+      user.info.power_ups.gun = true
+      user.info.power_ups.shield = true
     }
     dbUsers.push(user.info);
   }
