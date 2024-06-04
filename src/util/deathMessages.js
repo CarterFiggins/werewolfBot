@@ -1,4 +1,4 @@
-const { findSettings } = require("../werewolf_db");
+const { findSettings, updateGame } = require("../werewolf_db");
 const { organizeChannels } = require("./channelHelpers");
 const { castWitchCurse } = require("./characterHelpers/witchHelper");
 const { characters } = require("./commandHelpers");
@@ -43,14 +43,14 @@ async function votingDeathMessage({ interaction, deathCharacter, deadMember, dea
 }
 
 async function vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, vampireMember }) {
-  if (victim.character === PowerUpNames.SHIELD) {
+  if (deadCharacter === PowerUpNames.SHIELD) {
     return null
   }
   if (werewolfAttacked) {
     if (victim.character === characters.MUTATED) {
       return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
     }
-    return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
+    return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
   } else {
     return `The ${deadCharacter} named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
   }

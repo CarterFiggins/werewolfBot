@@ -15,7 +15,7 @@ function createDeck(characterCards, numberOfPlayers) {
   })));
 }
 
-function startingCharacters(settings) {
+function startingCharacters(settings, numberOfPlayers) {
   const werewolvesToAdd = Math.floor(numberOfPlayers/10)
   const standardCharacters = [characters.WEREWOLF];
   if (settings.random_cards) {
@@ -43,7 +43,7 @@ async function computeCharacters(numberOfPlayers, guildId) {
   }
 
   const balance = new DeckBalancer(settings);
-  const cardsInGame = startingCharacters(settings);
+  const cardsInGame = startingCharacters(settings, numberOfPlayers);
   cardsInGame.forEach((character) => balance.addCharacterPoints(character));
 
   let playersLeftOver = numberOfPlayers - cardsInGame.length;

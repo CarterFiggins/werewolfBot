@@ -13,6 +13,7 @@ const {
 } = require("../channelHelpers");
 const { removesDeadPermissions } = require("../deathHelper");
 const { vampireDeathMessage } = require("../deathMessages");
+const { PowerUpNames } = require("../powerUpHelpers");
 
 async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
   const members = interaction.guild.members.cache;
@@ -104,7 +105,15 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             vampireMember,
             organizedRoles
           );
-          return await vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, vampireMember })
+          if (werewolfAttacked) {
+            await organizedChannels.vampires.send(`${vampireMember} tried to bite ${victimMember} but a werewolf was also attacking ${victimMember}!`)
+          } else {
+            await organizedChannels.vampires.send(`${vampireMember} tried to bite ${victimMember} but they are a werewolf!`)
+          }
+          if (deadCharacter === PowerUpNames.SHIELD) {
+            await organizedChannels.vampires.send(`Good thing ${vampireMember} had a shield!`)
+          }
+          return await vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, vampire, vampireMember })
         }
       }
     })
