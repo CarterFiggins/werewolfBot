@@ -30,8 +30,9 @@ async function removesDeadPermissions(
   const settings = await findSettings(guildId);
 
   if (deadUser.power_ups[PowerUpNames.SHIELD]) {
+    deadUser.power_ups[PowerUpNames.SHIELD] = false;
     await updateUser(deadUser.user_id, interaction.guild.id, {
-      power_ups: { [PowerUpNames.SHIELD]: false },
+      power_ups: deadUser.power_ups,
     });
     await deadMember.send("Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again")
     return PowerUpNames.SHIELD
@@ -147,8 +148,9 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
       is_injured: false,
     });
   } else {
+    userWhoShot.power_ups[PowerUpNames.GUN] = false
     await updateUser(userWhoShot.user_id, interaction.guild.id, {
-      power_ups: { [PowerUpNames.GUN]: false },
+      power_ups: userWhoShot.power_ups,
     });
   }
 

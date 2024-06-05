@@ -18,19 +18,14 @@ async function votingDeathMessage({ interaction, deathCharacter, deadMember, dea
   }
 
   let cursedMessage = "";
-
-  if (deadUser.character === characters.WITCH) {
-    cursedMessage = await castWitchCurse(interaction, organizedRoles);
-  }
-
   let deathMessage = settings.hard_mode ? '' : `The town has killed a **${deathCharacter}**\n`;
-
-  if (deadUser.character === characters.HUNTER) {
-    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
-  }
 
   if (deathCharacter === PowerUpNames.SHIELD) {
     deathMessage = `However, ${deadMember} had a protective shield, sparing them from this fate! The shield is now used up and will not offer protection again.`
+  } else if (deadUser.character === characters.WITCH) {
+    cursedMessage = await castWitchCurse(interaction, organizedRoles);
+  } else if (deadUser.character === characters.HUNTER) {
+    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
   }
 
   await updateGame(interaction.guild.id, {
