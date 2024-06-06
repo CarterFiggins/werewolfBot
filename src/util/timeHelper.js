@@ -87,7 +87,7 @@ async function killReminder(interaction) {
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   if (!game.user_death_id) {
     await organizedChannels.werewolves.send(
-      `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? So, if you haven't already, it's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
+      `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
     )
   }
   if (game.wolf_double_kill && !game.second_user_death_id) {
