@@ -298,6 +298,7 @@ function createScheduleRule(hour, minute) {
   scheduleRule.minute = minute;
   scheduleRule.hour = hour;
   scheduleRule.tz = process.env.TIME_ZONE_TZ;
+  return scheduleRule;
 }
 
 module.exports = {
