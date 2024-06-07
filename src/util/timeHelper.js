@@ -50,30 +50,14 @@ async function timeScheduling(interaction) {
 
   const day = parseSettingTime(settings.day_time);
   const night = parseSettingTime(settings.night_time);
+  const { minute: warningMinute, hour: warningHour } = warningTime(night.hour, night.minute - 30)
+  const { minute: killReminderMinute, hour: killReminderHour } = warningTime(night.hour, night.minute + 30)
 
-  let warningHour = night.hour;
-  let warningMinute = night.minute - 30;
+  const nightRule = createScheduleRule(night.hour, night.minute) 
+  const dayRule = createScheduleRule(day.hour, day.minute) 
+  const voteWarningRule = createScheduleRule(warningHour, warningMinute) 
+  const killReminderRule = createScheduleRule(killReminderHour, killReminderMinute) 
 
-  if (warningMinute < 0) {
-    warningMinute = 60 + warningMinute;
-    warningHour -= 1;
-    if (warningHour < 0) {
-      warningHour = 23;
-    }
-  }
-
-  const nightRule = new schedule.RecurrenceRule();
-  const dayRule = new schedule.RecurrenceRule();
-  const warningRule = new schedule.RecurrenceRule();
-  nightRule.minute = night.minute;
-  nightRule.hour = night.hour;
-  nightRule.tz = process.env.TIME_ZONE_TZ;
-  dayRule.minute = day.minute;
-  dayRule.hour = day.hour;
-  dayRule.tz = process.env.TIME_ZONE_TZ;
-  warningRule.minute = warningMinute;
-  warningRule.hour = warningHour;
-  warningRule.tz = process.env.TIME_ZONE_TZ;
   console.log(`creating ${interaction.guild.id}-night`);
   schedule.scheduleJob(`${interaction.guild.id}-night`, nightRule, () =>
     nightTimeJob(interaction)
@@ -82,11 +66,33 @@ async function timeScheduling(interaction) {
   schedule.scheduleJob(`${interaction.guild.id}-day`, dayRule, () =>
     dayTimeJob(interaction)
   );
-  console.log(`creating ${interaction.guild.id}-warning`);
-  schedule.scheduleJob(`${interaction.guild.id}-warning`, warningRule, () =>
+  console.log(`creating ${interaction.guild.id}-voting-warning`);
+  schedule.scheduleJob(`${interaction.guild.id}-voting-warning`, voteWarningRule, () =>
     nightTimeWarning(interaction)
   );
+  console.log(`creating ${interaction.guild.id}-kill-reminder`);
+  schedule.scheduleJob(`${interaction.guild.id}-kill-reminder`, killReminderRule, () =>
+    killReminder(interaction)
+  );
   return true;
+}
+
+async function killReminder(interaction) {
+  const guildId = interaction.guild.id;
+  const game = await findGame(guildId);
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  const aliveRole = await getRole(interaction, roleNames.ALIVE);
+  if (!game.user_death_id) {
+    await organizedChannels.werewolves.send(
+      `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
+    )
+  }
+  if (game.wolf_double_kill && !game.second_user_death_id) {
+    await organizedChannels.werewolves.send(
+      `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target`
+    )
+  }
 }
 
 async function nightTimeWarning(interaction) {
@@ -234,6 +240,34 @@ async function nightTimeJob(interaction) {
   );
   await votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes })
   await checkGame(interaction);
+}
+
+function warningTime(hour, minute) {
+  if (minute < 0) {
+    minute = 60 + minute;
+    hour -= 1;
+    if (hour < 0) {
+      hour = 23;
+    }
+  }
+
+  if (minute > 60) {
+    minute = minute - 60;
+    hour += 1;
+    if (hour > 24) {
+      hour = 0;
+    }
+  }
+
+  return {hour, minute}
+}
+
+function createScheduleRule(hour, minute) {
+  const scheduleRule = new schedule.RecurrenceRule();
+  scheduleRule.minute = minute;
+  scheduleRule.hour = hour;
+  scheduleRule.tz = process.env.TIME_ZONE_TZ;
+  return scheduleRule;
 }
 
 module.exports = {

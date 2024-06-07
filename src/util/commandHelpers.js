@@ -74,7 +74,7 @@ async function sendGreeting(interaction, user) {
         break;
       case characters.SEER:
         await member.send(
-          `You are a **Seer!**\nYou have been chosen by the spirits to help the villagers get rid of the werewolves.\n${voteText}\nAt night use the \`/investigate\` command to see if a player's character is a werewolf or a villager.\n If there are two of you here one is the fool.`
+          `You are a **Seer!**\nYou have been chosen by the spirits to help the villagers get rid of the werewolves.\n${voteText}\nAt night use the \`/investigate\` command to see if a player's character is a werewolf or a villager.\n Remember you have a chance of being a fool.`
         );
         break;
       case characters.BODYGUARD:
