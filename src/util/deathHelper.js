@@ -67,7 +67,7 @@ async function removesDeadPermissions(
       wolf_double_kill: true,
     });
     await organizedChannels.werewolves.send(
-      `The Werewolf Cub name ${deadMember} has been killed :rage:\nTonight you will be able to target two villagers!\nhttps://tenor.com/86LT.gif`
+      `We have unfortunate news: ${deadMember}, our cub, has been killed. However, this loss has fueled your rage.:rage:\n Tonight, you can target not just one, but two villagers.\nhttps://tenor.com/86LT.gif`
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
@@ -104,7 +104,7 @@ async function checkBakers(guildId, townSquare) {
       is_baker_dead: true,
     });
     townSquare.send(
-      "There is no more bread! One villager will starve every morning"
+      `Hold onto your hats, because we've got a loafing crisis on our hands! Our baker has bitten the baguette, leaving us with fewer carbs than a gluten-free cookbook. Starting tomorrow, one unlucky villager will face the dreaded "empty stomach o'doom" and, well, let's just say it won't end well.`
     );
   }
 }

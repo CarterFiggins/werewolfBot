@@ -36,7 +36,7 @@ async function killPlayers(interaction, deathIds) {
           character: characters.WEREWOLF,
         });
         await organizedChannels.werewolves.send(
-          `${deadMember} did not die and has turned into a werewolf! :wolf:`
+          `You went after ${deadMember} last night, but things took an unexpected twist. Turns out, your attack triggered their mutated DNA, and they transformed into a werewolf!\nWelcome to the pack, ${deadMember}! The hunt just got a little wilder. :wolf:`
         );
         isDead = false;
       } else if (
@@ -49,10 +49,13 @@ async function killPlayers(interaction, deathIds) {
           character: characters.WEREWOLF,
         });
         organizedChannels.werewolves.send(
-          `You did not kill ${deadMember} because they are the witch! They have joined the channel`
+          `You went after ${deadMember} last night, but guess what? ${deadMember} was the witch, and your attack didn't quite go as planned. The twist? The witch has now joined your chat!\nWelcome, ${deadMember}! The hunt just got a little more magical.`
         );
         isDead = false;
       } else if (deadUser.has_guard) {
+        await organizedChannels.werewolves.send(
+          `${deadMember} is a lycan! It turns out they were tougher than you expected! Your attack was unsuccessful this time. However, now you know what you’re up against, and next time you’ll be prepared to take them down.`
+        );
         await updateUser(deadUser.user_id, interaction.guild.id, {
           has_guard: false,
         });
@@ -83,9 +86,9 @@ async function killPlayers(interaction, deathIds) {
           );
           message += `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they were able to kill the ${deadWerewolfCharacter} named ${deadWerewolfMember}\n`;
         } else if (deadUser.character === characters.HUNTER) { 
-           message += `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+           message += `Last night, the werewolves attacked and injured the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.\n`;
         } else {
-          message += `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
+          message += `Last night, the werewolves struck again. ${deadMember}, who played the role of ${deathCharacter}, has been killed by the attack.\n`;
         }
       }
     })
