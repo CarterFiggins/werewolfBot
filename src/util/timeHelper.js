@@ -18,14 +18,14 @@ const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
 const { removesDeadPermissions } = require("./deathHelper");
-const { guardPlayers } = require("./characterHelpers/bodyguardHelper");
+const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers/bodyguardHelper");
 const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
-const { votingDeathMessage } = require("./deathMessages");
+const { votingDeathMessage } = require("./botMessages/deathMessages");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -135,9 +135,11 @@ async function dayTimeJob(interaction) {
   await mutePlayers(interaction, guildId)
 
   const guardedIds = await guardPlayers(interaction);
-
+  const werewolfKills = [game.user_death_id, game.second_user_death_id]
+  const successfulGuardIds = _.intersection([game.user_death_id, game.second_user_death_id], guardedIds)
+  await sendSuccessfulGuardMessage(interaction, successfulGuardIds)
   const deathIds = _.difference(
-    [game.user_death_id, game.second_user_death_id],
+    werewolfKills,
     [...guardedIds, null]
   );
   const vampireDeathMessages = await vampiresAttack(

@@ -3,7 +3,7 @@ const { findUsersWithIds } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
 const { removesDeadPermissions } = require("../deathHelper");
 const { getAliveUsersIds } = require("../discordHelpers");
-const { starveDeathMessage } = require("../deathMessages");
+const { starveDeathMessage } = require("../botMessages/deathMessages");
 
 async function starveUser(interaction, organizedRoles, deathIds) {
   let aliveUserIds = await getAliveUsersIds(interaction);

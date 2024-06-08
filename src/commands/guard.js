@@ -68,6 +68,12 @@ module.exports = {
       });
       return;
     }
+    if (guardUser.character === characters.BODYGUARD && guardUser.user_id !== interaction.user.id) {
+      await interaction.reply({
+        content: `Nice try, but you can't guard another bodyguard. Turns out, ${targetedUser} is pretty stubborn and won't let you play hero on their turf.`,
+        ephemeral: false,
+      });
+    }
     if (!isAlive(targetedMember)) {
       await interaction.reply({
         content: `${targetedUser} is dead. Focus on guarding the living.`,

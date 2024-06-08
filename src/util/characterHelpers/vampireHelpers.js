@@ -12,7 +12,7 @@ const {
   giveChannelPermissions,
 } = require("../channelHelpers");
 const { removesDeadPermissions } = require("../deathHelper");
-const { vampireDeathMessage } = require("../deathMessages");
+const { vampireDeathMessage } = require("../botMessages/deathMessages");
 const { PowerUpNames } = require("../powerUpHelpers");
 
 async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {

@@ -1,9 +1,9 @@
-const { findSettings, updateGame } = require("../werewolf_db");
-const { organizeChannels } = require("./channelHelpers");
-const { castWitchCurse } = require("./characterHelpers/witchHelper");
-const { characters } = require("./commandHelpers");
-const { PowerUpNames } = require("./powerUpHelpers");
-const { organizeRoles } = require("./rolesHelpers");
+const { findSettings, updateGame } = require("../../werewolf_db");
+const { organizeChannels } = require("../channelHelpers");
+const { castWitchCurse } = require("../characterHelpers/witchHelper");
+const { characters } = require("../commandHelpers");
+const { PowerUpNames } = require("../powerUpHelpers");
+const { organizeRoles } = require("../rolesHelpers");
 
 async function votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes }) {
   const settings = await findSettings(interaction.guild.id);
