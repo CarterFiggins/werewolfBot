@@ -77,10 +77,8 @@ async function checkGame(interaction) {
     winner = teams.VAMPIRES;
   }
 
-  const scoreData = { winner };
-
   if (isGameOver) {
-    await endGame(interaction, roles, members, scoreData);
+    await endGame(interaction, roles, members);
   }
 }
 

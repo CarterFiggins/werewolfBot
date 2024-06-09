@@ -6,7 +6,6 @@ jest.mock("../werewolf_db", () => {
       allow_vampires: true,
       can_whisper: false,
       allow_reactions: true,
-      show_scoreboard: false,
       wolf_kills_witch: false,
       hard_mode: false,
       allow_first_bite: true,

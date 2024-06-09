@@ -154,7 +154,6 @@ module.exports = {
         can_whisper: true,
         allow_reactions: false,
         extra_characters: false,
-        show_scoreboard: false,
         wolf_kills_witch: false,
         random_cards: false,
         hard_mode: false,

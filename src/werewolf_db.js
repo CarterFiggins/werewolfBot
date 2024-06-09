@@ -116,20 +116,6 @@ async function updateSettings(guild_id, updatedSettings) {
     .updateOne({ guild_id }, { $set: updatedSettings });
 }
 
-async function findUserScore(where) {
-  return await db.collection("userScore").findOne(where);
-}
-
-async function createUserScore(newUserScore) {
-  return await db.collection("userScore").insertOne(newUserScore);
-}
-
-async function updateUserScore(guild_id, user_id, updatedScore) {
-  return await db
-    .collection("userScore")
-    .updateOne({ guild_id, user_id }, { $set: updatedScore });
-}
-
 module.exports = {
   deleteAllUsers,
   findUser,
@@ -150,7 +136,4 @@ module.exports = {
   findSettings,
   createSettings,
   updateSettings,
-  findUserScore,
-  createUserScore,
-  updateUserScore,
-};
+}
