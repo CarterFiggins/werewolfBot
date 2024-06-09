@@ -34,12 +34,14 @@ const characters = {
   CUB: "werewolf cub",
   WITCH: "witch",
   VAMPIRE: "king",
+  CHAOS_DEMON: "chaos demon",
 };
 
 const teams = {
   WEREWOLF: 'werewolf_team',
   VILLAGER: 'villager_team',
   VAMPIRE: 'vampire_team',
+  CHAOS: 'chaos_tem'
 }
 
 const characterInfoMap = new Map([

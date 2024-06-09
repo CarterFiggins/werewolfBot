@@ -1,11 +1,11 @@
 const _ = require("lodash");
 const { findUsersWithIds } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
-const { removesDeadPermissions } = require("../deathHelper");
+const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
 const { getAliveUsersIds } = require("../discordHelpers");
 const { starveDeathMessage } = require("../botMessages/deathMessages");
 
-async function starveUser(interaction, organizedRoles, deathIds) {
+async function starveUser(interaction, deathIds) {
   let aliveUserIds = await getAliveUsersIds(interaction);
 
   const cursor = await findUsersWithIds(interaction.guild.id, aliveUserIds);
@@ -43,7 +43,7 @@ async function starveUser(interaction, organizedRoles, deathIds) {
     interaction,
     starvedUser,
     starvedMember,
-    organizedRoles
+    WaysToDie.STARVED
   );
 
   return await starveDeathMessage({ starvedCharacter, starvedMember, starvedUser })

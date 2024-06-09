@@ -65,14 +65,13 @@ test("starve user", async () => {
   //     },
   //   },
   // };
-  // const organizedRoles = {};
   // const werewolfKillId = 1;
 
   // getAliveUsersIds.mockReturnValue([1, 2, 3, 4, 5, 6, 7]);
   // findUsersWithIds.mockReturnValue({ toArray: () => aliveUsers });
   // removesDeadPermissions.mockReturnValue("it worked");
 
-  // const message = await starveUser(interaction, organizedRoles, werewolfKillId);
+  // const message = await starveUser(interaction, werewolfKillId);
 
   // console.log(message);
 

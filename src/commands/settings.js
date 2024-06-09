@@ -15,6 +15,7 @@ const SettingCommands = {
   WOLF_KILLS_WITCH: "wolf_kills_witch",
   HARD_MODE: "hard_mode",
   ALLOW_VAMPIRES: "allow_vampires",
+  ALLOW_CHAOS_DEMON: 'allow_chaos_demon',
   ALLOW_FIRST_BITE: "allow_first_bite",
   ALWAYS_BITE_TWO: "always_bite_two",
   KING_BITE_WOLF_SAFE: "king_bite_wolf_safe",

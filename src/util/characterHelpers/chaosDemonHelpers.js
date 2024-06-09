@@ -1,12 +1,13 @@
 const _ = require("lodash");
-const { findOneUser, findUser } = require("../../werewolf_db");
+const { findOneUser, updateUser } = require("../../werewolf_db");
 const { getAliveUsersIds } = require("../discordHelpers");
 const { characters } = require("./characterUtil");
 
 async function markChaosTarget(interaction) {
   const chaosDemon = await findOneUser({
     guild_id: interaction.guild.id,
-    character: characters.CHAOS_DEMON
+    character: characters.CHAOS_DEMON,
+    is_dead: false
   })
 
   if (!chaosDemon) {

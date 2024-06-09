@@ -4,7 +4,7 @@ const { commandNames } = require("../util/commandHelpers");
 const { characters } = require("../util/characterHelpers/characterUtil");
 const { permissionCheck } = require("../util/permissionCheck");
 const { isAlive } = require("../util/rolesHelpers");
-const { updateUser, findUser } = require("../werewolf_db");
+const { updateUser, findUser, findGame } = require("../werewolf_db");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -33,6 +33,7 @@ module.exports = {
       });
       return;
     }
+    const game = await findGame(interaction.guild.id);
 
     if (!game.first_night) {
       const preTargetedUser = interaction.guild.members.cache.get(dbUser.chaos_target_user_id)
@@ -45,11 +46,17 @@ module.exports = {
 
     const targetedUser = await interaction.options.getUser("target");
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
-    const game = await findGame(interaction.guild.id);
 
     if (targetedUser.bot) {
       await interaction.reply({
         content: `You can't target me!\n${getRandomBotGif()}`,
+        ephemeral: true,
+      });
+      return;
+    }
+    if (targetedUser.id === interaction.user.id) {
+      await interaction.reply({
+        content: `Can't pick yourself. try again`,
         ephemeral: true,
       });
       return;

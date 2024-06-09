@@ -159,5 +159,14 @@ module.exports = {
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
     },
+    {
+      label: 'Chaos Demon',
+      emoji: '😈',
+      team: 'chaos',
+      description: `### Chaos Demon
+* The first night the Chaos Demon will pick any player. They are on their own team. Change the allow_chaos_demon setting to true to add this player in the game.
+* Channels: none
+* Commands: \`/chaos_target\``,
+    },
   ],
 }

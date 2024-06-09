@@ -6,12 +6,11 @@ const {
   findSettings,
 } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
-const { organizeRoles } = require("../rolesHelpers");
 const {
   organizeChannels,
   giveChannelPermissions,
 } = require("../channelHelpers");
-const { removesDeadPermissions } = require("../deathHelper");
+const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
 const { vampireDeathMessage } = require("../botMessages/deathMessages");
 const { PowerUpNames } = require("../powerUpHelpers");
 
@@ -19,8 +18,6 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
   const members = interaction.guild.members.cache;
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const allRoles = interaction.guild.roles.cache;
-  const organizedRoles = await organizeRoles(allRoles);
   const guildId = interaction.guild.id;
   const settings = await findSettings(guildId);
   const cursor = await findManyUsers({
@@ -103,7 +100,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             interaction,
             vampire,
             vampireMember,
-            organizedRoles
+            WaysToDie.WEREWOLF
           );
           if (werewolfAttacked) {
             await organizedChannels.vampires.send(`${vampireMember} tried to bite ${victimMember} but a werewolf was also attacking ${victimMember}!`)

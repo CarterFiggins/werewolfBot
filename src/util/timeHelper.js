@@ -2,7 +2,7 @@ require("dotenv").config();
 const _ = require("lodash");
 const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
-const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
+const { getRole, roleNames } = require("./rolesHelpers");
 const {
   findGame,
   updateGame,
@@ -17,7 +17,7 @@ const { endGuildJobs } = require("./schedulHelper");
 const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
-const { removesDeadPermissions } = require("./deathHelper");
+const { removesDeadPermissions, WaysToDie } = require("./deathHelper");
 const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers/bodyguardHelper");
 const {
   cursePlayers,
@@ -26,6 +26,8 @@ const { killPlayers } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
 const { votingDeathMessage } = require("./botMessages/deathMessages");
+const { markChaosTarget, isDeadChaosTarget } = require("./characterHelpers/chaosDemonHelpers");
+const { PowerUpNames } = require("./powerUpHelpers");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -122,9 +124,11 @@ async function dayTimeJob(interaction) {
     return;
   }
 
+  if (game.first_night) {
+    await markChaosTarget(interaction);
+  }
+
   await interaction.guild.members.fetch();
-  const roles = await interaction.guild.roles.fetch();
-  const organizedRoles = organizeRoles(roles);
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   let message = "";
@@ -151,7 +155,7 @@ async function dayTimeJob(interaction) {
   message += await killPlayers(interaction, deathIds);
   let starveMessage = ""
   if (game.is_baker_dead) {
-    starveMessage = await starveUser(interaction, organizedRoles, deathIds);
+    starveMessage = await starveUser(interaction, deathIds);
   }
 
   await investigatePlayers(interaction)
@@ -177,8 +181,6 @@ async function dayTimeJob(interaction) {
 async function nightTimeJob(interaction) {
   const guildId = interaction.guild.id;
   const members = await interaction.guild.members.fetch();
-  const roles = await interaction.guild.roles.fetch();
-  const organizedRoles = organizeRoles(roles);
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const game = await findGame(guildId);
@@ -233,15 +235,22 @@ async function nightTimeJob(interaction) {
   }
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
   const deadMember = members.get(voteWinner._id.voted_user_id);
+  const isChaosTarget = await isDeadChaosTarget(interaction, deadUser);
 
   const deathCharacter = await removesDeadPermissions(
     interaction,
     deadUser,
     deadMember,
-    organizedRoles
+    WaysToDie.HANGED,
   );
+
+  let chaosWins = false;
+  if (isChaosTarget && deathCharacter !== PowerUpNames.SHIELD) {
+    chaosWins = true;
+  }
+    
   await votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes })
-  await checkGame(interaction);
+  await checkGame(interaction, chaosWins);
 }
 
 function warningTime(hour, minute) {

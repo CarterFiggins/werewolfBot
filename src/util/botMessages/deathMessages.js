@@ -3,14 +3,11 @@ const { organizeChannels } = require("../channelHelpers");
 const { castWitchCurse } = require("../characterHelpers/witchHelper");
 const { characters } = require("../commandHelpers");
 const { PowerUpNames } = require("../powerUpHelpers");
-const { organizeRoles } = require("../rolesHelpers");
 
 async function votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes }) {
   const settings = await findSettings(interaction.guild.id);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const roles = interaction.guild.roles.cache;
-  const organizedRoles = organizeRoles(roles);
   if (topVotes.length > 1) {
     message = `There was a tie so I randomly picked ${deadMember} to die\n`;
   } else {
@@ -23,7 +20,7 @@ async function votingDeathMessage({ interaction, deathCharacter, deadMember, dea
   if (deathCharacter === PowerUpNames.SHIELD) {
     deathMessage = `However, ${deadMember} had a protective shield, sparing them from this fate! The shield is now used up and will not offer protection again.`
   } else if (deadUser.character === characters.WITCH) {
-    cursedMessage = await castWitchCurse(interaction, organizedRoles);
+    cursedMessage = await castWitchCurse(interaction);
   } else if (deadUser.character === characters.HUNTER) {
     deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
   }

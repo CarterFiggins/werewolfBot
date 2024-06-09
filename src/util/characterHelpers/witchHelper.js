@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { updateUser, findManyUsers } = require("../../werewolf_db");
 const { organizeChannels } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
-const { removesDeadPermissions, witchCurseDeathMessage } = require("../deathHelper");
+const { removesDeadPermissions, witchCurseDeathMessage, WaysToDie } = require("../deathHelper");
 
 async function cursePlayers(interaction) {
   const guildId = interaction.guild.id;
@@ -34,7 +34,7 @@ async function cursePlayers(interaction) {
   );
 }
 
-async function castWitchCurse(interaction, organizedRoles) {
+async function castWitchCurse(interaction) {
   const cursorCursed = await findManyUsers({
     guild_id: interaction.guild.id,
     is_cursed: true,
@@ -54,7 +54,7 @@ async function castWitchCurse(interaction, organizedRoles) {
         interaction,
         villager,
         villagerMember,
-        organizedRoles
+        WaysToDie.CURSED
       );
       return await witchCurseDeathMessage({ villager, deadVillager, villagerMember })
     })

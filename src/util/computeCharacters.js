@@ -25,6 +25,9 @@ function startingCharacters(settings, numberOfPlayers) {
   if (settings.allow_vampires) {
     standardCharacters.push(characters.VAMPIRE)
   }
+  if (settings.allow_chaos_demon) {
+    standardCharacters.push(characters.CHAOS_DEMON)
+  }
   if (settings.random_cards) {
     return standardCharacters
   }
