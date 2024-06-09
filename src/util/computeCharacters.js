@@ -37,7 +37,6 @@ async function computeCharacters(numberOfPlayers, guildId) {
 
   let werewolfDeck = createDeck(playingCards.wolfCards, numberOfPlayers);
   let villagerDeck = createDeck(playingCards.villagerCards, numberOfPlayers);
-  let vampireDeck = createDeck(playingCards.vampireCards, numberOfPlayers);
   if (settings.random_cards) {
     // make sure seer, bodyguard can be picked
     villagerDeck.concat(characters.SEER, characters.BODYGUARD);
@@ -55,8 +54,6 @@ async function computeCharacters(numberOfPlayers, guildId) {
       newCharacter = _.sample(villagerDeck);
     } else if (balance.nextTeam() === teams.WEREWOLF) {
       newCharacter = _.sample(werewolfDeck);
-    } else if (balance.nextTeam() === teams.VAMPIRE) {
-      newCharacter = _.sample(vampireDeck);
     }
     const characterInfo = characterInfoMap.get(newCharacter)
     if (characterInfo?.onlyOne) {
@@ -65,8 +62,6 @@ async function computeCharacters(numberOfPlayers, guildId) {
         villagerDeck = villagerDeck.filter((c) => c !== newCharacter)
       } else if (characterInfo.helpsTeam === teams.WEREWOLF) {
         werewolfDeck = werewolfDeck.filter((c) => c !== newCharacter)
-      } else if (characterInfo.helpsTeam === teams.VAMPIRE) {
-        vampireDeck = vampireDeck.filter((c) => c !== newCharacter)
       }
     }
     cardsInGame.push(balance.addCharacterPoints(newCharacter));

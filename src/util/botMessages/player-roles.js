@@ -156,7 +156,7 @@ module.exports = {
       emoji: '🧛',
       team: 'vampire',
       description: `### Vampire
-* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. If a vampire attacks a werewolf, (s)he will die.
+* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. If a vampire attacks a werewolf, (s)he will die. Change the allow_vampires setting to true to add this player in the game.
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
     },

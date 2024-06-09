@@ -10,7 +10,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.COPY)
     .setDescription("DOPPELGANGER COMMAND: Copies another players character")
-    .setDefaultPermission(true)
     .addUserOption((option) =>
       option
         .setName("target")

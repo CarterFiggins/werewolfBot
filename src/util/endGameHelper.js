@@ -10,7 +10,6 @@ const { characters } = require("./characterHelpers/characterUtil");
 const { getAliveMembers } = require("./discordHelpers");
 const { removeGameRolesFromMembers } = require("./rolesHelpers");
 const { endGuildJobs } = require("./schedulHelper");
-const { calculateScores, teams } = require("./scoreSystem");
 
 async function checkGame(interaction) {
   const members = interaction.guild.members.cache;
@@ -85,12 +84,10 @@ async function checkGame(interaction) {
   }
 }
 
-async function endGame(interaction, roles, members, scoreData) {
+async function endGame(interaction, roles, members) {
   const guildId = interaction.guild.id;
   // remove all discord roles from players
   await removeGameRolesFromMembers(members, roles);
-
-  await calculateScores(interaction, scoreData);
 
   // delete all game info from database
   await deleteAllUsers(guildId);

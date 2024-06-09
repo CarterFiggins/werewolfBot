@@ -12,7 +12,6 @@ const SettingCommands = {
   CAN_WHISPER: "can_whisper",
   ALLOW_REACTIONS: "allow_reactions",
   EXTRA_CHARACTERS: "extra_characters",
-  SHOW_SCOREBOARD: "show_scoreboard",
   WOLF_KILLS_WITCH: "wolf_kills_witch",
   HARD_MODE: "hard_mode",
   ALLOW_VAMPIRES: "allow_vampires",
@@ -119,17 +118,6 @@ module.exports = {
         .setDescription(
           "ADMIN COMMAND: Characters added: mutated villager, witch, fool, doppelganger, and apprentice seer"
         )
-        .addBooleanOption((option) =>
-          option
-            .setName("activate")
-            .setRequired(true)
-            .setDescription("Set setting true or false")
-        )
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName(SettingCommands.SHOW_SCOREBOARD)
-        .setDescription("ADMIN COMMAND: Shows the scoreboard channel.")
         .addBooleanOption((option) =>
           option
             .setName("activate")
