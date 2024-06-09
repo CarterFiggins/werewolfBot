@@ -54,7 +54,7 @@ const characterInfoMap = new Map([
   [characters.LYCAN, { frequency: 7, points: 3, helpsTeam: teams.WEREWOLF }],
   [characters.BAKER, { frequency: 10, points: 6, helpsTeam: teams.WEREWOLF, onlyOne: true }],
   [characters.MUTATED, { frequency: 9, points: 4, helpsTeam: teams.WEREWOLF }],
-  [characters.CUB, { frequency: 12, points: 8, helpsTeam: teams.WEREWOLF }],
+  [characters.CUB, { frequency: 12, points: 7, helpsTeam: teams.WEREWOLF }],
   [characters.WITCH, { frequency: 10, points: 7, helpsTeam: teams.WEREWOLF, onlyOne: true }],
   [characters.DOPPELGANGER, { frequency: 10, points: 5, helpsTeam: teams.VILLAGER }],
   [characters.GROUCHY_GRANNY, { frequency: 10, points: 6, helpsTeam: teams.VILLAGER }],

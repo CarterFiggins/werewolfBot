@@ -33,7 +33,7 @@ async function killPlayers(interaction, deathIds) {
           character: characters.WEREWOLF,
         });
         await organizedChannels.werewolves.send(
-          `${deadMember} did not die and has turned into a werewolf! :wolf:`
+          `You went after ${deadMember} last night, but things took an unexpected twist. Turns out, your attack triggered their mutated DNA, and they transformed into a werewolf!\nWelcome to the pack, ${deadMember}! The hunt just got a little wilder. :wolf:`
         );
         isDead = false;
       } else if (
@@ -45,11 +45,14 @@ async function killPlayers(interaction, deathIds) {
           user: deadMember,
           character: characters.WEREWOLF,
         });
-        await organizedChannels.werewolves.send(
-          `You did not kill ${deadMember} because they are the witch! They have joined the channel`
+        organizedChannels.werewolves.send(
+          `You went after ${deadMember} last night, but guess what? ${deadMember} was the witch, and your attack didn't quite go as planned. The twist? The witch has now joined your chat!\nWelcome, ${deadMember}! The hunt just got a little more magical.`
         );
         isDead = false;
       } else if (deadUser.has_guard) {
+        await organizedChannels.werewolves.send(
+          `${deadMember} is a lycan! It turns out they were tougher than you expected! Your attack was unsuccessful this time. However, now you know what you’re up against, and next time you’ll be prepared to take them down.`
+        );
         await updateUser(deadUser.user_id, interaction.guild.id, {
           has_guard: false,
         });

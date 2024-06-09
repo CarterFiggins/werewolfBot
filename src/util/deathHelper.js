@@ -77,7 +77,7 @@ async function removesDeadPermissions(
       wolf_double_kill: true,
     });
     await organizedChannels.werewolves.send(
-      `The Werewolf Cub name ${deadMember} has been killed :rage:\nTonight you will be able to target two villagers!\nhttps://tenor.com/86LT.gif`
+      `We have unfortunate news: ${deadMember}, our cub, has been killed. However, this loss has fueled your rage.:rage:\n Tonight, you can target not just one, but two villagers.\nhttps://tenor.com/86LT.gif`
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
@@ -114,7 +114,7 @@ async function checkBakers(guildId, townSquare) {
       is_baker_dead: true,
     });
     townSquare.send(
-      "There is no more bread! One villager will starve every morning"
+      `Hold onto your hats, because we've got a loafing crisis on our hands! Our baker has bitten the baguette, leaving us with fewer carbs than a gluten-free cookbook. Starting tomorrow, one unlucky villager will face the dreaded "empty stomach o'doom" and, well, let's just say it won't end well.`
     );
   }
 }
@@ -217,10 +217,10 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
   }
   
   if (deadUser.character === characters.HUNTER) { 
-     return `Last night the werewolves injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+     return `Last night, the werewolves attacked and injured the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.\n`;
   }
   
-  return `Last night the **${deathCharacter}** named ${deadMember} was killed by the werewolves.\n`;
+  return `Last night, the werewolves struck again. ${deadMember}, who played the role of ${deathCharacter}, has been killed by the attack.\n`;
 }
 
 async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire }) {

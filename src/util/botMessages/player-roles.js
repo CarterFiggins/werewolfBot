@@ -84,8 +84,7 @@ module.exports = {
       emoji: '🌝',
       team: 'villager',
       description: `### Lycan
-* Lycans will be told they are regular villagers. However, they will appear to the seer as werewolves.
-* Channels: none
+* Lycans will be told they are regular villagers. However, they will appear to the seer as werewolves. The first attack from a werewolf will be guarded but will die on the second attempt.
 * Commands: none`
     },
     {
