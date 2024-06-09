@@ -28,7 +28,16 @@ function startingCharacters(settings, numberOfPlayers) {
   if (settings.random_cards) {
     return standardCharacters
   }
-  return _.concat(standardCharacters, characters.SEER, characters.BODYGUARD, characters.MASON);
+  return _.concat(
+    characters.MASON,
+    characters.LYCAN,
+    characters.BAKER,
+    characters.HUNTER,
+    characters.MASON,
+    characters.BODYGUARD,
+    characters.SEER,
+    standardCharacters,
+  );
 }
 
 async function computeCharacters(numberOfPlayers, guildId) {
@@ -47,6 +56,10 @@ async function computeCharacters(numberOfPlayers, guildId) {
   cardsInGame.forEach((character) => balance.addCharacterPoints(character));
 
   let playersLeftOver = numberOfPlayers - cardsInGame.length;
+
+  if (playersLeftOver <= 0) {
+    return cardsInGame;
+  }
 
   _.forEach(_.range(playersLeftOver), () => {
     let newCharacter = characters.VILLAGER
