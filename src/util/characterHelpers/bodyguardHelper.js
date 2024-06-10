@@ -76,7 +76,6 @@ async function sendSuccessfulGuardMessage(interaction, successfulGuardIds) {
   const organizedChannels = organizeChannels(channels);
   const savedMembers = _.map(successfulGuardIds, (id) => members.get(id))
 
-  organizedChannels.bodyguard.send(`Great news! Last night, your vigilant efforts paid off. You successfully protected ${savedMembers.join(", ")} from harm.\nYour bravery has kept the village safe for another night. Keep up the good work!`);
   organizedChannels.werewolves.send(`Last night's attack didn't go as planned because you got scared off! The bodyguard was on duty, protecting ${savedMembers.join(", ")}, and you decided it wasn't worth the risk.`)
 }
 
