@@ -162,7 +162,18 @@ module.exports = {
             .setRequired(true)
             .setDescription("Set setting true or false")
         )
-    )
+  )
+  .addSubcommand((subcommand) =>
+    subcommand
+      .setName(SettingCommands.ALLOW_CHAOS_DEMON)
+      .setDescription("ADMIN COMMAND: Allow the Chaos Demon character to play")
+      .addBooleanOption((option) =>
+        option
+          .setName("activate")
+          .setRequired(true)
+          .setDescription("Set setting true or false")
+      )
+  )
     .addSubcommand((subcommand) =>
       subcommand
         .setName(SettingCommands.ALLOW_FIRST_BITE)
