@@ -38,7 +38,7 @@ async function removesDeadPermissions(
   let deadCharacter = deadUser.character; 
   const settings = await findSettings(guildId);
 
-  if (deadUser?.power_ups[PowerUpNames.SHIELD]) {
+  if (deadUser?.power_ups && deadUser?.power_ups[PowerUpNames.SHIELD]) {
     deadUser.power_ups[PowerUpNames.SHIELD] = false;
     await updateUser(deadUser.user_id, interaction.guild.id, {
       power_ups: deadUser.power_ups,
