@@ -133,7 +133,6 @@ async function sendGreeting(interaction, user) {
     }
   } catch (error) {
     console.error(error);
-    console.log(member);
     console.log(user);
   }
 }
