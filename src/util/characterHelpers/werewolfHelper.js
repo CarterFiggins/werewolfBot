@@ -9,7 +9,7 @@ const { werewolfKillDeathMessage } = require("../deathHelper");
 
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;
-  const members = interaction.guild.members.cache;
+  const members = await interaction.guild.members.fetch();
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const cursor = await findUsersWithIds(guildId, deathIds);

@@ -83,7 +83,6 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
         user.info.first_bite = true;
         break;
       case characters.LYCAN:
-        user.info.has_guard = true;
         user.info.assigned_identity = characters.VILLAGER
         break;
       case characters.MUTATED:
