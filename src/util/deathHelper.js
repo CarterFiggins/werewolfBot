@@ -7,6 +7,7 @@ const {
   deleteManyVotes,
   findSettings,
   findOneUser,
+  findUser,
 } = require("../werewolf_db");
 const {
   organizeChannels,

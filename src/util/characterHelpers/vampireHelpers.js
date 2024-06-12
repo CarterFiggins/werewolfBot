@@ -105,10 +105,10 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
           if (werewolfAttacked) {
             await organizedChannels.vampires.send(`${vampireMember} tried to bite ${victimMember} but a werewolf was also attacking ${victimMember}!`)
           } else {
-            await organizedChannels.vampires.send(`${vampireMember} tried to bite ${victimMember} but they are a werewolf!`)
+            await organizedChannels.vampires.send(`${vampireMember} Your attempt to bite ${victimMember} has backfired! Unbeknownst to you, ${victimMember} is a werewolf, and this deadly encounter has led to your demise.`)
           }
           if (deadCharacter === PowerUpNames.SHIELD) {
-            await organizedChannels.vampires.send(`Good thing ${vampireMember} had a shield!`)
+            await organizedChannels.vampires.send(`WAIT! ${vampireMember} has a shield! It protected them from death!`)
           }
           return await vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, vampire, vampireMember })
         }

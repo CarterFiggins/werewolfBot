@@ -25,9 +25,7 @@ async function cursePlayers(interaction) {
           target_cursed_user_id: null,
         });
         await organizedChannels.witch.send(
-          `${members.get(witch.user_id)} have successfully cursed ${members.get(
-            witch.target_cursed_user_id
-          )}`
+          `${members.get(witch.user_id)} Your dark magic has taken effect. You have successfully cursed ${members.get(witch.target_cursed_user_id)}. The power of your curse now looms over them.`
         );
       }
     })
