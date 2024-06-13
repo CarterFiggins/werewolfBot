@@ -101,7 +101,7 @@ module.exports = {
       emoji: '☣️',
       team: 'villager/werewolf',
       description: `### Mutated Villager
-* A mutated villager will be told (s)he is a regular villager and is initially on the villager team. If attacked by a werewolf, the mutated villager will turn into a werewolf. If bitten by a vampire, the mutated villager will turn into a vampire king.
+* A mutated villager will be told (s)he is a villager, hunter, or baker and is initially on the villager team. If attacked by a werewolf, the mutated villager will turn into a werewolf. If bitten by a vampire, the mutated villager will turn into a vampire king.
 * Channels: none
 * Commands: none`
     },

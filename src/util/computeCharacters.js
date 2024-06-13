@@ -16,30 +16,50 @@ function createDeck(characterCards, numberOfPlayers) {
 }
 
 function startingCharacters(settings, numberOfPlayers) {
-  const werewolvesToAdd = Math.floor(numberOfPlayers/10)
-  const standardCharacters = [characters.WEREWOLF];
+  const werewolvesPerPlayers = settings.allow_vampires ? 6 : 5
+  const werewolvesToAdd = Math.floor(numberOfPlayers/werewolvesPerPlayers) || 1
+  const startingCards = [];
   _.forEach(_.range(werewolvesToAdd), () => {
-    standardCharacters.push(characters.WEREWOLF)
+    startingCards.unshift(characters.WEREWOLF)
   })
   
   if (settings.allow_vampires) {
-    standardCharacters.push(characters.VAMPIRE)
+    startingCards.unshift(characters.VAMPIRE)
   }
   if (settings.allow_chaos_demon) {
-    standardCharacters.push(characters.CHAOS_DEMON)
+    startingCards.unshift(characters.CHAOS_DEMON)
   }
   if (settings.random_cards) {
-    return standardCharacters
+    return startingCards
   }
-  return _.concat(
+
+  startingCards.unshift(
+    characters.MASON,
+    characters.BODYGUARD,
+    characters.SEER,
+  )
+
+  let commonCards = [
     characters.MASON,
     characters.LYCAN,
     characters.BAKER,
     characters.HUNTER,
-    characters.MASON,
-    characters.BODYGUARD,
-    characters.SEER,
-    standardCharacters,
+  ]
+
+  if (settings.extra_characters) {
+    commonCards.push(
+      characters.MUTATED,
+      characters.WITCH,
+      characters.FOOL,
+      characters.DOPPELGANGER,
+      characters.APPRENTICE_SEER,
+      characters.GROUCHY_GRANNY,
+    )
+  }
+
+  return _.concat(
+    _.shuffle(commonCards),    
+    startingCards,
   );
 }
 
