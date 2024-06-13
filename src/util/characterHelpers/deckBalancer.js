@@ -14,6 +14,10 @@ class DeckBalancer{
       character = characters.villager
     }
     const characterInfo = characterInfoMap.get(character);
+    if (!characterInfo) {
+      return character
+    }
+
     if (characterInfo.helpsTeam === teams.VILLAGER) {
       this.villager.points += characterInfo.points;
     } else if (characterInfo.helpsTeam === teams.WEREWOLF) {
