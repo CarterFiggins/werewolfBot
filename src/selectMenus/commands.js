@@ -3,7 +3,7 @@ const { commandList } = require("../util/botMessages/commandsDescriptions");
 const { replyViewAll } = require("../util/botMessages/messageHelpers");
 
 module.exports = {
-  name: 'commands',
+  data: { name: 'commands' },
   sendResponse: async (interaction) => {
     const commandName = interaction.values[0]
     if (commandName === "View All") {

@@ -22,6 +22,7 @@ const commandNames = {
   DAY_TIME: "day_time",
   NIGHT_TIME: "night_time",
   SETTINGS: "settings",
+  ANNOUNCE_NEW_GAME: "announce_new_game",
   // Player game commands
   PLAYING: "playing",
   STOP_PLAYING: "stop_playing",

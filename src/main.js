@@ -18,31 +18,10 @@ mongoUtil.connectToServer(function (err, mongoClient) {
     partials: ["CHANNEL"],
   });
 
-  // ****************************
-  // ***** Command Handling *****
-  // ****************************
-  client.commands = new Collection();
-  const commandFiles = fs
-    .readdirSync("./src/commands")
-    .filter((file) => file.endsWith(".js"));
+  client.commands = createHandler('commands')
+  client.selectMenus = createHandler('selectMenus')
+  client.buttons = createHandler('buttons')
 
-  for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    // Set a new item in the Collection
-    // With the key as the command name and the value as the exported module
-    client.commands.set(command.data.name, command);
-  }
-  // ****************************
-  // *** Select Menu Handling ***
-  // ****************************
-  client.selectMenus = new Collection();
-  const menuFiles = fs
-  .readdirSync("./src/menus")
-  .filter((file) => file.endsWith(".js"));
-  for (const file of menuFiles) {
-    const menu = require(`./menus/${file}`);
-    client.selectMenus.set(menu.name, menu);
-  }
   // **************************
   // ***** Event Handling *****
   // **************************
@@ -63,3 +42,16 @@ mongoUtil.connectToServer(function (err, mongoClient) {
 
   client.login(process.env.TOKEN);
 });
+
+function createHandler(handlerName) {
+  const collection = new Collection();
+  const files = fs
+    .readdirSync(`./src/${handlerName}`)
+    .filter((file) => file.endsWith(".js"));
+
+  for (const file of files) {
+    const handler = require(`./${handlerName}/${file}`);
+    collection.set(handler.data.name, handler);
+  }
+  return collection;
+}
