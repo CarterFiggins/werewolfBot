@@ -3,6 +3,7 @@ const _ = require("lodash");
 const { commandNames } = require("../util/commandHelpers");
 const { findUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
+const { isPlaying } = require("../util/rolesHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -29,6 +30,13 @@ module.exports = {
     if (!dbUser) {
       await interaction.reply({
         content: 'I wish I knew! Try joining a game using `/playing` to get a character.',
+        ephemeral: true,
+      });
+      return;
+    }
+    if (isPlaying(interaction.member)) {
+      await interaction.reply({
+        content: 'When the game starts I will let you know who you are.',
         ephemeral: true,
       });
       return;
