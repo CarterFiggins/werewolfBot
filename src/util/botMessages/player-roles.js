@@ -164,7 +164,7 @@ module.exports = {
       emoji: '😈',
       team: 'chaos',
       description: `### Chaos Demon
-* The first night the Chaos Demon will pick any player. They are on their own team. Change the allow_chaos_demon setting to true to add this player in the game.
+* The first night the Chaos Demon will pick any player. For the Chaos Demon to win they must convince the town to hang the target player. If the target dies any other way the chaos demon will die. The Chaos demon is on their own team. Change the allow_chaos_demon setting to true to add this player in the game.
 * Channels: none
 * Commands: \`/chaos_target\``,
     },
