@@ -2,6 +2,7 @@ const _ = require("lodash");
 const { findOneUser, updateUser } = require("../../werewolf_db");
 const { getAliveUsersIds } = require("../discordHelpers");
 const { characters } = require("./characterUtil");
+const { organizeChannels } = require("../channelHelpers");
 
 async function markChaosTarget(interaction) {
   const chaosDemon = await findOneUser({
@@ -13,6 +14,10 @@ async function markChaosTarget(interaction) {
   if (!chaosDemon) {
     return
   }
+
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  const members = await interaction.guild.members.cache;
   
   let selectedChaosUserId = chaosDemon.chaos_target_user_id
   if (!selectedChaosUserId) {
@@ -25,6 +30,7 @@ async function markChaosTarget(interaction) {
     selectedChaosUserId = targetUserId
   }
 
+  organizedChannels.afterLife.send(`${members.get(chaosDemon.user_id)} the chaos demon has chosen ${members.get(targetUserId)}`)
   await updateUser(selectedChaosUserId, interaction.guild.id, {
     is_chaos_target: true,
   })

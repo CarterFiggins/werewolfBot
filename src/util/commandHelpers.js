@@ -119,10 +119,12 @@ async function sendGreeting(interaction, user) {
         await member.send(
           `You are a **Grouchy Granny**\n${voteText}\nYou can mute someone out of town square using the \`/mute\` command for the rest of the day and night. They will come back tomorrow but while they are gone they will be able to leave messages in the out cast channel. This will not allow them to use their night power. You will not be able to mute the same player for the rest of the game`
         );
+        break;
       case characters.CHAOS_DEMON:
         await member.send(
           `You are a **CHAOS_DEMON**\n${voteText}\nYou are on your own team. On the first night target a player using \`/chaos_target\`.\nTo win the game you must get the player that was targeted hanged. If that player dies in a different way you will die.`
         )
+        break;
     }
 
     if (settings.enable_power_ups) {

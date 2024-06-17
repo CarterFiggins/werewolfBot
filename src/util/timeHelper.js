@@ -124,11 +124,12 @@ async function dayTimeJob(interaction) {
     return;
   }
 
+  await interaction.guild.members.fetch();
+
   if (game.first_night) {
     await markChaosTarget(interaction);
   }
 
-  await interaction.guild.members.fetch();
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   let message = "";
@@ -204,6 +205,9 @@ async function nightTimeJob(interaction) {
     await organizedChannels.vampires.send(
       "This is the first night. Choose someone to bite with the `/vampire_bite` command"
     );
+    await organizedChannels.outCasts.send(
+      "This is the first night. Choose someone to mute with the `/mute` command"
+    )
     return;
   }
   if (!game.is_day) {

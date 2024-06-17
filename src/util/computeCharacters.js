@@ -16,7 +16,7 @@ function createDeck(characterCards, numberOfPlayers) {
 }
 
 function startingCharacters(settings, numberOfPlayers) {
-  const werewolvesPerPlayers = settings.allow_vampires ? 6 : 5
+  const werewolvesPerPlayers = settings.allow_vampires ? 5 : 4
   const werewolvesToAdd = Math.floor(numberOfPlayers/werewolvesPerPlayers) || 1
   const startingCards = [];
   _.forEach(_.range(werewolvesToAdd), () => {

@@ -31,6 +31,8 @@ async function sendStartMessages(interaction, users) {
   const werewolves = [];
   const masons = [];
   const seers = [];
+  const bodyguards = [];
+  const grannies = [];
 
   _.forEach(users, (user) => {
     switch (user.info.character) {
@@ -43,6 +45,12 @@ async function sendStartMessages(interaction, users) {
       case characters.SEER:
       case characters.FOOL:
         seers.push(user);
+        break;
+      case characters.BODYGUARD:
+        bodyguards.push(user);
+        break;
+      case characters.GROUCHY_GRANNY:
+        grannies.push(user);
         break;
     }
   });
@@ -81,10 +89,10 @@ async function sendStartMessages(interaction, users) {
     `${afterLifeStart}\n${showUsersCharacter(users)}`
   );
   await organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
-  await organizedChannels.bodyguard.send(bodyguardStart);
+  await organizedChannels.bodyguard.send(`${bodyguardStart}\nBodyguards:\n${bodyguards}`);
   await organizedChannels.witch.send(witchStart);
   await organizedChannels.vampires.send(vampireStart);
-  await organizedChannels.outCasts.send(outCastStart);
+  await organizedChannels.outCasts.send(`${outCastStart}\nGrannies:\n${grannies}`);
 }
 
 function showUsersCharacter(users) {
