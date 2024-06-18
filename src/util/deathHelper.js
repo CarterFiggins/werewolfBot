@@ -295,6 +295,10 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
     message = `${deadTargetMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
   }
 
+  if (targetDbUser.character === characters.WITCH) {
+    message += await castWitchCurse(interaction)
+  }
+
   if (randomFire) {
     const channels = interaction.guild.channels.cache;
     const organizedChannels = organizeChannels(channels);
@@ -326,10 +330,44 @@ async function witchCurseDeathMessage({ villager, deadVillager, villagerMember }
   return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}`;
 }
 
+
+async function castWitchCurse(interaction) {
+  const cursorCursed = await findManyUsers({
+    guild_id: interaction.guild.id,
+    is_cursed: true,
+    is_dead: false,
+  });
+  const cursedPlayers = await cursorCursed.toArray();
+  const cursedVillagers = _.filter(cursedPlayers, (player) => {
+    return player.character !== characters.WEREWOLF;
+  });
+  const members = interaction.guild.members.cache;
+
+  const deathCharacters = await Promise.all(
+    _.map(cursedVillagers, async (villager) => {
+      const villagerMember = members.get(villager.user_id);
+
+      const deadVillager = await removesDeadPermissions(
+        interaction,
+        villager,
+        villagerMember,
+        WaysToDie.CURSED
+      );
+      return await witchCurseDeathMessage({ villager, deadVillager, villagerMember })
+    })
+  );
+
+  if (deathCharacters) {
+    return `The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
+  }
+  return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";
+}
+
 module.exports = {
   removesDeadPermissions,
   gunFire,
   WaysToDie,
   witchCurseDeathMessage,
   werewolfKillDeathMessage,
+  castWitchCurse,
 };

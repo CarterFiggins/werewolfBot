@@ -1,7 +1,7 @@
 const { findSettings, updateGame } = require("../../werewolf_db");
 const { organizeChannels } = require("../channelHelpers");
-const { castWitchCurse } = require("../characterHelpers/witchHelper");
 const { characters } = require("../commandHelpers");
+const { castWitchCurse } = require("../deathHelper");
 const { PowerUpNames } = require("../powerUpHelpers");
 
 async function votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes }) {

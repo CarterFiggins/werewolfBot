@@ -32,39 +32,6 @@ async function cursePlayers(interaction) {
   );
 }
 
-async function castWitchCurse(interaction) {
-  const cursorCursed = await findManyUsers({
-    guild_id: interaction.guild.id,
-    is_cursed: true,
-    is_dead: false,
-  });
-  const cursedPlayers = await cursorCursed.toArray();
-  const cursedVillagers = _.filter(cursedPlayers, (player) => {
-    return player.character !== characters.WEREWOLF;
-  });
-  const members = interaction.guild.members.cache;
-
-  const deathCharacters = await Promise.all(
-    _.map(cursedVillagers, async (villager) => {
-      const villagerMember = members.get(villager.user_id);
-
-      const deadVillager = await removesDeadPermissions(
-        interaction,
-        villager,
-        villagerMember,
-        WaysToDie.CURSED
-      );
-      return await witchCurseDeathMessage({ villager, deadVillager, villagerMember })
-    })
-  );
-
-  if (deathCharacters) {
-    return `The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
-  }
-  return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";
-}
-
 module.exports = {
-  castWitchCurse,
   cursePlayers,
 };
