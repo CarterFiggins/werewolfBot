@@ -18,6 +18,7 @@ const { characters } = require("./characterHelpers/characterUtil");
 const { checkGame } = require("./endGameHelper");
 const { organizeRoles } = require("./rolesHelpers");
 const { PowerUpNames } = require("./powerUpHelpers");
+const { getAliveUsersIds } = require("./discordHelpers");
 
 const WaysToDie = {
   HANGED: 'hanged',
