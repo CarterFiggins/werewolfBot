@@ -19,6 +19,7 @@ const { checkGame } = require("./endGameHelper");
 const { organizeRoles } = require("./rolesHelpers");
 const { PowerUpNames } = require("./powerUpHelpers");
 const { getAliveUsersIds } = require("./discordHelpers");
+const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
 
 const WaysToDie = {
   HANGED: 'hanged',
@@ -45,7 +46,7 @@ async function removesDeadPermissions(
     await updateUser(deadUser.user_id, interaction.guild.id, {
       power_ups: deadUser.power_ups,
     });
-    await deadMember.send("Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again")
+    await sendMemberMessage(deadMember, "Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again")
     return PowerUpNames.SHIELD
   }
 
