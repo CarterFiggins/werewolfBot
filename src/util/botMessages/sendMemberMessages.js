@@ -7,7 +7,7 @@ async function sendMemberMessage(member, message) {
   }
 
   try {
-    member.send(message);
+    await member.send(message);
   } catch (error) {
     console.log(member)
     console.log(`did not get message: ${message}`)
