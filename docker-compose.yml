@@ -1,0 +1,27 @@
+services:
+  werewolf-bot:
+    image: werewolf-dev
+    build:
+      context: ./
+      dockerfile: Dev.Dockerfile
+    volumes:
+      - ./:/home/node/app
+    env_file: ".env"
+    environment:
+      MONGO_URI: "mongodb://sa:password@db"
+      MONGODB_NAME: "werewolf"
+    depends_on:
+      - db
+  werewolf-library-install:
+    extends:
+      service: werewolf-bot
+    command: ./watch-install.sh
+  db:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: sa
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongo-db:/data/db
+volumes:
+  mongo-db:

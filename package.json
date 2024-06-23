@@ -3,10 +3,25 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "watch": {
+    "deploy": {
+      "patterns": [
+        "src/deploy-commands.js",
+        "src/commands/*"
+      ],
+      "extensions": "js"
+    },
+    "dev": {
+      "patterns": [
+        "src/**/*"
+      ],
+      "extensions": "js"
+    }
+  },
   "scripts": {
     "test": "jest ./src/__test__",
+    "dev": "npm i && node ./src/main.js",
     "start": "node ./src/main.js",
-    "dev": "nodemon ./src/main.js",
     "deploy": "node ./src/deploy-commands.js"
   },
   "keywords": [],
@@ -21,6 +36,7 @@
     "node-schedule": "^2.1.0"
   },
   "devDependencies": {
-    "jest": "^27.4.7"
+    "jest": "^27.4.7",
+    "npm-watch": "^0.13.0"
   }
 }

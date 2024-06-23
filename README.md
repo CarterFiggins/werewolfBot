@@ -1,8 +1,21 @@
-# Discord Werwolf Bot
+# Discord Werewolf Bot
 
-This bot will be the narrator for the game werwolf in a discord server. Players will use commands from the bot to make actions in the game. A player can be on the villagers team or the werewolves team. There are options to add other teams like the vampires. Every night the werewolves attack and eat one villager. During the day the villagers vote for a plyer to be hanged. The villagers do not know who is on the villager team or the werewolf team. They will have to find out who the werewolves are and vote for them. The werewolves do know who is on their team. They try to act like a villager and survive from the vote. The werewolves win if the number of werewolves are equal or grater than the villagers plus any other teams playing (vampires). The villager will win when they killed all the werewolves and other teams (vampires). The game is in real time. The day and voting will end at 8pm and the night will end at 8am. During the day the villagers and werewolves will vote. During the night the werewolves will talk, in a private chanel, on who to target.
+This bot will be the narrator for the game werewolf in a discord server. Players will use commands from the bot to make 
+actions in the game. A player can be on the villagers team or the werewolves team. There are options to add other teams 
+like the vampires. Every night the werewolves attack and eat one villager. During the day the villagers vote for a 
+player to be hanged. The villagers do not know who is on the villager team or the werewolf team. They will have to find 
+out who the werewolves are and vote for them. The werewolves do know who is on their team. They try to act like a 
+villager and survive from the vote. The werewolves win if the number of werewolves are equal or grater than the 
+villagers plus any other teams playing (vampires). The villager will win when they killed all the werewolves and other 
+teams (vampires). The game is in real time. The day and voting will end at 8pm and the night will end at 8am. During the
+day the villagers and werewolves will vote. During the night the werewolves will talk, in a private chanel, on who to 
+target.
 
-# Characters
+## Setup and Development
+
+See [Setup Instructions](./SETUP.md)
+
+## Characters
 
 **Villager** +2 Villager Team
 
@@ -155,26 +168,4 @@ Commands are actions you can do in the game. To browse the commands type **/** i
 
 > When the bot goes offline the day and night schedulers get turned off. This will reset the scheduling so day and night time will happen according to the settings in the database.
 
-# Env set up
 
-There are 5 values to set up in the env before the bot will work. Copy the `.env.example` file to `.env` and fill in the values.
-
-### TOKEN
-
-This is the discord token that can be found after creating a bot in the discord developers application.
-
-### CLIENT_ID
-
-The client id is also found in the discord developers application.
-
-### MONGO_URI
-
-The uri to connect to mongodb
-
-### MONGODB_NAME
-
-The name of the mongo database
-
-### TIME_ZONE_TZ
-
-The time zone for the bot day schedulers
