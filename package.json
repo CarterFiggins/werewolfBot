@@ -11,7 +11,7 @@
       ],
       "extensions": "js"
     },
-    "dev": {
+    "start": {
       "patterns": [
         "src/**/*"
       ],
@@ -20,7 +20,6 @@
   },
   "scripts": {
     "test": "jest ./src/__test__",
-    "dev": "npm i && node ./src/main.js",
     "start": "node ./src/main.js",
     "deploy": "node ./src/deploy-commands.js"
   },
