@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging into ECR"
+      - aws ecr get-login --region $AWS_REGION
+      - export IMAGE_TAG="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO_NAME:$REPO_TAG"
+  build:
+    commands:
+      - echo "Building containers image"
+      - docker build -t $IMAGE_TAG
+  post_build:
+    commands:
+      - echo "Pushing $IMAGE_TAG"
+      - docker push "$IMAGE_TAG"
+      - echo "IMAGE_TAG=$IMAGE_TAG" > .env
+      -

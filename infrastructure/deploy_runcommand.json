@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Update and restart Discord bot",
+  "parameters": {
+    "tag": {
+      "type": "String",
+      "description": "Tag of the image to pull"
+    }
+  },
+  "mainSteps": [
+    {
+      "action": "aws:runShellScript",
+      "name": "updateAndRestart",
+      "inputs": {
+        "runCommand": [
+          "echo {{ message }} > {{ file_path }}"
+        ]
+      }
+    }
+  ]
+}
