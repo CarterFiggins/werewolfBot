@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { Colors } = require("discord.js");
 
 const roleNames = {
   PLAYING: "Playing",
@@ -48,28 +49,28 @@ async function setupRoles(interaction) {
   if (!allRoles.playing) {
     await interaction.guild.roles.create({
       name: roleNames.PLAYING,
-      color: "DARK_GOLD",
+      color: Colors.DarkGold,
       reason: "For players to be marked as ready",
     });
   }
   if (!allRoles.alive) {
     await interaction.guild.roles.create({
       name: roleNames.ALIVE,
-      color: "DARK_GREEN",
+      color: Colors.DarkGreen,
       reason: "For players that are alive in the game",
     });
   }
   if (!allRoles.dead) {
     await interaction.guild.roles.create({
       name: roleNames.DEAD,
-      color: "DARK_RED",
+      color: Colors.DarkRed,
       reason: "For players that are dead in the game",
     });
   }
   if (!allRoles.admin) {
     await interaction.guild.roles.create({
       name: roleNames.ADMIN,
-      color: "DARK_BLUE",
+      color: Colors.DarkBlue,
       reason: "admins can start games",
     });
   }
