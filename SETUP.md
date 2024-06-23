@@ -18,8 +18,10 @@ After creating a new application, go into its settings and:
 
 ### Final Setup
 
-After you have the application running (see below) and the bot added to your server, run `/server-setup` to add the 
-appropriate data.
+After you have the application running (see below) and the bot added to your server, run the `/server-setup` command in a 
+channel to add the appropriate data.
+
+Add the appropriate users to the newly created "Admin" role on you server to administer the bot. 
 
 ## Environment variables
 
