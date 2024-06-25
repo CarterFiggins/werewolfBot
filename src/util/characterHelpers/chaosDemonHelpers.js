@@ -30,7 +30,7 @@ async function markChaosTarget(interaction) {
     selectedChaosUserId = targetUserId
   }
 
-  organizedChannels.afterLife.send(`${members.get(chaosDemon.user_id)} the chaos demon has chosen ${members.get(targetUserId)}`)
+  organizedChannels.afterLife.send(`${members.get(chaosDemon.user_id)} the chaos demon has chosen ${members.get(selectedChaosUserId)}`)
   await updateUser(selectedChaosUserId, interaction.guild.id, {
     is_chaos_target: true,
   })
