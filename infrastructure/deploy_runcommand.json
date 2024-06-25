@@ -2,9 +2,29 @@
   "schemaVersion": "2.2",
   "description": "Update and restart Discord bot",
   "parameters": {
-    "tag": {
+    "image": {
       "type": "String",
-      "description": "Tag of the image to pull"
+      "description": "Docker image to deploy"
+    },
+    "mongoUri": {
+      "type": "String",
+      "description": "Full URI of the MongoDB database"
+    },
+    "dbName": {
+      "type": "String",
+      "description": "Mongo database name."
+    },
+    "discordAppId": {
+      "type": "String",
+      "description": "Discord App ID for bot"
+    },
+    "discordToken": {
+      "type": "String",
+      "description": "Discord secret token for bot"
+    },
+    "timeZone": {
+      "type": "String",
+      "description": "NodeJS formatted timezone that the bot runs in"
     }
   },
   "mainSteps": [
@@ -13,7 +33,10 @@
       "name": "updateAndRestart",
       "inputs": {
         "runCommand": [
-          "echo {{ message }} > {{ file_path }}"
+          "docker pull {{ image }}",
+          "docker stop werewolf-bot || true",
+          "docker rm werewolf-bot || true",
+          "docker run -d --name werewolf-bot -e TOKEN='{{ discordToken }}' -e CLIENT_ID='{{ discordAppId }}' -e MONGO_URI='{{ mongoUri }}' -e MONGODB_NAME='{{ dbName }}' -e TIME_ZONE_TZ='{{ timeZone }}' {{ image }}"
         ]
       }
     }

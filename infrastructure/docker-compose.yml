@@ -1,4 +1,0 @@
-services:
-  werewolf-bot:
-    image: __WEREWOLF_IMAGE__
-    restart: always
