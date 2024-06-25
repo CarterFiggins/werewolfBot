@@ -119,7 +119,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     return `${deadCharacter} (who was a vampire!)`;
   }
 
-  return settings.hard_mode ? 'player' : deadCharacter;
+  return settings.hard_mode ? '||player||' : deadCharacter;
 }
 
 async function removePlayer(
