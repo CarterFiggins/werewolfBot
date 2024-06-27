@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { findSettings } = require("../werewolf_db");
-const { characterInfoMap, characters, teams, getCards} = require("./characterHelpers/characterUtil");
+const { characters } = require("./characterHelpers/characterUtil");
 const { DeckBalancer } = require("./characterHelpers/deckBalancer");
 
 function startingCharacters(settings, numberOfPlayers) {

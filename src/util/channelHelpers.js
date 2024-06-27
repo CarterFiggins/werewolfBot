@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { findSettings, updateUser } = require("../werewolf_db");
-const { characters } = require("./characterHelpers/characterUtil");
+const { characters, getCards } = require("./characterHelpers/characterUtil");
 const { ChannelType, PermissionsBitField } = require("discord.js");
 const { getRole, roleNames } = require("./rolesHelpers");
 
@@ -67,27 +67,18 @@ async function sendStartMessages(interaction, users) {
     }
   });
 
-  let printCharacters = "";
-  characterCount.forEach((count, character) => {
-    printCharacters += `${character}: ${count}\n`;
-  });
+  await organizedChannels.townSquare.send(townSquareStart);
+  const townSquarePlayerMessage =  await organizedChannels.townSquare.send(`Possible characters in game:\n${(await possibleCharactersInGame(interaction)).join(", ")}`)
+  townSquarePlayerMessage.pin()
 
-  // Option to show what characters will be playing
-  const printPlayers = false;
-  if (printPlayers) {
-    await organizedChannels.townSquare.send(
-      `${townSquareStart}\nCharacters in game:\n${printCharacters}`
-    );
-  } else {
-    await organizedChannels.townSquare.send(townSquareStart);
-  }
   await organizedChannels.werewolves.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );
   await organizedChannels.seer.send(`${seerStart}\nSeers:\n${seers}`);
-  await organizedChannels.afterLife.send(
+  const afterLifeMessage = await organizedChannels.afterLife.send(
     `${afterLifeStart}\n${showUsersCharacter(users)}`
   );
+  afterLifeMessage.pin()
   await organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
   await organizedChannels.bodyguard.send(`${bodyguardStart}\nBodyguards:\n${bodyguards}`);
   await organizedChannels.witch.send(witchStart);
@@ -429,6 +420,16 @@ async function createChannels(interaction, users) {
   }
 }
 
+async function possibleCharactersInGame(interaction) {
+  const settings = await findSettings(interaction.guild.id);
+  const { wolfCards, villagerCards } = getCards(settings)
+  if (!settings.random_cards) {
+    wolfCards.push(characters.WITCH)
+    villagerCards.push(characters.BAKER)
+  }
+  return _.map([...wolfCards, ...villagerCards], _.capitalize)
+}
+
 module.exports = {
   createChannel,
   createCategory,
@@ -455,7 +456,7 @@ const seerStart =
   "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager.";
 
 const afterLifeStart =
-  "You are dead... There not much to do except talk to other dead players and watch the game";
+  "You are dead... There's not much to do except talk to other dead players and watch the game";
 
 const masonStart =
   "You are the masons. You can't tell anyone! This is a secretive group. If the body guard protects one of you than he/she will join! You are on the villager's side and you know everyone in this group is not a werewolf";

@@ -68,9 +68,9 @@ const characterInfoMap = new Map([
 
 function getCards(settings) {
   const wolfCards = [
-    characters.LYCAN,
     characters.WEREWOLF,
     characters.CUB,
+    characters.LYCAN,
   ];
   const villagerCards = [
     characters.SEER,
