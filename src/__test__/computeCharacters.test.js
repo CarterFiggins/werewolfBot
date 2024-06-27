@@ -16,6 +16,7 @@ jest.mock("../werewolf_db", () => {
       bodyguard_joins_masons: true,
       seer_joins_masons: true,
       hunter_guard: true,
+      allow_chaos_demon: true,
     }),
   };
 });
