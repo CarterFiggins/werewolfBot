@@ -66,10 +66,7 @@ async function getPlayingDiscordUsers(interaction) {
     .filter((m) => m);
 
   if (_.isEmpty(playingDiscordUsers)) {
-    await interaction.editReply({
-      content: "ERROR: No Players",
-      ephemeral: true,
-    });
+    throw new Error(`No Players`)
     return;
   }
 
@@ -80,11 +77,7 @@ async function giveUserRoles(interaction, discordUsers) {
   let minPlayers = 5;
 
   if (discordUsers.length < minPlayers) {
-    await interaction.editReply({
-      content: `Error: Not enough players (need at least ${minPlayers})`,
-      ephemeral: true,
-    });
-    return;
+    throw new Error(`Not enough players (need at least ${minPlayers})`)
   }
 
   const currentCharacters = await computeCharacters(

@@ -100,12 +100,16 @@ function showUsersCharacter(users) {
 
   _.shuffle(users).forEach((user) => {
     let character = user.info.character;
+    let wasTold = "";
     if (user.info.is_cub) {
       character = characters.CUB;
     } else if (user.info.is_vampire) {
       character = `vampire ${characters.VAMPIRE}`;
     }
-    message += `${user} is a ${character}\n`;
+    if (character !== user.info.assigned_identity) {
+      wasTold = `I told them they were a ${user.info.assigned_identity}`
+    }
+    message += `${user} is a ${character} ${wasTold}\n`;
   });
   return message;
 }
