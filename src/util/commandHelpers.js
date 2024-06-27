@@ -43,6 +43,9 @@ const commandNames = {
   MUTE: "mute",
   CHAOS_TARGET: "chaos_target",
   RANDOM_VOTE: "random_vote",
+  // power up commands
+  ALLIANCE_DETECTOR: "alliance_detector",
+  PREDATOR_VISION: "predator_vision",
 };
 
 const voteText =
@@ -51,6 +54,8 @@ const voteText =
 const powerUpMessages = new Map([
   [PowerUpNames.GUN, "POWER UP! You have a gun with one bullet. You can use the `/shoot` command once this game at any time. People will know it was you who fired the gun"],
   [PowerUpNames.SHIELD, "POWER UP! You have a shield. It will protect you once from death."],
+  [PowerUpNames.ALLIANCE_DETECTOR, "POWER UP! You have an Alliance Detector! Use `/alliance_detector` to check two players. It will tell you if they are on the same team or not."],
+  [PowerUpNames.PREDATOR_VISION, "POWER UP! You have Predator vision witch allows you to look at a player and find their true character. Use `/predator_vision`"]
 ])
 
 async function sendGreeting(interaction, user) {

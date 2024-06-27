@@ -48,7 +48,7 @@ module.exports = {
       emoji: '🪄',
       team: 'villager',
       description: `### Apprentice Seer
-* The apprentice seer takes over the seer role if the seer is killed. If the fool is still alive when the seer dies, the fool and seer characters will be shuffled. The apprentice may become the fool or the seer, and the former fool will take the other role.
+* The apprentice seer takes over the seer seat if the seer is killed. If the fool is still alive when the seer dies, the fool and seer characters will be shuffled. The apprentice may become the fool or the seer, and the former fool will take the other character.
 * Channels: seer
 * Commands \`/investigate\``},
 
@@ -128,7 +128,7 @@ module.exports = {
       emoji: '©️',
       team: 'unknown',
       description: `### Doppelganger
-* During the first night, the doppelganger may copy another player and become that role. The player copied is unaware (s)he was copied
+* During the first night, the doppelganger may copy another player and become that character. The player copied is unaware (s)he was copied
 * Channels: same as the copied player
 * Commands: \`copy\``,
     },

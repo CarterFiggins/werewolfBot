@@ -285,7 +285,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
      return `Last night, the werewolves attacked and injured the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.\n`;
   }
   
-  return `Last night, ${deadMember} was found dead, playing the role of ${deathCharacter}. They have been killed by a werewolf attack.\n`;
+  return `Last night, ${deadMember} was found dead, playing the character of ${deathCharacter}. They have been killed by a werewolf attack.\n`;
 }
 
 async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire }) {
