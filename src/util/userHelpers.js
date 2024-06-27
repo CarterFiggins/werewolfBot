@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { getRole, roleNames, organizeRoles } = require("../util/rolesHelpers");
 const { characters } = require("./commandHelpers");
 const { createUsers, findSettings } = require("../werewolf_db");
-const { PowerUpNames } = require("./powerUpHelpers");
+const { randomWeightPowerUp } = require("./powerUpHelpers");
 require("dotenv").config();
 
 async function getPlayingCount(interaction) {
@@ -94,10 +94,10 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
     }
 
     if (settings.enable_power_ups) {
-      // const randomPowerUp = _.sample(PowerUpNames)
-      // user.info.power_ups[randomPowerUp] = true;
-      user.info.power_ups.gun = true
-      user.info.power_ups.shield = true
+      const randomPowerUp = randomWeightPowerUp()
+      if (randomPowerUp) {
+        user.info.power_ups[randomPowerUp] = true;
+      }
     }
     dbUsers.push(user.info);
   }

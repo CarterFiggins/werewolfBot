@@ -100,7 +100,7 @@ function showUsersCharacter(users) {
     if (character !== user.info.assigned_identity) {
       wasTold = `I told them they were a ${user.info.assigned_identity}`
     }
-    message += `${user} is a ${character} ${wasTold}\n`;
+    message += `${user} is a ${character}. ${wasTold}\n`;
   });
   return message;
 }
