@@ -47,8 +47,18 @@ module.exports = {
         ephemeral: true,
       });
     }
+
+    const powerUps = _.map(dbUser.power_ups, (active, name) => {
+      return `${name}: ${active}`
+    })
+
+    let powerMessage = ""
+    if (!_.isEmpty(powerUps)) {
+      powerMessage = `\nCurrent Powers\n${powerUps.join("\n")}`
+    }
+
     await interaction.reply({
-      content: `Your character is: ${dbUser.assigned_identity}`,
+      content: `Your character is: ${dbUser.assigned_identity}${powerMessage}`,
       ephemeral: true,
     });
   },
