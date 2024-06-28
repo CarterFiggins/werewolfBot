@@ -422,12 +422,24 @@ async function createChannels(interaction, users) {
 
 async function possibleCharactersInGame(interaction) {
   const settings = await findSettings(interaction.guild.id);
-  const { wolfCards, villagerCards } = getCards(settings)
+  const { wolfCards, villagerCards } = getCards(settings);
+  const otherCards = [];
   if (!settings.random_cards) {
-    wolfCards.push(characters.WITCH)
-    villagerCards.push(characters.BAKER)
+    if (settings.extra_characters) {
+      wolfCards.push(characters.WITCH);
+    }
+    villagerCards.push(characters.BAKER);
   }
-  return _.map([...wolfCards, ...villagerCards], _.capitalize)
+
+  if (settings.allow_vampires) {
+    otherCards.push(`Vampire ${characters.VAMPIRE}`)
+  }
+
+  if (settings.allow_chaos_demon) {
+    otherCards.push(characters.CHAOS_DEMON)
+  }
+
+  return _.map([...wolfCards, ...villagerCards, ...otherCards], _.capitalize)
 }
 
 module.exports = {
