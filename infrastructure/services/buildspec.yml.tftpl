@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${ecr_host}
+      - export TAG=$(git describe --tags --exact-match)
+      - export IMAGE_TAG="${repo}:$TAG"
+  build:
+    commands:
+      - docker build -t $IMAGE_TAG -f Build.Dockerfile .
+  post_build:
+    commands:
+      - docker push "$IMAGE_TAG"
+      - |
+        cd infrastructure/deploy
+        terraform workspace new production || terraform workspace select production
+        terraform apply -auto-approve

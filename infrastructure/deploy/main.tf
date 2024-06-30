@@ -10,3 +10,11 @@ terraform {
 provider "aws" {
   region = var.primary_region
 }
+
+data "aws_ecs_cluster" "main" {
+  cluster_name = "discord-werewolf"
+}
+
+data "aws_ecr_repository" "bot" {
+  name = "discord-werewolf"
+}
