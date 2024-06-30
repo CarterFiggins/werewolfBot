@@ -1,1 +1,7 @@
 .terraform
+
+backend.tfvars
+terraform.tfvars
+
+builder-vars.json
+

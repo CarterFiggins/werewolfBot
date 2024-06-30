@@ -8,10 +8,10 @@ phases:
       - export IMAGE_TAG="${repo}:$TAG"
   build:
     commands:
-      - docker build -t $IMAGE_TAG -f Build.Dockerfile .
+      - docker build -t $IMAGE_TAG -f Build.Dockerfile --push .
   post_build:
     commands:
-      - docker push "$IMAGE_TAG"
+      - aws ssm put-parameter --name ${tag_parameter} --region ${aws_region} --overwrite --value "$TAG"
       - |
         cd infrastructure/deploy
         terraform workspace new production || terraform workspace select production

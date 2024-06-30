@@ -1,0 +1,24 @@
+name: "Build & Deploy"
+
+on:
+  push:
+    tags:
+      - rel/*
+
+jobs:
+  trigger-codebuild:
+    runs-on: ubuntu-latest
+    environment: Deploy
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Assume AWS Role using OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions
+          role-session-name: github-actions-deploy
+      - name: "Build & Deploy"
+        run: aws codebuild start-build --project-name build-and-deploy-discord-werewolf --source-version ${{ github.ref }}
