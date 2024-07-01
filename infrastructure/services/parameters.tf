@@ -49,6 +49,16 @@ resource "aws_ssm_parameter" "time_zone" {
   }
 }
 
+resource "aws_ssm_parameter" "deploy_backend" {
+  name = "deploy-backend"
+  type = "String"
+  value = "change-me"
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
 # You do not have to add a value for this
 resource "aws_ssm_parameter" "bot_deployed_tag" {
   name = "bot-deployed-tag"

@@ -15,5 +15,7 @@ phases:
       - aws ssm put-parameter --name ${tag_parameter} --region ${aws_region} --overwrite --value "$TAG"
       - |
         cd infrastructure/deploy
+        aws ssm get-parameter --name deploy-backend --query "Paramter.Value" --output text > backend.tfvars
+        terraform init -backend-config=backend.tfvars
         terraform workspace new production || terraform workspace select production
         terraform apply -auto-approve
