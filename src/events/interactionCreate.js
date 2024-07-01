@@ -1,3 +1,4 @@
+const { buttonResponse } = require("./buttonResponse");
 const { commandResponse } = require("./command");
 const { selectMenuResponse } = require("./selectMenuResponse");
 
@@ -8,6 +9,8 @@ module.exports = {
       commandResponse(interaction)
     } else if (interaction.isAnySelectMenu()) {
       selectMenuResponse(interaction)
+    } else if (interaction.isButton()) {
+      buttonResponse(interaction)
     }
   },
 };

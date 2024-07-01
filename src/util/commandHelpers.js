@@ -1,7 +1,8 @@
 require("dotenv").config();
 const _ = require("lodash");
-const { updateUser, findAllUsers } = require("../werewolf_db");
+const { findSettings } = require("../werewolf_db");
 const { characters } = require("./characterHelpers/characterUtil");
+const { PowerUpNames } = require("./powerUpHelpers");
 
 /* 
 To add a new game command add it to the
@@ -21,6 +22,7 @@ const commandNames = {
   DAY_TIME: "day_time",
   NIGHT_TIME: "night_time",
   SETTINGS: "settings",
+  ANNOUNCE_NEW_GAME: "announce_new_game",
   // Player game commands
   PLAYING: "playing",
   STOP_PLAYING: "stop_playing",
@@ -39,14 +41,27 @@ const commandNames = {
   VAMPIRE_BITE: "vampire_bite",
   COPY: "copy",
   MUTE: "mute",
+  CHAOS_TARGET: "chaos_target",
   RANDOM_VOTE: "random_vote",
+  // power up commands
+  ALLIANCE_DETECTOR: "alliance_detector",
+  PREDATOR_VISION: "predator_vision",
 };
 
 const voteText =
   "Every day you may vote to hang someone by using the `/vote` command in the town square.";
 
-async function sendGreeting(member, user) {
+const powerUpMessages = new Map([
+  [PowerUpNames.GUN, "POWER UP! You have a gun with one bullet. You can use the `/shoot` command once this game at any time. People will know it was you who fired the gun"],
+  [PowerUpNames.SHIELD, "POWER UP! You have a shield. It will protect you once from death."],
+  [PowerUpNames.ALLIANCE_DETECTOR, "POWER UP! You have an Alliance Detector! Use `/alliance_detector` to check two players. It will tell you if they are on the same team or not."],
+  [PowerUpNames.PREDATOR_VISION, "POWER UP! You have Predator vision witch allows you to look at a player and find their true character. Use `/predator_vision`"]
+])
+
+async function sendGreeting(interaction, user) {
   try {
+    const member = await interaction.guild.members.fetch(user.id);
+    const settings = await findSettings(interaction.guild.id);
     if (member.user.bot) {
       return;
     }
@@ -55,7 +70,7 @@ async function sendGreeting(member, user) {
     const bakerMessage = `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`;
     const hunterMessage = `You are the **Hunter**.\n${voteText}\nWhen you die you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`;
 
-    switch (user.assignedIdentity) {
+    switch (user.info.assigned_identity) {
       case characters.VILLAGER:
         await member.send(villagerMessage);
         break;
@@ -109,31 +124,28 @@ async function sendGreeting(member, user) {
         await member.send(
           `You are a **Grouchy Granny**\n${voteText}\nYou can mute someone out of town square using the \`/mute\` command for the rest of the day and night. They will come back tomorrow but while they are gone they will be able to leave messages in the out cast channel. This will not allow them to use their night power. You will not be able to mute the same player for the rest of the game`
         );
+        break;
+      case characters.CHAOS_DEMON:
+        await member.send(
+          `You are a **CHAOS_DEMON**\n${voteText}\nYou are on your own team. On the first night target a player using \`/chaos_target\`.\nTo win the game you must get the player that was targeted hanged. If that player dies in a different way you will die.`
+        )
+        break;
+    }
+
+    if (settings.enable_power_ups) {
+      for (const powerKey in user.info.power_ups) {
+        if (user.info.power_ups[powerKey]) {
+          member.send(powerUpMessages.get(powerKey))
+        }
+      }
     }
   } catch (error) {
     console.error(error);
-    console.log(member);
     console.log(user);
   }
 }
 
-async function resetNightPowers(guildId) {
-  const cursor = await findAllUsers(guildId);
-  const users = await cursor.toArray();
-  await Promise.all(
-    users.map(async (user) => {
-      switch (user.character) {
-        case characters.SEER:
-        case characters.FOOL:
-          await updateUser(user.user_id, guildId, { can_investigate: true });
-          break;
-      }
-    })
-  );
-}
-
 module.exports = {
-  resetNightPowers,
   sendGreeting,
   commandNames,
   characters,

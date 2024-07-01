@@ -12,10 +12,10 @@ const SettingCommands = {
   CAN_WHISPER: "can_whisper",
   ALLOW_REACTIONS: "allow_reactions",
   EXTRA_CHARACTERS: "extra_characters",
-  SHOW_SCOREBOARD: "show_scoreboard",
   WOLF_KILLS_WITCH: "wolf_kills_witch",
   HARD_MODE: "hard_mode",
   ALLOW_VAMPIRES: "allow_vampires",
+  ALLOW_CHAOS_DEMON: 'allow_chaos_demon',
   ALLOW_FIRST_BITE: "allow_first_bite",
   ALWAYS_BITE_TWO: "always_bite_two",
   KING_BITE_WOLF_SAFE: "king_bite_wolf_safe",
@@ -23,7 +23,8 @@ const SettingCommands = {
   VIEW: "view",
   BODYGUARD_JOINS_MASONS: "bodyguard_joins_masons",
   SEER_JOINS_MASONS: "seer_joins_masons",
-  HUNTER_GUARD: "hunter_guard"
+  HUNTER_GUARD: "hunter_guard",
+  ENABLE_POWER_UPS: "enable_power_ups",
 };
 
 module.exports = {
@@ -127,17 +128,6 @@ module.exports = {
     )
     .addSubcommand((subcommand) =>
       subcommand
-        .setName(SettingCommands.SHOW_SCOREBOARD)
-        .setDescription("ADMIN COMMAND: Shows the scoreboard channel.")
-        .addBooleanOption((option) =>
-          option
-            .setName("activate")
-            .setRequired(true)
-            .setDescription("Set setting true or false")
-        )
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
         .setName(SettingCommands.WOLF_KILLS_WITCH)
         .setDescription(
           "ADMIN COMMAND: If true wolf kills the witch. If false the witch will join the werewolf chat"
@@ -172,7 +162,18 @@ module.exports = {
             .setRequired(true)
             .setDescription("Set setting true or false")
         )
-    )
+  )
+  .addSubcommand((subcommand) =>
+    subcommand
+      .setName(SettingCommands.ALLOW_CHAOS_DEMON)
+      .setDescription("ADMIN COMMAND: Allow the Chaos Demon character to play")
+      .addBooleanOption((option) =>
+        option
+          .setName("activate")
+          .setRequired(true)
+          .setDescription("Set setting true or false")
+      )
+  )
     .addSubcommand((subcommand) =>
       subcommand
         .setName(SettingCommands.ALLOW_FIRST_BITE)
@@ -235,22 +236,33 @@ module.exports = {
             .setRequired(true)
             .setDescription("Set setting true or false")
         )
-  )
-  .addSubcommand((subcommand) =>
-    subcommand
-      .setName(SettingCommands.SEER_JOINS_MASONS)
-      .setDescription("ADMIN COMMAND: The Seer can join the masons")
-      .addBooleanOption((option) =>
-        option
-          .setName("activate")
-          .setRequired(true)
-          .setDescription("Set setting true or false")
-      )
-  )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName(SettingCommands.SEER_JOINS_MASONS)
+        .setDescription("ADMIN COMMAND: The Seer can join the masons")
+        .addBooleanOption((option) =>
+          option
+            .setName("activate")
+            .setRequired(true)
+            .setDescription("Set setting true or false")
+        )
+    )
     .addSubcommand((subcommand) =>
       subcommand
         .setName(SettingCommands.HUNTER_GUARD)
         .setDescription("ADMIN COMMAND: Hunter will kill one werewolf when attacked by werewolves")
+        .addBooleanOption((option) =>
+          option
+            .setName("activate")
+            .setRequired(true)
+            .setDescription("Set setting true or false")
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName(SettingCommands.ENABLE_POWER_UPS)
+        .setDescription("ADMIN COMMAND: players will also get one power up at the start of the game")
         .addBooleanOption((option) =>
           option
             .setName("activate")

@@ -2,13 +2,13 @@ const _ = require("lodash");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { characters } = require("../util/characterHelpers/characterUtil")
-const { channelNames } = require("../util/channelHelpers");
 const { isAlive } = require("../util/rolesHelpers");
-const { findUser, updateUser } = require("../werewolf_db");
-const { organizeRoles } = require("../util/rolesHelpers");
+const { findUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
-const { removesDeadPermissions } = require("../util/deathHelper");
-const { checkGame } = require("../util/endGameHelper");
+const { PowerUpNames } = require("../util/powerUpHelpers");
+const { channelNames } = require("../util/channelHelpers");
+const { gunFire } = require("../util/deathHelper");
+
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -26,7 +26,7 @@ module.exports = {
       interaction,
       guildOnly: true,
       check: () =>
-        !isAlive(interaction.member) || dbUser.character !== characters.HUNTER,
+        !isAlive(interaction.member) || (dbUser.character !== characters.HUNTER && !dbUser?.power_ups[PowerUpNames.GUN]),
     });
 
     if (deniedMessage) {
@@ -41,12 +41,12 @@ module.exports = {
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
-    const hunterUser = await findUser(
+    const userWhoShot = await findUser(
       interaction.user.id,
       interaction.guild.id
     );
 
-    if (!hunterUser.can_shoot) {
+    if (dbUser.character === characters.HUNTER && !userWhoShot.is_injured && !dbUser?.power_ups[PowerUpNames.GUN]) {
       await interaction.reply({
         content:
           "You can only shoot when you are injured\nhttps://tenor.com/wgj9.gif",
@@ -65,62 +65,26 @@ module.exports = {
     if (targetedUser.bot) {
       await interaction.reply({
         content: "Silly human.\nhttps://tenor.com/67jg.gif",
-        ephemeral: false,
+        ephemeral: true,
       });
       return;
     }
     if (!isAlive(targetedMember)) {
       await interaction.reply({
         content: `${targetedUser} is already dead. Don't shoot dead people! try again.\nhttps://tenor.com/Jx9w.gif`,
-        ephemeral: false,
+        ephemeral: true,
       });
       return;
     }
     if (targetDbUser.user_id === interaction.user.id) {
       await interaction.reply({
         content: `Can't shoot yourself\nhttps://tenor.com/7Ev1.gif`,
-        ephemeral: false,
+        ephemeral: true,
       });
       return;
     }
 
-    await interaction.reply(":dart: PEW PEW :gun:");
+    await gunFire(interaction, targetDbUser, userWhoShot)
+  }
+}
 
-    const members = await interaction.guild.members.fetch();
-    const deadTargetMember = members.get(targetedUser.id);
-    const hunterMember = members.get(interaction.user.id);
-    const allRoles = await interaction.guild.roles.fetch();
-    const organizedRoles = organizeRoles(allRoles);
-
-    // kill target
-    const deadCharacter = await removesDeadPermissions(
-      interaction,
-      targetDbUser,
-      deadTargetMember,
-      organizedRoles
-    );
-    // kill hunter
-    await removesDeadPermissions(
-      interaction,
-      hunterUser,
-      hunterMember,
-      organizedRoles
-    );
-
-    await updateUser(interaction.user.id, interaction.guild.id, {
-      can_shoot: false,
-    });
-
-    let message = "";
-
-    if (targetDbUser.character === characters.HUNTER) {
-      message = `${targetedUser} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
-    }
-
-    await interaction.editReply(
-      `${interaction.user} took aim and shot the ${deadCharacter} named ${targetedUser}\n${message}`
-    );
-
-    await checkGame(interaction);
-  },
-};

@@ -48,7 +48,7 @@ module.exports = {
       emoji: '🪄',
       team: 'villager',
       description: `### Apprentice Seer
-* The apprentice seer takes over the seer role if the seer is killed. If the fool is still alive when the seer dies, the fool and seer characters will be shuffled. The apprentice may become the fool or the seer, and the former fool will take the other role.
+* The apprentice seer takes over the seer seat if the seer is killed. If the fool is still alive when the seer dies, the fool and seer characters will be shuffled. The apprentice may become the fool or the seer, and the former fool will take the other character.
 * Channels: seer
 * Commands \`/investigate\``},
 
@@ -101,7 +101,7 @@ module.exports = {
       emoji: '☣️',
       team: 'villager/werewolf',
       description: `### Mutated Villager
-* A mutated villager will be told (s)he is a regular villager and is initially on the villager team. If attacked by a werewolf, the mutated villager will turn into a werewolf. If bitten by a vampire, the mutated villager will turn into a vampire king.
+* A mutated villager will be told (s)he is a villager, hunter, or baker and is initially on the villager team. If attacked by a werewolf, the mutated villager will turn into a werewolf. If bitten by a vampire, the mutated villager will turn into a vampire king.
 * Channels: none
 * Commands: none`
     },
@@ -128,7 +128,7 @@ module.exports = {
       emoji: '©️',
       team: 'unknown',
       description: `### Doppelganger
-* During the first night, the doppelganger may copy another player and become that role. The player copied is unaware (s)he was copied
+* During the first night, the doppelganger may copy another player and become that character. The player copied is unaware (s)he was copied
 * Channels: same as the copied player
 * Commands: \`copy\``,
     },
@@ -155,9 +155,18 @@ module.exports = {
       emoji: '🧛',
       team: 'vampire',
       description: `### Vampire
-* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. If a vampire attacks a werewolf, (s)he will die.
+* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. If a vampire attacks a werewolf, (s)he will die. Change the allow_vampires setting to true to add this player in the game.
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
+    },
+    {
+      label: 'Chaos Demon',
+      emoji: '😈',
+      team: 'chaos',
+      description: `### Chaos Demon
+* The first night the Chaos Demon will pick any player. For the Chaos Demon to win they must convince the town to hang the target player. If the target dies any other way the chaos demon will die. The Chaos demon is on their own team. Change the allow_chaos_demon setting to true to add this player in the game.
+* Channels: none
+* Commands: \`/chaos_target\``,
     },
   ],
 }

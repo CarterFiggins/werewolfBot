@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { Colors } = require("discord.js");
 
 const roleNames = {
@@ -81,6 +82,9 @@ async function removeGameRolesFromMembers(members, roles) {
     members.map(async (member) => {
       await member.roles.remove(organizedRoles.dead);
       await member.roles.remove(organizedRoles.alive);
+      if (process.env.TESTING_MODE) {
+        await member.roles.add(organizedRoles.playing);
+      }
     })
   );
 }

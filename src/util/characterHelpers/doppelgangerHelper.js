@@ -17,6 +17,14 @@ async function copyCharacters(interaction) {
   );
 }
 
+function validateCopiedCharacter(copiedCharacter) {
+  if (copiedCharacter === characters.DOPPELGANGER || copiedCharacter === characters.CHAOS_DEMON) {
+    return characters.VILLAGER
+  }
+
+  return copiedCharacter
+}
+
 async function copy(interaction, doppelgangerUserId, copyUserId) {
   const guildId = interaction.guild.id;
   const members = interaction.guild.members.cache;
@@ -35,10 +43,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     displayInGameCharacter = characters.SEER
   }
 
-  copiedCharacter =
-    copiedCharacter === characters.DOPPELGANGER
-      ? characters.VILLAGER
-      : copiedCharacter;
+  copiedCharacter = validateCopiedCharacter(copiedCharacter)
 
   const copiedVampire = copiedCharacter === characters.VAMPIRE;
 

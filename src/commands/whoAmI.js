@@ -3,6 +3,7 @@ const _ = require("lodash");
 const { commandNames } = require("../util/commandHelpers");
 const { findUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
+const { isPlaying } = require("../util/rolesHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -33,14 +34,31 @@ module.exports = {
       });
       return;
     }
+    if (isPlaying(interaction.member)) {
+      await interaction.reply({
+        content: 'When the game starts I will let you know who you are.',
+        ephemeral: true,
+      });
+      return;
+    }
     if (dbUser.is_dead) {
       await interaction.reply({
         content: `Your WERE ${dbUser.assigned_identity}, but now you're dead lol`,
         ephemeral: true,
       });
     }
+
+    const powerUps = _.map(dbUser.power_ups, (active, name) => {
+      return `${name}: ${active}`
+    })
+
+    let powerMessage = ""
+    if (!_.isEmpty(powerUps)) {
+      powerMessage = `\nCurrent Powers\n${powerUps.join("\n")}`
+    }
+
     await interaction.reply({
-      content: `Your character is: ${dbUser.assigned_identity}`,
+      content: `Your character is: ${dbUser.assigned_identity}${powerMessage}`,
       ephemeral: true,
     });
   },

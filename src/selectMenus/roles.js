@@ -3,7 +3,7 @@ const { roleList } = require("../util/botMessages/player-roles");
 const { replyViewAll } = require("../util/botMessages/messageHelpers");
 
 module.exports = {
-  name: 'roles',
+  data: { name: 'roles' },
   sendResponse: async (interaction) => {
     const roleName = interaction.values[0]
     if (roleName === "View All") {
