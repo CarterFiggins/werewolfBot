@@ -44,6 +44,7 @@ module "builder_service_role" {
   attach_policy_arns = [
     "arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess"
   ]
+  inline_policy_name = "BuilderAccess"
   inline_policies = [
     {
       sid: "AppRepoAccess",
@@ -53,18 +54,16 @@ module "builder_service_role" {
         aws_ecr_repository.discord_werewolf.arn
       ],
       actions: [
+        "ecr:UploadLayerPart",
+        "ecr:PutImage",
+        "ecr:ListImages",
+        "ecr:InitiateLayerUpload",
+        "ecr:GetDownloadUrlForLayer",
         "ecr:DescribeRepositories",
         "ecr:DescribeImages",
-        "ecr:ListImages",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:PutImage",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
         "ecr:CompleteLayerUpload",
-        "ecr:BatchDeleteImage",
-        "ecr:GetAuthorizationToken"
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability"
       ]
     },
     {
@@ -75,14 +74,32 @@ module "builder_service_role" {
         "ssm:GetParameter",
         "ssm:GetParameters",
         "ssm:GetParametersByPath",
-        "sts:GetServiceBearerToken"
+        "sts:GetServiceBearerToken",
+        "ssm:PutParameter",
+        "ecr:GetAuthorizationToken"
+      ]
+    },
+    {
+      sid: "LogGroup"
+      effect: "Allow",
+      actions: [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      resources: [
+        "${aws_cloudwatch_log_group.build_werewolf_app.arn}:*"
       ]
     }
   ]
 }
 
+resource "aws_cloudwatch_log_group" "build_werewolf_app" {
+  name = "build-and-deploy-discord-werewolf"
+}
+
 resource "aws_codebuild_project" "build_werewolf_app" {
   name         = "build-and-deploy-discord-werewolf"
+  resource_access_role = module.builder_service_role.arn
   service_role = module.builder_service_role.arn
   build_timeout = 10
 
@@ -93,8 +110,8 @@ resource "aws_codebuild_project" "build_werewolf_app" {
   environment {
     compute_type = "BUILD_GENERAL1_SMALL"
     image        = "${aws_ecr_repository.builder.repository_url}:latest"
-    type         = "LINUX_CONTAINER"
-    image_pull_credentials_type = "CODEBUILD"
+    type         = "ARM_CONTAINER"
+    image_pull_credentials_type = "SERVICE_ROLE"
   }
 
   source {
@@ -110,4 +127,10 @@ resource "aws_codebuild_project" "build_werewolf_app" {
   }
 
   source_version = "override_on_run"
+
+  logs_config {
+    cloudwatch_logs {
+      group_name = aws_cloudwatch_log_group.build_werewolf_app.name
+    }
+  }
 }

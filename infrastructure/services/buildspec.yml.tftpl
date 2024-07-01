@@ -4,7 +4,8 @@ phases:
   pre_build:
     commands:
       - aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${ecr_host}
-      - export TAG=$(git describe --tags --exact-match)
+      - export REL=$(git describe --tags --exact-match)
+      - export TAG=$(echo $REL | sed 's/rel\///')
       - export IMAGE_TAG="${repo}:$TAG"
   build:
     commands:
