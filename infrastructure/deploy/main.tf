@@ -18,3 +18,14 @@ data "aws_ecs_cluster" "main" {
 data "aws_ecr_repository" "bot" {
   name = "discord-werewolf"
 }
+
+data "aws_subnets" "public" {
+  filter {
+    name = "tag:VPC"
+    values = ["primary-werewolf"]
+  }
+  filter {
+    name = "tag:Role"
+    values = ["public-subnet"]
+  }
+}

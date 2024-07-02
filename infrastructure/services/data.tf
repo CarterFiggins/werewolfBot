@@ -10,3 +10,15 @@ resource "local_file" "builder_vars" {
     buildRepo = aws_ecr_repository.builder.repository_url
   })
 }
+
+output "public_ip" {
+  value = aws_eip.ec2_esc_service.address
+}
+
+output "ecr_host" {
+  value = local.ecr_host
+}
+
+output "build_repo" {
+  value = aws_ecr_repository.builder.repository_url
+}
