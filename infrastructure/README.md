@@ -33,12 +33,14 @@ You're on your own for this one. It is suggested to use MongoDB Atlas.
 
 In the `infrastructure` directory: 
 
+Run `npm install`
+
 Create the S3 bucket and DynamoDB table that Terraform will use to track state and locks
 
 * On Linux/MacOS: `./setup`
 * On Windows: `node.exe setup`
 
-Follow the prompts. Make note of the bucket and table names for later.
+Follow the prompts. Make note of the region, bucket, and table names for later.
 
 #### Terraform Initial Deploy
 
@@ -53,7 +55,9 @@ values.
     * Other outputs are useful for later steps. Record these and keep until setup is complete. 
     * Data is written to `builder-vars.json` for the builder image script
 
-#### In the `builder-image` directory:
+#### Builder Image
+
+In the `builder-image` directory:
 
 1. Make sure you run `terraform apply` in `infrastructure/services` before this if any changes have been made or you are 
    running off a freshly cloned project. 
@@ -62,6 +66,7 @@ values.
     * Windows: `node.exe deploy-builder`
     
 #### AWS 
+ 
 1. Log into the AWS console and search for "Parameter Store" (it's in Systems Manager)
 2. Add values for everything but `bot-deployed-tag`. See the [SETUP for the app](../SETUP.md) for more details on the 
     environment variables used. 
@@ -94,7 +99,7 @@ This will run the Github action which will in turn trigger the Codebuild project
 
 ### Infrastructure Deploy
 
-Make sure your AWS credentials are in your environment (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION). 
+Make sure your AWS credentials are in your environment (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY). 
 
 In `infrastructure/services` run `terraform apply`. Verify the changes before accepting. 
 
