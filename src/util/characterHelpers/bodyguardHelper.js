@@ -70,6 +70,18 @@ async function guardedVampireMessage({
   }
 }
 
+async function sendSuccessfulGuardMessage(interaction, successfulGuardIds) {
+  const members = interaction.guild.members.cache;
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  const savedMembers = _.map(successfulGuardIds, (id) => members.get(id))
+
+  if (!_.isEmpty(savedMembers)) {
+    organizedChannels.werewolves.send(`Last night's attack didn't go as planned because you got scared off! The bodyguard was on duty, protecting ${savedMembers.join(", ")}, and you decided it wasn't worth the risk.`)
+  }
+}
+
 module.exports = {
   guardPlayers,
+  sendSuccessfulGuardMessage,
 };

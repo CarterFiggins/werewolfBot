@@ -1,20 +1,17 @@
 const _ = require("lodash");
-const { findUsersWithIds, updateUser, findSettings, findManyUsers } = require("../../werewolf_db");
+const { findUsersWithIds, updateUser, findSettings } = require("../../werewolf_db");
 const {
   giveChannelPermissions,
   organizeChannels,
 } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
-const { removesDeadPermissions } = require("../deathHelper");
-const { organizeRoles } = require("../rolesHelpers");
+const { werewolfKillDeathMessage } = require("../deathHelper");
 
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;
-  const members = interaction.guild.members.cache;
+  const members = await interaction.guild.members.fetch();
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const roles = interaction.guild.roles.cache;
-  const organizedRoles = organizeRoles(roles);
   const cursor = await findUsersWithIds(guildId, deathIds);
   const deadUsers = await cursor.toArray();
   const settings = await findSettings(guildId);
@@ -63,33 +60,7 @@ async function killPlayers(interaction, deathIds) {
       }
 
       if (isDead) {
-        const deathCharacter = await removesDeadPermissions(
-          interaction,
-          deadUser,
-          deadMember,
-          organizedRoles,
-          settings.hunter_guard
-        );
-        if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
-          const cursorWerewolf = await findManyUsers({
-            guild_id: interaction.guild.id,
-            character: characters.WEREWOLF,
-          });
-          const werewolves = await cursorWerewolf.toArray();
-          const deadWerewolf = _.sample(werewolves)
-          const deadWerewolfMember = members.get(deadWerewolf.user_id);
-          const deadWerewolfCharacter = await removesDeadPermissions(
-            interaction,
-            deadWerewolf,
-            deadWerewolfMember,
-            organizedRoles,
-          );
-          message += `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they were able to kill the ${deadWerewolfCharacter} named ${deadWerewolfMember}\n`;
-        } else if (deadUser.character === characters.HUNTER) { 
-           message += `Last night, the werewolves attacked and injured the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.\n`;
-        } else {
-          message += `Last night, the werewolves struck again. ${deadMember}, who played the role of ${deathCharacter}, has been killed by the attack.\n`;
-        }
+        message += await werewolfKillDeathMessage({ interaction, deadMember, deadUser })
       }
     })
   );

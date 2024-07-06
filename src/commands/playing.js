@@ -8,6 +8,7 @@ const {
   isPlaying,
   isDead,
 } = require("../util/rolesHelpers");
+const { playingResponse } = require("../util/playingHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -27,22 +28,6 @@ module.exports = {
       });
       return;
     }
-    const member = interaction.member;
-    if (isAlive(member) || isPlaying(member) || isDead(member)) {
-      await interaction.reply({
-        content: "You are already Playing",
-        ephemeral: true,
-      });
-      return;
-    }
-
-    await interaction.deferReply();
-
-    const playingRole = await getRole(interaction, roleNames.PLAYING);
-    member.roles.add(playingRole);
-
-    await interaction.editReply({
-      content: `${interaction.user} is now playing`,
-    });
+    await playingResponse(interaction);
   },
 };

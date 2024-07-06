@@ -35,10 +35,10 @@ module.exports = {
       return;
     }
 
-    const ok = await startGame(interaction);
-    // error message was sent
-    if (!ok) {
-      await interaction.editReply({ content: "Error Game was not created", ephemeral: true });
+    try {
+      await startGame(interaction);
+    } catch (error) {
+      await interaction.editReply({ content: error.message, ephemeral: true });
       return;
     }
     await interaction.editReply({ content: "Game Created", ephemeral: true });

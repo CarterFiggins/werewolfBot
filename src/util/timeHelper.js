@@ -2,9 +2,7 @@ require("dotenv").config();
 const _ = require("lodash");
 const schedule = require("node-schedule");
 const { organizeChannels } = require("./channelHelpers");
-const { organizeRoles, getRole, roleNames } = require("./rolesHelpers");
-const { resetNightPowers } = require("./commandHelpers");
-const { characters } = require("./characterHelpers/characterUtil");
+const { getRole, roleNames } = require("./rolesHelpers");
 const {
   findGame,
   updateGame,
@@ -19,15 +17,17 @@ const { endGuildJobs } = require("./schedulHelper");
 const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
-const { removesDeadPermissions } = require("./deathHelper");
-const { guardPlayers } = require("./characterHelpers/bodyguardHelper");
+const { removesDeadPermissions, WaysToDie } = require("./deathHelper");
+const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers/bodyguardHelper");
 const {
-  castWitchCurse,
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
 const { killPlayers } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
+const { votingDeathMessage } = require("./botMessages/deathMessages");
+const { markChaosTarget, isDeadChaosTarget } = require("./characterHelpers/chaosDemonHelpers");
+const { PowerUpNames } = require("./powerUpHelpers");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -125,8 +125,11 @@ async function dayTimeJob(interaction) {
   }
 
   await interaction.guild.members.fetch();
-  const roles = await interaction.guild.roles.fetch();
-  const organizedRoles = organizeRoles(roles);
+
+  if (game.first_night) {
+    await markChaosTarget(interaction);
+  }
+
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   let message = "";
@@ -137,9 +140,11 @@ async function dayTimeJob(interaction) {
   await mutePlayers(interaction, guildId)
 
   const guardedIds = await guardPlayers(interaction);
-
+  const werewolfKills = [game.user_death_id, game.second_user_death_id]
+  const successfulGuardIds = _.intersection([game.user_death_id, game.second_user_death_id], guardedIds)
+  await sendSuccessfulGuardMessage(interaction, successfulGuardIds)
   const deathIds = _.difference(
-    [game.user_death_id, game.second_user_death_id],
+    werewolfKills,
     [...guardedIds, null]
   );
   const vampireDeathMessages = await vampiresAttack(
@@ -151,7 +156,7 @@ async function dayTimeJob(interaction) {
   message += await killPlayers(interaction, deathIds);
   let starveMessage = ""
   if (game.is_baker_dead) {
-    starveMessage = await starveUser(interaction, organizedRoles, deathIds);
+    starveMessage = await starveUser(interaction, deathIds);
   }
 
   await investigatePlayers(interaction)
@@ -166,8 +171,8 @@ async function dayTimeJob(interaction) {
 
   const backUpMessage = "No one died from a werewolf last night.\n";
 
-  organizedChannels.townSquare.send(
-    `${message || backUpMessage}${starveMessage}${vampireDeathMessages}**It is day time**`
+  await organizedChannels.townSquare.send(
+    `${message || backUpMessage}${starveMessage}${vampireDeathMessages}\n**It is day time**`
   );
 
   await checkGame(interaction);
@@ -177,39 +182,38 @@ async function dayTimeJob(interaction) {
 async function nightTimeJob(interaction) {
   const guildId = interaction.guild.id;
   const members = await interaction.guild.members.fetch();
-  const roles = await interaction.guild.roles.fetch();
-  const organizedRoles = organizeRoles(roles);
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const game = await findGame(guildId);
-  const settings = await findSettings(guildId);
 
   if (game.first_night) {
     await updateGame(guildId, {
       is_day: false,
     });
-    organizedChannels.werewolves.send(
+    await organizedChannels.werewolves.send(
       "This is the first night. Choose someone to kill with the `/kill` command"
     );
-    organizedChannels.bodyguard.send(
+    await organizedChannels.bodyguard.send(
       "This is the first night. Choose someone to guard with the `/guard` command"
     );
-    organizedChannels.seer.send(
+    await organizedChannels.seer.send(
       "This is the first night. Choose someone to see with the `/investigate` command"
     );
-    organizedChannels.witch.send(
+    await organizedChannels.witch.send(
       "This is the first night. Choose someone to curse with the `/curse` command"
     );
-    organizedChannels.vampires.send(
+    await organizedChannels.vampires.send(
       "This is the first night. Choose someone to bite with the `/vampire_bite` command"
     );
+    await organizedChannels.outCasts.send(
+      "This is the first night. Choose someone to mute with the `/mute` command"
+    )
     return;
   }
   if (!game.is_day) {
     console.log("It is currently night skip");
     return;
   }
-  let message;
 
   const cursor = await getCountedVotes(guildId);
   const allVotes = await cursor.toArray();
@@ -226,51 +230,31 @@ async function nightTimeJob(interaction) {
 
   const voteWinner = _.sample(topVotes);
   await deleteManyVotes({ guild_id: guildId });
-  await resetNightPowers(guildId);
   if (!voteWinner) {
     await updateGame(guildId, {
       is_day: false,
     });
-    organizedChannels.townSquare.send("No one has voted...\nIt is night");
+    await organizedChannels.townSquare.send("No one has voted...\nIt is night");
     return;
   }
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
   const deadMember = members.get(voteWinner._id.voted_user_id);
-
-  let cursedMessage = "";
-
-  if (deadUser.character === characters.WITCH) {
-    cursedMessage = await castWitchCurse(interaction, organizedRoles);
-  }
+  const isChaosTarget = await isDeadChaosTarget(interaction, deadUser);
 
   const deathCharacter = await removesDeadPermissions(
     interaction,
     deadUser,
     deadMember,
-    organizedRoles
+    WaysToDie.HANGED,
   );
 
-  if (topVotes.length > 1) {
-    message = `There was a tie so I randomly picked ${deadMember} to die\n`;
-  } else {
-    message = `The town has decided to hang ${deadMember}\n`;
+  let chaosWins = false;
+  if (isChaosTarget && deathCharacter !== PowerUpNames.SHIELD) {
+    chaosWins = true;
   }
-
-  let deathMessage = settings.hard_mode ? '' : `The town has killed a **${deathCharacter}**\n`;
-
-  if (deadUser.character === characters.HUNTER) {
-    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
-  }
-
-  await updateGame(guildId, {
-    is_day: false,
-  });
-
-  organizedChannels.townSquare.send(
-    `${message}${deathMessage}${cursedMessage}**It is night time**`
-  );
-
-  await checkGame(interaction);
+    
+  await votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes })
+  await checkGame(interaction, chaosWins);
 }
 
 function warningTime(hour, minute) {

@@ -38,6 +38,7 @@ module.exports = {
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
     const guardUser = await findUser(interaction.user.id, interaction.guild.id);
 
     if (channel.name !== channelNames.BODYGUARD) {
@@ -64,6 +65,13 @@ module.exports = {
     if (targetedUser.bot) {
       await interaction.reply({
         content: "You can't guard a bot!\nhttps://tenor.com/yYlL.gif",
+        ephemeral: false,
+      });
+      return;
+    }
+    if (targetDbUser.character === characters.BODYGUARD && targetDbUser.user_id !== interaction.user.id) {
+      await interaction.reply({
+        content: `Nice try, but you can't guard another bodyguard. Turns out, ${targetedUser} is pretty stubborn and won't let you play hero on their turf.`,
         ephemeral: false,
       });
       return;

@@ -124,7 +124,7 @@ async function sendInvestigateMessage(interaction, seer) {
     }
   }
 
-  organizedChannels.seer.send(`${seerMember}! Your vision reveals that ${member} is a ${revealedCharacter}`)
+  await organizedChannels.seer.send(`${seerMember}! Your vision reveals that ${member} is a ${revealedCharacter}`)
 }
 
 async function investigatePlayers(interaction) {

@@ -4,16 +4,16 @@ const { commandNames } = require("../util/commandHelpers");
 const { characters } = require("../util/characterHelpers/characterUtil");
 const { permissionCheck } = require("../util/permissionCheck");
 const { isAlive } = require("../util/rolesHelpers");
-const { updateUser, findUser } = require("../werewolf_db");
+const { updateUser, findUser, findGame } = require("../werewolf_db");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(commandNames.COPY)
-    .setDescription("DOPPELGANGER COMMAND: Copies another players character")
+    .setName(commandNames.CHAOS_TARGET)
+    .setDescription("CHAOS DEMON COMMAND: Marks a player for the chaos demon to try and get hanged")
     .addUserOption((option) =>
       option
         .setName("target")
-        .setDescription("name of player to copy")
+        .setDescription("name of player to target")
         .setRequired(true)
     ),
   async execute(interaction) {
@@ -23,12 +23,22 @@ module.exports = {
       guildOnly: true,
       check: () =>
         !isAlive(interaction.member) ||
-        dbUser.character !== characters.DOPPELGANGER,
+        dbUser.character !== characters.CHAOS_DEMON,
     });
 
     if (deniedMessage) {
       await interaction.reply({
         content: deniedMessage,
+        ephemeral: true,
+      });
+      return;
+    }
+    const game = await findGame(interaction.guild.id);
+
+    if (!game.first_night) {
+      const preTargetedUser = interaction.guild.members.cache.get(dbUser.chaos_target_user_id)
+      await interaction.reply({
+        content: `You are targeting ${preTargetedUser}. Try and convince the villagers to hang ${preTargetedUser}`,
         ephemeral: true,
       });
       return;
@@ -39,25 +49,32 @@ module.exports = {
 
     if (targetedUser.bot) {
       await interaction.reply({
-        content: `You can't copy me!\n${getRandomBotGif()}`,
+        content: `You can't target me!\n${getRandomBotGif()}`,
+        ephemeral: true,
+      });
+      return;
+    }
+    if (targetedUser.id === interaction.user.id) {
+      await interaction.reply({
+        content: `Can't pick yourself. try again`,
         ephemeral: true,
       });
       return;
     }
     if (!isAlive(targetedMember)) {
       await interaction.reply({
-        content: `${targetedUser} is dead. You don't what to copy that.`,
+        content: `${targetedUser} is dead. You don't what to target that.`,
         ephemeral: true,
       });
       return;
     }
 
     await updateUser(interaction.user.id, interaction.guild.id, {
-      copy_user_id: targetedUser.id,
+      chaos_target_user_id: targetedUser.id,
     });
 
     await interaction.reply({
-      content: `You are going to copy ${targetedUser}.`,
+      content: `You are going to target ${targetedUser}. After the first night is over it will be locked in.`,
       ephemeral: true,
     });
   },

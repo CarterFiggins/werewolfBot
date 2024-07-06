@@ -50,14 +50,6 @@ module.exports = {
       });
       return;
     }
-    if (game.first_night) {
-      await interaction.reply({
-        content:
-          "Can't mute before the first night wait until tomorrow\nhttps://tenor.com/VZNU.gif",
-        ephemeral: true,
-      });
-      return;
-    }
     if (game.is_day) {
       await interaction.reply({
         content:
@@ -83,21 +75,21 @@ module.exports = {
     if (muteUser.id === interaction.user.id) { 
       await interaction.reply({
         content: `Stop muting yourself! try again!`,
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
     if (mutedDbUser.isMuted === true) { 
       await interaction.reply({
         content: `Player currently muted`,
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
     if (mutedDbUser.safeFromMutes === true) { 
       await interaction.reply({
         content: `Player has already been muted this game. Try again`,
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
@@ -109,7 +101,7 @@ module.exports = {
 
     await interaction.reply({
       content: `You are going to mute ${muteUser}`,
-      ephemeral: true,
+      ephemeral: false,
     });
   },
 };

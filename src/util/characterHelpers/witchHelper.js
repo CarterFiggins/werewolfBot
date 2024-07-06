@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { updateUser, findManyUsers } = require("../../werewolf_db");
 const { organizeChannels } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
-const { removesDeadPermissions } = require("../deathHelper");
+const { removesDeadPermissions, witchCurseDeathMessage, WaysToDie } = require("../deathHelper");
 
 async function cursePlayers(interaction) {
   const guildId = interaction.guild.id;
@@ -24,54 +24,14 @@ async function cursePlayers(interaction) {
         await updateUser(witch.user_id, guildId, {
           target_cursed_user_id: null,
         });
-        organizedChannels.witch.send(
-          `${members.get(witch.user_id)} have successfully cursed ${members.get(
-            witch.target_cursed_user_id
-          )}`
+        await organizedChannels.witch.send(
+          `${members.get(witch.user_id)} Your dark magic has taken effect. You have successfully cursed ${members.get(witch.target_cursed_user_id)}. The power of your curse now looms over them.`
         );
       }
     })
   );
 }
 
-async function castWitchCurse(interaction, organizedRoles) {
-  const cursorCursed = await findManyUsers({
-    guild_id: interaction.guild.id,
-    is_cursed: true,
-    is_dead: false,
-  });
-  const cursedPlayers = await cursorCursed.toArray();
-  const cursedVillagers = _.filter(cursedPlayers, (player) => {
-    return player.character !== characters.WEREWOLF;
-  });
-  const members = interaction.guild.members.cache;
-
-  const deathCharacters = await Promise.all(
-    _.map(cursedVillagers, async (villager) => {
-      const villagerMember = members.get(villager.user_id);
-
-      const deadVillager = await removesDeadPermissions(
-        interaction,
-        villager,
-        villagerMember,
-        organizedRoles
-      );
-      let hunterMessage = "";
-      if (villager.character === characters.HUNTER) {
-        hunterMessage =
-          "you don't have long to live. Grab your gun and `/shoot` someone.\n";
-      }
-      return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}`;
-    })
-  );
-
-  if (deathCharacters) {
-    return `The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
-  }
-  return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";
-}
-
 module.exports = {
-  castWitchCurse,
   cursePlayers,
 };

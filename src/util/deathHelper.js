@@ -4,9 +4,10 @@ const {
   updateUser,
   updateGame,
   findManyUsers,
-  findUser,
   deleteManyVotes,
   findSettings,
+  findOneUser,
+  findUser,
 } = require("../werewolf_db");
 const {
   organizeChannels,
@@ -14,24 +15,46 @@ const {
 } = require("./channelHelpers");
 const { shuffleSeers } = require("./characterHelpers/seerHelper");
 const { characters } = require("./characterHelpers/characterUtil");
+const { checkGame } = require("./endGameHelper");
+const { organizeRoles } = require("./rolesHelpers");
+const { PowerUpNames } = require("./powerUpHelpers");
 const { getAliveUsersIds } = require("./discordHelpers");
+const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
+
+const WaysToDie = {
+  HANGED: 'hanged',
+  WEREWOLF: 'werewolf',
+  SHOT: 'shot',
+  CURSED: 'cursed',
+  STARVED: 'starved',
+  INJURED: 'injured',
+  CHAOS: 'chaos',
+}
 
 async function removesDeadPermissions(
   interaction,
   deadUser,
   deadMember,
-  organizedRoles,
-  hunterGuard,
+  causeOfDeath,
 ) {
   const guildId = interaction.guild.id;
-  let deadCharacter = deadUser.character;
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
+  let deadCharacter = deadUser.character; 
   const settings = await findSettings(guildId);
-  if (deadCharacter === characters.HUNTER && !deadUser.is_dead && !hunterGuard) {
+
+  if (deadUser?.power_ups && deadUser?.power_ups[PowerUpNames.SHIELD]) {
+    deadUser.power_ups[PowerUpNames.SHIELD] = false;
+    await updateUser(deadUser.user_id, interaction.guild.id, {
+      power_ups: deadUser.power_ups,
+    });
+    await sendMemberMessage(deadMember, "Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again")
+    return PowerUpNames.SHIELD
+  }
+
+  if (deadCharacter === characters.HUNTER && !deadUser.is_dead && !settings.hunter_guard) {
     await updateUser(deadUser.user_id, guildId, {
-      can_shoot: true,
+      is_injured: true,
       is_dead: true,
+      cause_of_death: causeOfDeath,
     });
 
     const currentDate = new Date();
@@ -43,7 +66,7 @@ async function removesDeadPermissions(
     schedule.scheduleJob(
       `${guildId}-hunter-${deadUser.user_id}`,
       shootingLimit,
-      () => hunterShootingLimitJob(interaction, deadMember, organizedRoles)
+      () => hunterShootingLimitJob(interaction, deadMember)
     );
 
     if (deadUser.is_vampire && !settings.hard_mode) {
@@ -53,12 +76,27 @@ async function removesDeadPermissions(
     return deadCharacter;
   }
 
-  // removes deadUser character command and channel Permissions
-  deadMember.roles.remove(organizedRoles.alive);
-  deadMember.roles.add(organizedRoles.dead);
-  await removeChannelPermissions(interaction, deadMember);
-  await removeUserVotes(guildId, deadUser.user_id);
-  await updateUser(deadUser.user_id, guildId, { is_dead: true });
+  await removePlayer(
+    interaction,
+    deadUser,
+    deadMember,
+    causeOfDeath
+  )
+
+  deadCharacter = await handleCharactersDeath(interaction, deadCharacter, deadUser, deadMember)
+
+  if (deadUser.is_chaos_target && causeOfDeath !== WaysToDie.HANGED) {
+    await killChaosDemon(interaction, deadMember)
+  }
+
+  return deadCharacter
+}
+
+async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadMember) {
+  const guildId = interaction.guild.id;
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  const settings = await findSettings(guildId);
 
   if (deadCharacter === characters.BAKER) {
     await checkBakers(guildId, organizedChannels.townSquare);
@@ -81,7 +119,48 @@ async function removesDeadPermissions(
     return `${deadCharacter} (who was a vampire!)`;
   }
 
-  return settings.hard_mode ? 'player' : deadCharacter;
+  return settings.hard_mode ? '||player||' : deadCharacter;
+}
+
+async function removePlayer(
+  interaction,
+  deadUser,
+  deadMember,
+  causeOfDeath
+) {
+  const guildId = interaction.guild.id;
+  const roles = await interaction.guild.roles.fetch();
+  const organizedRoles = organizeRoles(roles);
+
+  deadMember.roles.remove(organizedRoles.alive);
+  deadMember.roles.add(organizedRoles.dead);
+  await removeChannelPermissions(interaction, deadMember);
+  await removeUserVotes(guildId, deadUser.user_id);
+  await updateUser(deadUser.user_id, guildId, { is_dead: true, cause_of_death: causeOfDeath });
+}
+
+async function killChaosDemon(interaction, targetMember) {
+  const members = interaction.guild.members.cache;
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  const chaosDemon = await findOneUser({
+    guild_id: interaction.guild.id,
+    character: characters.CHAOS_DEMON,
+    is_dead: false,
+  })
+  const chaosDemonMember = members.get(chaosDemon.user_id)
+
+  if (!chaosDemon) {
+    return;
+  }
+
+  await removePlayer(
+    interaction,
+    chaosDemon,
+    chaosDemonMember,
+    WaysToDie.CHAOS
+  )
+  organizedChannels.townSquare.send(`In a twist of fate, the Chaos Demon, ${chaosDemonMember}, has met their end! Their sinister plan failed because their marked target, ${targetMember}, died, but not by hanging. Without their target's demise by lynching, the Chaos Demon's power has been vanquished.`)
 }
 
 async function removeUserVotes(guildId, userId) {
@@ -109,16 +188,52 @@ async function checkBakers(guildId, townSquare) {
   }
 }
 
+async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = false) {
+  if (!randomFire) {
+    await interaction.reply(":dart: PEW PEW :gun:");
+  }
+
+  const members = await interaction.guild.members.fetch();
+  const deadTargetMember = members.get(targetDbUser.user_id);
+  const memberWhoShot = members.get(userWhoShot.user_id);
+
+  const deadCharacter = await removesDeadPermissions(
+    interaction,
+    targetDbUser,
+    deadTargetMember,
+    WaysToDie.SHOT
+  );
+
+  if (userWhoShot.character === characters.HUNTER && userWhoShot.is_injured) {
+    await removesDeadPermissions(
+      interaction,
+      userWhoShot,
+      memberWhoShot,
+      userWhoShot.cause_of_death
+    );
+    await updateUser(userWhoShot.user_id, interaction.guild.id, {
+      is_injured: false,
+    });
+  } else {
+    userWhoShot.power_ups[PowerUpNames.GUN] = false
+    await updateUser(userWhoShot.user_id, interaction.guild.id, {
+      power_ups: userWhoShot.power_ups,
+    });
+  }
+
+  await sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire })
+  await checkGame(interaction);
+}
+
 async function hunterShootingLimitJob(
   interaction,
-  deadHunterMember,
-  organizedRoles
+  deadHunterMember
 ) {
   const deadDbHunter = await findUser(
     deadHunterMember.user.id,
     interaction.guild.id
   );
-  if (!deadDbHunter.can_shoot) {
+  if (!deadDbHunter.is_injured) {
     return;
   }
   // get all alive users but not the hunter
@@ -128,34 +243,133 @@ async function hunterShootingLimitJob(
 
   const shotUserId = _.sample(aliveUserIds);
   const shotUser = await findUser(shotUserId, interaction.guild.id);
-  const shotMember = interaction.guild.members.cache.get(shotUserId);
-  // kill hunter
-  await removesDeadPermissions(
+  const randomFire = true
+  await gunFire(interaction, shotUser, deadDbHunter, randomFire)
+}
+
+async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
+  const settings = await findSettings(interaction.guild.id);
+  const members = interaction.guild.members.cache;
+
+  const deathCharacter = await removesDeadPermissions(
     interaction,
-    deadDbHunter,
-    deadHunterMember,
-    organizedRoles
+    deadUser,
+    deadMember,
+    WaysToDie.WEREWOLF
   );
-  // kill targeted user
-  const deadCharacter = await removesDeadPermissions(
-    interaction,
-    shotUser,
-    shotMember,
-    organizedRoles
+  if (deathCharacter === PowerUpNames.SHIELD) { 
+    return `Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werwolf attack. Their shield has been consumed`
+  }
+  
+  if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
+    const cursorWerewolf = await findManyUsers({
+      guild_id: interaction.guild.id,
+      character: characters.WEREWOLF,
+    });
+    const werewolves = await cursorWerewolf.toArray();
+    const deadWerewolf = _.sample(werewolves)
+    const deadWerewolfMember = members.get(deadWerewolf.user_id);
+    const deadWerewolfCharacter = await removesDeadPermissions(
+      interaction,
+      deadWerewolf,
+      deadWerewolfMember,
+      WaysToDie.SHOT
+    );
+    if (deadWerewolfCharacter === PowerUpNames.SHIELD) {
+      return `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they shot at their attacker and hit a werewolves shield! Next time that werewolf won't be so lucky`
+    } 
+    return `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they shot at their attacker and hit the ${deadWerewolfCharacter} named ${deadWerewolfMember}\n`;
+  }
+  
+  if (deadUser.character === characters.HUNTER) { 
+     return `Last night, the werewolves attacked and injured the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.\n`;
+  }
+  
+  return `Last night, ${deadMember} was found dead, playing the character of ${deathCharacter}. They have been killed by a werewolf attack.\n`;
+}
+
+async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire }) {
+  let message = "";
+  const userWasProtected = deadCharacter === PowerUpNames.SHIELD;
+
+
+  if (targetDbUser.character === characters.HUNTER) {
+    message = `${deadTargetMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
+  }
+
+  if (targetDbUser.character === characters.WITCH) {
+    message += await castWitchCurse(interaction)
+  }
+
+  if (randomFire) {
+    const channels = interaction.guild.channels.cache;
+    const organizedChannels = organizeChannels(channels);
+    let finalMessage = `${memberWhoShot} didn't have time to shoot and died. They dropped their gun and it shot `
+    let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
+    if (userWasProtected) {
+      targetMessage = `${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed`
+    }
+    await organizedChannels.townSquare.send(`${finalMessage}${targetMessage}`);
+  } else {
+    let finalMessage = `${memberWhoShot} took aim and shot `
+    let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
+    if (userWasProtected) {
+      targetMessage = `${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed`
+    }
+    await interaction.editReply(`${finalMessage}${targetMessage}`);
+  }
+}
+
+async function witchCurseDeathMessage({ villager, deadVillager, villagerMember }) {
+  if (deadVillager === PowerUpNames.SHIELD) {
+    return `A villager's shield absorbed the curse, turning it into a puff of smoke.`
+  }
+  let hunterMessage = "";
+  if (villager.character === characters.HUNTER) {
+    hunterMessage =
+      "you don't have long to live. Grab your gun and `/shoot` someone.\n";
+  }
+  return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}`;
+}
+
+
+async function castWitchCurse(interaction) {
+  const cursorCursed = await findManyUsers({
+    guild_id: interaction.guild.id,
+    is_cursed: true,
+    is_dead: false,
+  });
+  const cursedPlayers = await cursorCursed.toArray();
+  const cursedVillagers = _.filter(cursedPlayers, (player) => {
+    return player.character !== characters.WEREWOLF;
+  });
+  const members = interaction.guild.members.cache;
+
+  const deathCharacters = await Promise.all(
+    _.map(cursedVillagers, async (villager) => {
+      const villagerMember = members.get(villager.user_id);
+
+      const deadVillager = await removesDeadPermissions(
+        interaction,
+        villager,
+        villagerMember,
+        WaysToDie.CURSED
+      );
+      return await witchCurseDeathMessage({ villager, deadVillager, villagerMember })
+    })
   );
 
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
-  let message = "";
-  if (shotUser.character === characters.HUNTER) {
-    message = `${shotMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.\n`;
+  if (deathCharacters) {
+    return `The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
   }
-  await organizedChannels.townSquare.send(
-    `${deadHunterMember} didn't have time to shoot and died. They dropped their gun and it shot the ${deadCharacter} named ${shotMember}\n${message}\n`
-  );
-  await checkGame(interaction);
+  return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";
 }
 
 module.exports = {
   removesDeadPermissions,
+  gunFire,
+  WaysToDie,
+  witchCurseDeathMessage,
+  werewolfKillDeathMessage,
+  castWitchCurse,
 };

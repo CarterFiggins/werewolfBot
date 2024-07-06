@@ -6,19 +6,18 @@ const {
   findSettings,
 } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
-const { organizeRoles } = require("../rolesHelpers");
 const {
   organizeChannels,
   giveChannelPermissions,
 } = require("../channelHelpers");
-const { removesDeadPermissions } = require("../deathHelper");
+const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
+const { vampireDeathMessage } = require("../botMessages/deathMessages");
+const { PowerUpNames } = require("../powerUpHelpers");
 
 async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
   const members = interaction.guild.members.cache;
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const allRoles = interaction.guild.roles.cache;
-  const organizedRoles = await organizeRoles(allRoles);
   const guildId = interaction.guild.id;
   const settings = await findSettings(guildId);
   const cursor = await findManyUsers({
@@ -83,7 +82,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             biteCount += 1;
           }
           usersBittenById.set(victim.user_id, biteCount);
-          organizedChannels.vampires.send(
+          await organizedChannels.vampires.send(
             `${vampireMember} you have successfully bitten ${victimMember}`
           );
           if (biteCount >= 2) {
@@ -95,22 +94,23 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             settings.king_bite_wolf_safe) &&
           (werewolfAttacked || settings.king_victim_attack_safe)
         ) {
-          organizedChannels.vampires.send(protectedMemberMessage);
+          await organizedChannels.vampires.send(protectedMemberMessage);
         } else {
           const deadCharacter = await removesDeadPermissions(
             interaction,
             vampire,
             vampireMember,
-            organizedRoles
+            WaysToDie.WEREWOLF
           );
           if (werewolfAttacked) {
-            if (victim.character === characters.MUTATED) {
-              return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves\nhttps://tenor.com/5qDD.gif\n`;
-            }
-            return `The ${deadCharacter} named ${vampireMember} died while in the way of the werewolves killing ${victimMember}\nhttps://tenor.com/5qDD.gif\n`;
+            await organizedChannels.vampires.send(`${vampireMember} tried to bite ${victimMember} but a werewolf was also attacking ${victimMember}!`)
           } else {
-            return `The ${deadCharacter} named ${vampireMember} tried to suck blood from a werewolf and died\nhttps://tenor.com/sJlV.gif\n`;
+            await organizedChannels.vampires.send(`${vampireMember} Your attempt to bite ${victimMember} has backfired! Unbeknownst to you, ${victimMember} is a werewolf, and this deadly encounter has led to your demise.`)
           }
+          if (deadCharacter === PowerUpNames.SHIELD) {
+            await organizedChannels.vampires.send(`WAIT! ${vampireMember} has a shield! It protected them from death!`)
+          }
+          return await vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, vampire, vampireMember })
         }
       }
     })

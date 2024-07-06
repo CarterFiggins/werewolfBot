@@ -1,4 +1,3 @@
-// const { resetNightPowers, characters } = require("../util/commandHelpers");
 
 // jest.mock("../werewolf_db.js", () => {
 //   return {
@@ -30,6 +29,5 @@ test("jest mocking", async () => {
   //     expect(update.guard).toBeTruthy;
   //   }
   // });
-  // await resetNightPowers(users, guildId);
   expect(1).toBe(1);
 });
