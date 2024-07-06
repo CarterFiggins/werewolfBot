@@ -69,7 +69,7 @@ async function removesDeadPermissions(
       () => hunterShootingLimitJob(interaction, deadMember)
     );
 
-    if (deadUser.is_vampire && !settings.hard_mode) {
+    if (deadUser.is_vampire) {
       return `${deadCharacter} (who was a vampire!)`;
     }
     // return early so the hunter doesn't die.
@@ -119,7 +119,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     return `${deadCharacter} (who was a vampire!)`;
   }
 
-  return settings.hard_mode ? '||player||' : deadCharacter;
+  return deadCharacter;
 }
 
 async function removePlayer(
