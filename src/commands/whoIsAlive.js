@@ -51,9 +51,13 @@ module.exports = {
     });
 
     if (_.isEmpty(dbUsers)) {
+      const {playersCount, playingMembers} = await getPlayingCount(interaction)
       await interaction.reply({
-        content: `Player count: ${await getPlayingCount(interaction)}`,
+        content: `Player count: ${playersCount}\n${_.join(playingMembers, "\n")}`,
         ephemeral: false,
+        allowedMentions: {
+          parse: []
+        }
       });
       return;
     }
@@ -69,6 +73,9 @@ module.exports = {
     await interaction.reply({
       content: message,
       ephemeral: false,
+      allowedMentions: {
+        parse: []
+      }
     });
   },
 };

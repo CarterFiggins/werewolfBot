@@ -58,7 +58,7 @@ async function removesDeadPermissions(
     });
 
     const currentDate = new Date();
-    const hours = 4;
+    const hours = 11;
     const shootingLimit = new Date(
       currentDate.setHours(currentDate.getHours() + hours)
     );

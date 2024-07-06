@@ -10,12 +10,14 @@ async function getPlayingCount(interaction) {
   const members = await interaction.guild.members.fetch();
 
   let playersCount = 0;
+  const playingMembers = [];
   members.forEach((member) => {
     if (member._roles.includes(playingRole.id)) {
       playersCount += 1;
+      playingMembers.push(member)
     }
   });
-  return playersCount;
+  return {playersCount, playingMembers};
 }
 
 async function buildUserInfo(interaction, user, newCharacter) {

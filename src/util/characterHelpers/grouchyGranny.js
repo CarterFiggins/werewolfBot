@@ -29,7 +29,7 @@ async function returnMutedPlayers(interaction, guildId) {
 
   await Promise.all(
     users.map(async (user) => {
-      if (user.isMuted) {
+      if (user.isMuted && !user.is_dead) {
         const channels = await interaction.guild.channels.fetch();
         const organizedChannels = organizeChannels(channels);
         const member = members.get(user.user_id)
