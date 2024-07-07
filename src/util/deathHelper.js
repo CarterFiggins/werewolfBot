@@ -132,8 +132,8 @@ async function removePlayer(
   const roles = await interaction.guild.roles.fetch();
   const organizedRoles = organizeRoles(roles);
 
-  deadMember.roles.remove(organizedRoles.alive);
-  deadMember.roles.add(organizedRoles.dead);
+  await deadMember.roles.remove(organizedRoles.alive);
+  await deadMember.roles.add(organizedRoles.dead);
   await removeChannelPermissions(interaction, deadMember);
   await removeUserVotes(guildId, deadUser.user_id);
   await updateUser(deadUser.user_id, guildId, { is_dead: true, cause_of_death: causeOfDeath });
