@@ -79,8 +79,9 @@ In the `builder-image` directory:
 
 1. On your Github project, go to Settings -> Environments.
 2. Create a new environment named "Deploy"
-3. Add a secret named AWS_ACCOUNT_ID with your AWS account ID
+3. Add a secret named `AWS_ACCOUNT_ID` with your AWS account ID
    * This is one of the outputs from the initial Terraform deploy
+4. Add an environment variable named `AWS_REGION` with the region you picked before.
 
 
 ## Deploys
