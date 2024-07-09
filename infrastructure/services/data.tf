@@ -12,7 +12,7 @@ resource "local_file" "builder_vars" {
 }
 
 output "public_ip" {
-  value = aws_eip.ec2_esc_service.address
+  value = aws_eip.ec2_esc_service.public_ip
 }
 
 output "ecr_host" {
