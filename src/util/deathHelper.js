@@ -58,7 +58,7 @@ async function removesDeadPermissions(
     });
 
     const currentDate = new Date();
-    const hours = 4;
+    const hours = 11;
     const shootingLimit = new Date(
       currentDate.setHours(currentDate.getHours() + hours)
     );
@@ -69,7 +69,7 @@ async function removesDeadPermissions(
       () => hunterShootingLimitJob(interaction, deadMember)
     );
 
-    if (deadUser.is_vampire && !settings.hard_mode) {
+    if (deadUser.is_vampire) {
       return `${deadCharacter} (who was a vampire!)`;
     }
     // return early so the hunter doesn't die.
@@ -119,7 +119,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     return `${deadCharacter} (who was a vampire!)`;
   }
 
-  return settings.hard_mode ? '||player||' : deadCharacter;
+  return deadCharacter;
 }
 
 async function removePlayer(
@@ -132,8 +132,8 @@ async function removePlayer(
   const roles = await interaction.guild.roles.fetch();
   const organizedRoles = organizeRoles(roles);
 
-  deadMember.roles.remove(organizedRoles.alive);
-  deadMember.roles.add(organizedRoles.dead);
+  await deadMember.roles.remove(organizedRoles.alive);
+  await deadMember.roles.add(organizedRoles.dead);
   await removeChannelPermissions(interaction, deadMember);
   await removeUserVotes(guildId, deadUser.user_id);
   await updateUser(deadUser.user_id, guildId, { is_dead: true, cause_of_death: causeOfDeath });

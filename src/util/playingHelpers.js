@@ -20,7 +20,7 @@ async function playingResponse(interaction) {
   await interaction.deferReply();
 
   const playingRole = await getRole(interaction, roleNames.PLAYING);
-  member.roles.add(playingRole);
+  await member.roles.add(playingRole);
 
   await interaction.editReply({
     content: `${interaction.user} is now playing`,
@@ -31,7 +31,7 @@ async function stopPlayingResponse(interaction) {
   const member = interaction.member;
   if (isPlaying(member)) {
     const playingRole = await getRole(interaction, roleNames.PLAYING);
-    member.roles.remove(playingRole);
+    await member.roles.remove(playingRole);
 
     await interaction.reply({
       content: `You have removed yourself from playing.`,

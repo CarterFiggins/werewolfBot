@@ -46,6 +46,7 @@ module.exports = {
         content: `Your WERE ${dbUser.assigned_identity}, but now you're dead lol`,
         ephemeral: true,
       });
+      return;
     }
 
     const powerUps = _.map(dbUser.power_ups, (active, name) => {

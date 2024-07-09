@@ -135,9 +135,6 @@ async function dayTimeJob(interaction) {
   let message = "";
 
   await copyCharacters(interaction);
-  await cursePlayers(interaction);
-  await returnMutedPlayers(interaction, guildId);
-  await mutePlayers(interaction, guildId)
 
   const guardedIds = await guardPlayers(interaction);
   const werewolfKills = [game.user_death_id, game.second_user_death_id]
@@ -159,7 +156,10 @@ async function dayTimeJob(interaction) {
     starveMessage = await starveUser(interaction, deathIds);
   }
 
+  await cursePlayers(interaction);
+  await returnMutedPlayers(interaction, guildId);
   await investigatePlayers(interaction)
+  await mutePlayers(interaction, guildId)
 
   await updateGame(guildId, {
     user_death_id: null,

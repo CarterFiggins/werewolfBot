@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { isAlive } = require("../util/rolesHelpers");
-const { organizeChannels } = require("../util/channelHelpers");
+const { organizeChannels, channelNames } = require("../util/channelHelpers");
 const { findSettings } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 

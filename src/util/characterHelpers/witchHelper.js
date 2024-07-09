@@ -1,8 +1,7 @@
 const _ = require("lodash");
-const { updateUser, findManyUsers } = require("../../werewolf_db");
+const { updateUser, findManyUsers, findUser } = require("../../werewolf_db");
 const { organizeChannels } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
-const { removesDeadPermissions, witchCurseDeathMessage, WaysToDie } = require("../deathHelper");
 
 async function cursePlayers(interaction) {
   const guildId = interaction.guild.id;
@@ -18,6 +17,13 @@ async function cursePlayers(interaction) {
   await Promise.all(
     _.map(witches, async (witch) => {
       if (witch.target_cursed_user_id) {
+        const targetDbUser = await findUser(witch.target_cursed_user_id, guildId)
+        if (targetDbUser.is_dead) {
+          await organizedChannels.witch.send(
+            `${members.get(witch.user_id)} Your dark magic has failed. ${members.get(witch.target_cursed_user_id)} has died and this cures works on the living.`
+          );
+          return;
+        }
         await updateUser(witch.target_cursed_user_id, guildId, {
           is_cursed: true,
         });
