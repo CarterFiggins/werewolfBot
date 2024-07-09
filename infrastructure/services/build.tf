@@ -101,10 +101,12 @@ module "builder_service_role" {
         "ec2:DescribeSubnets",
         "ecs:RegisterTaskDefinition",
         "ecs:DeregisterTaskDefinition",
+        "logs:DescribeLogGroups",
         "logs:CreateLogGroup",
         "logs:PutRetentionPolicy",
         "iam:CreateRole",
-        "iam:GetRole"
+        "iam:GetRole",
+        "iam:ListRolePolicies"
       ]
     },
     {
