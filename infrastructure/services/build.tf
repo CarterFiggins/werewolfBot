@@ -16,7 +16,7 @@ locals {
 
 resource "aws_ecr_repository" "discord_werewolf" {
   name = "discord-werewolf"
-  image_tag_mutability = "IMMUTABLE"
+  image_tag_mutability = "MUTABLE"
 }
 
 resource "aws_ecr_lifecycle_policy" "discord_werewolf" {
@@ -67,6 +67,27 @@ module "builder_service_role" {
       ]
     },
     {
+      sid: "EcsAccess"
+      effect: "Allow",
+      resources: [
+        aws_ecs_cluster.main.arn,
+        "${aws_ecs_cluster.main.arn}:*"
+      ],
+      actions: [
+        "ecs:CreateService",
+        "ecs:UpdateService",
+        "ecs:DeleteService",
+        "ecs:DescribeClusters",
+        "ecs:DescribeServices",
+        "ecs:DescribeTaskDefinition",
+        "ecs:DescribeTasks",
+        "ecs:ListClusters",
+        "ecs:ListServices",
+        "ecs:ListTaskDefinitions",
+        "ecs:ListTasks"
+      ]
+    },
+    {
       sid: "GlobalResources",
       effect: "Allow",
       resources: ["*"],
@@ -76,7 +97,14 @@ module "builder_service_role" {
         "ssm:GetParametersByPath",
         "sts:GetServiceBearerToken",
         "ssm:PutParameter",
-        "ecr:GetAuthorizationToken"
+        "ecr:GetAuthorizationToken",
+        "ec2:DescribeSubnets",
+        "ecs:RegisterTaskDefinition",
+        "ecs:DeregisterTaskDefinition",
+        "logs:CreateLogGroup",
+        "logs:PutRetentionPolicy",
+        "iam:CreateRole",
+        "iam:GetRole"
       ]
     },
     {
