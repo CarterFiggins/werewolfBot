@@ -22,3 +22,7 @@ output "ecr_host" {
 output "build_repo" {
   value = aws_ecr_repository.builder.repository_url
 }
+
+output "account_id" {
+  value = data.aws_caller_identity.current.account_id
+}
