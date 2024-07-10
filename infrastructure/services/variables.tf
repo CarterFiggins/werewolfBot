@@ -1,6 +1,16 @@
 variable "github_source_repo" {
   type = string
-  description = "Where code will be pulled from to build the container. Format: user/repo"
+  description = "Where code will be pulled from to build the container. Format: user/repo."
+}
+
+variable "terraform_bucket" {
+  type = string
+  description = "Name of the S3 bucket that holds the terraform state."
+}
+
+variable "terraform_table" {
+  type = string
+  description = "Name of the DynamoDB table that holds the terraform state locks."
 }
 
 variable "primary_region" {
