@@ -82,7 +82,7 @@ module.exports = {
 
     try {
       await senderMember.send(
-        `You Whispered to ${
+        `You whispered to ${
           playerMember.nickname || player.username
         }\n${message}\n`
       );
