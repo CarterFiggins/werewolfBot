@@ -18,7 +18,7 @@ async function copyCharacters(interaction) {
 }
 
 function validateCopiedCharacter(copiedCharacter) {
-  if (copiedCharacter === characters.DOPPELGANGER || copiedCharacter === characters.CHAOS_DEMON) {
+  if (copiedCharacter === characters.CHAOS_DEMON) {
     return characters.VILLAGER
   }
 
@@ -33,14 +33,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     copiedCharacter = (await randomUser(guildId)).character;
   } else {
     const originalUser = await findUser(copyUserId, guildId);
-    copiedCharacter = originalUser.character;
-  }
-
-  let displayInGameCharacter = copiedCharacter
-  if (displayInGameCharacter === characters.LYCAN || displayInGameCharacter === characters.MUTATED ) {
-    displayInGameCharacter = characters.VILLAGER
-  } else if (displayInGameCharacter === characters.FOOL) {
-    displayInGameCharacter = characters.SEER
+    copiedCharacter = originalUser.assigned_identity;
   }
 
   copiedCharacter = validateCopiedCharacter(copiedCharacter)
@@ -53,6 +46,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   });
 
   const doppelgangerMember = members.get(doppelgangerUserId);
+  const copiedMember = members.get(copyUserId);
   const organizedChannels = await giveChannelPermissions({
     interaction,
     user: doppelgangerMember,
@@ -66,12 +60,12 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   }
 
   await organizedChannels.afterLife.send(
-    `${doppelgangerMember} has become a ${isVampire}${copiedCharacter}`
+    `${doppelgangerMember} has copied ${copiedMember} and has become a ${isVampire}${copiedCharacter}`
   );
 
   try {
     await doppelgangerMember.send(
-      `You are now a ${isVampire} ${displayInGameCharacter}`
+      `You are now a ${isVampire} ${copiedCharacter}`
     );
   } catch (e) {
     console.log(e);

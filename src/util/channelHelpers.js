@@ -97,7 +97,7 @@ function showUsersCharacter(users) {
     } else if (user.info.is_vampire) {
       character = `vampire ${characters.VAMPIRE}`;
     }
-    if (character !== user.info.assigned_identity) {
+    if (character !== user.info.assigned_identity && !user.info.is_vampire) {
       wasTold = `I told them they were a ${user.info.assigned_identity}`
     }
     message += `${user} is a ${character}. ${wasTold}\n`;

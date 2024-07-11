@@ -42,8 +42,12 @@ module.exports = {
       return;
     }
     if (dbUser.is_dead) {
+      const vampire = ""
+      if (dbUser.is_vampire) {
+        vampire = "vampire "
+      }
       await interaction.reply({
-        content: `Your WERE ${dbUser.assigned_identity}, but now you're dead lol`,
+        content: `Your WERE the ${vampire}${dbUser.character}, but now you're dead lol`,
         ephemeral: true,
       });
       return;

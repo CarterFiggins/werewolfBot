@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { organizeChannels, channelNames } = require("../util/channelHelpers");
-const { findSettings } = require("../werewolf_db");
+const { findSettings, findUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
@@ -42,12 +42,12 @@ module.exports = {
       return;
     }
 
-    const channel = interaction.guild.channels.cache.get(interaction.channelId);
+    const userDb = await findUser(interaction.user.id, interaction.guild.id)
 
-    if (channel.name === channelNames.OUT_CASTS) {
+    if (userDb.isMuted) {
       await interaction.reply({
         content:
-          "You are to far away! They can not hear you",
+          "You are to far away! They can not hear you. https://tenor.com/uRgx.gif",
         ephemeral: true,
       });
       return;
@@ -59,13 +59,37 @@ module.exports = {
     );
     const player = interaction.options.getUser("player");
     const playerMember = await interaction.guild.members.fetch(player.id);
+    const playerUserDb = await findUser(player.id, interaction.guild.id)
     const message = interaction.options.getString("message");
     const channels = interaction.guild.channels.cache;
     const organizedChannels = organizeChannels(channels);
 
     if (!isAlive(playerMember)) {
       await interaction.editReply({
-        content: "psst you can only whisper to people who are alive.",
+        content: "Whispering to the departed? They're great listeners, but they've got a no-reply policy in their current state. Try selecting someone who is alive.",
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (playerUserDb.isMuted) {
+      await interaction.editReply({
+        content: "They have been muted by the granny. Looks like your whispers will have to wait until they find their way back from Granny's bad side!",
+        ephemeral: true,
+      });
+      return;
+    }
+
+    try {
+      await senderMember.send(
+        `You Whispered to ${
+          playerMember.nickname || player.username
+        }\n${message}\n`
+      );
+    } catch (e) {
+      console.log(e);
+      await interaction.editReply({
+        content: "You are currently blocking or not allowing messages from the werewolf bot.",
         ephemeral: true,
       });
       return;
