@@ -14,9 +14,17 @@ locals {
   }
 }
 
+data "aws_s3_bucket" "tf_state" {
+  bucket = var.terraform_bucket
+}
+
+data "aws_dynamodb_table" "tf_state" {
+  name = var.terraform_table
+}
+
 resource "aws_ecr_repository" "discord_werewolf" {
   name = "discord-werewolf"
-  image_tag_mutability = "IMMUTABLE"
+  image_tag_mutability = "MUTABLE"
 }
 
 resource "aws_ecr_lifecycle_policy" "discord_werewolf" {
@@ -67,6 +75,27 @@ module "builder_service_role" {
       ]
     },
     {
+      sid: "EcsAccess"
+      effect: "Allow",
+      resources: [
+        aws_ecs_cluster.main.arn,
+        "${aws_ecs_cluster.main.arn}:*"
+      ],
+      actions: [
+        "ecs:CreateService",
+        "ecs:UpdateService",
+        "ecs:DeleteService",
+        "ecs:DescribeClusters",
+        "ecs:DescribeServices",
+        "ecs:DescribeTaskDefinition",
+        "ecs:DescribeTasks",
+        "ecs:ListClusters",
+        "ecs:ListServices",
+        "ecs:ListTaskDefinitions",
+        "ecs:ListTasks"
+      ]
+    },
+    {
       sid: "GlobalResources",
       effect: "Allow",
       resources: ["*"],
@@ -76,7 +105,26 @@ module "builder_service_role" {
         "ssm:GetParametersByPath",
         "sts:GetServiceBearerToken",
         "ssm:PutParameter",
-        "ecr:GetAuthorizationToken"
+        "ecr:GetAuthorizationToken",
+        "ec2:DescribeSubnets",
+        "ecs:RegisterTaskDefinition",
+        "ecs:DeregisterTaskDefinition",
+        "ecs:DescribeTaskDefinition",
+        "ecs:DescribeServices",
+        "ecs:CreateService",
+        "ecs:UpdateService",
+        "logs:DescribeLogGroups",
+        "logs:CreateLogGroup",
+        "logs:PutRetentionPolicy",
+        "logs:ListTagsForResource",
+        "iam:CreateRole",
+        "iam:GetRole",
+        "iam:PassRole",
+        "iam:ListRolePolicies",
+        "iam:GetRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:PutRolePolicy",
+        "iam:AttachRolePolicy"
       ]
     },
     {
@@ -89,6 +137,33 @@ module "builder_service_role" {
       resources: [
         "${aws_cloudwatch_log_group.build_werewolf_app.arn}:*"
       ]
+    },
+    {
+      sid: "TerraformBucket",
+      effect: "Allow",
+      actions: [
+        "s3:ListBucket",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:GetObjectVersion"
+      ],
+      resources: [
+        data.aws_s3_bucket.tf_state.arn,
+        "${data.aws_s3_bucket.tf_state.arn}/*"
+      ]
+    },
+    {
+      sid: "TerraformTable"
+      effect: "Allow",
+      actions: [
+        "dynamodb:ListTables",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:DeleteItem"
+      ],
+      resources: [data.aws_dynamodb_table.tf_state.arn]
     }
   ]
 }

@@ -12,7 +12,7 @@ resource "local_file" "builder_vars" {
 }
 
 output "public_ip" {
-  value = aws_eip.ec2_esc_service.address
+  value = aws_eip.ec2_esc_service.public_ip
 }
 
 output "ecr_host" {
@@ -21,4 +21,8 @@ output "ecr_host" {
 
 output "build_repo" {
   value = aws_ecr_repository.builder.repository_url
+}
+
+output "account_id" {
+  value = data.aws_caller_identity.current.account_id
 }

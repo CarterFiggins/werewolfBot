@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { updateUser, findAllUsers, findManyUsers } = require("../../werewolf_db");
+const { updateUser, findAllUsers, findManyUsers, findUser } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
 const { organizeChannels, channelNames, giveChannelPermissions } = require("../channelHelpers");
 
@@ -14,7 +14,10 @@ async function mutePlayers(interaction) {
   for (const granny of grannies) {
     if (granny.muteUserId) {
       const muteMember = members.get(granny.muteUserId)
-      await castOutUser(interaction, muteMember)
+      const muteUserDb = findUser(granny.muteUserId, interaction.guild.id)
+      if (!muteUserDb.is_dead) {
+        await castOutUser(interaction, muteMember)
+      }
       await updateUser(granny.user_id, interaction.guild.id, {
         muteUserId: null,
       });
@@ -100,6 +103,8 @@ async function castOutUser(interaction, member) {
           SendMessages: true,
           ViewChannel: true,
         });
+      } else if (channel.name === channelNames.AFTER_LIFE) {
+        // Don't change permissions here
       } else {
         await channel.permissionOverwrites.edit(member, {
           SendMessages: false,
