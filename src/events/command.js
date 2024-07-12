@@ -1,8 +1,9 @@
 module.exports = {
   async commandResponse(interaction) {
-    if (!interaction.channel.type) {
+    console.log(interaction.channel.type)
+    if (interaction.channel?.type === "DM") {
       await interaction.reply({
-        content: "Can not find channel type",
+        content: "DM commands are turned off",
         ephemeral: true,
       });
       return;
