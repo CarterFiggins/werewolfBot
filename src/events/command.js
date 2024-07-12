@@ -1,6 +1,6 @@
 module.exports = {
   async commandResponse(interaction) {
-    if (interaction.channel.type == "DM") {
+    if (!interaction.channel.type) {
       await interaction.reply({
         content: "DM commands are turned off",
         ephemeral: true,
