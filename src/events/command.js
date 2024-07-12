@@ -1,9 +1,8 @@
 module.exports = {
   async commandResponse(interaction) {
-    console.log(interaction.channel.type)
-    if (interaction.channel?.type === "DM") {
+    if (!interaction.guild) {
       await interaction.reply({
-        content: "DM commands are turned off",
+        content: "I don't know what guild you are from. Please run this command in the game server",
         ephemeral: true,
       });
       return;
