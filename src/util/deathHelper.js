@@ -341,7 +341,7 @@ async function castWitchCurse(interaction) {
   });
   const cursedPlayers = await cursorCursed.toArray();
   const cursedVillagers = _.filter(cursedPlayers, (player) => {
-    return player.character !== characters.WEREWOLF;
+    return player.character !== characters.WEREWOLF && player.character !== characters.WITCH;
   });
   const members = interaction.guild.members.cache;
 
