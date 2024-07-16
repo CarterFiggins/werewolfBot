@@ -93,6 +93,12 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
       case characters.MUTATED:
         user.info.assigned_identity = _.sample([characters.VILLAGER, characters.BAKER, characters.HUNTER])
         break;
+      case characters.MONARCH:
+        user.info.given_power_ups = [];
+        user.info.given_to_user_ids = [];
+        user.info.giving_user_id = null;
+        user.info.giving_power = null;
+        break;
     }
 
     if (settings.enable_power_ups) {

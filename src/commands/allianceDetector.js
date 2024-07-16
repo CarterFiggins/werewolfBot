@@ -110,7 +110,7 @@ module.exports = {
 }
 
 function findCharactersTeam(user) {
-  if (user.is_vampire || user.character === characters.VAMPIRE) {
+  if (user.is_vampire) {
     return teams.VAMPIRE
   }
   if (user.character === characters.CHAOS_DEMON) {

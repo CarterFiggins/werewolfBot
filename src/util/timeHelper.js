@@ -17,7 +17,7 @@ const { endGuildJobs } = require("./schedulHelper");
 const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
-const { removesDeadPermissions, WaysToDie } = require("./deathHelper");
+const { removesDeadPermissions, WaysToDie, botShoots } = require("./deathHelper");
 const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers/bodyguardHelper");
 const {
   cursePlayers,
@@ -28,6 +28,7 @@ const { investigatePlayers } = require("./characterHelpers/seerHelper");
 const { votingDeathMessage } = require("./botMessages/deathMessages");
 const { markChaosTarget, isDeadChaosTarget } = require("./characterHelpers/chaosDemonHelpers");
 const { PowerUpNames } = require("./powerUpHelpers");
+const { givePower } = require("./characterHelpers/monarchHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -160,6 +161,10 @@ async function dayTimeJob(interaction) {
   await returnMutedPlayers(interaction, guildId);
   await investigatePlayers(interaction)
   await mutePlayers(interaction, guildId)
+  await givePower(interaction)
+  if (game.bot_has_gun) {
+    await botShoots(interaction);
+  }
 
   await updateGame(guildId, {
     user_death_id: null,

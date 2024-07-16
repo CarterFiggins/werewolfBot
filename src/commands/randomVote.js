@@ -35,8 +35,6 @@ module.exports = {
       return role.name;
     });
 
-    console.log(votedMember.user.username)
-
     const dbUser = await findUser(interaction.user.id, interaction.guild.id);
 
     if (channel.name !== channelNames.TOWN_SQUARE) {

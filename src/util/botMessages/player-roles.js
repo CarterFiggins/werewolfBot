@@ -80,6 +80,15 @@ module.exports = {
 * Commands: \`/shoot\``
     },
     {
+      label: 'Monarch',
+      emoji: '🦋',
+      team: 'villager',
+      description: `### Monarch
+* The Monarch can give powers to other players. They only have one of each power to give. They can give one power each night and they will not be able to give that player another power.
+* Channels: monarch
+* Commands: \`/bestow_power\``,
+    },
+    {
       label: 'Lycan',
       emoji: '🌝',
       team: 'villager',

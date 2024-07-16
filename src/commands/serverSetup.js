@@ -163,6 +163,7 @@ module.exports = {
         // vampire settings
         allow_vampires: false,
         allow_chaos_demon: false,
+        allow_monarch: false,
         allow_first_bite: false,
         always_bite_two: false,
         king_bite_wolf_safe: false,

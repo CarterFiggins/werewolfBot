@@ -62,8 +62,13 @@ module.exports = {
       powerMessage = `\nCurrent Powers\n${powerUps.join("\n")}`
     }
 
+    let vampire = ""
+    if (dbUser.is_vampire) {
+      vampire = "vampire "
+    }
+
     await interaction.reply({
-      content: `Your character is: ${dbUser.assigned_identity}${powerMessage}`,
+      content: `Your character is: ${vampire}${dbUser.assigned_identity}${powerMessage}`,
       ephemeral: true,
     });
   },

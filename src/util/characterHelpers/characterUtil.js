@@ -25,6 +25,7 @@ const characters = {
   HUNTER: "hunter",
   GROUCHY_GRANNY: "grouchy granny",
   DOPPELGANGER: "doppelganger",
+  MONARCH: "monarch",
   // helps werewolves
   WEREWOLF: "werewolf",
   FOOL: "fool",
@@ -33,6 +34,7 @@ const characters = {
   MUTATED: "mutated villager",
   CUB: "werewolf cub",
   WITCH: "witch",
+  // Other teams
   VAMPIRE: "king",
   CHAOS_DEMON: "chaos demon",
 };
@@ -49,21 +51,22 @@ const teams = {
 // helpsTeam = shows what team the character helps if in the game.
 // onlyOne = only one of these characters are in the game.
 const characterInfoMap = new Map([
-  [characters.VILLAGER, {         weight: 6, points: 3, helpsTeam: teams.VILLAGER }],
-  [characters.SEER, {             weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
-  [characters.BODYGUARD, {        weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
-  [characters.APPRENTICE_SEER, {  weight: 4, points: 7, helpsTeam: teams.VILLAGER }],
-  [characters.MASON, {            weight: 6, points: 4, helpsTeam: teams.VILLAGER }],
-  [characters.HUNTER, {           weight: 6, points: 5, helpsTeam: teams.VILLAGER }],
+  [characters.VILLAGER, {         weight: 5, points: 3, helpsTeam: teams.VILLAGER }],
+  [characters.SEER, {             weight: 2, points: 6, helpsTeam: teams.VILLAGER }],
+  [characters.BODYGUARD, {        weight: 2, points: 6, helpsTeam: teams.VILLAGER }],
+  [characters.APPRENTICE_SEER, {  weight: 3, points: 7, helpsTeam: teams.VILLAGER }],
+  [characters.MASON, {            weight: 4, points: 4, helpsTeam: teams.VILLAGER }],
+  [characters.HUNTER, {           weight: 5, points: 5, helpsTeam: teams.VILLAGER }],
   [characters.WEREWOLF, {         weight: 0, points: 6, helpsTeam: teams.WEREWOLF }], // weighted 0 because the number of werewolves are base off of number of players
-  [characters.FOOL, {             weight: 5, points: 3, helpsTeam: teams.WEREWOLF }],
-  [characters.LYCAN, {            weight: 6, points: 3, helpsTeam: teams.WEREWOLF }],
+  [characters.FOOL, {             weight: 3, points: 3, helpsTeam: teams.WEREWOLF }],
+  [characters.LYCAN, {            weight: 5, points: 3, helpsTeam: teams.WEREWOLF }],
   [characters.BAKER, {            weight: 5, points: 6, helpsTeam: teams.WEREWOLF, onlyOne: true }],
-  [characters.MUTATED, {          weight: 5, points: 4, helpsTeam: teams.WEREWOLF }],
-  [characters.CUB, {              weight: 1, points: 7, helpsTeam: teams.WEREWOLF }],
+  [characters.MUTATED, {          weight: 3, points: 4, helpsTeam: teams.WEREWOLF }],
+  [characters.CUB, {              weight: 2, points: 7, helpsTeam: teams.WEREWOLF }],
   [characters.WITCH, {            weight: 6, points: 7, helpsTeam: teams.WEREWOLF, onlyOne: true }],
   [characters.DOPPELGANGER, {     weight: 3, points: 5, helpsTeam: teams.VILLAGER }],
-  [characters.GROUCHY_GRANNY, {   weight: 6, points: 6, helpsTeam: teams.VILLAGER }],
+  [characters.GROUCHY_GRANNY, {   weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
+  [characters.MONARCH, {          weight: 3, points: 6, helpsTeam: teams.VILLAGER }]
 ]);
 
 function getCards(settings) {
