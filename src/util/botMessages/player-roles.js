@@ -1,3 +1,5 @@
+const { showAllPowerUpMessages } = require("../commandHelpers");
+
 module.exports = {
   playerRolesIntro: '# Player Roles',
   roleList: [
@@ -84,7 +86,7 @@ module.exports = {
       emoji: '🦋',
       team: 'villager',
       description: `### Monarch
-* The Monarch can give powers to other players. They only have one of each power to give. They can give one power each night and they will not be able to give that player another power.
+* The Monarch can give powers to other players. They only have one of each power to give. They can give one power each night and they will not be able to give that player another power. Powers that can be given.\n${showAllPowerUpMessages()}
 * Channels: monarch
 * Commands: \`/bestow_power\``,
     },

@@ -72,7 +72,7 @@ module.exports = {
     }
     if (dbUser.giving_user_id === "bot") {
       await interaction.reply({
-        content: "It's too late you gave the gun to me. https://tenor.com/rcQQ7sUBwuk.gif",
+        content: "It's too late! You gave the gun to me. https://tenor.com/rcQQ7sUBwuk.gif",
         ephemeral: false,
       });
       return;
