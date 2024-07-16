@@ -156,7 +156,6 @@ function evilBotWithGun() {
     "With the Gun in my control, I'll twist the game's fate, amplifying chaos and uncertainty. Trust me wisely, for I hold sway over life and death in this village now.",
     "With the Gun in my hands, I'll make fear palpable. Each shot will drive suspicion deeper, unraveling trust. Your power, twisted by my hand, will shape the village's demise.",
     "I advise against bestowing the Gun upon me. Its power in my hands would unleash havoc beyond reckoning, casting a shadow over our village.",
-    "For me?! How unexpectedly kind of you. Gifts in these dark times... how intriguing. Now, let's see who shall be my next kill... hmmm how about you? Isn't this just deliciously ironic? You better start running, my dear friend, because the thrill of the hunt is calling me, and I won't stop until I find you.",
     "I am... surprised. The Gun in my possession? An unexpected turn. Rest assured, I will wield it with cunning. I plan to use its power to unravel secrets, sow doubt, and tip the scales in favor of chaos. You will tremble in the wake of my decisions."
   ])
 }
