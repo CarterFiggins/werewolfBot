@@ -77,20 +77,20 @@ async function sendStartMessages(interaction, users) {
   const townSquarePlayerMessage =  await organizedChannels.townSquare.send(`Possible characters in game:\n${(await possibleCharactersInGame(interaction)).join(", ")}`)
   townSquarePlayerMessage.pin()
 
-  await organizedChannels.werewolves.send(
+  await organizedChannels?.werewolves?.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );
-  await organizedChannels.seer.send(`${seerStart}\nSeers:\n${seers}`);
+  await organizedChannels?.seer?.send(`${seerStart}\nSeers:\n${seers}`);
   const afterLifeMessage = await organizedChannels.afterLife.send(
     `${afterLifeStart}\n${showUsersCharacter(users)}`
   );
   afterLifeMessage.pin()
-  await organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
-  await organizedChannels.bodyguard.send(`${bodyguardStart}\nBodyguards:\n${bodyguards}`);
-  await organizedChannels.witch.send(witchStart);
-  await organizedChannels.vampires.send(vampireStart);
-  await organizedChannels.outCasts.send(`${outCastStart}\nGrannies:\n${grannies}`);
-  await organizedChannels.monarch.send(`${monarchStart}\nMonarchs:\n${monarchs}`);
+  await organizedChannels?.mason?.send(`${masonStart}\nMasons:\n${masons}`);
+  await organizedChannels?.bodyguard?.send(`${bodyguardStart}\nBodyguards:\n${bodyguards}`);
+  await organizedChannels?.witch?.send(witchStart);
+  await organizedChannels?.vampires?.send(vampireStart);
+  await organizedChannels?.outCasts?.send(`${outCastStart}\nGrannies:\n${grannies}`);
+  await organizedChannels?.monarch?.send(`${monarchStart}\nMonarchs:\n${monarchs}`);
 }
 
 function showUsersCharacter(users) {
@@ -219,7 +219,7 @@ async function giveChannelPermissions({
   });
 
   if (message) {
-    await channel.send(message);
+    await channel?.send(message);
   }
   return organizedChannels;
 }
@@ -372,10 +372,16 @@ async function createChannels(interaction, users) {
     },
   ];
 
-  const createChannelsData = [
+  const allUserCharacters = _.map(users, (u) => u.info.character)
+
+  const allChannelsData = [
     {
       channelName: channelNames.TOWN_SQUARE,
       permissions: townSquarePermissions,
+    },
+    {
+      channelName: channelNames.AFTER_LIFE,
+      permissions: afterLifePermissions,
     },
     {
       channelName: channelNames.WEREWOLVES,
@@ -384,10 +390,6 @@ async function createChannels(interaction, users) {
     {
       channelName: channelNames.SEER,
       characterNames: [characters.SEER, characters.FOOL]
-    },
-    {
-      channelName: channelNames.AFTER_LIFE,
-      permissions: afterLifePermissions,
     },
     {
       channelName: channelNames.MASON,
@@ -414,6 +416,16 @@ async function createChannels(interaction, users) {
       characterNames: [characters.MONARCH],
     },
   ];
+
+  const createChannelsData = _.filter(allChannelsData, (data) => {
+    if (_.isEmpty(data.characterNames)) {
+      return true
+    }
+    if (!_.isEmpty(_.intersection(data.characterNames, allUserCharacters))) {
+      return true
+    }
+    return false
+  })
 
   const category = await createCategory(interaction, channelNames.THE_TOWN);
 
@@ -452,10 +464,6 @@ async function possibleCharactersInGame(interaction) {
 
   if (settings.allow_chaos_demon) {
     otherCards.push(characters.CHAOS_DEMON)
-  }
-
-  if (settings.allow_monarch) {
-    otherCards.push(characters.MONARCH)
   }
 
   return _.map([...wolfCards, ...villagerCards, ...otherCards], _.capitalize)

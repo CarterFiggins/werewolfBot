@@ -105,7 +105,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     await updateGame(guildId, {
       wolf_double_kill: true,
     });
-    await organizedChannels.werewolves.send(
+    await organizedChannels?.werewolves?.send(
       `We have unfortunate news: ${deadMember}, our cub, has been killed. However, this loss has fueled your rage.:rage:\n Tonight, you can target not just one, but two villagers.\nhttps://tenor.com/86LT.gif`
     );
     deadCharacter = characters.CUB;

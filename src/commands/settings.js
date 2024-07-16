@@ -14,7 +14,6 @@ const SettingCommands = {
   EXTRA_CHARACTERS: "extra_characters",
   WOLF_KILLS_WITCH: "wolf_kills_witch",
   HARD_MODE: "hard_mode",
-  ALLOW_MONARCH: 'allow_monarch',
   ALLOW_CHAOS_DEMON: 'allow_chaos_demon',
   ALLOW_VAMPIRES: "allow_vampires",
   ALLOW_FIRST_BITE: "allow_first_bite",
@@ -157,17 +156,6 @@ module.exports = {
     subcommand
       .setName(SettingCommands.ALLOW_CHAOS_DEMON)
       .setDescription("ADMIN COMMAND: Allow the Chaos Demon character to play")
-      .addBooleanOption((option) =>
-        option
-          .setName("activate")
-          .setRequired(true)
-          .setDescription("Set setting true or false")
-      )
-  )
-  .addSubcommand((subcommand) =>
-    subcommand
-      .setName(SettingCommands.ALLOW_MONARCH)
-      .setDescription("ADMIN COMMAND: Allow the Monarch character to play")
       .addBooleanOption((option) =>
         option
           .setName("activate")

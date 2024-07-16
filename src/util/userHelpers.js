@@ -36,6 +36,7 @@ async function buildUserInfo(interaction, user, newCharacter) {
     is_vampire: false,
     is_cub: false,
     is_dead: false,
+    whisper_count: 0,
     vampire_bites: 0,
     has_guard: false,
     assigned_identity: newCharacter,

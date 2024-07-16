@@ -38,6 +38,7 @@ module.exports = {
     try {
       await startGame(interaction);
     } catch (error) {
+      console.error(error)
       await interaction.editReply({ content: error.message, ephemeral: true });
       return;
     }

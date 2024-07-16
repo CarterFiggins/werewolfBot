@@ -94,6 +94,7 @@ function getCards(settings) {
     villagerCards.push(characters.DOPPELGANGER);
     villagerCards.push(characters.APPRENTICE_SEER);
     villagerCards.push(characters.GROUCHY_GRANNY);
+    villagerCards.push(characters.MONARCH);
   }
   return {wolfCards, villagerCards}
 }
