@@ -43,6 +43,7 @@ function startingCharacters(settings, numberOfPlayers) {
       characters.MUTATED,
       characters.WITCH,
       characters.FOOL,
+      characters.CUB,
     )
     villagerCards.push(
       characters.DOPPELGANGER,
