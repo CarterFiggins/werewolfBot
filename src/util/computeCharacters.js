@@ -17,6 +17,7 @@ function startingCharacters(settings, numberOfPlayers) {
   if (settings.allow_chaos_demon) {
     startingCards.unshift(characters.CHAOS_DEMON)
   }
+
   if (settings.random_cards) {
     return { cardsInGame: startingCards, werewolfCards: [], villagerCards: []}
   }
@@ -42,11 +43,13 @@ function startingCharacters(settings, numberOfPlayers) {
       characters.MUTATED,
       characters.WITCH,
       characters.FOOL,
+      characters.CUB,
     )
     villagerCards.push(
       characters.DOPPELGANGER,
       characters.APPRENTICE_SEER,
       characters.GROUCHY_GRANNY,
+      characters.MONARCH,
     )
   }
 

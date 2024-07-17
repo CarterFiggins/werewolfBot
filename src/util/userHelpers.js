@@ -36,6 +36,7 @@ async function buildUserInfo(interaction, user, newCharacter) {
     is_vampire: false,
     is_cub: false,
     is_dead: false,
+    whisper_count: 0,
     vampire_bites: 0,
     has_guard: false,
     assigned_identity: newCharacter,
@@ -92,6 +93,12 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
         break;
       case characters.MUTATED:
         user.info.assigned_identity = _.sample([characters.VILLAGER, characters.BAKER, characters.HUNTER])
+        break;
+      case characters.MONARCH:
+        user.info.given_power_ups = [];
+        user.info.given_to_user_ids = [];
+        user.info.giving_user_id = null;
+        user.info.giving_power = null;
         break;
     }
 

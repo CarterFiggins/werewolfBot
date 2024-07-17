@@ -3,6 +3,7 @@ const { findSettings, updateUser } = require("../werewolf_db");
 const { characters, getCards } = require("./characterHelpers/characterUtil");
 const { ChannelType, PermissionsBitField } = require("discord.js");
 const { getRole, roleNames } = require("./rolesHelpers");
+const { showAllPowerUpMessages } = require("./commandHelpers");
 
 const channelNames = {
   THE_TOWN: "the-town",
@@ -15,6 +16,7 @@ const channelNames = {
   WITCH: "witch",
   VAMPIRES: "vampires",
   OUT_CASTS: "out-casts",
+  MONARCH: "monarch",
 };
 
 const setupChannelNames = {
@@ -33,6 +35,7 @@ async function sendStartMessages(interaction, users) {
   const seers = [];
   const bodyguards = [];
   const grannies = [];
+  const monarchs = [];
 
   _.forEach(users, (user) => {
     switch (user.info.character) {
@@ -51,6 +54,9 @@ async function sendStartMessages(interaction, users) {
         break;
       case characters.GROUCHY_GRANNY:
         grannies.push(user);
+        break;
+      case characters.MONARCH:
+        monarchs.push(user);
         break;
     }
   });
@@ -71,19 +77,20 @@ async function sendStartMessages(interaction, users) {
   const townSquarePlayerMessage =  await organizedChannels.townSquare.send(`Possible characters in game:\n${(await possibleCharactersInGame(interaction)).join(", ")}`)
   townSquarePlayerMessage.pin()
 
-  await organizedChannels.werewolves.send(
+  await organizedChannels?.werewolves?.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );
-  await organizedChannels.seer.send(`${seerStart}\nSeers:\n${seers}`);
+  await organizedChannels?.seer?.send(`${seerStart}\nSeers:\n${seers}`);
   const afterLifeMessage = await organizedChannels.afterLife.send(
     `${afterLifeStart}\n${showUsersCharacter(users)}`
   );
   afterLifeMessage.pin()
-  await organizedChannels.mason.send(`${masonStart}\nMasons:\n${masons}`);
-  await organizedChannels.bodyguard.send(`${bodyguardStart}\nBodyguards:\n${bodyguards}`);
-  await organizedChannels.witch.send(witchStart);
-  await organizedChannels.vampires.send(vampireStart);
-  await organizedChannels.outCasts.send(`${outCastStart}\nGrannies:\n${grannies}`);
+  await organizedChannels?.mason?.send(`${masonStart}\nMasons:\n${masons}`);
+  await organizedChannels?.bodyguard?.send(`${bodyguardStart}\nBodyguards:\n${bodyguards}`);
+  await organizedChannels?.witch?.send(witchStart);
+  await organizedChannels?.vampires?.send(vampireStart);
+  await organizedChannels?.outCasts?.send(`${outCastStart}\nGrannies:\n${grannies}`);
+  await organizedChannels?.monarch?.send(`${monarchStart}\nMonarchs:\n${monarchs}`);
 }
 
 function showUsersCharacter(users) {
@@ -135,6 +142,9 @@ function organizeChannels(channels) {
         break;
       case channelNames.OUT_CASTS:
         channelObject.outCasts = channel;
+        break;
+      case channelNames.MONARCH:
+        channelObject.monarch = channel;
         break;
     }
   });
@@ -209,7 +219,7 @@ async function giveChannelPermissions({
   });
 
   if (message) {
-    await channel.send(message);
+    await channel?.send(message);
   }
   return organizedChannels;
 }
@@ -291,6 +301,7 @@ async function removeAllGameChannels(channels) {
         case channelNames.WITCH:
         case channelNames.VAMPIRES:
         case channelNames.OUT_CASTS:
+        case channelNames.MONARCH:
           await channel.delete();
       }
     })
@@ -361,10 +372,16 @@ async function createChannels(interaction, users) {
     },
   ];
 
-  const createChannelsData = [
+  const allUserCharacters = _.map(users, (u) => u.info.character)
+
+  const allChannelsData = [
     {
       channelName: channelNames.TOWN_SQUARE,
       permissions: townSquarePermissions,
+    },
+    {
+      channelName: channelNames.AFTER_LIFE,
+      permissions: afterLifePermissions,
     },
     {
       channelName: channelNames.WEREWOLVES,
@@ -373,10 +390,6 @@ async function createChannels(interaction, users) {
     {
       channelName: channelNames.SEER,
       characterNames: [characters.SEER, characters.FOOL]
-    },
-    {
-      channelName: channelNames.AFTER_LIFE,
-      permissions: afterLifePermissions,
     },
     {
       channelName: channelNames.MASON,
@@ -398,7 +411,21 @@ async function createChannels(interaction, users) {
       channelName: channelNames.OUT_CASTS,
       characterNames: [characters.GROUCHY_GRANNY],
     },
+    {
+      channelName: channelNames.MONARCH,
+      characterNames: [characters.MONARCH],
+    },
   ];
+
+  const createChannelsData = _.filter(allChannelsData, (data) => {
+    if (_.isEmpty(data.characterNames)) {
+      return true
+    }
+    if (!_.isEmpty(_.intersection(data.characterNames, allUserCharacters))) {
+      return true
+    }
+    return false
+  })
 
   const category = await createCategory(interaction, channelNames.THE_TOWN);
 
@@ -484,6 +511,9 @@ const vampireStart =
 
 const outCastStart =
   "Welcome to the Grouchy Granny's House";
+
+const monarchStart =
+  `You are a monarch! Use the \`/bestow_power <target_user> <power>\` command to give away power. You will not be able to give power to yourself. You can only give out a power once and can not give power twice to the same player.\nAll powers that can be used with the messages that will be told to the player who get the power\n${showAllPowerUpMessages()}`
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

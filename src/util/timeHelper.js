@@ -10,6 +10,7 @@ const {
   getCountedVotes,
   deleteManyVotes,
   findSettings,
+  resetUserWhisperCount,
 } = require("../werewolf_db");
 const { vampiresAttack } = require("./characterHelpers/vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
@@ -17,7 +18,7 @@ const { endGuildJobs } = require("./schedulHelper");
 const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
-const { removesDeadPermissions, WaysToDie } = require("./deathHelper");
+const { removesDeadPermissions, WaysToDie, botShoots } = require("./deathHelper");
 const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers/bodyguardHelper");
 const {
   cursePlayers,
@@ -28,6 +29,7 @@ const { investigatePlayers } = require("./characterHelpers/seerHelper");
 const { votingDeathMessage } = require("./botMessages/deathMessages");
 const { markChaosTarget, isDeadChaosTarget } = require("./characterHelpers/chaosDemonHelpers");
 const { PowerUpNames } = require("./powerUpHelpers");
+const { givePower } = require("./characterHelpers/monarchHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -86,12 +88,12 @@ async function killReminder(interaction) {
   const organizedChannels = organizeChannels(channels);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   if (!game.user_death_id) {
-    await organizedChannels.werewolves.send(
+    await organizedChannels?.werewolves?.send(
       `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
     )
   }
   if (game.wolf_double_kill && !game.second_user_death_id) {
-    await organizedChannels.werewolves.send(
+    await organizedChannels?.werewolves?.send(
       `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target`
     )
   }
@@ -160,6 +162,10 @@ async function dayTimeJob(interaction) {
   await returnMutedPlayers(interaction, guildId);
   await investigatePlayers(interaction)
   await mutePlayers(interaction, guildId)
+  await givePower(interaction)
+  if (game.bot_has_gun) {
+    await botShoots(interaction);
+  }
 
   await updateGame(guildId, {
     user_death_id: null,
@@ -185,27 +191,28 @@ async function nightTimeJob(interaction) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const game = await findGame(guildId);
+  const settings = await findSettings(interaction.guild.id);
 
   if (game.first_night) {
     await updateGame(guildId, {
       is_day: false,
     });
-    await organizedChannels.werewolves.send(
+    await organizedChannels?.werewolves?.send(
       "This is the first night. Choose someone to kill with the `/kill` command"
     );
-    await organizedChannels.bodyguard.send(
+    await organizedChannels?.bodyguard?.send(
       "This is the first night. Choose someone to guard with the `/guard` command"
     );
-    await organizedChannels.seer.send(
+    await organizedChannels?.seer?.send(
       "This is the first night. Choose someone to see with the `/investigate` command"
     );
-    await organizedChannels.witch.send(
+    await organizedChannels?.witch?.send(
       "This is the first night. Choose someone to curse with the `/curse` command"
     );
-    await organizedChannels.vampires.send(
+    await organizedChannels?.vampires?.send(
       "This is the first night. Choose someone to bite with the `/vampire_bite` command"
     );
-    await organizedChannels.outCasts.send(
+    await organizedChannels?.outCasts?.send(
       "This is the first night. Choose someone to mute with the `/mute` command"
     )
     return;
@@ -213,6 +220,10 @@ async function nightTimeJob(interaction) {
   if (!game.is_day) {
     console.log("It is currently night skip");
     return;
+  }
+  
+  if (settings.can_whisper) {
+    await resetUserWhisperCount(guildId)
   }
 
   const cursor = await getCountedVotes(guildId);

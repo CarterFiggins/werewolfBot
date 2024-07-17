@@ -43,6 +43,7 @@ const commandNames = {
   MUTE: "mute",
   CHAOS_TARGET: "chaos_target",
   RANDOM_VOTE: "random_vote",
+  BESTOW_POWER: "bestow_power",
   // power up commands
   ALLIANCE_DETECTOR: "alliance_detector",
   PREDATOR_VISION: "predator_vision",
@@ -52,11 +53,17 @@ const voteText =
   "Every day you may vote to hang someone by using the `/vote` command in the town square.";
 
 const powerUpMessages = new Map([
-  [PowerUpNames.GUN, "POWER UP! You have a gun with one bullet. You can use the `/shoot` command once this game at any time. People will know it was you who fired the gun"],
-  [PowerUpNames.SHIELD, "POWER UP! You have a shield. It will protect you once from death."],
-  [PowerUpNames.ALLIANCE_DETECTOR, "POWER UP! You have an Alliance Detector! Use `/alliance_detector` to check two players. It will tell you if they are on the same team or not."],
-  [PowerUpNames.PREDATOR_VISION, "POWER UP! You have Predator vision witch allows you to look at a player and find their true character. Use `/predator_vision`"]
+  [PowerUpNames.GUN, "You have a gun with one bullet. You can use the `/shoot` command once this game at any time. People will know it was you who fired the gun."],
+  [PowerUpNames.SHIELD, "You have a shield. It will protect you once from death."],
+  [PowerUpNames.ALLIANCE_DETECTOR, "You have an Alliance Detector! Use `/alliance_detector` to check two players. It will tell you if they are on the same team or not."],
+  [PowerUpNames.PREDATOR_VISION, "You have Predator vision witch allows you to look at a player and find their true character. Use command `/predator_vision` to see the players true role."]
 ])
+
+function showAllPowerUpMessages() {
+  return _.join(_.map(Array.from(powerUpMessages.entries()), ([name, message]) => {
+    return `* **${name}**: ${message}`
+  }), "\n")
+}
 
 async function sendGreeting(interaction, user) {
   try {
@@ -127,7 +134,12 @@ async function sendGreeting(interaction, user) {
         break;
       case characters.CHAOS_DEMON:
         await member.send(
-          `You are a **CHAOS_DEMON**\n${voteText}\nYou are on your own team. On the first night target a player using \`/chaos_target\`.\nTo win the game you must get the player that was targeted hanged. If that player dies in a different way you will die.`
+          `You are a **Chaos Demon**\n${voteText}\nYou are on your own team. On the first night target a player using \`/chaos_target\`.\nTo win the game you must get the player that was targeted hanged. If that player dies in a different way you will die.`
+        )
+        break;
+      case characters.MONARCH:
+        await member.send(
+          `You are a **Monarch**\n${voteText}\nYou can \`/bestow_power\` to a player, but each power can only be given once, and not to the same player twice. Choose wisely who gets them. Help the villagers win!\nHere are all the powers you can give the the message that will be sent to the player who gets them.\n${showAllPowerUpMessages()}`
         )
         break;
     }
@@ -135,7 +147,7 @@ async function sendGreeting(interaction, user) {
     if (settings.enable_power_ups) {
       for (const powerKey in user.info.power_ups) {
         if (user.info.power_ups[powerKey]) {
-          member.send(powerUpMessages.get(powerKey))
+          member.send(`POWER UP! ${powerUpMessages.get(powerKey)}`)
         }
       }
     }
@@ -147,6 +159,8 @@ async function sendGreeting(interaction, user) {
 
 module.exports = {
   sendGreeting,
+  powerUpMessages,
   commandNames,
   characters,
+  showAllPowerUpMessages,
 };

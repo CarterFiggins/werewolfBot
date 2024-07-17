@@ -43,6 +43,12 @@ async function updateUser(user_id, guild_id, updatedUser) {
     .updateOne({ user_id, guild_id }, { $set: updatedUser });
 }
 
+async function resetUserWhisperCount(guild_id) {
+  await db
+    .collection("users")
+    .updateMany({ guild_id, is_dead: false }, { $set: { whisper_count: 0 } });
+}
+
 async function createUsers(newUsers) {
   await db.collection("users").insertMany(newUsers);
 }
@@ -136,4 +142,5 @@ module.exports = {
   findSettings,
   createSettings,
   updateSettings,
+  resetUserWhisperCount,
 }

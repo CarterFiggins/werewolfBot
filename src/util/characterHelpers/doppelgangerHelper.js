@@ -68,7 +68,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
       `You are now a ${isVampire} ${copiedCharacter}`
     );
   } catch (e) {
-    console.log(e);
+    console.error(e);
     console.log("Failed to send doppelganger new character message");
   }
 }

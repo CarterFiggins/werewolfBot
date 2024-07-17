@@ -8,6 +8,7 @@ const {
   findSettings,
   findOneUser,
   findUser,
+  findUsersWithIds,
 } = require("../werewolf_db");
 const {
   organizeChannels,
@@ -104,7 +105,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     await updateGame(guildId, {
       wolf_double_kill: true,
     });
-    await organizedChannels.werewolves.send(
+    await organizedChannels?.werewolves?.send(
       `We have unfortunate news: ${deadMember}, our cub, has been killed. However, this loss has fueled your rage.:rage:\n Tonight, you can target not just one, but two villagers.\nhttps://tenor.com/86LT.gif`
     );
     deadCharacter = characters.CUB;
@@ -332,6 +333,42 @@ async function witchCurseDeathMessage({ villager, deadVillager, villagerMember }
   return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}`;
 }
 
+async function botShoots(interaction) {
+  let aliveUserIds = await getAliveUsersIds(interaction);
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  const cursor = await findUsersWithIds(interaction.guild.id, aliveUserIds);
+  let aliveUsers = await cursor.toArray();
+  const unluckyDbUser = _.sample(aliveUsers)
+
+  const unluckyMember = interaction.guild.members.cache.get(
+    unluckyDbUser.user_id
+  );
+
+  const botShotCharacter = await removesDeadPermissions(
+    interaction,
+    unluckyDbUser,
+    unluckyMember,
+    WaysToDie.SHOT
+  );
+
+  if (botShotCharacter === PowerUpNames.SHIELD) {
+    organizedChannels.townSquare.send("Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss!")
+    return
+  }
+
+  const responses = [
+    `Guess what? I've got a gun! I took aim and fired at ${unluckyMember}. I'm mad with power! The ${botShotCharacter} is dead!`,
+    `I'm pleased to announce a surprising turn of events—I now wield a gun! With unerring aim, I fired upon ${unluckyMember}, and alas, The ${botShotCharacter} has met their untimely demise.`,
+    `I've just been handed a gun! Taking careful aim, I fired at ${unluckyMember} and brought the ${botShotCharacter}'s journey to an abrupt end!`,
+    `I've acquired a firearm! Taking aim, I shot ${unluckyMember}. The ${botShotCharacter} is now out of the game!`,
+    `Hold onto your hats, folks! Guess who's packing heat? That's right, it's me with a shiny new gun! Fired off a shot at ${unluckyMember} and voila! The ${botShotCharacter} is now a ghost!`,
+    `Guess what, folks? I've only gone and snagged myself a gun! Took a shot at ${unluckyMember}, and poof! The ${botShotCharacter} is toast!`
+  ]
+
+  organizedChannels.townSquare.send(_.sample(responses))
+}
+
 
 async function castWitchCurse(interaction) {
   const cursorCursed = await findManyUsers({
@@ -372,4 +409,5 @@ module.exports = {
   witchCurseDeathMessage,
   werewolfKillDeathMessage,
   castWitchCurse,
+  botShoots,
 };

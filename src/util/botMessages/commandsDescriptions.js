@@ -92,7 +92,7 @@ This is the Hunters command. When a hunter is injured they will be able to use t
       role: 'everyone',
       emoji: '🔉',
       description: `### /whisper (player) (message)
-Players can use this command to talk to other players in private. (dead and non players will be able to see what is being said in the after-life channel) The message will be sent by the bot and it will also display in the after life for dead to see.`
+Players can use this command to talk to other players in private. (dead and non players will be able to see what is being said in the after-life channel) The message will be sent by the bot and it will also display in the after life for dead to see. You can only whisper once per day. Whispering resets after the day cycle ends`
     },
     {
       label: '/curse (target)',

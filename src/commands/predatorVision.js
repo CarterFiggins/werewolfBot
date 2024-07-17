@@ -39,7 +39,7 @@ module.exports = {
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
 
-    if (targetedUser.bot || targetedTwoUser.bot) {
+    if (targetedUser.bot) {
       await interaction.reply({
         content: "Can't select a bot. Try again",
         ephemeral: true,

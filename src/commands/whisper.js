@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { isAlive } = require("../util/rolesHelpers");
-const { organizeChannels, channelNames } = require("../util/channelHelpers");
-const { findSettings, findUser } = require("../werewolf_db");
+const { organizeChannels } = require("../util/channelHelpers");
+const { findSettings, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
@@ -79,6 +79,13 @@ module.exports = {
       });
       return;
     }
+    if (userDb.whisper_count > 0) {
+      await interaction.editReply({
+        content: "You have already used your whisper for today. Try again after the day is over.",
+        ephemeral: true,
+      });
+      return;
+    }
 
     try {
       await senderMember.send(
@@ -87,7 +94,7 @@ module.exports = {
         }\n${message}\n`
       );
     } catch (e) {
-      console.log(e);
+      console.error(e);
       await interaction.editReply({
         content: "You are currently blocking or not allowing messages from the werewolf bot.",
         ephemeral: true,
@@ -103,7 +110,7 @@ module.exports = {
         }\n${message}\n`
       );
     } catch (e) {
-      console.log(e);
+      console.error(e);
       await interaction.editReply({
         content: "The player might be blocking the bot. Message did not send",
         ephemeral: true,
@@ -119,6 +126,9 @@ module.exports = {
     await interaction.editReply({
       content: `Message was Sent\n${message}`,
       ephemeral: true,
+    });
+    await updateUser(userDb.user_id, interaction.guild.id, {
+      whisper_count: userDb.whisper_count+1,
     });
   },
 };

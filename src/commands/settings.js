@@ -14,8 +14,8 @@ const SettingCommands = {
   EXTRA_CHARACTERS: "extra_characters",
   WOLF_KILLS_WITCH: "wolf_kills_witch",
   HARD_MODE: "hard_mode",
-  ALLOW_VAMPIRES: "allow_vampires",
   ALLOW_CHAOS_DEMON: 'allow_chaos_demon',
+  ALLOW_VAMPIRES: "allow_vampires",
   ALLOW_FIRST_BITE: "allow_first_bite",
   ALWAYS_BITE_TWO: "always_bite_two",
   KING_BITE_WOLF_SAFE: "king_bite_wolf_safe",
@@ -151,17 +151,6 @@ module.exports = {
             .setRequired(true)
             .setDescription("Set setting true or false")
         )
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName(SettingCommands.ALLOW_VAMPIRES)
-        .setDescription("ADMIN COMMAND: Allow the vampire character to play")
-        .addBooleanOption((option) =>
-          option
-            .setName("activate")
-            .setRequired(true)
-            .setDescription("Set setting true or false")
-        )
   )
   .addSubcommand((subcommand) =>
     subcommand
@@ -174,18 +163,29 @@ module.exports = {
           .setDescription("Set setting true or false")
       )
   )
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName(SettingCommands.ALLOW_FIRST_BITE)
-        .setDescription(
-          "ADMIN COMMAND: Vampires king's first bite will transform a player into a vampire"
-        )
-        .addBooleanOption((option) =>
-          option
-            .setName("activate")
-            .setRequired(true)
-            .setDescription("Set setting true or false")
-        )
+  .addSubcommand((subcommand) =>
+    subcommand
+      .setName(SettingCommands.ALLOW_VAMPIRES)
+      .setDescription("ADMIN COMMAND: Allow the vampire character to play")
+      .addBooleanOption((option) =>
+        option
+          .setName("activate")
+          .setRequired(true)
+          .setDescription("Set setting true or false")
+      )
+  )
+  .addSubcommand((subcommand) =>
+    subcommand
+      .setName(SettingCommands.ALLOW_FIRST_BITE)
+      .setDescription(
+        "ADMIN COMMAND: Vampires king's first bite will transform a player into a vampire"
+      )
+      .addBooleanOption((option) =>
+        option
+          .setName("activate")
+          .setRequired(true)
+          .setDescription("Set setting true or false")
+      )
     )
     .addSubcommand((subcommand) =>
       subcommand

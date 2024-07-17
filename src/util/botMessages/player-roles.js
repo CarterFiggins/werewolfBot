@@ -1,3 +1,5 @@
+const { showAllPowerUpMessages } = require("../commandHelpers");
+
 module.exports = {
   playerRolesIntro: '# Player Roles',
   roleList: [
@@ -78,6 +80,15 @@ module.exports = {
 * When the hunter is killed, whoever they have been targeting will be shot and killed. The hunter is immune to starvation.
 * Channels: hunting-party
 * Commands: \`/shoot\``
+    },
+    {
+      label: 'Monarch',
+      emoji: '🦋',
+      team: 'villager',
+      description: `### Monarch
+* The Monarch can give powers to other players. They only have one of each power to give. They can give one power each night and they will not be able to give that player another power. Powers that can be given.\n${showAllPowerUpMessages()}
+* Channels: monarch
+* Commands: \`/bestow_power\``,
     },
     {
       label: 'Lycan',
