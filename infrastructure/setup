@@ -1,0 +1,52 @@
+#!/bin/env node
+
+import { CreateBucketCommand, S3Client } from "@aws-sdk/client-s3";
+import { CreateTableCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import readline from 'readline';
+
+const reader = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function ask(prompt) {
+  return new Promise((resolve) => {
+    reader.question(prompt, (answer) => {
+      resolve(answer.trim());
+    });
+  });
+}
+
+process.stdout.write("Creating S3 bucket and DynamoDB resources for Terraform deploys.\n");
+
+let awsRegion = process.env.AWS_REGION || process.env.DEFAULT_AWS_REGION;
+
+if (!awsRegion) {
+  awsRegion = await ask("Enter the AWS region: ");
+} else {
+  process.stdout.write(`Using AWS region: ${awsRegion}`);
+}
+
+const bucketName = await ask("Enter the S3 bucket name: ");
+const dynamoDbName = await ask("Enter the DynamoDB table name: ");
+
+const s3 = new S3Client({ region: awsRegion });
+const ddb = new DynamoDBClient({ region: awsRegion });
+
+process.stdout.write(`Creating the bucket ${dynamoDbName}...\n`);
+await s3.send(new CreateBucketCommand({ Bucket: bucketName }));
+
+process.stdout.write(`Creating DynamoDB table ${dynamoDbName}...\n`);
+await ddb.send(new CreateTableCommand({
+  TableName: dynamoDbName,
+  BillingMode: "PAY_PER_REQUEST",
+  AttributeDefinitions: [
+    { AttributeName: "LockID", AttributeType: "S" }
+  ],
+  KeySchema: [
+    { AttributeName: "LockID", KeyType: "HASH" }
+  ]
+}));
+
+process.stdout.write("Done!\n");
+process.exit(0);

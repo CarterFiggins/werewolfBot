@@ -11,7 +11,11 @@ module.exports = {
         keepAlive: true,
       },
       (err, mongoClient) => {
-        _db = mongoClient.db(process.env.MONGODB_NAME);
+        if (!err) {
+          _db = mongoClient.db(process.env.MONGODB_NAME);
+        } else {
+          console.error(err);
+        }
         return callback(err);
       }
     );
