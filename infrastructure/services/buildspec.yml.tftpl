@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - export AWS_REGION=${aws_region}
+      - aws ecr get-login-password | docker login --username AWS --password-stdin ${ecr_host}
+      - export REL=$(git describe --tags --exact-match)
+      - export TAG=$(echo $REL | sed 's/rel\///')
+      - export IMAGE_TAG="${repo}:$TAG"
+  build:
+    commands:
+      - docker build -t $IMAGE_TAG -f Build.Dockerfile --push .
+  post_build:
+    commands:
+      - aws ssm put-parameter --name ${tag_parameter} --overwrite --value "$TAG"
+      - |
+        cd infrastructure/deploy
+        aws ssm get-parameter --name deploy-backend --query "Parameter.Value" --output text > backend.tfvars
+        terraform init -reconfigure -backend-config=backend.tfvars
+        terraform apply -auto-approve
