@@ -17,7 +17,6 @@ const SettingCommands = {
   ALLOW_CHAOS_DEMON: 'allow_chaos_demon',
   ALLOW_VAMPIRES: "allow_vampires",
   ALLOW_FIRST_BITE: "allow_first_bite",
-  ALWAYS_BITE_TWO: "always_bite_two",
   KING_BITE_WOLF_SAFE: "king_bite_wolf_safe",
   KING_VICTIM_ATTACK_SAFE: "king_victim_attack_safe",
   VIEW: "view",
@@ -186,19 +185,6 @@ module.exports = {
           .setRequired(true)
           .setDescription("Set setting true or false")
       )
-    )
-    .addSubcommand((subcommand) =>
-      subcommand
-        .setName(SettingCommands.ALWAYS_BITE_TWO)
-        .setDescription(
-          "ADMIN COMMAND: The vampire king only needs to bite a player once to transform a player"
-        )
-        .addBooleanOption((option) =>
-          option
-            .setName("activate")
-            .setRequired(true)
-            .setDescription("Set setting true or false")
-        )
     )
     .addSubcommand((subcommand) =>
       subcommand

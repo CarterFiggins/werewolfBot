@@ -492,7 +492,7 @@ const werewolfStart =
   "Welcome to the werewolf channel! Talk to your fellow werewolves and mark your next target with the `/kill` command at night to kill the villagers";
 
 const seerStart =
-  "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager.";
+  "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager. If there is more than one player here there might be a fool among you.";
 
 const afterLifeStart =
   "You are dead... There's not much to do except talk to other dead players and watch the game";
@@ -504,13 +504,13 @@ const bodyguardStart =
   "You are a bodyguard who protects this town! Use the `/guard` command to guard people at night. If you guard a player that the werewolves attack you will save them and they will not die. You can guard yourself but you can't guard someone twice in a row";
 
 const witchStart =
-  "You are a witch! You help the werewolves by cursing villagers with the `/curse` command. If the villagers kill you than all the villagers who have the curse will die. If the werewolves kill you the curse will break and they will not die";
+  "You are a witch! You help the werewolves by cursing villagers with the `/curse` command. If the villagers kill you than all the villagers who have the curse will die.";
 
 const vampireStart =
-  "You are a vampire! Use the '/vampire_bite' command to turn villagers into vampires. **Vampire king's first bite will transform a player into a vampire** after that it takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey.";
+  "You are a vampire! Use the '/vampire_bite' command to turn villagers into vampires. **Vampire king's first bite might transform a player into a vampire depending on the settings** after that it takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey. Depending on the settings this might not apply to the vampire king";
 
 const outCastStart =
-  "Welcome to the Grouchy Granny's House";
+  "Welcome to the Grouchy Granny's House. This is where players will be kicked to when they are muted.";
 
 const monarchStart =
   `You are a monarch! Use the \`/bestow_power <target_user> <power>\` command to give away power. You will not be able to give power to yourself. You can only give out a power once and can not give power twice to the same player.\nAll powers that can be used with the messages that will be told to the player who get the power\n${showAllPowerUpMessages()}`

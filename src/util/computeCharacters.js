@@ -4,7 +4,7 @@ const { characters } = require("./characterHelpers/characterUtil");
 const { DeckBalancer } = require("./characterHelpers/deckBalancer");
 
 function startingCharacters(settings, numberOfPlayers) {
-  const werewolvesPerPlayers = settings.allow_vampires ? 5 : 4
+  const werewolvesPerPlayers = settings.allow_vampires ? 6 : 5
   const werewolvesToAdd = Math.floor(numberOfPlayers/werewolvesPerPlayers) || 1
   const startingCards = [];
   _.forEach(_.range(werewolvesToAdd), () => {
@@ -24,6 +24,7 @@ function startingCharacters(settings, numberOfPlayers) {
 
   startingCards.unshift(
     characters.MASON,
+    characters.MASON,
     characters.BODYGUARD,
     characters.SEER,
   )
@@ -34,7 +35,6 @@ function startingCharacters(settings, numberOfPlayers) {
   ]
 
   const villagerCards = [
-    characters.MASON,
     characters.HUNTER,
   ]
 

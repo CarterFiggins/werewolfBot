@@ -164,7 +164,6 @@ module.exports = {
         allow_vampires: false,
         allow_chaos_demon: false,
         allow_first_bite: false,
-        always_bite_two: false,
         king_bite_wolf_safe: false,
         king_victim_attack_safe: true,
       });

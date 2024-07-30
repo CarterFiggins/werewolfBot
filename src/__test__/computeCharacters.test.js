@@ -9,7 +9,6 @@ jest.mock("../werewolf_db", () => {
       wolf_kills_witch: false,
       hard_mode: false,
       allow_first_bite: true,
-      always_bite_two: false,
       king_bite_wolf_safe: false,
       king_victim_attack_safe: true,
       random_cards: true,

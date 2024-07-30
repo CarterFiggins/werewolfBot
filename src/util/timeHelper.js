@@ -157,15 +157,16 @@ async function dayTimeJob(interaction) {
   if (game.is_baker_dead) {
     starveMessage = await starveUser(interaction, deathIds);
   }
+  
+  if (game.bot_has_gun) {
+    await botShoots(interaction);
+  }
 
   await cursePlayers(interaction);
   await returnMutedPlayers(interaction, guildId);
   await investigatePlayers(interaction)
-  await mutePlayers(interaction, guildId)
   await givePower(interaction)
-  if (game.bot_has_gun) {
-    await botShoots(interaction);
-  }
+  await mutePlayers(interaction, guildId)
 
   await updateGame(guildId, {
     user_death_id: null,

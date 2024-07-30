@@ -47,7 +47,7 @@ async function removesDeadPermissions(
     await updateUser(deadUser.user_id, interaction.guild.id, {
       power_ups: deadUser.power_ups,
     });
-    await sendMemberMessage(deadMember, "Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again")
+    await sendMemberMessage(deadMember, "🛡️Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again🛡️")
     return PowerUpNames.SHIELD
   }
 
@@ -259,7 +259,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     WaysToDie.WEREWOLF
   );
   if (deathCharacter === PowerUpNames.SHIELD) { 
-    return `Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werwolf attack. Their shield has been consumed`
+    return `🛡️Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werwolf attack. Their shield has been consumed🛡️`
   }
   
   if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
@@ -277,7 +277,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
       WaysToDie.SHOT
     );
     if (deadWerewolfCharacter === PowerUpNames.SHIELD) {
-      return `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they shot at their attacker and hit a werewolves shield! Next time that werewolf won't be so lucky`
+      return `🛡️Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they shot at their attacker and hit a werewolves shield! Next time that werewolf won't be so lucky🛡️`
     } 
     return `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they shot at their attacker and hit the ${deadWerewolfCharacter} named ${deadWerewolfMember}\n`;
   }
@@ -308,14 +308,14 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
     let finalMessage = `${memberWhoShot} didn't have time to shoot and died. They dropped their gun and it shot `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
     if (userWasProtected) {
-      targetMessage = `${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed`
+      targetMessage = `🛡️${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed🛡️`
     }
     await organizedChannels.townSquare.send(`${finalMessage}${targetMessage}`);
   } else {
     let finalMessage = `${memberWhoShot} took aim and shot `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
     if (userWasProtected) {
-      targetMessage = `${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed`
+      targetMessage = `🛡️${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed🛡️`
     }
     await interaction.editReply(`${finalMessage}${targetMessage}`);
   }
@@ -323,14 +323,14 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
 
 async function witchCurseDeathMessage({ villager, deadVillager, villagerMember }) {
   if (deadVillager === PowerUpNames.SHIELD) {
-    return `A villager's shield absorbed the curse, turning it into a puff of smoke.`
+    return `* 🛡️A villager's shield absorbed the curse, turning it into a puff of smoke.🛡️\n`
   }
   let hunterMessage = "";
   if (villager.character === characters.HUNTER) {
     hunterMessage =
-      "you don't have long to live. Grab your gun and `/shoot` someone.\n";
+      " You don't have long to live. Grab your gun and `/shoot` someone.\n";
   }
-  return `The ${deadVillager} named ${villagerMember}. ${hunterMessage}`;
+  return `* The ${deadVillager} named ${villagerMember}.${hunterMessage}\n`;
 }
 
 async function botShoots(interaction) {
@@ -353,7 +353,7 @@ async function botShoots(interaction) {
   );
 
   if (botShotCharacter === PowerUpNames.SHIELD) {
-    organizedChannels.townSquare.send("Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss!")
+    organizedChannels.townSquare.send("🛡️Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss!🛡️")
     return
   }
 
@@ -396,7 +396,7 @@ async function castWitchCurse(interaction) {
     })
   );
 
-  if (deathCharacters) {
+  if (!_.isEmpty(deathCharacters)) {
     return `The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
   }
   return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";

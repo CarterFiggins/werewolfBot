@@ -47,7 +47,7 @@ module.exports = {
         vampire = "vampire "
       }
       await interaction.reply({
-        content: `Your WERE the ${vampire}${dbUser.character}, but now you're dead lol`,
+        content: `You WERE the ${vampire}${dbUser.character}, but now you're dead lol`,
         ephemeral: true,
       });
       return;

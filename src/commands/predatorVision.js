@@ -38,7 +38,16 @@ module.exports = {
     const targetedUser = await interaction.options.getUser("target");
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
+    const game = await findGame(interaction.guild.id);
 
+    if (game.first_night) {
+      await interaction.reply({
+        content:
+          "It is the first night. Try again tomorrow",
+        ephemeral: true,
+      });
+      return;
+    }
     if (targetedUser.bot) {
       await interaction.reply({
         content: "Can't select a bot. Try again",
