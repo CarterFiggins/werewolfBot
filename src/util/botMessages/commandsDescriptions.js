@@ -1,3 +1,5 @@
+const { showAllPowerUpMessages } = require("../commandHelpers");
+
 module.exports = {
   commandsIntro: `# Commands
 
@@ -121,6 +123,13 @@ This is the Doppelganger command. Use it to copy a players character and become 
       emoji: '🔇',
       description: `### /mute (target)
 This is the Grouchy Granny command. Use it in the town square channel. Can be used any time during the day. It will last the rest of the day and through the night. While the player is muted they will be able to leave massages on the out cast channel. The mute will be removed the next morning and the granny will not be able to mute them again. This will stop a player from using a night power. eg (seer will not be able to use see or vampire will not be able to bite)`
+    },
+    {
+      label: '/bestow_power (target) (power)',
+      role: 'grouchy granny',
+      emoji: '🎁',
+      description: `### /bestow_power (target) (power)
+This is the Monarch command. It is used to give powers to another player. The Monarch can not give powers to themselves because that would be selfish. Powers that can be given.\n${showAllPowerUpMessages()}`
     },
   ]
 }

@@ -11,7 +11,7 @@ const {
 } = require("../util/rolesHelpers");
 const { findSettings, createSettings } = require("../werewolf_db");
 const { createChannel, setupChannelNames, createCategory } = require("../util/channelHelpers");
-const { howToPlayIntro, howToPlayRoles, villagerTeam, werewolfTeam, vampireTeam, undeterminedTeam } = require("../util/botMessages/howToPlay");
+const { howToPlayIntro, howToPlayRoles, villagerTeam, werewolfTeam, vampireTeam, undeterminedTeam, soloCharacters } = require("../util/botMessages/howToPlay");
 const { commandList, commandsIntro } = require("../util/botMessages/commandsDescriptions");
 const { playerRolesIntro, roleList } = require("../util/botMessages/player-roles");
 
@@ -88,6 +88,7 @@ module.exports = {
       await setupChannels.howToPlay.send(villagerTeam);
       await setupChannels.howToPlay.send(werewolfTeam);
       await setupChannels.howToPlay.send(vampireTeam);
+      await setupChannels.howToPlay.send(soloCharacters);
       await setupChannels.howToPlay.send(undeterminedTeam);
     }
 
