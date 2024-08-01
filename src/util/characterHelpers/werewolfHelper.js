@@ -49,12 +49,12 @@ async function killPlayers(interaction, deathIds) {
           `You went after ${deadMember} last night, but guess what? ${deadMember} was the witch, and your attack didn't quite go as planned. The twist? The witch has now joined your chat!\nWelcome, ${deadMember}! The hunt just got a little more magical.`
         );
         isDead = false;
-      } else if (deadUser.has_guard) {
+      } else if (deadUser.has_lycan_guard) {
         await organizedChannels.werewolves.send(
           `${deadMember} is a lycan! It turns out they were tougher than you expected! Your attack was unsuccessful this time. However, now you know what you’re up against, and next time you’ll be prepared to take them down.`
         );
         await updateUser(deadUser.user_id, interaction.guild.id, {
-          has_guard: false,
+          has_lycan_guard: false,
         });
         isDead = false;
       }

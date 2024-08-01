@@ -23,6 +23,7 @@ const SettingCommands = {
   BODYGUARD_JOINS_MASONS: "bodyguard_joins_masons",
   SEER_JOINS_MASONS: "seer_joins_masons",
   HUNTER_GUARD: "hunter_guard",
+  ALLOW_LYCAN_GUARD: "allow_lycan_guard",
   ENABLE_POWER_UPS: "enable_power_ups",
 };
 
@@ -244,7 +245,18 @@ module.exports = {
             .setRequired(true)
             .setDescription("Set setting true or false")
         )
-    )
+  )
+  .addSubcommand((subcommand) =>
+    subcommand
+      .setName(SettingCommands.ALLOW_LYCAN_GUARD)
+      .setDescription("ADMIN COMMAND: Lycan will be protected from one werewolf attack")
+      .addBooleanOption((option) =>
+        option
+          .setName("activate")
+          .setRequired(true)
+          .setDescription("Set setting true or false")
+      )
+  )
     .addSubcommand((subcommand) =>
       subcommand
         .setName(SettingCommands.ENABLE_POWER_UPS)
