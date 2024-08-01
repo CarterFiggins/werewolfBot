@@ -15,7 +15,7 @@ async function killPlayers(interaction, deathIds) {
   const cursor = await findUsersWithIds(guildId, deathIds);
   const deadUsers = await cursor.toArray();
   const settings = await findSettings(guildId);
-  let message = "";
+  let message = [];
 
   await Promise.all(
     _.map(deadUsers, async (deadUser) => {
@@ -60,12 +60,12 @@ async function killPlayers(interaction, deathIds) {
       }
 
       if (isDead) {
-        message += await werewolfKillDeathMessage({ interaction, deadMember, deadUser })
+        message.push(`* ${await werewolfKillDeathMessage({ interaction, deadMember, deadUser })}`)
       }
     })
   );
 
-  return message;
+  return message.join("\n");
 }
 
 module.exports = {

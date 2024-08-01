@@ -34,23 +34,26 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   const members = interaction.guild.members.cache;
   let copiedCharacter;
   let copiedAssignedIdentity;
+  let copiedUserDb;
   if (!copyUserId) {
-    copiedCharacter = (await randomUser(guildId)).character;
+    copiedUserDb = await randomUser(guildId)
+    copiedCharacter = copiedUserDb.character;
+    copiedAssignedIdentity = copiedUserDb.assigned_identity;
   } else {
-    const originalUser = await findUser(copyUserId, guildId);
-    copiedCharacter = originalUser.character;
-    copiedAssignedIdentity = originalUser.assigned_identity;
+    copiedUserDb = await findUser(copyUserId, guildId);
+    copiedCharacter = copiedUserDb.character;
+    copiedAssignedIdentity = copiedUserDb.assigned_identity;
   }
 
   copiedCharacter = validateCopiedCharacter(copiedCharacter)
-  = validateCopiedCharacter()
+  copiedAssignedIdentity = validateCopiedCharacter(copiedAssignedIdentity)
 
   const copiedVampireKing = copiedCharacter === characters.VAMPIRE;
 
   await updateUser(doppelgangerUserId, guildId, {
     character: copiedCharacter,
     first_bite: copiedVampireKing,
-    is_cub: originalUser.is_cub,
+    is_cub: copiedUserDb.is_cub,
   });
 
   const doppelgangerMember = members.get(doppelgangerUserId);
@@ -63,7 +66,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   });
 
   let isVampire = "";
-  if ( originalUser.is_vampire) {
+  if ( copiedUserDb.is_vampire) {
     isVampire = "vampire ";
   }
 

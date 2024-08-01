@@ -161,7 +161,7 @@ async function killChaosDemon(interaction, targetMember) {
     chaosDemonMember,
     WaysToDie.CHAOS
   )
-  organizedChannels.townSquare.send(`In a twist of fate, the Chaos Demon, ${chaosDemonMember}, has met their end! Their sinister plan failed because their marked target, ${targetMember}, died, but not by hanging. Without their target's demise by lynching, the Chaos Demon's power has been vanquished.`)
+  organizedChannels.townSquare.send(`## In a twist of fate, the Chaos Demon, ${chaosDemonMember}, has met their end! Their sinister plan failed because their marked target, ${targetMember}, died, but not by hanging. Without their target's demise by lynching, the Chaos Demon's power has been vanquished.`)
 }
 
 async function removeUserVotes(guildId, userId) {
@@ -184,7 +184,7 @@ async function checkBakers(guildId, townSquare) {
       is_baker_dead: true,
     });
     townSquare.send(
-      `Hold onto your hats, because we've got a loafing crisis on our hands! Our baker has bitten the baguette, leaving us with fewer carbs than a gluten-free cookbook. Starting tomorrow, one unlucky villager will face the dreaded "empty stomach o'doom" and, well, let's just say it won't end well.`
+      `## Hold onto your hats, because we've got a loafing crisis on our hands! Our baker has bitten the baguette, leaving us with fewer carbs than a gluten-free cookbook. Starting tomorrow, one unlucky villager will face the dreaded "empty stomach o'doom" and, well, let's just say it won't end well.`
     );
   }
 }
@@ -310,7 +310,7 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
     if (userWasProtected) {
       targetMessage = `🛡️${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed🛡️`
     }
-    await organizedChannels.townSquare.send(`${finalMessage}${targetMessage}`);
+    await organizedChannels.townSquare.send(`## ${finalMessage}${targetMessage}`);
   } else {
     let finalMessage = `${memberWhoShot} took aim and shot `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
@@ -353,7 +353,7 @@ async function botShoots(interaction) {
   );
 
   if (botShotCharacter === PowerUpNames.SHIELD) {
-    organizedChannels.townSquare.send("🛡️Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss!🛡️")
+    organizedChannels.townSquare.send("## 🛡️Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss!🛡️")
     return
   }
 
@@ -366,7 +366,7 @@ async function botShoots(interaction) {
     `Guess what, folks? I've only gone and snagged myself a gun! Took a shot at ${unluckyMember}, and poof! The ${botShotCharacter} is toast!`
   ]
 
-  organizedChannels.townSquare.send(_.sample(responses))
+  organizedChannels.townSquare.send(`## ${_.sample(responses)}`)
 }
 
 

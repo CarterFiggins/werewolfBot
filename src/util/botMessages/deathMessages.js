@@ -30,7 +30,7 @@ async function votingDeathMessage({ interaction, deathCharacter, deadMember, dea
   });
 
   await organizedChannels.townSquare.send(
-    `${message}${deathMessage}${cursedMessage}\n**It is night time**`
+    `## ${message}${deathMessage}${cursedMessage}\n**It is night time**`
   );
 }
 
