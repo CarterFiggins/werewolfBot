@@ -24,7 +24,8 @@ _All alive players can communicate in the town square and vote to lynch a player
 * Hunter
 * Grouchy Granny
 * Lycan
-* Mutated Villager
+* Monarch
+* Mutated Villager (Until attacked by werewolf)
   `,
 
   werewolfTeam: `## WerewolfTeam
@@ -35,6 +36,9 @@ _All alive players can communicate in the town square and vote to lynch a player
 
   vampireTeam: `## Vampire Team
 * Vampire King
+  `,
+  soloCharacters: `## Solo Characters
+* Chaos Demon
   `,
 
   undeterminedTeam: `## Undetermined Team

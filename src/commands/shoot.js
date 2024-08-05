@@ -36,7 +36,7 @@ module.exports = {
       });
       return;
     }
-
+    const game = await findGame(interaction.guild.id);
     const targetedUser = await interaction.options.getUser("target");
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
@@ -46,6 +46,14 @@ module.exports = {
       interaction.guild.id
     );
 
+    if (game.first_night) {
+      await interaction.reply({
+        content:
+          "It is the first night. Try again tomorrow",
+        ephemeral: true,
+      });
+      return;
+    }
     if (dbUser.character === characters.HUNTER && !userWhoShot.is_injured && !dbUser?.power_ups[PowerUpNames.GUN]) {
       await interaction.reply({
         content:

@@ -38,7 +38,7 @@ async function buildUserInfo(interaction, user, newCharacter) {
     is_dead: false,
     whisper_count: 0,
     vampire_bites: 0,
-    has_guard: false,
+    has_lycan_guard: false,
     assigned_identity: newCharacter,
     power_ups: {},
   };
@@ -87,7 +87,7 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
         break;
       case characters.LYCAN:
         if (settings.allow_lycan_guard) {
-          user.info.has_guard = true;
+          user.info.has_lycan_guard = true;
         }
         user.info.assigned_identity = characters.VILLAGER
         break;

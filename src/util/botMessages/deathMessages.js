@@ -18,7 +18,7 @@ async function votingDeathMessage({ interaction, deathCharacter, deadMember, dea
   let deathMessage = settings.hard_mode ? '' : `The town has killed a **${deathCharacter}**\n`;
 
   if (deathCharacter === PowerUpNames.SHIELD) {
-    deathMessage = `However, ${deadMember} had a protective shield, sparing them from this fate! The shield is now used up and will not offer protection again.`
+    deathMessage = `🛡️However, ${deadMember} had a protective shield, sparing them from this fate! The shield is now used up and will not offer protection again.🛡️`
   } else if (deadUser.character === characters.WITCH) {
     cursedMessage = await castWitchCurse(interaction);
   } else if (deadUser.character === characters.HUNTER) {
@@ -30,7 +30,7 @@ async function votingDeathMessage({ interaction, deathCharacter, deadMember, dea
   });
 
   await organizedChannels.townSquare.send(
-    `${message}${deathMessage}${cursedMessage}\n**It is night time**`
+    `## ${message}${deathMessage}${cursedMessage}\n**It is night time**`
   );
 }
 
@@ -50,7 +50,7 @@ async function vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, va
 
 async function starveDeathMessage({ starvedCharacter, starvedMember, starvedUser }) {
   if (starvedCharacter === PowerUpNames.SHIELD) {
-    return `A villager was about to starve! But surprise the villager's shield turned into a sandwich and saved the day! The shield (now a tasty snack) is gone.`
+    return `🛡️A villager was about to starve! But surprise the villager's shield turned into a sandwich and saved the day! The shield (now a tasty snack) is gone.🥪`
   }
 
   let deadMessage = "has died from starvation";

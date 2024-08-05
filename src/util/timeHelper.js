@@ -87,14 +87,14 @@ async function killReminder(interaction) {
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
-  if (!game.user_death_id) {
-    await organizedChannels?.werewolves?.send(
-      `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
+  if (game.wolf_double_kill && !game.second_user_death_id) {
+    return organizedChannels?.werewolves?.send(
+      `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target`
     )
   }
-  if (game.wolf_double_kill && !game.second_user_death_id) {
-    await organizedChannels?.werewolves?.send(
-      `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target`
+  if (!game.user_death_id) {
+    return organizedChannels?.werewolves?.send(
+      `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
     )
   }
 }
@@ -107,12 +107,12 @@ async function nightTimeWarning(interaction) {
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   if (game.first_night) {
     await organizedChannels.townSquare.send(
-      `${aliveRole} This is the first night. Voting will start tomorrow`
+      `## ${aliveRole} This is the first night. Voting will start tomorrow`
     );
     return;
   }
   await organizedChannels.townSquare.send(
-    `${aliveRole} 30 minutes until night`
+    `## ${aliveRole} 30 minutes until night`
   );
 }
 
@@ -158,14 +158,15 @@ async function dayTimeJob(interaction) {
     starveMessage = await starveUser(interaction, deathIds);
   }
 
-  await cursePlayers(interaction);
-  await returnMutedPlayers(interaction, guildId);
-  await investigatePlayers(interaction)
-  await mutePlayers(interaction, guildId)
-  await givePower(interaction)
   if (game.bot_has_gun) {
     await botShoots(interaction);
   }
+
+  await cursePlayers(interaction);
+  await returnMutedPlayers(interaction, guildId);
+  await investigatePlayers(interaction)
+  await givePower(interaction)
+  await mutePlayers(interaction, guildId)
 
   await updateGame(guildId, {
     user_death_id: null,
@@ -178,7 +179,7 @@ async function dayTimeJob(interaction) {
   const backUpMessage = "No one died from a werewolf last night.\n";
 
   await organizedChannels.townSquare.send(
-    `${message || backUpMessage}${starveMessage}${vampireDeathMessages}\n**It is day time**`
+    `## ${message || backUpMessage}${starveMessage}${vampireDeathMessages}\n**It is day time**`
   );
 
   await checkGame(interaction);
@@ -245,7 +246,7 @@ async function nightTimeJob(interaction) {
     await updateGame(guildId, {
       is_day: false,
     });
-    await organizedChannels.townSquare.send("No one has voted...\nIt is night");
+    await organizedChannels.townSquare.send("## No one has voted...\nIt is night");
     return;
   }
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);

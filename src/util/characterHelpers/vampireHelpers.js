@@ -71,11 +71,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
       const vampireKilled = _.includes(werewolfKillIds, vampire.user_id);
       if (!victim.is_vampire && !vampireKilled) {
         if (bitePlayer(victim) && !werewolfAttacked) {
-          if (
-            isVampireKing &&
-            ((vampire.first_bite && settings.allow_first_bite) ||
-              settings.always_bite_two)
-          ) {
+          if ( isVampireKing && vampire.first_bite && settings.allow_first_bite) {
             biteCount += 2;
             await updateUser(vampire.user_id, guildId, { first_bite: false });
           } else {
@@ -108,7 +104,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             await organizedChannels.vampires.send(`${vampireMember} Your attempt to bite ${victimMember} has backfired! Unbeknownst to you, ${victimMember} is a werewolf, and this deadly encounter has led to your demise.`)
           }
           if (deadCharacter === PowerUpNames.SHIELD) {
-            await organizedChannels.vampires.send(`WAIT! ${vampireMember} has a shield! It protected them from death!`)
+            await organizedChannels.vampires.send(`🛡️WAIT! ${vampireMember} has a shield! It protected them from death!🛡️`)
           }
           return await vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, vampire, vampireMember })
         }
@@ -125,6 +121,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
 
 async function transformIntoVampire(interaction, user, userMember) {
   const is_mutated = user.character === characters.MUTATED;
+  const settings = await findSettings(interaction.guild.id);
 
   await updateUser(user.user_id, interaction.guild.id, {
     is_vampire: true,
@@ -132,7 +129,7 @@ async function transformIntoVampire(interaction, user, userMember) {
     character: is_mutated ? characters.VAMPIRE : user.character,
   });
 
-  const vampireType = is_mutated
+  const vampireType = is_mutated && settings.allow_first_bite
     ? "vampire king! Their first successful bite will transform a player into a vampire."
     : "vampire! It will take them two bites to transform a player into a vampire.";
 

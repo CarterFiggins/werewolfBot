@@ -41,7 +41,7 @@ module.exports = {
       });
       return;
     }
-
+    const game = await findGame(interaction.guild.id);
     const targetedOneUser = await interaction.options.getUser("target1");
     const targetedTwoUser = await interaction.options.getUser("target2");
     const targetedOneMember = interaction.guild.members.cache.get(targetedOneUser.id);
@@ -49,6 +49,14 @@ module.exports = {
     const targetOneDbUser = await findUser(targetedOneUser.id, interaction.guild.id);
     const targetTwoDbUser = await findUser(targetedTwoUser.id, interaction.guild.id);
 
+    if (game.first_night) {
+      await interaction.reply({
+        content:
+          "It is the first night. Try again tomorrow",
+        ephemeral: true,
+      });
+      return;
+    }
     if (targetedOneUser.bot || targetedTwoUser.bot) {
       await interaction.reply({
         content: "Can't select a bot. Try again",
