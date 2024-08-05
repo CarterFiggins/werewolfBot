@@ -87,14 +87,14 @@ async function killReminder(interaction) {
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
-  if (!game.user_death_id) {
-    await organizedChannels?.werewolves?.send(
-      `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
+  if (game.wolf_double_kill && !game.second_user_death_id) {
+    return organizedChannels?.werewolves?.send(
+      `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target`
     )
   }
-  if (game.wolf_double_kill && !game.second_user_death_id) {
-    await organizedChannels?.werewolves?.send(
-      `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target`
+  if (!game.user_death_id) {
+    return organizedChannels?.werewolves?.send(
+      `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
     )
   }
 }
