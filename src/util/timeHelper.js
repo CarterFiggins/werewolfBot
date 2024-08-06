@@ -84,7 +84,7 @@ async function timeScheduling(interaction) {
 async function killReminder(interaction) {
   const guildId = interaction.guild.id;
   const game = await findGame(guildId);
-  const channels = interaction.guild.channels.cache;
+  const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   if (game.wolf_double_kill && !game.second_user_death_id) {
@@ -102,7 +102,7 @@ async function killReminder(interaction) {
 async function nightTimeWarning(interaction) {
   const guildId = interaction.guild.id;
   const game = await findGame(guildId);
-  const channels = interaction.guild.channels.cache;
+  const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   if (game.first_night) {

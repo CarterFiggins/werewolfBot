@@ -14,6 +14,10 @@ async function cursePlayers(interaction) {
   });
   const witches = await cursorWitches.toArray();
 
+  if (_.isEmpty(witches)) {
+    return;
+  }
+
   await Promise.all(
     _.map(witches, async (witch) => {
       if (witch.target_cursed_user_id) {
@@ -35,6 +39,16 @@ async function cursePlayers(interaction) {
         );
       }
     })
+  );
+
+  const cursorCursed = await findManyUsers({
+    guild_id: guildId,
+    is_cursed: true,
+    is_dead: false,
+  });
+  const cursedUser = await cursorCursed.toArray();
+  await organizedChannels.witch.send(
+    `Current players cursed\n${_.map(cursedUser, (user) => `* ${members.get(user.user_id)}`).join("\n")}`
   );
 }
 

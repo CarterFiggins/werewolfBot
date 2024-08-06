@@ -98,6 +98,11 @@ async function findGame(guild_id) {
   return await db.collection("games").findOne({ guild_id });
 }
 
+async function findAllGames() {
+  const cursor = await db.collection("games").find();
+  return cursor.toArray();
+}
+
 async function updateGame(guild_id, updatedGame) {
   return await db
     .collection("games")
@@ -137,6 +142,7 @@ module.exports = {
   findManyVotes,
   createGame,
   findGame,
+  findAllGames,
   updateGame,
   deleteGame,
   findSettings,
