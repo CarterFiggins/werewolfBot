@@ -23,7 +23,8 @@ const setupChannelNames = {
   HOW_TO_PLAY: "how-to-play",
   PLAYER_ROLES: "player-roles",
   COMMANDS: "commands",
-  GAME_INSTRUCTIONS: "game-instructions"
+  GAME_INSTRUCTIONS: "game-instructions",
+  SETTINGS: "settings",
 }
 
 async function sendStartMessages(interaction, users) {

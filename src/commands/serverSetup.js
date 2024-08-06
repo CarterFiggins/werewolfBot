@@ -11,9 +11,10 @@ const {
 } = require("../util/rolesHelpers");
 const { findSettings, createSettings } = require("../werewolf_db");
 const { createChannel, setupChannelNames, createCategory } = require("../util/channelHelpers");
-const { howToPlayIntro, howToPlayRoles, villagerTeam, werewolfTeam, vampireTeam, undeterminedTeam, soloCharacters } = require("../util/botMessages/howToPlay");
+const { howToPlayIntro, howToPlayRoles, villagerTeam, werewolfTeam, vampireTeam, undeterminedTeam, soloCharacters, orderOfOperations } = require("../util/botMessages/howToPlay");
 const { commandList, commandsIntro } = require("../util/botMessages/commandsDescriptions");
 const { playerRolesIntro, roleList } = require("../util/botMessages/player-roles");
+const { settingsList, settingsIntro } = require("../util/botMessages/settings");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -68,6 +69,8 @@ module.exports = {
         setupChannels.playerRoles = channel
       } else if (channel.name === setupChannelNames.GAME_INSTRUCTIONS) {
         setupChannels.gameInstructions = channel
+      } else if (channel.name === setupChannelNames.SETTINGS) {
+        setupChannels.settings = channel
       }
     });
 
@@ -85,6 +88,7 @@ module.exports = {
       );
       await setupChannels.howToPlay.send(howToPlayIntro);
       await setupChannels.howToPlay.send(howToPlayRoles);
+      await setupChannels.howToPlay.send(orderOfOperations);
       await setupChannels.howToPlay.send(villagerTeam);
       await setupChannels.howToPlay.send(werewolfTeam);
       await setupChannels.howToPlay.send(vampireTeam);
@@ -160,16 +164,45 @@ module.exports = {
         hard_mode: false,
         allow_chaos_demon: false,
         allow_vampires: false,
-        allow_first_bite: false,
-        king_bite_wolf_safe: false,
+        allow_first_bite: true,
+        king_bite_wolf_safe: true,
         king_victim_attack_safe: true,
         bodyguard_joins_masons: true,
         seer_joins_masons: false,
         hunter_guard: false,
-        allow_lycan_guard: false,
+        allow_lycan_guard: true,
         enable_power_ups: false,
       });
     }
+
+    if (!setupChannels.settings) {
+      setupChannels.settings = await createChannel(
+        interaction,
+        setupChannelNames.SETTINGS,
+        [adminPermissions, nonPlayersPermissions],
+        setupChannels.gameInstructions
+      );
+
+      const selectMenu = new StringSelectMenuBuilder()
+      .setCustomId("settings")
+      .setPlaceholder("Select Setting")
+      .setMinValues(1)
+      .setMaxValues(1)
+      .addOptions(_.map(settingsList, (setting) => {
+        return new StringSelectMenuOptionBuilder()
+          .setLabel(setting.label)
+          .setValue(setting.label)
+          .setEmoji(setting.emoji)
+        }
+      ))
+    
+      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
+      await setupChannels.settings.send(settingsIntro);
+      await setupChannels.settings.send({
+        components: [actionRow],
+      });
+    }
+
     await interaction.editReply({
       content: "Server is READY!",
       ephemeral: true,

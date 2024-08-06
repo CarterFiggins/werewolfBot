@@ -12,6 +12,16 @@ Villagers win when all werewolves and vampires are dead. Werewolves and vampires
 
 _All alive players can communicate in the town square and vote to lynch a player during the day. Dead players can see all channels but only communicate in the afterlife._
   `,
+  orderOfOperations: `# Order of night commands
+1. Bodyguard protects target
+2. Vampires bites target
+3. Werewolf kills target
+4. Witch curses a target
+5. Player returns from being muted
+6. Seer investigates target
+7. Monarch gives target power
+8. Grouchy granny mutes a player
+  `,
 
   villagerTeam: `## Villager Team
 * Villager

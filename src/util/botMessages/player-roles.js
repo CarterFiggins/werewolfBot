@@ -157,7 +157,7 @@ module.exports = {
       emoji: '🧛',
       team: 'vampire',
       description: `### Vampire King
-* The Vampire King is the first vampire. The first night, (s)he chooses someone to bite. That player is immediately turned into a vampire. After that, each player will take two successful bites to turn into a vampire. If the Vampire King tries to bite a werewolf, the attack will fail.
+* The Vampire King is the first vampire. The first night, (s)he chooses someone to bite. That player is immediately turned into a vampire. After that, each player will take two successful bites to turn into a vampire. If the Vampire King tries to bite a werewolf, the attack will fail. Change the allow_vampires setting to true to add this player in the game.
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
     },
@@ -166,7 +166,7 @@ module.exports = {
       emoji: '🧛',
       team: 'vampire',
       description: `### Vampire
-* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. If a vampire attacks a werewolf, (s)he will die. Change the allow_vampires setting to true to add this player in the game.
+* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. Each night, a vampire may attack a player. It takes two bites to turn a player into a vampire. If a vampire attacks a werewolf or targets the same player as the werewolves, (s)he will die. Change the allow_vampires setting to true to add this player in the game.
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
     },
