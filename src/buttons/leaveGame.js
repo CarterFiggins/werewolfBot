@@ -1,4 +1,4 @@
-const { stopPlayingResponse } = require("../util/playingHelpers");
+const { stopPlayingResponse } = require("../util/changeRoleHelpers");
 
 module.exports = {
   data: { name: 'leave-game' },

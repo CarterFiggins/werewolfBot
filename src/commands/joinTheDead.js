@@ -1,12 +1,12 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
-const { playingResponse } = require("../util/changeRoleHelpers");
+const { joinTheDeadResponse } = require("../util/changeRoleHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName(commandNames.PLAYING)
-    .setDescription("give the playing role to user"),
+    .setName(commandNames.JOIN_THE_DEAD)
+    .setDescription("Join the dead when a game has already started"),
 
   async execute(interaction) {
     const deniedMessage = await permissionCheck({
@@ -21,6 +21,6 @@ module.exports = {
       });
       return;
     }
-    await playingResponse(interaction);
+    await joinTheDeadResponse(interaction);
   },
 };

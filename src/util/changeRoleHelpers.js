@@ -4,7 +4,7 @@ const {
   isAlive,
   isPlaying,
   isDead,
-} = require("../util/rolesHelpers");
+} = require("./rolesHelpers");
 
 
 async function playingResponse(interaction) {
@@ -46,7 +46,32 @@ async function stopPlayingResponse(interaction) {
   }
 }
 
+async function joinTheDeadResponse(interaction) {
+  const member = interaction.member;
+  if (isAlive(member)) {
+    await interaction.reply({
+      content: "https://tenor.com/pym7KF2INdx.gif",
+      ephemeral: true,
+    });
+    return;
+  }
+  if (isDead(member)) {
+    await interaction.reply({
+      content: "https://tenor.com/bCebX.gif",
+      ephemeral: true,
+    });
+    return;
+  }
+  const deadRole = await getRole(interaction, roleNames.DEAD);
+  await member.roles.add(deadRole);
+  await interaction.reply({
+    content: `Welcome to the dead ⚰️`,
+    ephemeral: true,
+  });
+}
+
 module.exports = {
   playingResponse,
   stopPlayingResponse,
+  joinTheDeadResponse,
 };

@@ -27,6 +27,13 @@ This is how you let the werewolf bot know you want to play the next round. It wi
 If you decide you don\`t want to play use this command and it will remove the Playing role.`
     },
     {
+      label: '/join_the_dead',
+      role: 'everyone',
+      emoji: '👁️',
+      description: `### /join_the_dead
+Join the dead when a game has already started so you can talk about what is happening in the game.`
+    },
+    {
       label: '/vote (target)',
       role: 'everyone',
       emoji: '✉️',

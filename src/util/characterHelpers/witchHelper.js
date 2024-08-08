@@ -47,9 +47,11 @@ async function cursePlayers(interaction) {
     is_dead: false,
   });
   const cursedUser = await cursorCursed.toArray();
-  await organizedChannels.witch.send(
-    `Current players cursed\n${_.map(cursedUser, (user) => `* ${members.get(user.user_id)}`).join("\n")}`
-  );
+  if (!_.isEmpty(cursedUser)) {
+    await organizedChannels.witch.send(
+      `Current players cursed\n${_.map(cursedUser, (user) => `* ${members.get(user.user_id)}`).join("\n")}`
+    );
+  }
 }
 
 module.exports = {
