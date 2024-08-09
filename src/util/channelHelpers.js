@@ -97,7 +97,7 @@ async function sendStartMessages(interaction, users) {
 function showUsersCharacter(users) {
   let message = "";
 
-  _.shuffle(users).forEach((user) => {
+  _.orderBy(users, ['info.character'], ['asc'] ).forEach((user) => {
     let character = user.info.character;
     let wasTold = "";
     if (user.info.is_cub) {

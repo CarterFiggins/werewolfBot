@@ -71,7 +71,11 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
       const vampireKilled = _.includes(werewolfKillIds, vampire.user_id);
       if (!victim.is_vampire && !vampireKilled) {
         if (bitePlayer(victim) && !werewolfAttacked) {
-          if ( isVampireKing && vampire.first_bite && settings.allow_first_bite) {
+          if (
+            isVampireKing &&
+            vampire.first_bite &&
+            settings.allow_first_bite
+          ) {
             biteCount += 2;
             await updateUser(vampire.user_id, guildId, { first_bite: false });
           } else {
@@ -99,14 +103,26 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
             WaysToDie.WEREWOLF
           );
           if (werewolfAttacked) {
-            await organizedChannels.vampires.send(`${vampireMember} tried to bite ${victimMember} but a werewolf was also attacking ${victimMember}!`)
+            await organizedChannels.vampires.send(
+              `${vampireMember} tried to bite ${victimMember} but a werewolf was also attacking ${victimMember}!`
+            );
           } else {
-            await organizedChannels.vampires.send(`${vampireMember} Your attempt to bite ${victimMember} has backfired! Unbeknownst to you, ${victimMember} is a werewolf, and this deadly encounter has led to your demise.`)
+            await organizedChannels.vampires.send(
+              `${vampireMember} Your attempt to bite ${victimMember} has backfired! Unbeknownst to you, ${victimMember} is a werewolf, and this deadly encounter has led to your demise.`
+            );
           }
           if (deadCharacter === PowerUpNames.SHIELD) {
-            await organizedChannels.vampires.send(`🛡️WAIT! ${vampireMember} has a shield! It protected them from death!🛡️`)
+            await organizedChannels.vampires.send(
+              `🛡️WAIT! ${vampireMember} has a shield! It protected them from death!🛡️`
+            );
           }
-          return await vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, vampire, vampireMember })
+          return await vampireDeathMessage({
+            werewolfAttacked,
+            victim,
+            deadCharacter,
+            vampire,
+            vampireMember,
+          });
         }
       }
     })
@@ -116,7 +132,32 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
     await updateUser(userId, guildId, { vampire_bites: bites });
   }
 
+  await sendBittenUsersMessage(interaction, organizedChannels.vampires);
+
   return _.compact(vampireDeathMessages).join();
+}
+
+async function sendBittenUsersMessage(interaction, vampireChannel) {
+  const bittenDbUsers = await getBittenUsers(interaction);
+  if (_.isEmpty(bittenDbUsers)) {
+    return;
+  }
+  const members = interaction.guild.members.cache;
+  const bittenMessage = _.map(
+    bittenDbUsers,
+    (dbUser) => `* ${members.get(dbUser.user_id)}`
+  ).join("\n");
+  await vampireChannel.send(`### Players bitten\n${bittenMessage}`);
+}
+
+async function getBittenUsers(interaction) {
+  const cursor = await findManyUsers({
+    guild_id: interaction.guild.id,
+    is_vampire: false,
+    is_dead: false,
+    vampire_bites: 1,
+  });
+  return cursor.toArray();
 }
 
 async function transformIntoVampire(interaction, user, userMember) {
@@ -129,9 +170,10 @@ async function transformIntoVampire(interaction, user, userMember) {
     character: is_mutated ? characters.VAMPIRE : user.character,
   });
 
-  const vampireType = is_mutated && settings.allow_first_bite
-    ? "vampire king! Their first successful bite will transform a player into a vampire."
-    : "vampire! It will take them two bites to transform a player into a vampire.";
+  const vampireType =
+    is_mutated && settings.allow_first_bite
+      ? "vampire king! Their first successful bite will transform a player into a vampire."
+      : "vampire! It will take them two bites to transform a player into a vampire.";
 
   await giveChannelPermissions({
     interaction,

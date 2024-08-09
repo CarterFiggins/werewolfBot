@@ -15,7 +15,7 @@ async function votingDeathMessage({ interaction, deathCharacter, deadMember, dea
   }
 
   let cursedMessage = "";
-  let deathMessage = settings.hard_mode ? '' : `The town has killed a **${deathCharacter}**\n`;
+  let deathMessage = settings.hard_mode ? '' : `## The town has killed a **${deathCharacter}**\n`;
 
   if (deathCharacter === PowerUpNames.SHIELD) {
     deathMessage = `🛡️However, ${deadMember} had a protective shield, sparing them from this fate! The shield is now used up and will not offer protection again.🛡️`

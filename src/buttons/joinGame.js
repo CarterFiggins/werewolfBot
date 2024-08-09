@@ -1,4 +1,4 @@
-const { playingResponse } = require("../util/playingHelpers");
+const { playingResponse } = require("../util/changeRoleHelpers");
 
 module.exports = {
   data: { name: 'join-game' },

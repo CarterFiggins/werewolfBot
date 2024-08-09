@@ -1,118 +1,158 @@
+const _ = require("lodash");
 const {
-  findUser,
   deleteAllUsers,
   deleteGame,
   deleteManyVotes,
   findGame,
   findOneUser,
+  findAllUsers,
 } = require("../werewolf_db");
 const { organizeChannels } = require("./channelHelpers");
 const { characters } = require("./characterHelpers/characterUtil");
-const { getAliveMembers } = require("./discordHelpers");
 const { removeGameRolesFromMembers } = require("./rolesHelpers");
 const { endGuildJobs } = require("./schedulHelper");
 
 async function checkGame(interaction, chaosWins) {
   const members = interaction.guild.members.cache;
-  const guildId = interaction.guild.id;
   const roles = interaction.guild.roles.cache;
-  const aliveMembers = await getAliveMembers(interaction);
 
-  let werewolfCount = 0;
-  let villagerCount = 0;
-  let vampireCount = 0;
-  let witchCount = 0;
-
-  await Promise.all(
-    aliveMembers.map(async (member) => {
-      const dbUser = await findUser(member.user.id, guildId);
-      if (dbUser.character === characters.WEREWOLF) {
-        werewolfCount += 1;
-      } else if (dbUser.is_vampire) {
-        vampireCount += 1;
-      } else if (dbUser.character === characters.WITCH) {
-        witchCount += 1;
-      } else {
-        villagerCount += 1;
-      }
-    })
-  );
-
-  if (werewolfCount > 0) {
-    werewolfCount += witchCount;
-  }
-
-  const isGameOver = await checkForWinner(interaction, chaosWins, {
-    werewolfCount,
-    villagerCount,
-    vampireCount,
-    witchCount,
-  });
+  const isGameOver = await checkForWinner(interaction, chaosWins);
 
   if (isGameOver) {
     await endGame(interaction, roles, members);
   }
 }
 
-async function checkForWinner(interaction, chaosWins, counts) {
-  const { werewolfCount, villagerCount, vampireCount, witchCount } = counts
+async function checkForWinner(interaction, chaosWins) {
+  const { aliveUsers, deadUsers } = await orderAllPlayers(interaction);
   const game = await findGame(interaction.guild.id);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
+  const villagerCount =
+    (aliveUsers.villagers.length || 0) + (aliveUsers?.chaosDemon?.length || 0);
+  const werewolfCount = aliveUsers.werewolves.length
+    ? aliveUsers.werewolves.length + aliveUsers.witches.length
+    : 0;
+  const vampireCount = aliveUsers.vampires.length || 0;
+  const witchCount = aliveUsers.witches.length || 0;
 
   if (chaosWins) {
-    const members = interaction.guild.members.cache;
-    const chaosDemon = await findOneUser({
-      guild_id: interaction.guild.id,
-      character: characters.CHAOS_DEMON
-    });
-    const chaosDemonMember = members.get(chaosDemon.user_id)
-      
-    await organizedChannels.townSquare.send(
-      `# Chaos Demon Victory!
-The player you lynched was the Chaos Demon's marked target!
-As a result, the village is plunged into chaos, and everyone loses... except for ${chaosDemonMember} the devious Chaos Demon
-      `
-    );
-    return true
+    await sendChaosWinMessage(interaction, organizedChannels.townSquare);
+    return true;
   }
 
   if (villagerCount === 0 && werewolfCount === vampireCount && game.is_day) {
     return false;
   }
 
-  if (werewolfCount === 0 && vampireCount === 0 && villagerCount === 0 && witchCount === 0) {
+  const listUsers = (dbUsers) => {
+    const members = interaction.guild.members.cache;
+    return _.map(
+      dbUsers,
+      (dbUser) =>
+        `${members.get(dbUser.user_id)}! playing as ${dbUser.character}`
+    ).join("\n");
+  };
+
+  if (werewolfCount + vampireCount + villagerCount + witchCount === 0) {
+    await organizedChannels.townSquare.send("# I WIN! Everyone is dead!");
+    return true;
+  }
+
+  if (werewolfCount + vampireCount === 0) {
     await organizedChannels.townSquare.send(
-      "# I WIN! Everyone is dead!"
+      `# Villagers Win!
+There are no more werewolves or vampires.
+## Winners
+### Alive:
+${listUsers(aliveUsers.villagers)}
+### Dead:
+${listUsers(deadUsers.villagers)}`
     );
     return true;
   }
-  
-  if (werewolfCount === 0 && vampireCount === 0) {
-    await organizedChannels.townSquare.send(
-      `# Villagers Win!
-      There are no more werewolves or vampires.`
-    );
-     return true;
-  }
-  
+
   if (werewolfCount >= villagerCount + vampireCount) {
     await organizedChannels.townSquare.send(
       `# Werewolves Win!
-      Werewolves out number the villagers and vampires.`
-    );
-     return true;
-  }
-  
-  if (vampireCount >= villagerCount + werewolfCount) {
-    await organizedChannels.townSquare.send(
-      `# Vampires Win!
-      Vampires out number the villagers and werewolves.`
+      Werewolves out number the villagers and vampires.
+      ## Winners
+### Alive:
+${listUsers([...aliveUsers.werewolves, ...aliveUsers.witches])}
+### Dead:
+${listUsers([deadUsers.werewolves, ...deadUsers.witches])}`
     );
     return true;
   }
-  
+
+  if (vampireCount >= villagerCount + werewolfCount) {
+    await organizedChannels.townSquare.send(
+      `# Vampires Win!
+      Vampires out number the villagers and werewolves.
+      ## Winners
+### Alive:
+${listUsers(aliveUsers.vampires)}
+### Dead:
+${listUsers(deadUsers.vampires)}`
+    );
+    return true;
+  }
+
   return false;
+}
+
+async function sendChaosWinMessage(interaction, townSquareChannel) {
+  const members = interaction.guild.members.cache;
+  const chaosDemon = await findOneUser({
+    guild_id: interaction.guild.id,
+    character: characters.CHAOS_DEMON,
+  });
+  const chaosDemonMember = members.get(chaosDemon.user_id);
+
+  await townSquareChannel.send(
+    `# Chaos Demon Victory!
+The player you lynched was the Chaos Demon's marked target!
+As a result, the village is plunged into chaos, and everyone loses... except for ${chaosDemonMember} the devious Chaos Demon`
+  );
+}
+
+async function orderAllPlayers(interaction) {
+  const allDbUsersCursor = await findAllUsers(interaction.guild.id);
+  const allDbUsers = await allDbUsersCursor.toArray();
+  const aliveUsers = {
+    werewolves: [],
+    vampires: [],
+    witches: [],
+    villagers: [],
+    chaosDemon: [],
+  };
+  const deadUsers = {
+    werewolves: [],
+    vampires: [],
+    witches: [],
+    villagers: [],
+    chaosDemon: [],
+  };
+
+  _.forEach(allDbUsers, (dbUser) => {
+    let userArray = aliveUsers;
+    if (dbUser.is_dead) {
+      userArray = deadUsers;
+    }
+    if (dbUser.character === characters.WEREWOLF) {
+      userArray.werewolves.push(dbUser);
+    } else if (dbUser.is_vampire) {
+      userArray.vampires.push(dbUser);
+    } else if (dbUser.character === characters.WITCH) {
+      userArray.witches.push(dbUser);
+    } else if (dbUser.character === characters.CHAOS_DEMON) {
+      userArray.chaosDemon.push(dbUser);
+    } else {
+      userArray.villagers.push(dbUser);
+    }
+  });
+
+  return { aliveUsers, deadUsers };
 }
 
 async function endGame(interaction, roles, members) {

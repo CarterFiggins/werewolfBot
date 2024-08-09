@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
-const { stopPlayingResponse } = require("../util/playingHelpers");
+const { stopPlayingResponse } = require("../util/changeRoleHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
