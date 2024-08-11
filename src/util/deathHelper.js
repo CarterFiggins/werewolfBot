@@ -51,7 +51,9 @@ async function removesDeadPermissions(
     return PowerUpNames.SHIELD
   }
 
-  if (deadCharacter === characters.HUNTER && !deadUser.is_dead && !settings.hunter_guard) {
+  const hunterGuardActivated =  settings.hunter_guard && causeOfDeath === WaysToDie.WEREWOLF
+
+  if (deadCharacter === characters.HUNTER && !deadUser.is_dead && !hunterGuardActivated) {
     await updateUser(deadUser.user_id, guildId, {
       is_injured: true,
       is_dead: true,
