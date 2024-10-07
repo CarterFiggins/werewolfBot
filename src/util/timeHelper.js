@@ -30,6 +30,7 @@ const { votingDeathMessage } = require("./botMessages/deathMessages");
 const { markChaosTarget, isDeadChaosTarget } = require("./characterHelpers/chaosDemonHelpers");
 const { PowerUpNames } = require("./powerUpHelpers");
 const { givePower } = require("./characterHelpers/monarchHelper");
+const { characters } = require("./commandHelpers");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -83,6 +84,16 @@ async function timeScheduling(interaction) {
 
 async function killReminder(interaction) {
   const guildId = interaction.guild.id;
+  const cursorWerewolves = await findManyUsers({
+    guild_id: guildId,
+    is_dead: false,
+    character: characters.WEREWOLF,
+  });
+  const werewolves = await cursorWerewolves.toArray();
+  if (_.isEmpty(werewolves)) {
+    return;
+  }
+
   const game = await findGame(guildId);
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);

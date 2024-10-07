@@ -83,6 +83,13 @@ module.exports = {
       });
       return;
     }
+    if (guardUser.isMuted) {
+      await interaction.reply({
+        content: `${targetedUser} is safely locked away in the Granny's house. You don't want to go there! try again.`,
+        ephemeral: false,
+      });
+      return;
+    }
 
     await updateUser(interaction.user.id, interaction.guild.id, {
       guarded_user_id: targetedUser.id,

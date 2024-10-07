@@ -73,6 +73,7 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
       case characters.CUB:
         user.info.is_cub = true;
         user.info.character = characters.WEREWOLF;
+        user.info.assigned_identity = characters.WEREWOLF;
         break;
       case characters.BODYGUARD:
         user.info.last_guarded_user_id = null;
@@ -89,7 +90,7 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
         if (settings.allow_lycan_guard) {
           user.info.has_lycan_guard = true;
         }
-        user.info.assigned_identity = characters.VILLAGER
+        user.info.assigned_identity = _.sample([characters.VILLAGER, characters.BAKER, characters.HUNTER])
         break;
       case characters.MUTATED:
         user.info.assigned_identity = _.sample([characters.VILLAGER, characters.BAKER, characters.HUNTER])
@@ -114,7 +115,19 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
   return shuffledUsers;
 }
 
+function getPlayersCharacter(dbUser) {
+  if (dbUser.is_vampire) {
+    return `vampire ${dbUser.character}`
+  }
+  if (dbUser.is_cub) {
+    return `Werewolf cub`
+  }
+
+  return dbUser.character
+}
+
 module.exports = {
   getPlayingCount,
   crateUserData,
+  getPlayersCharacter,
 };

@@ -91,10 +91,10 @@ This is a Seer and fool\`s command. It is used at night in the seer channel to i
     },
     {
       label: '/shoot (target)',
-      role: 'hunter',
+      role: 'hunter or gun ability',
       emoji: '🔫',
       description: `### /shoot (target)
-This is the Hunters command. When a hunter is injured they will be able to use this command to shoot someone. If they forget to shoot then the bot will shoot for them. After shooting the hunter will die along with the player they shot.`
+If the hunter is killed they will be in an injured state and can use this command to shoot a target. This command is also used when a player has a gun. If a player has a gun they can use the command at any time to shoot a player. A hunter can also be give a gun. They can shoot using the gun ability and then shoot again when injured.`
     },
     {
       label: '/whisper (player) (message)',
@@ -115,7 +115,7 @@ This is the Witch command. Use it in the witch channel. Uses this command to sel
       role: 'vampire king, vampire',
       emoji: '🧛',
       description: `### /vampire_bite (target)
-This is the Vampires command. Use it in the vampire channel. Each vampire is able to bite one other player each night. When a villager is bitten twice they turn into a vampire and are able to use this command. If they try to bite a werewolf or bite the same target as the werewolves they will die except the first vampire (vampire king).`
+This is the Vampires command. Use it in the vampire channel. Each vampire is able to bite one other player each night. When a villager is bitten twice they turn into a vampire and are able to use this command. If they try to bite a werewolf or bite the same target as the werewolves they will die. The admin can change the settings to protect the first vampire (vampire king) from dying this way. The bodyguard, witch, werewolves, and chaos demon can not be converted into a vampire.`
     },
     {
       label: '/copy (target)',

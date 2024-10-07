@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { commandNames } = require("../util/commandHelpers");
+const { commandNames, characters } = require("../util/commandHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
 const { findSettings, findUser, updateUser } = require("../werewolf_db");
@@ -43,9 +43,16 @@ module.exports = {
     }
 
     const userDb = await findUser(interaction.user.id, interaction.guild.id)
-
+    if (userDb.character === characters.MONARCH) {
+      await interaction.editReply({
+        content:
+          "The Monarch can not whisper.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (userDb.isMuted) {
-      await interaction.reply({
+      await interaction.editReply({
         content:
           "You are to far away! They can not hear you. https://tenor.com/uRgx.gif",
         ephemeral: true,
@@ -105,9 +112,9 @@ module.exports = {
     // send message to player from the bot.
     try {
       await playerMember.send(
-        `Whisper from ${
+        `(${interaction?.guild?.name}) Whisper from ${
           senderMember.nickname || messageSender.username
-        }\n${message}\n`
+        } id: ${senderMember.id}\n${message}\n`
       );
     } catch (e) {
       console.error(e);

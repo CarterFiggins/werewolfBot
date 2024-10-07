@@ -6,6 +6,7 @@ const { findUser, updateUser, findGame } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames } = require("../util/powerUpHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
+const { getPlayersCharacter } = require("../util/userHelpers");
 
 
 module.exports = {
@@ -70,7 +71,7 @@ module.exports = {
       return;
     }
 
-    const playersCharacter = targetDbUser.is_vampire ? `vampire ${targetDbUser.character}` : targetDbUser.character
+    const playersCharacter = getPlayersCharacter(targetDbUser);
 
     await interaction.reply({
       content: `Your predatory senses keenly focus on ${targetedMember}. Through the haze of uncertainty, the truth emerges: ${targetedMember} is a ${playersCharacter}`,

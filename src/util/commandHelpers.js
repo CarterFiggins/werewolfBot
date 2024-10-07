@@ -60,7 +60,7 @@ const powerUpMessages = new Map([
   ],
   [
     PowerUpNames.SHIELD,
-    "You have a shield. It will protect you once from death.",
+    "You have a shield. It will protect you once from death. The shield will not protect from a vampire bite.",
   ],
   [
     PowerUpNames.ALLIANCE_DETECTOR,

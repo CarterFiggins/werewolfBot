@@ -47,6 +47,10 @@ async function checkForWinner(interaction, chaosWins) {
 
   const listUsers = (dbUsers) => {
     const members = interaction.guild.members.cache;
+    const deadUsers = _.filter(dbUsers, (dbUser) => dbUser.user_id && dbUser.character)
+    if (_.isEmpty(deadUsers)) {
+      return "None"
+    }
     return _.map(
       dbUsers,
       (dbUser) =>

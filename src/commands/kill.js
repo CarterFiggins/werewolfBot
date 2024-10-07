@@ -83,13 +83,19 @@ module.exports = {
       });
       return;
     }
-
     if (
       targetedUser.id === game.user_death_id ||
       targetedUser.id === game.second_user_death_id
     ) {
       await interaction.reply({
         content: `Already targeting ${targetedUser}`,
+        ephemeral: false,
+      });
+      return;
+    }
+    if (dbTargetUser.isMuted) {
+      await interaction.reply({
+        content: `${targetedUser} is safely locked away in the Granny's house. Try again`,
         ephemeral: false,
       });
       return;

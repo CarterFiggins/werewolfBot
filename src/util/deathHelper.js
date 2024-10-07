@@ -261,7 +261,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     WaysToDie.WEREWOLF
   );
   if (deathCharacter === PowerUpNames.SHIELD) { 
-    return `🛡️Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werwolf attack. Their shield has been consumed🛡️`
+    return `🛡️Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their shield has been consumed🛡️`;
   }
   
   if (deadUser.character === characters.HUNTER && settings.hunter_guard) {

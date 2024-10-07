@@ -63,7 +63,7 @@ module.exports = {
 
     _.shuffle(dbUsers).forEach((user) => {
       let characterMessage = "";
-      if (channel.name === channelNames.AFTER_LIFE) {
+      if (channel.name === channelNames.AFTER_LIFE || (user.is_dead && !settings.hard_mode)) {
         const vampireMessage = user.is_vampire ? "vampire " : "";
         characterMessage = `: **${vampireMessage}${user.character}**`;
       }
@@ -78,7 +78,7 @@ module.exports = {
         }
       } else {
         someoneIsDead = true;
-        deadMessage += `${members.get(user.user_id)}${characterMessage}\n`;
+        deadMessage += `${members.get(user.user_id) || "Player left"}${characterMessage}\n`;
       }
     });
 

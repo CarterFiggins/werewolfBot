@@ -40,6 +40,7 @@ module.exports = {
     });
 
     const dbUser = await findUser(interaction.user.id, interaction.guild.id);
+    const votedDbUser = await findUser(votedUser.id, interaction.guild.id);
 
     if (channel.name !== channelNames.TOWN_SQUARE) {
       await interaction.reply({
@@ -83,6 +84,13 @@ module.exports = {
       await interaction.reply({
         content: `You voted for ${votedUser} who is dead. Try again.`,
         ephemeral: false,
+      });
+      return;
+    }
+    if (votedDbUser.isMuted) {
+      await interaction.reply({
+        content: `${votedUser} is safely locked away in the Granny's house. They will not be here for the hanging and can not be voted.`,
+        ephemeral: true,
       });
       return;
     }
