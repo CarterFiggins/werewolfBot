@@ -131,6 +131,8 @@ async function nightTimeWarning(interaction) {
 async function dayTimeJob(interaction) {
   const guildId = interaction.guild.id;
   const game = await findGame(guildId);
+  // collect messages as players die
+  interaction.townAnnouncements = [];
 
   if (game.is_day) {
     console.log("It is currently day skip");
@@ -192,18 +194,24 @@ async function dayTimeJob(interaction) {
   await organizedChannels.townSquare.send(
     `## ${message || backUpMessage}${starveMessage}${vampireDeathMessages}\n**It is day time**`
   );
-
   await checkGame(interaction);
+
+  if (!_.isEmpty(interaction.townAnnouncements)) {
+    await organizedChannels.townSquare.send(
+      interaction.townAnnouncements.join("\n")
+    );
+  }
 }
 
 // Handles town votes and death
 async function nightTimeJob(interaction) {
   const guildId = interaction.guild.id;
-  const members = await interaction.guild.members.fetch();
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const game = await findGame(guildId);
   const settings = await findSettings(interaction.guild.id);
+  // collect messages as players die
+  interaction.townAnnouncements = [];
 
   if (game.first_night) {
     await updateGame(guildId, {
@@ -238,8 +246,22 @@ async function nightTimeJob(interaction) {
     await resetUserWhisperCount(guildId)
   }
 
+  const chaosWins = await handleVotingDeath(interaction)
+  await checkGame(interaction, chaosWins);
+  if (!_.isEmpty(interaction.townAnnouncements)) {
+    await organizedChannels.townSquare.send(
+      interaction.townAnnouncements.join("\n")
+    );
+  }
+}
+
+async function handleVotingDeath(interaction) {
+  const guildId = interaction.guild.id;
   const cursor = await getCountedVotes(guildId);
   const allVotes = await cursor.toArray();
+  const members = await interaction.guild.members.fetch();
+  const channels = await interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
 
   let topVotes = [];
   let topCount = 0;
@@ -258,7 +280,7 @@ async function nightTimeJob(interaction) {
       is_day: false,
     });
     await organizedChannels.townSquare.send("## No one has voted...\nIt is night");
-    return;
+    return false;
   }
   const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
   const deadMember = members.get(voteWinner._id.voted_user_id);
@@ -277,7 +299,7 @@ async function nightTimeJob(interaction) {
   }
     
   await votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes })
-  await checkGame(interaction, chaosWins);
+  return chaosWins;
 }
 
 function warningTime(hour, minute) {

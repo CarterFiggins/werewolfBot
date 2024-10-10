@@ -33,7 +33,7 @@ async function givePower(interaction) {
     } else if (monarch.giving_user_id) {
       const targetMember = members.get(monarch.giving_user_id)
       const monarchMember = members.get(monarch.user_id)
-      const targetDbUser = findUser(monarch.giving_user_id, interaction.guild.id)
+      const targetDbUser = await findUser(monarch.giving_user_id, interaction.guild.id)
       if (!targetDbUser.is_dead) {
         if (!targetDbUser.power_ups) {
           targetDbUser.power_ups = {}

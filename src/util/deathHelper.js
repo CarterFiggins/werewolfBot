@@ -99,10 +99,9 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
   const guildId = interaction.guild.id;
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const settings = await findSettings(guildId);
 
   if (deadCharacter === characters.BAKER) {
-    await checkBakers(guildId, organizedChannels.townSquare);
+    await checkBakers(interaction);
   } else if (deadCharacter === characters.WEREWOLF && deadUser.is_cub) {
     await updateGame(guildId, {
       wolf_double_kill: true,
@@ -144,8 +143,6 @@ async function removePlayer(
 
 async function killChaosDemon(interaction, targetMember) {
   const members = interaction.guild.members.cache;
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
   const chaosDemon = await findOneUser({
     guild_id: interaction.guild.id,
     character: characters.CHAOS_DEMON,
@@ -163,7 +160,7 @@ async function killChaosDemon(interaction, targetMember) {
     chaosDemonMember,
     WaysToDie.CHAOS
   )
-  organizedChannels.townSquare.send(`## In a twist of fate, the Chaos Demon, ${chaosDemonMember}, has met their end! Their sinister plan failed because their marked target, ${targetMember}, died, but not by hanging. Without their target's demise by lynching, the Chaos Demon's power has been vanquished.`)
+  interaction.townAnnouncements.push(`## * In a twist of fate, the Chaos Demon, ${chaosDemonMember}, has met their end! Their sinister plan failed because their marked target, ${targetMember}, died, but not by hanging. Without their target's demise by lynching, the Chaos Demon's power has been vanquished.`)
 }
 
 async function removeUserVotes(guildId, userId) {
@@ -173,21 +170,19 @@ async function removeUserVotes(guildId, userId) {
   });
 }
 
-async function checkBakers(guildId, townSquare) {
+async function checkBakers(interaction) {
   const bakers = await (
     await findManyUsers({
-      guild_id: guildId,
+      guild_id: interaction.guild.id,
       is_dead: false,
       character: characters.BAKER,
     })
   ).toArray();
   if (_.isEmpty(bakers)) {
-    await updateGame(guildId, {
+    await updateGame(interaction.guild.id, {
       is_baker_dead: true,
     });
-    townSquare.send(
-      `## Hold onto your hats, because we've got a loafing crisis on our hands! Our baker has bitten the baguette, leaving us with fewer carbs than a gluten-free cookbook. Starting tomorrow, one unlucky villager will face the dreaded "empty stomach o'doom" and, well, let's just say it won't end well.`
-    );
+    interaction.townAnnouncements.push(`## * Hold onto your hats, because we've got a loafing crisis on our hands! Our baker has bitten the baguette, leaving us with fewer carbs than a gluten-free cookbook. Starting tomorrow, one unlucky villager will face the dreaded "empty stomach o'doom" and, well, let's just say it won't end well.`)
   }
 }
 
@@ -305,14 +300,12 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
   }
 
   if (randomFire) {
-    const channels = interaction.guild.channels.cache;
-    const organizedChannels = organizeChannels(channels);
     let finalMessage = `${memberWhoShot} didn't have time to shoot and died. They dropped their gun and it shot `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
     if (userWasProtected) {
       targetMessage = `🛡️${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed🛡️`
     }
-    await organizedChannels.townSquare.send(`## ${finalMessage}${targetMessage}`);
+    interaction.townAnnouncements.push(`## * ${finalMessage}${targetMessage}`);
   } else {
     let finalMessage = `${memberWhoShot} took aim and shot `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
@@ -337,8 +330,6 @@ async function witchCurseDeathMessage({ villager, deadVillager, villagerMember }
 
 async function botShoots(interaction) {
   let aliveUserIds = await getAliveUsersIds(interaction);
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
   const cursor = await findUsersWithIds(interaction.guild.id, aliveUserIds);
   let aliveUsers = await cursor.toArray();
   const unluckyDbUser = _.sample(aliveUsers)
@@ -355,7 +346,7 @@ async function botShoots(interaction) {
   );
 
   if (botShotCharacter === PowerUpNames.SHIELD) {
-    organizedChannels.townSquare.send("## 🛡️Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss!🛡️")
+    interaction.townAnnouncements.push("## * 🛡️Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss!🛡️")
     return
   }
 
@@ -368,7 +359,7 @@ async function botShoots(interaction) {
     `Guess what, folks? I've only gone and snagged myself a gun! Took a shot at ${unluckyMember}, and poof! The ${botShotCharacter} is toast!`
   ]
 
-  organizedChannels.townSquare.send(`## ${_.sample(responses)}`)
+  interaction.townAnnouncements.push(`## * ${_.sample(responses)}`)
 }
 
 

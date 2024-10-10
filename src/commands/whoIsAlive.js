@@ -58,8 +58,11 @@ module.exports = {
     let deadMessage = "## Players Dead:\n";
     let werewolfCount = 0;
     let villagerCount = 0;
+    let soloCount = 0;
     let vampireCount = 0;
     let someoneIsDead = false;
+
+    const soloCharacters = [characters.CHAOS_DEMON]
 
     _.shuffle(dbUsers).forEach((user) => {
       let characterMessage = "";
@@ -73,6 +76,8 @@ module.exports = {
           werewolfCount += 1;
         } else if (user.is_vampire) {
           vampireCount += 1;
+        } else if (soloCharacters.includes(user.character)) {
+          soloCount += 1;
         } else {
           villagerCount += 1;
         }
@@ -90,8 +95,12 @@ module.exports = {
       const vampireMessage = vampireCount
         ? `Vampire Count: ${vampireCount}\n`
         : "";
+      
+      const soloMessage = soloCount
+        ? `Solo Character Count: ${soloCount}\n`
+        : "";
 
-      message += `${werewolfMessage}${vampireMessage}Villager Count: ${villagerCount}\n`;
+      message += `${werewolfMessage}${vampireMessage}${soloMessage}Villager Count: ${villagerCount}\n`;
     }
 
     await interaction.reply({

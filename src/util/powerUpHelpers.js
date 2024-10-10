@@ -9,6 +9,10 @@ const PowerUpNames = {
 
 const PowersWithWeightsVillagers = [
   {
+    name: PowerUpNames.PREDATOR_VISION,
+    weight: 1,
+  },
+  {
     name: PowerUpNames.GUN,
     weight: 3,
   },
@@ -24,6 +28,10 @@ const PowersWithWeightsVillagers = [
 
 
 const PowersWithWeightsWerewolves = [
+  {
+    name: PowerUpNames.ALLIANCE_DETECTOR,
+    weight: 1,
+  },
   {
     name: PowerUpNames.GUN,
     weight: 3,

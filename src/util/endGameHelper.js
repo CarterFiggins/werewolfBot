@@ -7,7 +7,6 @@ const {
   findOneUser,
   findAllUsers,
 } = require("../werewolf_db");
-const { organizeChannels } = require("./channelHelpers");
 const { characters } = require("./characterHelpers/characterUtil");
 const { removeGameRolesFromMembers } = require("./rolesHelpers");
 const { endGuildJobs } = require("./schedulHelper");
@@ -26,10 +25,8 @@ async function checkGame(interaction, chaosWins) {
 async function checkForWinner(interaction, chaosWins) {
   const { aliveUsers, deadUsers } = await orderAllPlayers(interaction);
   const game = await findGame(interaction.guild.id);
-  const channels = interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
-  const villagerCount =
-    (aliveUsers.villagers.length || 0) + (aliveUsers?.chaosDemon?.length || 0);
+  const chaosCount = aliveUsers?.chaosDemon?.length || 0;
+  const villagerCount = aliveUsers.villagers.length || 0;
   const werewolfCount = aliveUsers.werewolves.length
     ? aliveUsers.werewolves.length + aliveUsers.witches.length
     : 0;
@@ -37,7 +34,7 @@ async function checkForWinner(interaction, chaosWins) {
   const witchCount = aliveUsers.witches.length || 0;
 
   if (chaosWins) {
-    await sendChaosWinMessage(interaction, organizedChannels.townSquare);
+    await sendChaosWinMessage(interaction);
     return true;
   }
 
@@ -59,14 +56,14 @@ async function checkForWinner(interaction, chaosWins) {
   };
 
   if (werewolfCount + vampireCount + villagerCount + witchCount === 0) {
-    await organizedChannels.townSquare.send("# I WIN! Everyone is dead!");
+    interaction.townAnnouncements.push("# I WIN! Everyone is dead!");
     return true;
   }
 
-  if (werewolfCount + vampireCount === 0) {
-    await organizedChannels.townSquare.send(
+  if (werewolfCount + vampireCount + chaosCount === 0) {
+    interaction.townAnnouncements.push(
       `# Villagers Win!
-There are no more werewolves or vampires.
+There are no more evil in the town. The town is saved!
 ## Winners
 ### Alive:
 ${listUsers(aliveUsers.villagers)}
@@ -77,9 +74,9 @@ ${listUsers(deadUsers.villagers)}`
   }
 
   if (werewolfCount >= villagerCount + vampireCount) {
-    await organizedChannels.townSquare.send(
+    interaction.townAnnouncements.push(
       `# Werewolves Win!
-      Werewolves out number the villagers and vampires.
+      Werewolves now outnumber the town's remaining population.
       ## Winners
 ### Alive:
 ${listUsers([...aliveUsers.werewolves, ...aliveUsers.witches])}
@@ -90,9 +87,9 @@ ${listUsers([deadUsers.werewolves, ...deadUsers.witches])}`
   }
 
   if (vampireCount >= villagerCount + werewolfCount) {
-    await organizedChannels.townSquare.send(
+    interaction.townAnnouncements.push(
       `# Vampires Win!
-      Vampires out number the villagers and werewolves.
+      Vampires now outnumber the town's remaining population.
       ## Winners
 ### Alive:
 ${listUsers(aliveUsers.vampires)}
@@ -105,7 +102,7 @@ ${listUsers(deadUsers.vampires)}`
   return false;
 }
 
-async function sendChaosWinMessage(interaction, townSquareChannel) {
+async function sendChaosWinMessage(interaction) {
   const members = interaction.guild.members.cache;
   const chaosDemon = await findOneUser({
     guild_id: interaction.guild.id,
@@ -113,7 +110,7 @@ async function sendChaosWinMessage(interaction, townSquareChannel) {
   });
   const chaosDemonMember = members.get(chaosDemon.user_id);
 
-  await townSquareChannel.send(
+  interaction.townAnnouncements.push(
     `# Chaos Demon Victory!
 The player you lynched was the Chaos Demon's marked target!
 As a result, the village is plunged into chaos, and everyone loses... except for ${chaosDemonMember} the devious Chaos Demon`
