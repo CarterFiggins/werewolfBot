@@ -190,6 +190,7 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
   if (!randomFire) {
     await interaction.reply(":dart: PEW PEW :gun:");
   }
+  interaction.townAnnouncements = [];
 
   const members = await interaction.guild.members.fetch();
   const deadTargetMember = members.get(targetDbUser.user_id);
@@ -221,6 +222,11 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
 
   await sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire })
   await checkGame(interaction);
+  if (!_.isEmpty(interaction.townAnnouncements)) {
+    await organizedChannels.townSquare.send(
+      interaction.townAnnouncements.join("\n")
+    );
+  }
 }
 
 async function hunterShootingLimitJob(
