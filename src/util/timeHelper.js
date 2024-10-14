@@ -11,6 +11,7 @@ const {
   deleteManyVotes,
   findSettings,
   resetUserWhisperCount,
+  findManyUsers,
 } = require("../werewolf_db");
 const { vampiresAttack } = require("./characterHelpers/vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
