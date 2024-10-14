@@ -223,7 +223,11 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
   await sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire })
   await checkGame(interaction);
   if (!_.isEmpty(interaction.townAnnouncements)) {
-    interaction.townAnnouncements.join("\n")
+    const channels = interaction.guild.channels.cache;
+    const organizedChannels = organizeChannels(channels);
+    await organizedChannels.townSquare.send(
+      interaction.townAnnouncements.join("\n")
+    );
   }
 }
 
