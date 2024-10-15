@@ -14,7 +14,7 @@ const {
   organizeChannels,
   removeChannelPermissions,
 } = require("./channelHelpers");
-const { shuffleSeers } = require("./characterHelpers/seerHelper");
+const { handleApprenticeSeer } = require("./characterHelpers/seerHelper");
 const { characters } = require("./characterHelpers/characterUtil");
 const { checkGame } = require("./endGameHelper");
 const { organizeRoles } = require("./rolesHelpers");
@@ -111,7 +111,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
-    await shuffleSeers(interaction, organizedChannels);
+    await handleApprenticeSeer(interaction, deadUser);
   }
 
   if (deadUser.is_vampire) {

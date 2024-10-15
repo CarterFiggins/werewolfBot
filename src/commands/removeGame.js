@@ -39,7 +39,7 @@ module.exports = {
         if (channelName === interactionChannel.name) {
           await interaction.reply({
             content:
-              "Don't end game in channel that will be deleted. Try general",
+              "Don't end game in channel that will be deleted. Try a channel outside of the game.",
             ephemeral: true,
           });
           wrongChannel = true;

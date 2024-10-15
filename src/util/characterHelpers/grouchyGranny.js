@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { updateUser, findAllUsers, findManyUsers, findUser } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
-const { organizeChannels, channelNames, giveChannelPermissions } = require("../channelHelpers");
+const { organizeChannels, channelNames, giveChannelPermissions, flatOrganizedChannels } = require("../channelHelpers");
 
 async function mutePlayers(interaction) {
   const cursorGrannies = await findManyUsers({
@@ -43,6 +43,7 @@ async function returnMutedPlayers(interaction, guildId) {
           user: member,
           character: user.character,
           message,
+          joiningDbUser: user,
         });
         if (user.character !== characters.VILLAGER) {
           giveChannelPermissions({
@@ -97,7 +98,7 @@ async function castOutUser(interaction, member) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   await Promise.all(
-    _.map(organizedChannels, async (channel) => {
+    _.map(flatOrganizedChannels(organizedChannels), async (channel) => {
       if (channel.name === channelNames.OUT_CASTS) {
         await channel.permissionOverwrites.edit(member, {
           SendMessages: true,

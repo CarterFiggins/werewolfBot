@@ -63,6 +63,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     user: doppelgangerMember,
     character: copiedCharacter,
     message: characters.VILLAGER === copiedCharacter ? null : `The doppelganger ${doppelgangerMember} has joined`,
+    joiningDbUser: copiedUserDb,
   });
 
   let isVampire = "";
