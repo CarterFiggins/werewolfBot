@@ -148,11 +148,11 @@ async function killChaosDemon(interaction, targetMember) {
     character: characters.CHAOS_DEMON,
     is_dead: false,
   })
-  const chaosDemonMember = members.get(chaosDemon.user_id)
 
   if (!chaosDemon) {
     return;
   }
+  const chaosDemonMember = members.get(chaosDemon.user_id)
 
   await removePlayer(
     interaction,
@@ -222,13 +222,6 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
 
   await sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire })
   await checkGame(interaction);
-  if (!_.isEmpty(interaction.townAnnouncements)) {
-    const channels = interaction.guild.channels.cache;
-    const organizedChannels = organizeChannels(channels);
-    await organizedChannels.townSquare.send(
-      interaction.townAnnouncements.join("\n")
-    );
-  }
 }
 
 async function hunterShootingLimitJob(

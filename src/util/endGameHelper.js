@@ -17,6 +17,14 @@ async function checkGame(interaction, chaosWins) {
 
   const isGameOver = await checkForWinner(interaction, chaosWins);
 
+  if (!_.isEmpty(interaction.townAnnouncements)) {
+    const channels = interaction.guild.channels.cache;
+    const organizedChannels = organizeChannels(channels);
+    await organizedChannels.townSquare.send(
+      interaction.townAnnouncements.join("\n")
+    );
+  }
+
   if (isGameOver) {
     await endGame(interaction, roles, members);
   }
