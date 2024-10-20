@@ -39,6 +39,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     copiedUserDb = await randomUser(guildId)
     copiedCharacter = copiedUserDb.character;
     copiedAssignedIdentity = copiedUserDb.assigned_identity;
+    copyUserId = copiedUserDb.user_id
   } else {
     copiedUserDb = await findUser(copyUserId, guildId);
     copiedCharacter = copiedUserDb.character;

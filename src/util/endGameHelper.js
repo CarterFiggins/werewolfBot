@@ -10,6 +10,7 @@ const {
 const { characters } = require("./characterHelpers/characterUtil");
 const { removeGameRolesFromMembers } = require("./rolesHelpers");
 const { endGuildJobs } = require("./schedulHelper");
+const { organizeChannels } = require("./channelHelpers");
 
 async function checkGame(interaction, chaosWins) {
   const members = interaction.guild.members.cache;
