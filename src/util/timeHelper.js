@@ -11,6 +11,7 @@ const {
   deleteManyVotes,
   findSettings,
   resetUserWhisperCount,
+  findManyUsers,
 } = require("../werewolf_db");
 const { vampiresAttack } = require("./characterHelpers/vampireHelpers");
 const { parseSettingTime } = require("./checkTime");
@@ -195,12 +196,6 @@ async function dayTimeJob(interaction) {
     `## ${message || backUpMessage}${starveMessage}${vampireDeathMessages}\n**It is day time**`
   );
   await checkGame(interaction);
-
-  if (!_.isEmpty(interaction.townAnnouncements)) {
-    await organizedChannels.townSquare.send(
-      interaction.townAnnouncements.join("\n")
-    );
-  }
 }
 
 // Handles town votes and death
@@ -248,11 +243,6 @@ async function nightTimeJob(interaction) {
 
   const chaosWins = await handleVotingDeath(interaction)
   await checkGame(interaction, chaosWins);
-  if (!_.isEmpty(interaction.townAnnouncements)) {
-    await organizedChannels.townSquare.send(
-      interaction.townAnnouncements.join("\n")
-    );
-  }
 }
 
 async function handleVotingDeath(interaction) {

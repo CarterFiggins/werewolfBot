@@ -14,7 +14,7 @@ const {
   organizeChannels,
   removeChannelPermissions,
 } = require("./channelHelpers");
-const { shuffleSeers } = require("./characterHelpers/seerHelper");
+const { handleApprenticeSeer } = require("./characterHelpers/seerHelper");
 const { characters } = require("./characterHelpers/characterUtil");
 const { checkGame } = require("./endGameHelper");
 const { organizeRoles } = require("./rolesHelpers");
@@ -111,7 +111,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
-    await shuffleSeers(interaction, organizedChannels);
+    await handleApprenticeSeer(interaction, deadUser);
   }
 
   if (deadUser.is_vampire) {
@@ -148,11 +148,11 @@ async function killChaosDemon(interaction, targetMember) {
     character: characters.CHAOS_DEMON,
     is_dead: false,
   })
-  const chaosDemonMember = members.get(chaosDemon.user_id)
 
   if (!chaosDemon) {
     return;
   }
+  const chaosDemonMember = members.get(chaosDemon.user_id)
 
   await removePlayer(
     interaction,
@@ -190,6 +190,7 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
   if (!randomFire) {
     await interaction.reply(":dart: PEW PEW :gun:");
   }
+  interaction.townAnnouncements = [];
 
   const members = await interaction.guild.members.fetch();
   const deadTargetMember = members.get(targetDbUser.user_id);

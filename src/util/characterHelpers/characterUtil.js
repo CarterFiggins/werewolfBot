@@ -58,7 +58,7 @@ const characterInfoMap = new Map([
   [characters.MASON, {            weight: 4, points: 4, helpsTeam: teams.VILLAGER }],
   [characters.HUNTER, {           weight: 5, points: 5, helpsTeam: teams.VILLAGER }],
   [characters.WEREWOLF, {         weight: 0, points: 6, helpsTeam: teams.WEREWOLF }], // weighted 0 because the number of werewolves are base off of number of players
-  [characters.FOOL, {             weight: 3, points: 3, helpsTeam: teams.WEREWOLF }],
+  [characters.FOOL, {             weight: 3, points: 5, helpsTeam: teams.WEREWOLF }],
   [characters.LYCAN, {            weight: 5, points: 3, helpsTeam: teams.WEREWOLF }],
   [characters.BAKER, {            weight: 5, points: 6, helpsTeam: teams.WEREWOLF, onlyOne: true }],
   [characters.MUTATED, {          weight: 3, points: 4, helpsTeam: teams.WEREWOLF }],

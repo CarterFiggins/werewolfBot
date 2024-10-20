@@ -15,7 +15,7 @@ const channelNames = {
   MASON: "mason",
   WITCH: "witch",
   VAMPIRES: "vampires",
-  OUT_CASTS: "out-casts",
+  OUT_CASTS: "grannys-house",
   MONARCH: "monarch",
 };
 
@@ -33,7 +33,6 @@ async function sendStartMessages(interaction, users) {
 
   const werewolves = [];
   const masons = [];
-  const seers = [];
   const bodyguards = [];
   const grannies = [];
   const monarchs = [];
@@ -45,10 +44,6 @@ async function sendStartMessages(interaction, users) {
         break;
       case characters.MASON:
         masons.push(user);
-        break;
-      case characters.SEER:
-      case characters.FOOL:
-        seers.push(user);
         break;
       case characters.BODYGUARD:
         bodyguards.push(user);
@@ -81,7 +76,13 @@ async function sendStartMessages(interaction, users) {
   await organizedChannels?.werewolves?.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );
-  await organizedChannels?.seer?.send(`${seerStart}\nSeers:\n${seers}`);
+  
+  if (!_.isEmpty(organizedChannels?.seerChannels)) {
+    for (const channel of organizedChannels.seerChannels) {
+      await channel.send(`${seerStart}`);
+    }
+  }
+
   const afterLifeMessage = await organizedChannels.afterLife.send(
     `${afterLifeStart}\n${showUsersCharacter(users)}`
   );
@@ -114,7 +115,7 @@ function showUsersCharacter(users) {
 }
 
 function organizeChannels(channels) {
-  channelObject = {};
+  const channelObject = {seerChannels: []};
   channels.forEach((channel) => {
     switch (channel.name) {
       case channelNames.TOWN_SQUARE:
@@ -122,9 +123,6 @@ function organizeChannels(channels) {
         break;
       case channelNames.WEREWOLVES:
         channelObject.werewolves = channel;
-        break;
-      case channelNames.SEER:
-        channelObject.seer = channel;
         break;
       case channelNames.AFTER_LIFE:
         channelObject.afterLife = channel;
@@ -148,15 +146,23 @@ function organizeChannels(channels) {
         channelObject.monarch = channel;
         break;
     }
+    if (channel.name.includes(channelNames.SEER)) {
+      channelObject.seerChannels.push(channel)
+    }
   });
   return channelObject;
+}
+
+function flatOrganizedChannels(organizedChannels) {
+  const [arrayChannels, singleChannels] = _.partition(organizedChannels, (c) => _.isArray(c))
+  return [...singleChannels, ..._.flatten(arrayChannels)]
 }
 
 async function removeChannelPermissions(interaction, user) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   await Promise.all(
-    _.map(organizedChannels, async (channel) => {
+    _.map(flatOrganizedChannels(organizedChannels), async (channel) => {
       if (channel.name !== channelNames.AFTER_LIFE) {
         await channel.permissionOverwrites.edit(user, {
           SendMessages: false,
@@ -175,6 +181,7 @@ async function giveChannelPermissions({
   user,
   character,
   message,
+  joiningDbUser,
 }) {
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
@@ -199,7 +206,11 @@ async function giveChannelPermissions({
       break;
     case characters.SEER:
     case characters.FOOL:
-      channel = organizedChannels.seer;
+      const channels = interaction.guild.channels.cache;
+      channel = channels.get(joiningDbUser.channel_id.toString());
+      await updateUser(user.id, interaction.guild.id, {
+        channel_id: channel.id,
+      })
       break;
     case characters.VILLAGER:
       channel = organizedChannels.townSquare;
@@ -294,7 +305,6 @@ async function removeAllGameChannels(channels) {
       switch (channel.name) {
         case channelNames.TOWN_SQUARE:
         case channelNames.WEREWOLVES:
-        case channelNames.SEER:
         case channelNames.MASON:
         case channelNames.AFTER_LIFE:
         case channelNames.THE_TOWN:
@@ -304,6 +314,9 @@ async function removeAllGameChannels(channels) {
         case channelNames.OUT_CASTS:
         case channelNames.MONARCH:
           await channel.delete();
+      }
+      if (channel.name.includes(channelNames.SEER)) {
+        await channel.delete();
       }
     })
   );
@@ -374,23 +387,23 @@ async function createChannels(interaction, users) {
   ];
 
   const allUserCharacters = _.map(users, (u) => u.info.character)
+  const seerOrFoolUsers = _.filter(users, (u) => u.info.character === characters.SEER || u.info.character === characters.FOOL)
 
   const allChannelsData = [
     {
       channelName: channelNames.TOWN_SQUARE,
       permissions: townSquarePermissions,
+      defaultChannel: true,
     },
     {
       channelName: channelNames.AFTER_LIFE,
       permissions: afterLifePermissions,
+      defaultChannel: true,
     },
     {
       channelName: channelNames.WEREWOLVES,
       characterNames: [characters.WEREWOLF],
-    },
-    {
-      channelName: channelNames.SEER,
-      characterNames: [characters.SEER, characters.FOOL]
+      defaultChannel: true,
     },
     {
       channelName: channelNames.MASON,
@@ -418,8 +431,20 @@ async function createChannels(interaction, users) {
     },
   ];
 
+  seerOrFoolUsers.forEach((user) => {
+    allChannelsData.push({
+      channelName: `${user.username.substring(0, 50)}-the-seer`,
+      singlePermission: true,
+      characterNames: [user.info.character],
+      player: user,
+    })
+  })
+
   const createChannelsData = _.filter(allChannelsData, (data) => {
-    if (_.isEmpty(data.characterNames)) {
+    if (data.defaultChannel) {
+      return true
+    }
+    if (data?.singlePermission) {
       return true
     }
     if (!_.isEmpty(_.intersection(data.characterNames, allUserCharacters))) {
@@ -435,16 +460,23 @@ async function createChannels(interaction, users) {
     if (!permissions) {
       permissions = defaultPermissions
     }
+    const channelUsers = channelData.singlePermission ? [channelData.player] : users
+
     if (!_.isEmpty(channelData.characterNames)) {
-      const characterPermissions = await createPermissions(users, channelData.characterNames, guildSettings)
+      const characterPermissions = await createPermissions(channelUsers, channelData.characterNames, guildSettings)
       permissions = permissions.concat(characterPermissions)
     }
-    await createChannel(
+    const channel = await createChannel(
       interaction,
       channelData.channelName,
       permissions,
       category
     );
+    if (channelData.singlePermission) {
+      await updateUser(channelData.player.id, interaction.guild.id, {
+        channel_id: channel.id,
+      })
+    }
   }
 }
 
@@ -482,6 +514,7 @@ module.exports = {
   joinMasons,
   createChannels,
   removeAllGameChannels,
+  flatOrganizedChannels,
   channelNames,
   setupChannelNames,
 };
@@ -493,7 +526,7 @@ const werewolfStart =
   "Welcome to the werewolf channel! Talk to your fellow werewolves and mark your next target with the `/kill` command at night to kill the villagers";
 
 const seerStart =
-  "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager. If there is more than one player here there might be a fool among you.";
+  "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager. Oh and there is a chance you could be a fool... but we are all counting on you!";
 
 const afterLifeStart =
   "You are dead... There's not much to do except talk to other dead players and watch the game";

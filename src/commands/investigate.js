@@ -42,9 +42,8 @@ module.exports = {
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
-    const seerUser = await findUser(interaction.user.id, interaction.guild.id);
 
-    if (channel.name !== channelNames.SEER) {
+    if (!channel.name.includes(channelNames.SEER)) {
       await interaction.reply({
         content: "Your magic only works in the seer channel",
         ephemeral: true,
@@ -75,16 +74,6 @@ module.exports = {
     if (targetDbUser.user_id === interaction.user.id) {
       await interaction.reply({
         content: `${targetedUser} is a seer... hmm thats you right? You don't have to investigate to know that! try again.`,
-        ephemeral: false,
-      });
-      return;
-    }
-    if (
-      targetDbUser.character === characters.SEER ||
-      targetDbUser.character === characters.FOOL
-    ) {
-      await interaction.reply({
-        content: `${targetedUser} is a **werewolf**..... jk they are a villager in the same channel as you! **try again!**\nhttps://tenor.com/bK8Gm.gif`,
         ephemeral: false,
       });
       return;

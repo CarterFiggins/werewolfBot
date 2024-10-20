@@ -41,7 +41,7 @@ module.exports = {
       emoji: "🤡",
       team: "villager",
       description: `### Fool 
-* The fool is told (s)he is the seer but when investigating, (s)he will receive a random answer. The fool and the seer are in the same channel, and together they figure out which of them is the real seer.
+* The fool is told (s)he is the seer but when investigating, (s)he will receive a random answer. The fool will be in their own seer channel.
 * Channels: seer
 * Commands: \`/investigate\``,
     },
@@ -50,7 +50,7 @@ module.exports = {
       emoji: "🪄",
       team: "villager",
       description: `### Apprentice Seer
-* The apprentice seer takes over the seer seat if the seer is killed. If the fool is still alive when the seer dies, the fool and seer characters will be shuffled. The apprentice may become the fool or the seer, and the former fool will take the other character.
+* The apprentice seer takes over the seer seat if the seer is killed. They will join the old seer's channel and see the history of what they have done. They will not become the fool if the fool dies.
 * Channels: seer
 * Commands \`/investigate\``,
     },
@@ -105,7 +105,7 @@ module.exports = {
       team: "villager",
       description: `### Grouchy Granny
     * The grouchy granny is a villager. Each night, she can choose to mute one player, preventing them from speaking the next day and stops them from using their power.
-    * Channels: out-casts
+    * Channels: grannys-house
     * Commands: \`/mute\``,
     },
     {

@@ -48,6 +48,14 @@ async function stopPlayingResponse(interaction) {
 
 async function joinTheDeadResponse(interaction) {
   const member = interaction.member;
+  const game = await findGame(interaction.guild.id);
+  if (!game) {
+    await interaction.reply({
+      content: "There is not an active game.",
+      ephemeral: true,
+    });
+    return;
+  }
   if (isAlive(member)) {
     await interaction.reply({
       content: "https://tenor.com/pym7KF2INdx.gif",

@@ -17,6 +17,14 @@ async function checkGame(interaction, chaosWins) {
 
   const isGameOver = await checkForWinner(interaction, chaosWins);
 
+  if (!_.isEmpty(interaction.townAnnouncements)) {
+    const channels = interaction.guild.channels.cache;
+    const organizedChannels = organizeChannels(channels);
+    await organizedChannels.townSquare.send(
+      interaction.townAnnouncements.join("\n")
+    );
+  }
+
   if (isGameOver) {
     await endGame(interaction, roles, members);
   }
@@ -55,7 +63,10 @@ async function checkForWinner(interaction, chaosWins) {
     ).join("\n");
   };
 
-  if (werewolfCount + vampireCount + villagerCount + witchCount === 0) {
+  if (
+    werewolfCount + vampireCount + villagerCount + witchCount + chaosCount ===
+    0
+  ) {
     interaction.townAnnouncements.push("# I WIN! Everyone is dead!");
     return true;
   }
@@ -73,7 +84,7 @@ ${listUsers(deadUsers.villagers)}`
     return true;
   }
 
-  if (werewolfCount >= villagerCount + vampireCount) {
+  if (werewolfCount >= villagerCount + vampireCount + chaosCount) {
     interaction.townAnnouncements.push(
       `# Werewolves Win!
       Werewolves now outnumber the town's remaining population.
@@ -86,7 +97,7 @@ ${listUsers([deadUsers.werewolves, ...deadUsers.witches])}`
     return true;
   }
 
-  if (vampireCount >= villagerCount + werewolfCount) {
+  if (vampireCount >= villagerCount + werewolfCount + chaosCount) {
     interaction.townAnnouncements.push(
       `# Vampires Win!
       Vampires now outnumber the town's remaining population.
