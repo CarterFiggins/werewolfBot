@@ -292,11 +292,11 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
   const userWasProtected = deadCharacter === PowerUpNames.SHIELD;
 
 
-  if (targetDbUser.character === characters.HUNTER) {
+  if (targetDbUser.character === characters.HUNTER && !userWasProtected) {
     message = `${deadTargetMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
   }
 
-  if (targetDbUser.character === characters.WITCH) {
+  if (targetDbUser.character === characters.WITCH && !userWasProtected) {
     message += await castWitchCurse(interaction)
   }
 
