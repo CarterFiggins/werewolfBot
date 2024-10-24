@@ -54,6 +54,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   await updateUser(doppelgangerUserId, guildId, {
     character: copiedCharacter,
     first_bite: copiedVampireKing,
+    is_vampire: copiedVampireKing,
     is_cub: copiedUserDb.is_cub,
   });
 
