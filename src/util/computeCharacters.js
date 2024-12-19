@@ -7,7 +7,12 @@ function startingCharacters(settings, numberOfPlayers) {
   const werewolvesPerPlayers = settings.allow_vampires ? 6 : 5
   const werewolvesToAdd = Math.floor(numberOfPlayers/werewolvesPerPlayers) || 1
   const startingCards = [];
-  _.forEach(_.range(werewolvesToAdd), () => {
+  let wolfSubtract = 0;
+  if (settings.extra_characters && werewolvesToAdd > 1 && Math.random() < 0.25) {
+    startingCards.push(characters.CUB);
+    wolfSubtract = 1;
+  }
+  _.forEach(_.range(werewolvesToAdd - wolfSubtract), () => {
     startingCards.unshift(characters.WEREWOLF)
   })
   
@@ -43,7 +48,6 @@ function startingCharacters(settings, numberOfPlayers) {
       characters.MUTATED,
       characters.WITCH,
       characters.FOOL,
-      characters.CUB,
     )
     villagerCards.push(
       characters.DOPPELGANGER,
