@@ -1,0 +1,14 @@
+[Unit]
+Description=Werewolf bot server
+
+[Service]
+User=pi
+Type=idle
+WorkingDirectory=/home/pi/Documents/werewolfBot
+Restart=always
+Environment=PATH=/home/pi/.nvm/versions/node/v18.17.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+ExecStart=/home/pi/.nvm/versions/node/v18.17.1/bin/npm run start
+
+[Install]
+WantedBy=multi-user.target

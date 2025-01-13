@@ -25,6 +25,7 @@ const setupChannelNames = {
   COMMANDS: "commands",
   GAME_INSTRUCTIONS: "game-instructions",
   SETTINGS: "settings",
+  ADMIN_SETTINGS: "admin-settings",
 }
 
 async function sendStartMessages(interaction, users) {
