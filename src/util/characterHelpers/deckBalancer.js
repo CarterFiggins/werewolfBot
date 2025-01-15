@@ -13,10 +13,10 @@ function createDeck(characterCards) {
 }
 
 class DeckBalancer{
-  constructor(settings, startingWerewolfCards, startingVillagerCards) {
+  constructor(adminCharacters, startingWerewolfCards, startingVillagerCards) {
     this.villager = { points: 0, team: teams.VILLAGER };
     this.werewolf = { points: 0, team: teams.WEREWOLF };
-    const playingCards = getCards(settings);
+    const playingCards = getCards(adminCharacters);
     this.startingVillagerCards = startingVillagerCards;
     this.startingWerewolfCards = startingWerewolfCards;
     this.villagerDeck = createDeck(playingCards.villagerCards);

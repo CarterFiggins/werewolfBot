@@ -127,6 +127,26 @@ async function updateSettings(guild_id, updatedSettings) {
     .updateOne({ guild_id }, { $set: updatedSettings });
 }
 
+async function addAdminCharacters(guild_id, characters) {
+  const adminSettings =  await db
+    .collection("adminSettings")
+    .findOne({ guild_id });
+  
+  if (!adminSettings) {
+    return await db.collection("adminSettings").insertOne({ guild_id, characters });
+  }
+
+  return await db
+    .collection("adminSettings")
+    .updateOne({ guild_id }, { $set: { characters } });
+}
+
+async function findAdminSettings(guild_id) {
+  return  await db
+    .collection("adminSettings")
+    .findOne({ guild_id });
+}
+
 module.exports = {
   deleteAllUsers,
   findUser,
@@ -149,4 +169,6 @@ module.exports = {
   createSettings,
   updateSettings,
   resetUserWhisperCount,
+  addAdminCharacters,
+  findAdminSettings,
 }

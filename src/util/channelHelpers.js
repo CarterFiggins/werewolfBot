@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { findSettings, updateUser } = require("../werewolf_db");
-const { characters, getCards } = require("./characterHelpers/characterUtil");
+const { characters, getCards, getCurrentCharacters } = require("./characterHelpers/characterUtil");
 const { ChannelType, PermissionsBitField } = require("discord.js");
 const { getRole, roleNames } = require("./rolesHelpers");
 const { showAllPowerUpMessages } = require("./commandHelpers");
@@ -482,25 +482,11 @@ async function createChannels(interaction, users) {
 }
 
 async function possibleCharactersInGame(interaction) {
-  const settings = await findSettings(interaction.guild.id);
-  const { wolfCards, villagerCards } = getCards(settings);
-  const otherCards = [];
-  if (!settings.random_cards) {
-    if (settings.extra_characters) {
-      wolfCards.push(characters.WITCH);
-    }
-    villagerCards.push(characters.BAKER);
-  }
-
-  if (settings.allow_vampires) {
-    otherCards.push(`Vampire ${characters.VAMPIRE}`)
-  }
-
-  if (settings.allow_chaos_demon) {
-    otherCards.push(characters.CHAOS_DEMON)
-  }
-
-  return _.map([...wolfCards, ...villagerCards, ...otherCards], _.capitalize)
+  const adminCharacters = await getCurrentCharacters(interaction.guild.id)
+  const { wolfCards, villagerCards, otherCards } = getCards(adminCharacters);
+  const vampireName = `Vampire ${_.capitalize(characters.VAMPIRE)}`
+  const soloCards = _.map(otherCards, (name) => name === characters.VAMPIRE ? vampireName : name)
+  return _.map([...wolfCards, ...villagerCards, ...soloCards], _.capitalize)
 }
 
 module.exports = {

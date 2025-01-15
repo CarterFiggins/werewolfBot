@@ -43,7 +43,7 @@ roles = [
   },
   {
     label: "Apprentice Seer",
-    tag: characters.SEER,
+    tag: characters.APPRENTICE_SEER,
     emoji: "🪄",
     team: "villager",
     description: `### Apprentice Seer
