@@ -167,7 +167,7 @@ roles = [
     emoji: "😈",
     team: "chaos",
     description: `### Chaos Demon
-* The first night the Chaos Demon will pick any player. For the Chaos Demon to win they must convince the town to hang the target player. If the target dies any other way the chaos demon will die. The Chaos demon is on their own team. Change the allow_chaos_demon setting to true to add this player in the game.
+* The first night the Chaos Demon will pick any player. For the Chaos Demon to win they must convince the town to hang the target player. If the target dies any other way the chaos demon will die. The Chaos demon is on their own team.
 * Channels: none
 * Commands: \`/chaos_target\``,
   },
@@ -177,7 +177,7 @@ roles = [
     emoji: "🧛",
     team: "vampire",
     description: `### Vampire King
-* The Vampire King is the first vampire. The first night, (s)he chooses someone to bite. That player is immediately turned into a vampire. After that, each player will take two successful bites to turn into a vampire. If the Vampire King tries to bite a werewolf, the attack will fail. Change the allow_vampires setting to true to add this player in the game.
+* The Vampire King is the first vampire. The first night, (s)he chooses someone to bite. That player is immediately turned into a vampire. After that, each player will take two successful bites to turn into a vampire. If the Vampire King tries to bite a werewolf, the attack will fail.
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
   },
@@ -200,7 +200,7 @@ module.exports = {
       emoji: "🧛",
       team: "vampire",
       description: `### Vampire
-  * A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. Each night, a vampire may attack a player. It takes two bites to turn a player into a vampire. If a vampire attacks a werewolf or targets the same player as the werewolves, (s)he will die. Change the allow_vampires setting to true to add this player in the game.
+  * A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. Each night, a vampire may attack a player. It takes two bites to turn a player into a vampire. If a vampire attacks a werewolf or targets the same player as the werewolves, (s)he will die.
   * Channels: vampires
   * Commands: \`/vampire_bite\``,
     },

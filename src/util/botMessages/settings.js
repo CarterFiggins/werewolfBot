@@ -1,7 +1,4 @@
 const SettingCommands = {
-  EXTRA_CHARACTERS: "extra_characters",
-  ALLOW_CHAOS_DEMON: 'allow_chaos_demon',
-  ALLOW_VAMPIRES: "allow_vampires",
   KING_BITE_WOLF_SAFE: "king_bite_wolf_safe",
   KING_VICTIM_ATTACK_SAFE: "king_victim_attack_safe",
   ALLOW_FIRST_BITE: "allow_first_bite",
@@ -29,38 +26,6 @@ module.exports = {
       description: `# Night and Day times
 Use these commands (\`/settings night_time\`, \`/settings day_time\`) to set the day and night time in the game. Currently the time zone is set in MST. So you might need to adjust the time if you are in a different time zone.
 `
-    },
-    {
-      id: SettingCommands.EXTRA_CHARACTERS,
-      label: 'Add Extra Characters',
-      emoji: '👥',
-      description: `### Extra Characters
-Add more characters into the game. Characters added:
-* Mutated Villager
-* Witch
-* Fool
-* Werewolf Cub
-* DoppelGanger
-* Apprentice_seer
-* Grouchy Granny
-* Monarch
-`,
-    },
-    {
-      id: SettingCommands.ALLOW_CHAOS_DEMON,
-      label: 'Add Chaos Demon',
-      emoji: '😈',
-      description: `### Add Chaos Demon
-Adds the Chaos Demon in the game.
-`,
-    },
-    {
-      id: SettingCommands.ALLOW_VAMPIRES,
-      label: 'Add King Vampire',
-      emoji: '🧛‍♂️',
-      description: `### Add King Vampire
-Adds the King Vampire in the game.
-`,
     },
     {
       id: SettingCommands.KING_BITE_WOLF_SAFE,
