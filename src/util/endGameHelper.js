@@ -57,6 +57,9 @@ async function checkForWinner(interaction, chaosWins) {
     if (_.isEmpty(deadUsers)) {
       return "None"
     }
+    // log here to see why dead has undefined
+    console.log("dbUsers")
+    console.log(dbUsers)
     return _.map(
       dbUsers,
       (dbUser) =>

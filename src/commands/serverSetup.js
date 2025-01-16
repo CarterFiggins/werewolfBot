@@ -13,7 +13,7 @@ const { findSettings, createSettings } = require("../werewolf_db");
 const { createChannel, setupChannelNames, createCategory } = require("../util/channelHelpers");
 const { howToPlayIntro, howToPlayRoles, villagerTeam, werewolfTeam, vampireTeam, undeterminedTeam, soloCharacters, orderOfOperations } = require("../util/botMessages/howToPlay");
 const { commandList, commandsIntro } = require("../util/botMessages/commandsDescriptions");
-const { playerRolesIntro, roleList } = require("../util/botMessages/player-roles");
+const { playerRolesIntro, roleList, characterSelectionIntro, selectCharacterList } = require("../util/botMessages/player-roles");
 const { settingsList, settingsIntro } = require("../util/botMessages/settings");
 
 module.exports = {
@@ -51,11 +51,24 @@ module.exports = {
       deny: [
         PermissionsBitField.Flags.SendMessages,
         PermissionsBitField.Flags.AddReactions,
-        PermissionsBitField.Flags. CreatePrivateThreads,
-        PermissionsBitField.Flags. CreatePublicThreads,
-        PermissionsBitField.Flags. SendMessagesInThreads,
+        PermissionsBitField.Flags.CreatePrivateThreads,
+        PermissionsBitField.Flags.CreatePublicThreads,
+        PermissionsBitField.Flags.SendMessagesInThreads,
       ],
       allow: [PermissionsBitField.Flags.ViewChannel],
+    };
+
+    const denyEveryonePermissions = {
+      id: interaction.guild.id,
+      deny: [
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.AddReactions,
+        PermissionsBitField.Flags.CreatePrivateThreads,
+        PermissionsBitField.Flags.CreatePublicThreads,
+        PermissionsBitField.Flags.SendMessagesInThreads,
+        PermissionsBitField.Flags.ViewChannel,
+      ],
+      allow: [],
     };
 
     const setupChannels = {}
@@ -71,7 +84,9 @@ module.exports = {
         setupChannels.gameInstructions = channel
       } else if (channel.name === setupChannelNames.SETTINGS) {
         setupChannels.settings = channel
-      }
+      } else if (channel.name === setupChannelNames.ADMIN_SETTINGS) {
+        setupChannels.adminSettings = channel
+      } 
     });
 
     if (!setupChannels.gameInstructions) {
@@ -159,11 +174,8 @@ module.exports = {
         random_cards: false,
         can_whisper: false,
         allow_reactions: false,
-        extra_characters: false,
         wolf_kills_witch: false,
         hard_mode: false,
-        allow_chaos_demon: false,
-        allow_vampires: false,
         allow_first_bite: true,
         king_bite_wolf_safe: true,
         king_victim_attack_safe: true,
@@ -198,6 +210,33 @@ module.exports = {
     
       const actionRow = new ActionRowBuilder().addComponents(selectMenu)
       await setupChannels.settings.send(settingsIntro);
+      await setupChannels.settings.send({
+        components: [actionRow],
+      });
+    }
+
+    if (!setupChannels.adminSettings) {
+      setupChannels.settings = await createChannel(
+        interaction,
+        setupChannelNames.ADMIN_SETTINGS,
+        [adminPermissions, denyEveryonePermissions],
+        setupChannels.gameInstructions
+      );
+
+      const selectMenu = new StringSelectMenuBuilder()
+      .setCustomId("character-selection")
+      .setPlaceholder("Select characters")
+      .setMinValues(1)
+      .setMaxValues(selectCharacterList.length)  
+      .addOptions(_.map(selectCharacterList, (character) => new StringSelectMenuOptionBuilder()
+        .setLabel(character.label)
+        .setDescription(`team ${character.team}`)
+        .setValue(character.tag)
+        .setEmoji(character.emoji)
+      ))
+      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
+      await setupChannels.settings.send("# Admin Settings");
+      await setupChannels.settings.send(characterSelectionIntro);
       await setupChannels.settings.send({
         components: [actionRow],
       });

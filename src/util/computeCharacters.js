@@ -1,14 +1,24 @@
 const _ = require("lodash");
 const { findSettings } = require("../werewolf_db");
-const { characters } = require("./characterHelpers/characterUtil");
+const { characters, teams, characterInfoMap, getCurrentCharacters } = require("./characterHelpers/characterUtil");
 const { DeckBalancer } = require("./characterHelpers/deckBalancer");
 
-function startingCharacters(settings, numberOfPlayers) {
-  const werewolvesPerPlayers = settings.allow_vampires ? 6 : 5
-  const werewolvesToAdd = Math.floor(numberOfPlayers/werewolvesPerPlayers) || 1
+function startingCharacters(settings, numberOfPlayers, adminCharacters) {
+  const isPlaying = (playingCharacter) => _.find(adminCharacters, (c) => c === playingCharacter)
+
+  werewolfIsPlaying = isPlaying(characters.WEREWOLF)
+  vampireIsPlaying = isPlaying(characters.VAMPIRE)
+  cubIsPlaying = isPlaying(characters.CUB)
+  chaosDemonIsPlaying = isPlaying(characters.CHAOS_DEMON)
+  masonIsPlaying = isPlaying(characters.MASON)
+  bodyguardIsPlaying = isPlaying(characters.BODYGUARD)
+  seerIsPlaying = isPlaying(characters.SEER)
+
+  const werewolvesPerPlayers = vampireIsPlaying ? 6 : 5
+  const werewolvesToAdd = werewolfIsPlaying ? (Math.floor(numberOfPlayers/werewolvesPerPlayers) || 1) : 0
   const startingCards = [];
   let wolfSubtract = 0;
-  if (settings.extra_characters && werewolvesToAdd > 1 && Math.random() < 0.25) {
+  if (cubIsPlaying && werewolvesToAdd > 1 && Math.random() < 0.25) {
     startingCards.push(characters.CUB);
     wolfSubtract = 1;
   }
@@ -16,10 +26,10 @@ function startingCharacters(settings, numberOfPlayers) {
     startingCards.unshift(characters.WEREWOLF)
   })
   
-  if (settings.allow_vampires) {
+  if (vampireIsPlaying) {
     startingCards.unshift(characters.VAMPIRE)
   }
-  if (settings.allow_chaos_demon) {
+  if (chaosDemonIsPlaying) {
     startingCards.unshift(characters.CHAOS_DEMON)
   }
 
@@ -27,43 +37,53 @@ function startingCharacters(settings, numberOfPlayers) {
     return { cardsInGame: startingCards, werewolfCards: [], villagerCards: []}
   }
 
-  startingCards.unshift(
-    characters.MASON,
-    characters.MASON,
-    characters.BODYGUARD,
-    characters.SEER,
-  )
-
-  const werewolfCards = [
-    characters.LYCAN,
-    characters.BAKER,
-  ]
-
-  const villagerCards = [
-    characters.HUNTER,
-  ]
-
-  if (settings.extra_characters) {
-    werewolfCards.push(
-      characters.MUTATED,
-      characters.WITCH,
-      characters.FOOL,
-    )
-    villagerCards.push(
-      characters.DOPPELGANGER,
-      characters.APPRENTICE_SEER,
-      characters.GROUCHY_GRANNY,
-      characters.MONARCH,
+  if (masonIsPlaying) {
+    startingCards.unshift(
+      characters.MASON,
+      characters.MASON,
     )
   }
+
+  if (bodyguardIsPlaying) {
+    startingCards.unshift(characters.BODYGUARD)
+  }
+
+  if (seerIsPlaying) {
+    startingCards.unshift(characters.SEER)
+  }
+
+  const filterCardTeams = (team) => {
+    _.difference(
+      _.filter(adminCharacters, (role) => {
+        const info = characterInfoMap.get(role)
+        return info.helpsTeam === team
+      }),
+      startingCards
+    )
+  }
+
+  const werewolfCards = filterCardTeams(teams.WEREWOLF)
+  const villagerCards = filterCardTeams(teams.VILLAGER)
 
   return { cardsInGame: startingCards, werewolfCards: _.shuffle(werewolfCards), villagerCards: _.shuffle(villagerCards) }
 }
 
 async function computeCharacters(numberOfPlayers, guildId) {
+
+  if (process.env.TESTING_MODE) {
+    return [
+      characters.VILLAGER,
+      characters.DOPPELGANGER,
+      characters.WEREWOLF,
+      characters.CHAOS_DEMON,
+      characters.SEER,
+    ] 
+  }
+
   const settings = await findSettings(guildId);
-  const { cardsInGame, werewolfCards, villagerCards } = startingCharacters(settings, numberOfPlayers);
-  const balance = new DeckBalancer(settings, werewolfCards, villagerCards);
+  const adminCharacters = await getCurrentCharacters(guildId)
+  const { cardsInGame, werewolfCards, villagerCards } = startingCharacters(settings, numberOfPlayers, adminCharacters);
+  const balance = new DeckBalancer(adminCharacters, werewolfCards, villagerCards);
   cardsInGame.forEach((character) => {
     balance.addCharacterPoints(character)
   });

@@ -127,6 +127,20 @@ async function updateSettings(guild_id, updatedSettings) {
     .updateOne({ guild_id }, { $set: updatedSettings });
 }
 
+async function updateAdminSettings(guild_id, settings) {
+  return await db.collection("adminSettings").updateOne(
+    { guild_id },
+    { $set: settings },
+    { upsert: true }
+  );
+}
+
+async function findAdminSettings(guild_id) {
+  return  await db
+    .collection("adminSettings")
+    .findOne({ guild_id });
+}
+
 module.exports = {
   deleteAllUsers,
   findUser,
@@ -149,4 +163,6 @@ module.exports = {
   createSettings,
   updateSettings,
   resetUserWhisperCount,
+  findAdminSettings,
+  updateAdminSettings,
 }

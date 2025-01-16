@@ -64,6 +64,8 @@ module.exports = {
 
     const soloCharacters = [characters.CHAOS_DEMON]
 
+    const someWolves = _.some(dbUsers, (u) => u.character === characters.WEREWOLF)
+
     _.shuffle(dbUsers).forEach((user) => {
       let characterMessage = "";
       if (channel.name === channelNames.AFTER_LIFE || (user.is_dead && !settings.hard_mode)) {
@@ -72,7 +74,7 @@ module.exports = {
       }
       if (!user.is_dead) {
         message += `${members.get(user.user_id)}${characterMessage}\n`;
-        if (user.character === characters.WEREWOLF) {
+        if (user.character === characters.WEREWOLF || ( someWolves && user.character === characters.WITCH )) {
           werewolfCount += 1;
         } else if (user.is_vampire) {
           vampireCount += 1;

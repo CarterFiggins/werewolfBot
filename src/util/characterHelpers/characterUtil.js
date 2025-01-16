@@ -1,3 +1,6 @@
+const _ = require("lodash");
+const { findAdminSettings } = require("../../werewolf_db");
+
 /* 
 To add a new character add it to these
   1. characters list below
@@ -57,7 +60,7 @@ const characterInfoMap = new Map([
   [characters.APPRENTICE_SEER, {  weight: 3, points: 7, helpsTeam: teams.VILLAGER }],
   [characters.MASON, {            weight: 4, points: 4, helpsTeam: teams.VILLAGER }],
   [characters.HUNTER, {           weight: 5, points: 5, helpsTeam: teams.VILLAGER }],
-  [characters.WEREWOLF, {         weight: 0, points: 6, helpsTeam: teams.WEREWOLF }], // weighted 0 because the number of werewolves are base off of number of players
+  [characters.WEREWOLF, {         weight: 1, points: 6, helpsTeam: teams.WEREWOLF }],
   [characters.FOOL, {             weight: 3, points: 5, helpsTeam: teams.WEREWOLF }],
   [characters.LYCAN, {            weight: 5, points: 3, helpsTeam: teams.WEREWOLF }],
   [characters.BAKER, {            weight: 5, points: 6, helpsTeam: teams.WEREWOLF, onlyOne: true }],
@@ -66,37 +69,48 @@ const characterInfoMap = new Map([
   [characters.WITCH, {            weight: 6, points: 7, helpsTeam: teams.WEREWOLF, onlyOne: true }],
   [characters.DOPPELGANGER, {     weight: 3, points: 5, helpsTeam: teams.VILLAGER }],
   [characters.GROUCHY_GRANNY, {   weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
-  [characters.MONARCH, {          weight: 3, points: 6, helpsTeam: teams.VILLAGER }]
+  [characters.MONARCH, {          weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
+  [characters.VAMPIRE, {          weight: 0, points: 0, helpsTeam: teams.VAMPIRE }],
+  [characters.CHAOS_DEMON, {      weight: 0, points: 0, helpsTeam: teams.CHAOS }],
 ]);
 
-function getCards(settings) {
-  const wolfCards = [
-    characters.WEREWOLF,
-    characters.CUB,
-    characters.LYCAN,
-  ];
-  const villagerCards = [
-    characters.SEER,
-    characters.BODYGUARD,
-    characters.MASON,
-    characters.HUNTER,
-    characters.VILLAGER,
-  ];
-  if (settings.random_cards) {
-    wolfCards.push(characters.BAKER)
+defaultCharacters = [
+  characters.WEREWOLF,
+  characters.BAKER,
+  characters.LYCAN,
+  characters.VILLAGER,
+  characters.SEER,
+  characters.BODYGUARD,
+  characters.HUNTER,
+]
+
+function getCards(adminCharacters) {
+  const allCards = {
+    wolfCards: [],
+    villagerCards: [],
+    otherCards: [],
   }
-  if (settings.extra_characters) {
-    if (settings.random_cards) {
-      wolfCards.push(characters.WITCH);
+
+  _.forEach(adminCharacters, (role) => {
+    if (characterInfoMap.get(role).helpsTeam === teams.WEREWOLF) {
+      allCards.wolfCards.push(role)
+    } else if (characterInfoMap.get(role).helpsTeam === teams.VILLAGER) {
+      allCards.villagerCards.push(role)
+    } else {
+      allCards.otherCards.push(role)
     }
-    wolfCards.push(characters.MUTATED);
-    wolfCards.push(characters.FOOL);
-    villagerCards.push(characters.DOPPELGANGER);
-    villagerCards.push(characters.APPRENTICE_SEER);
-    villagerCards.push(characters.GROUCHY_GRANNY);
-    villagerCards.push(characters.MONARCH);
-  }
-  return {wolfCards, villagerCards}
+  })
+
+  return allCards
+}
+
+async function getCurrentCharacters(guildId) {
+  const adminSettings = await findAdminSettings(guildId)
+  const currentCharacters = adminSettings?.characters
+   if (_.isEmpty(currentCharacters)) {
+      return defaultCharacters
+   }
+  return currentCharacters
 }
 
 
@@ -105,4 +119,6 @@ module.exports = {
   characters,
   teams,
   getCards,
+  defaultCharacters,
+  getCurrentCharacters,
 };

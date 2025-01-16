@@ -2,8 +2,6 @@ const computeCharacters = require("../util/computeCharacters");
 jest.mock("../werewolf_db", () => {
   return {
     findSettings: () => ({
-      extra_characters: true,
-      allow_vampires: true,
       can_whisper: false,
       allow_reactions: true,
       wolf_kills_witch: false,
@@ -15,7 +13,6 @@ jest.mock("../werewolf_db", () => {
       bodyguard_joins_masons: true,
       seer_joins_masons: true,
       hunter_guard: true,
-      allow_chaos_demon: true,
     }),
   };
 });
