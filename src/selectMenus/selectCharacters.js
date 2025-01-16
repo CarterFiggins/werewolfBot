@@ -42,7 +42,7 @@ module.exports = {
     await updateAdminSettings(guildId, { characters: charactersInGame })
 
     const characterMessage = ` # Current Selection
-## ${charactersInGame.sort().join("\n# ")}`
+## ${charactersInGame.map(c => c === characters.VAMPIRE ? `Vampire ${_.capitalize(c)}` : _.capitalize(c)).sort().join("\n## ")}`
     const adminSettings = await findAdminSettings(guildId)
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
 

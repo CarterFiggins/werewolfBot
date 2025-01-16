@@ -49,6 +49,9 @@ class DeckBalancer{
   findRandomWeightedCard(deck) {
     let card = null;
     let foundCard = false;
+    if (_.isEmpty(deck)) {
+      return { character: characters.VILLAGER }
+    }
     const maxWeight = _.last(deck).weight;
     while (!foundCard) {
       const randomWeight = Math.floor(Math.random() * maxWeight);
