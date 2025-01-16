@@ -70,15 +70,16 @@ function startingCharacters(settings, numberOfPlayers, adminCharacters) {
 
 async function computeCharacters(numberOfPlayers, guildId) {
 
-  if (process.env.TESTING_MODE) {
-    return [
-      characters.VILLAGER,
-      characters.DOPPELGANGER,
-      characters.WEREWOLF,
-      characters.CHAOS_DEMON,
-      characters.SEER,
-    ] 
-  }
+  // if (process.env.TESTING_MODE) {
+  //   return [
+  //     characters.VILLAGER, // AJ
+  //     characters.DOPPELGANGER, // computing
+  //     characters.WEREWOLF,  // werewolf bot
+  //     characters.CHAOS_DEMON, // bot encourage
+  //     characters.SEER, // me
+
+  //   ] 
+  // }
 
   const settings = await findSettings(guildId);
   const adminCharacters = await getCurrentCharacters(guildId)
