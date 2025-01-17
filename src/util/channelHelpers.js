@@ -246,10 +246,10 @@ async function createChannel(interaction, name, permissionOverwrites, parent) {
   });
 }
 
-async function createCategory(interaction, name) {
+async function createCategory(interaction, category) {
   return await interaction.guild.channels.create({
-    name,
     type: ChannelType.GuildCategory,
+    ...category
   });
 }
 
@@ -454,7 +454,7 @@ async function createChannels(interaction, users) {
     return false
   })
 
-  const category = await createCategory(interaction, channelNames.THE_TOWN);
+  const category = await createCategory(interaction, { name: channelNames.THE_TOWN });
 
   for (const channelData of createChannelsData) {
     let permissions = channelData.permissions;

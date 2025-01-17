@@ -37,6 +37,28 @@ module.exports = {
       return;
     }
 
+    if (!settings) {
+      await createSettings({
+        server_name: interaction.guild.name,
+        guild_id: interaction.guild.id,
+        day_time: "8:00",
+        night_time: "20:00",
+        random_cards: false,
+        can_whisper: false,
+        allow_reactions: false,
+        wolf_kills_witch: false,
+        hard_mode: false,
+        allow_first_bite: true,
+        king_bite_wolf_safe: true,
+        king_victim_attack_safe: true,
+        bodyguard_joins_masons: true,
+        seer_joins_masons: false,
+        hunter_guard: false,
+        allow_lycan_guard: true,
+        enable_power_ups: false,
+      });
+    }
+
     await interaction.client.application.fetch();
     await setupRoles(interaction);
 
@@ -44,7 +66,10 @@ module.exports = {
     const adminRole = await getRole(interaction, roleNames.ADMIN);
     const adminPermissions = {
       id: adminRole.id,
-      allow: [PermissionsBitField.Flags.Administrator],
+      allow: [
+        PermissionsBitField.Flags.Administrator,
+        PermissionsBitField.Flags.ViewChannel,
+      ],
     };
     const nonPlayersPermissions = {
       id: interaction.guild.id,
@@ -71,176 +96,139 @@ module.exports = {
       allow: [],
     };
 
-    const setupChannels = {}
-
     channels.map(async (channel) => {
-      if (channel.name === setupChannelNames.HOW_TO_PLAY) {
-        setupChannels.howToPlay = channel;
-      } else if (channel.name === setupChannelNames.COMMANDS) {
-        setupChannels.commands = channel;
-      } else if (channel.name === setupChannelNames.PLAYER_ROLES) {
-        setupChannels.playerRoles = channel
-      } else if (channel.name === setupChannelNames.GAME_INSTRUCTIONS) {
-        setupChannels.gameInstructions = channel
-      } else if (channel.name === setupChannelNames.SETTINGS) {
-        setupChannels.settings = channel
-      } else if (channel.name === setupChannelNames.ADMIN_SETTINGS) {
-        setupChannels.adminSettings = channel
-      } 
+      switch (channel.name) {
+        case setupChannelNames.HOW_TO_PLAY:
+        case setupChannelNames.COMMANDS:
+        case setupChannelNames.PLAYER_ROLES:
+        case setupChannelNames.GAME_INSTRUCTIONS:
+        case setupChannelNames.SETTINGS:
+        case setupChannelNames.ADMIN_SETTINGS:
+          await channel.delete()
+      }
     });
 
-    if (!setupChannels.gameInstructions) {
-      setupChannels.gameInstructions = await createCategory(interaction, setupChannelNames.GAME_INSTRUCTIONS);
-    }
+    gameInstructionsCategory = await createCategory(interaction, { name: setupChannelNames.GAME_INSTRUCTIONS, poosition: 1 });
+    gameInstructionsCategory.setPosition(0);
 
+    
+    howToPlayChannel = await createChannel(
+      interaction,
+      setupChannelNames.HOW_TO_PLAY,
+      [adminPermissions, nonPlayersPermissions],
+      gameInstructionsCategory
+    );
+    await howToPlayChannel.send(howToPlayIntro);
+    await howToPlayChannel.send(howToPlayRoles);
+    await howToPlayChannel.send(orderOfOperations);
+    await howToPlayChannel.send(villagerTeam);
+    await howToPlayChannel.send(werewolfTeam);
+    await howToPlayChannel.send(vampireTeam);
+    await howToPlayChannel.send(soloCharacters);
+    await howToPlayChannel.send(undeterminedTeam);
 
-    if (!setupChannels.howToPlay) {
-      setupChannels.howToPlay = await createChannel(
-        interaction,
-        setupChannelNames.HOW_TO_PLAY,
-        [adminPermissions, nonPlayersPermissions],
-        setupChannels.gameInstructions
-      );
-      await setupChannels.howToPlay.send(howToPlayIntro);
-      await setupChannels.howToPlay.send(howToPlayRoles);
-      await setupChannels.howToPlay.send(orderOfOperations);
-      await setupChannels.howToPlay.send(villagerTeam);
-      await setupChannels.howToPlay.send(werewolfTeam);
-      await setupChannels.howToPlay.send(vampireTeam);
-      await setupChannels.howToPlay.send(soloCharacters);
-      await setupChannels.howToPlay.send(undeterminedTeam);
-    }
+    
+    playerRolesChannel = await createChannel(
+      interaction,
+      setupChannelNames.PLAYER_ROLES,
+      [adminPermissions, nonPlayersPermissions],
+      gameInstructionsCategory
+    );
 
-    if (!setupChannels.playerRoles) {
-      setupChannels.playerRoles = await createChannel(
-        interaction,
-        setupChannelNames.PLAYER_ROLES,
-        [adminPermissions, nonPlayersPermissions],
-        setupChannels.gameInstructions
-      );
+    const selectMenuRoles = new StringSelectMenuBuilder()
+    .setCustomId("roles")
+    .setPlaceholder("Select Role")
+    .setMinValues(1)
+    .setMaxValues(1)
+    .addOptions(_.map(roleList, (role) => new StringSelectMenuOptionBuilder()
+      .setLabel(role.label)
+      .setDescription(`team ${role.team}`)
+      .setValue(role.label)
+      .setEmoji(role.emoji)
+    ))
+  
+    const actionRowRoles = new ActionRowBuilder().addComponents(selectMenuRoles)
+    await playerRolesChannel.send(playerRolesIntro);
+    await playerRolesChannel.send({
+      components: [actionRowRoles],
+    });
+    
 
-      const selectMenu = new StringSelectMenuBuilder()
-      .setCustomId("roles")
-      .setPlaceholder("Select Role")
+    commandsChannel = await createChannel(
+      interaction,
+      setupChannelNames.COMMANDS,
+      [adminPermissions, nonPlayersPermissions],
+      gameInstructionsCategory
+    );
+
+    await commandsChannel.send(commandsIntro);
+    const selectMenuCommands = new StringSelectMenuBuilder()
+      .setCustomId("commands")
+      .setPlaceholder("Select command")
       .setMinValues(1)
       .setMaxValues(1)
-      .addOptions(_.map(roleList, (role) => new StringSelectMenuOptionBuilder()
-        .setLabel(role.label)
-        .setDescription(`team ${role.team}`)
-        .setValue(role.label)
-        .setEmoji(role.emoji)
+      .addOptions(_.map(commandList, (command) => new StringSelectMenuOptionBuilder()
+        .setLabel(command.label)
+        .setDescription(command.role)
+        .setValue(command.label)
+        .setEmoji(command.emoji)
       ))
-    
-      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
-      await setupChannels.playerRoles.send(playerRolesIntro);
-      await setupChannels.playerRoles.send({
-        components: [actionRow],
-      });
-    }
 
-    if (!setupChannels.commands) {
-      setupChannels.commands = await createChannel(
-        interaction,
-        setupChannelNames.COMMANDS,
-        [adminPermissions, nonPlayersPermissions],
-        setupChannels.gameInstructions
-      );
+    const actionRowCommands = new ActionRowBuilder().addComponents(selectMenuCommands)
+    await commandsChannel.send({
+      components: [actionRowCommands],
+    })
 
-      await setupChannels.commands.send(commandsIntro);
-      const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId("commands")
-        .setPlaceholder("Select command")
-        .setMinValues(1)
-        .setMaxValues(1)
-        .addOptions(_.map(commandList, (command) => new StringSelectMenuOptionBuilder()
-          .setLabel(command.label)
-          .setDescription(command.role)
-          .setValue(command.label)
-          .setEmoji(command.emoji)
-        ))
+    settingChannnel = await createChannel(
+      interaction,
+      setupChannelNames.SETTINGS,
+      [adminPermissions, nonPlayersPermissions],
+      gameInstructionsCategory
+    );
 
-      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
-      await setupChannels.commands.send({
-        components: [actionRow],
-      })
-    }
+    const selectMenuSettings = new StringSelectMenuBuilder()
+    .setCustomId("settings")
+    .setPlaceholder("Select Setting")
+    .setMinValues(1)
+    .setMaxValues(1)
+    .addOptions(_.map(settingsList, (setting) => {
+      return new StringSelectMenuOptionBuilder()
+        .setLabel(setting.label)
+        .setValue(setting.label)
+        .setEmoji(setting.emoji)
+      }
+    ))
+  
+    const actionRowSettings = new ActionRowBuilder().addComponents(selectMenuSettings)
+    await settingChannnel.send(settingsIntro);
+    await settingChannnel.send({
+      components: [actionRowSettings],
+    });
 
-    if (!settings) {
-      await createSettings({
-        server_name: interaction.guild.name,
-        guild_id: interaction.guild.id,
-        day_time: "8:00",
-        night_time: "20:00",
-        random_cards: false,
-        can_whisper: false,
-        allow_reactions: false,
-        wolf_kills_witch: false,
-        hard_mode: false,
-        allow_first_bite: true,
-        king_bite_wolf_safe: true,
-        king_victim_attack_safe: true,
-        bodyguard_joins_masons: true,
-        seer_joins_masons: false,
-        hunter_guard: false,
-        allow_lycan_guard: true,
-        enable_power_ups: false,
-      });
-    }
+    const adminSettingsChannel = await createChannel(
+      interaction,
+      setupChannelNames.ADMIN_SETTINGS,
+      [adminPermissions, denyEveryonePermissions],
+      gameInstructionsCategory
+    );
 
-    if (!setupChannels.settings) {
-      setupChannels.settings = await createChannel(
-        interaction,
-        setupChannelNames.SETTINGS,
-        [adminPermissions, nonPlayersPermissions],
-        setupChannels.gameInstructions
-      );
-
-      const selectMenu = new StringSelectMenuBuilder()
-      .setCustomId("settings")
-      .setPlaceholder("Select Setting")
-      .setMinValues(1)
-      .setMaxValues(1)
-      .addOptions(_.map(settingsList, (setting) => {
-        return new StringSelectMenuOptionBuilder()
-          .setLabel(setting.label)
-          .setValue(setting.label)
-          .setEmoji(setting.emoji)
-        }
-      ))
-    
-      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
-      await setupChannels.settings.send(settingsIntro);
-      await setupChannels.settings.send({
-        components: [actionRow],
-      });
-    }
-
-    if (!setupChannels.adminSettings) {
-      setupChannels.settings = await createChannel(
-        interaction,
-        setupChannelNames.ADMIN_SETTINGS,
-        [adminPermissions, denyEveryonePermissions],
-        setupChannels.gameInstructions
-      );
-
-      const selectMenu = new StringSelectMenuBuilder()
-      .setCustomId("character-selection")
-      .setPlaceholder("Select characters")
-      .setMinValues(1)
-      .setMaxValues(selectCharacterList.length)  
-      .addOptions(_.map(selectCharacterList, (character) => new StringSelectMenuOptionBuilder()
-        .setLabel(character.label)
-        .setDescription(`team ${character.team}`)
-        .setValue(character.tag)
-        .setEmoji(character.emoji)
-      ))
-      const actionRow = new ActionRowBuilder().addComponents(selectMenu)
-      await setupChannels.settings.send("# Admin Settings");
-      await setupChannels.settings.send(characterSelectionIntro);
-      await setupChannels.settings.send({
-        components: [actionRow],
-      });
-    }
+    const selectMenuCharacterSelection = new StringSelectMenuBuilder()
+    .setCustomId("character-selection")
+    .setPlaceholder("Select characters")
+    .setMinValues(1)
+    .setMaxValues(selectCharacterList.length)  
+    .addOptions(_.map(selectCharacterList, (character) => new StringSelectMenuOptionBuilder()
+      .setLabel(character.label)
+      .setDescription(`team ${character.team}`)
+      .setValue(character.tag)
+      .setEmoji(character.emoji)
+    ))
+    const actionRowMenuCharacterSelection = new ActionRowBuilder().addComponents(selectMenuCharacterSelection)
+    await adminSettingsChannel.send("# Admin Settings");
+    await adminSettingsChannel.send(characterSelectionIntro);
+    await adminSettingsChannel.send({
+      components: [actionRowMenuCharacterSelection],
+    });
 
     await interaction.editReply({
       content: "Server is READY!",
