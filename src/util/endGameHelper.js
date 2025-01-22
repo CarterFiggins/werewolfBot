@@ -152,7 +152,7 @@ async function orderAllPlayers(interaction) {
 
   _.forEach(allDbUsers, (dbUser) => {
     let userArray = aliveUsers;
-    if (dbUser.is_dead) {
+    if (dbUser.is_dead && !dbUser.is_injured) {
       userArray = deadUsers;
     }
     if (dbUser.character === characters.WEREWOLF) {
