@@ -4,7 +4,7 @@ module.exports = {
     if (!selectMenu) return;
     
     console.log(
-      `${interaction?.user?.tag} in guild ${interaction?.guild?.name}, channel #${interaction?.channel?.name} triggered selectMenu ${interaction?.customId}, values: ${interaction?.values}`
+      `${new Date().toISOString()}: ${interaction?.user?.tag} in guild ${interaction?.guild?.name}, channel #${interaction?.channel?.name} triggered selectMenu ${interaction?.customId}, values: ${interaction?.values}`
     );
     try {
       await selectMenu.sendResponse(interaction);

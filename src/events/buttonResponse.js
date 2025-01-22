@@ -4,7 +4,7 @@ module.exports = {
     if (!button) return;
 
     console.log(
-      `${interaction?.user?.tag} in guild ${interaction?.guild?.name}, channel #${interaction?.channel?.name} triggered button ${interaction?.customId}`
+      `${new Date().toISOString()}: ${interaction?.user?.tag} in guild ${interaction?.guild?.name}, channel #${interaction?.channel?.name} triggered button ${interaction?.customId}`
     );
     try {
       button.execute(interaction)
