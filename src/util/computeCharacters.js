@@ -53,7 +53,7 @@ function startingCharacters(settings, numberOfPlayers, adminCharacters) {
   }
 
   const filterCardTeams = (team) => {
-    _.difference(
+    return _.difference(
       _.filter(adminCharacters, (role) => {
         const info = characterInfoMap.get(role)
         return info.helpsTeam === team
