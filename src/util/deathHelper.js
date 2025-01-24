@@ -391,9 +391,9 @@ async function castWitchCurse(interaction) {
   );
 
   if (!_.isEmpty(deathCharacters)) {
-    return `The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
+    return `## The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
   }
-  return "The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";
+  return "## The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";
 }
 
 module.exports = {

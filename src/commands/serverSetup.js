@@ -56,6 +56,7 @@ module.exports = {
         hunter_guard: false,
         allow_lycan_guard: true,
         enable_power_ups: false,
+        double_hanging: false,
       });
     }
 

@@ -12,6 +12,7 @@ const SettingCommands = {
   CAN_WHISPER: "can_whisper",
   HARD_MODE: "hard_mode",
   ENABLE_POWER_UPS: "enable_power_ups",
+  DOUBLE_HANGING: "double_hanging",
 };
 
 module.exports = {
@@ -131,6 +132,14 @@ Turn this setting on to hide the werewolf and vampire count in the who_is_alive 
       emoji: '🦸‍♂️',
       description: `### Power Ups
 Turn this on to give a power to each player at the start of the game. The powers are the same that the monarch can give. Players are given a one power randomly
+`,
+    },
+    {
+      id: SettingCommands.DOUBLE_HANGING,
+      label: 'Double Hanging',
+      emoji: '2️⃣',
+      description: `### Double Hanging
+This setting will hang two people instead of one. It will take the top two voted players and if there is a three way tie it will randomly kill two of them. If there is one with higher votes then the others they will die and the rest that tied second will be picked at random.
 `,
     },
   ],
