@@ -6,9 +6,6 @@ const { getRole, roleNames } = require("./rolesHelpers");
 const {
   findGame,
   updateGame,
-  findUser,
-  getCountedVotes,
-  deleteManyVotes,
   findSettings,
   resetUserWhisperCount,
   findManyUsers,
@@ -19,7 +16,7 @@ const { endGuildJobs } = require("./schedulHelper");
 const { copyCharacters } = require("./characterHelpers/doppelgangerHelper");
 const { starveUser } = require("./characterHelpers/bakerHelper");
 const { checkGame } = require("./endGameHelper");
-const { removesDeadPermissions, WaysToDie, botShoots } = require("./deathHelper");
+const { botShoots } = require("./deathHelper");
 const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers/bodyguardHelper");
 const {
   cursePlayers,
@@ -28,10 +25,10 @@ const { killPlayers } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
 const { votingDeathMessage } = require("./botMessages/deathMessages");
-const { markChaosTarget, isDeadChaosTarget } = require("./characterHelpers/chaosDemonHelpers");
-const { PowerUpNames } = require("./powerUpHelpers");
+const { markChaosTarget, didChaosWin } = require("./characterHelpers/chaosDemonHelpers");
 const { givePower } = require("./characterHelpers/monarchHelper");
 const { characters } = require("./commandHelpers");
+const { handleHangingVotes } = require("./voteHelpers");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -246,50 +243,13 @@ async function nightTimeJob(interaction) {
 }
 
 async function handleVotingDeath(interaction) {
-  const guildId = interaction.guild.id;
-  const cursor = await getCountedVotes(guildId);
-  const allVotes = await cursor.toArray();
-  const members = await interaction.guild.members.fetch();
-  const channels = await interaction.guild.channels.cache;
-  const organizedChannels = organizeChannels(channels);
+  const playersDeathInfo = await handleHangingVotes(interaction)
+  await votingDeathMessage({ interaction, playersDeathInfo })
 
-  let topVotes = [];
-  let topCount = 0;
-
-  _.forEach(allVotes, (vote) => {
-    if (vote.count >= topCount) {
-      topVotes.push(vote);
-      topCount = vote.count;
-    }
+  await updateGame(interaction.guild.id, {
+    is_day: false,
   });
-
-  const voteWinner = _.sample(topVotes);
-  await deleteManyVotes({ guild_id: guildId });
-  if (!voteWinner) {
-    await updateGame(guildId, {
-      is_day: false,
-    });
-    await organizedChannels.townSquare.send("## No one has voted...\nIt is night");
-    return false;
-  }
-  const deadUser = await findUser(voteWinner._id.voted_user_id, guildId);
-  const deadMember = members.get(voteWinner._id.voted_user_id);
-  const isChaosTarget = await isDeadChaosTarget(interaction, deadUser);
-
-  const deathCharacter = await removesDeadPermissions(
-    interaction,
-    deadUser,
-    deadMember,
-    WaysToDie.HANGED,
-  );
-
-  let chaosWins = false;
-  if (isChaosTarget && deathCharacter !== PowerUpNames.SHIELD) {
-    chaosWins = true;
-  }
-    
-  await votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes })
-  return chaosWins;
+  return didChaosWin(playersDeathInfo);
 }
 
 function warningTime(hour, minute) {

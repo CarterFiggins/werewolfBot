@@ -50,7 +50,21 @@ async function isDeadChaosTarget(interaction, deadUser) {
   return false;
 }
 
+async function didChaosWin(playersDeathInfo) {
+  const targetsHanged = _.filter(playersDeathInfo, { chaosWins: true })
+  const targetsHangedIds = _.map(targetsHanged, (info) => info.user.user_id)
+  
+  if (!_.isEmpty(targetsHangedIds)) {
+    const chaosDemonsDeathInfo = _.filter(playersDeathInfo, { user: { character: characters.CHAOS_DEMON } });
+    const targetIds = _.map(chaosDemonsDeathInfo, (info) => info.user.chaos_target_user_id)
+    const successfulHangedTargets = _.difference(targetsHangedIds, targetIds)
+    return !_.isEmpty(successfulHangedTargets)
+  }
+  return false
+}
+
 module.exports = {
   markChaosTarget,
   isDeadChaosTarget,
+  didChaosWin,
 }

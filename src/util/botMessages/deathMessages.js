@@ -1,36 +1,71 @@
+const _ = require("lodash");
 const { findSettings, updateGame } = require("../../werewolf_db");
 const { organizeChannels } = require("../channelHelpers");
 const { characters } = require("../commandHelpers");
 const { castWitchCurse } = require("../deathHelper");
 const { PowerUpNames } = require("../powerUpHelpers");
 
-async function votingDeathMessage({ interaction, deathCharacter, deadMember, deadUser, topVotes }) {
+async function votingDeathMessage({ interaction, playersDeathInfo }) {
   const settings = await findSettings(interaction.guild.id);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  if (topVotes.length > 1) {
-    message = `There was a tie so I randomly picked ${deadMember} to die\n`;
-  } else {
-    message = `The town has decided to hang ${deadMember}\n`;
+
+  if (_.isEmpty(playersDeathInfo)) {
+    await organizedChannels.townSquare.send("## No one has voted...\n# **It is night time**");
+    return;
   }
 
-  let cursedMessage = "";
-  let deathMessage = settings.hard_mode ? '' : `## The town has killed a **${deathCharacter}**\n`;
+  const [playersKilledData, randomPlayersKilled] = _.partition(playersDeathInfo, ['random', false])
 
-  if (deathCharacter === PowerUpNames.SHIELD) {
-    deathMessage = `🛡️However, ${deadMember} had a protective shield, sparing them from this fate! The shield is now used up and will not offer protection again.🛡️`
-  } else if (deadUser.character === characters.WITCH) {
-    cursedMessage = await castWitchCurse(interaction);
-  } else if (deadUser.character === characters.HUNTER) {
-    deathMessage = `The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+  let message = ""
+  if (!_.isEmpty(playersKilledData)) {
+    const playersKilled = _.map(playersKilledData, (playerData) => playerData.member).join(", ")
+    message = `The town has decided to hang ${playersKilled}\n`;
   }
 
-  await updateGame(interaction.guild.id, {
-    is_day: false,
-  });
+  if (!_.isEmpty(playersKilledData) && !_.isEmpty(randomPlayersKilled)) {
+    message += "For the next hanging...\n"
+  }
+
+  if (!_.isEmpty(randomPlayersKilled)) {
+    const playersKilled = _.map(randomPlayersKilled, (playerData) => playerData.member).join(", ")
+    message +=`There was a tie so I randomly picked ${playersKilled} to die\n`
+  }
+
+  if (message) {
+    await organizedChannels.townSquare.send(
+      `## ${message}`
+    );
+  }
+
+  for (const playerInfo of playersDeathInfo) {
+    const {
+      member: deadMember,
+      user: deadUser,
+      deathCharacter,
+    } = playerInfo
+    let cursedMessage = "";
+    let deathMessage = settings.hard_mode ? '' : `## The town has killed a **${deathCharacter}**\n`;
+
+    if (deathCharacter === PowerUpNames.SHIELD) {
+      deathMessage = `## 🛡️However, ${deadMember} had a protective shield, sparing them from this fate! The shield is now used up and will not offer protection again.🛡️`
+    } else if (deadUser.character === characters.WITCH) {
+      cursedMessage = await castWitchCurse(interaction);
+    } else if (deadUser.character === characters.HUNTER) {
+      deathMessage = `## The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+    }
+  
+    await updateGame(interaction.guild.id, {
+      is_day: false,
+    });
+  
+    await organizedChannels.townSquare.send(
+      `${deathMessage}${cursedMessage}`
+    );
+  }
 
   await organizedChannels.townSquare.send(
-    `## ${message}${deathMessage}${cursedMessage}\n**It is night time**`
+    `# **It is night time**`
   );
 }
 
