@@ -57,11 +57,11 @@ async function checkForWinner(interaction, chaosWins) {
     if (_.isEmpty(deadUsers)) {
       return "None"
     }
-    const name = dbUser.nickname ?? dbUser.name
+    
     return _.map(
       dbUsers,
       (dbUser) =>
-        `${members.get(dbUser.user_id) || name}! playing as ${dbUser.character}`
+        `${members.get(dbUser.user_id) || dbUser.nickname ?? dbUser.name}! playing as ${dbUser.character}`
     ).join("\n");
   };
 
