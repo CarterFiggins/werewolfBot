@@ -106,11 +106,20 @@ function getCards(adminCharacters) {
 
 async function getCurrentCharacters(guildId) {
   const adminSettings = await findAdminSettings(guildId)
-  const currentCharacters = adminSettings?.characters
-   if (_.isEmpty(currentCharacters)) {
-      return defaultCharacters
-   }
-  return currentCharacters
+  const characterData = adminSettings?.characters
+  const currentCharacters = _.map(characterData, (info) => info.character)
+  if (_.isEmpty(currentCharacters)) {
+    return { currentCharacters: defaultCharacters }
+  }
+
+  const cardsInGame = []
+  _.forEach(characterData, (info) => {
+    _.forEach(_.range(info.count), () => {
+      cardsInGame.push(info.character)
+    })
+  })
+
+  return { currentCharacters, cardsInGame }
 }
 
 

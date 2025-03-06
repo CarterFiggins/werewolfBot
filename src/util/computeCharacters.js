@@ -3,8 +3,8 @@ const { findSettings } = require("../werewolf_db");
 const { characters, teams, characterInfoMap, getCurrentCharacters } = require("./characterHelpers/characterUtil");
 const { DeckBalancer } = require("./characterHelpers/deckBalancer");
 
-function startingCharacters(settings, numberOfPlayers, adminCharacters) {
-  const isPlaying = (playingCharacter) => _.find(adminCharacters, (c) => c === playingCharacter)
+function startingCharacters(settings, numberOfPlayers, currentCharacters) {
+  const isPlaying = (playingCharacter) => _.find(currentCharacters, (c) => c === playingCharacter)
 
   werewolfIsPlaying = isPlaying(characters.WEREWOLF)
   vampireIsPlaying = isPlaying(characters.VAMPIRE)
@@ -54,7 +54,7 @@ function startingCharacters(settings, numberOfPlayers, adminCharacters) {
 
   const filterCardTeams = (team) => {
     return _.difference(
-      _.filter(adminCharacters, (role) => {
+      _.filter(currentCharacters, (role) => {
         const info = characterInfoMap.get(role)
         return info.helpsTeam === team
       }),
@@ -81,9 +81,14 @@ async function computeCharacters(numberOfPlayers, guildId) {
   }
 
   const settings = await findSettings(guildId);
-  const adminCharacters = await getCurrentCharacters(guildId)
-  const { cardsInGame, werewolfCards, villagerCards } = startingCharacters(settings, numberOfPlayers, adminCharacters);
-  const balance = new DeckBalancer(adminCharacters, werewolfCards, villagerCards);
+  const { currentCharacters, cardsInGame: adminSelectCards } = await getCurrentCharacters(guildId)
+  
+  if (settings.admin_controls_cards) {
+    return _.shuffle(adminSelectCards)
+  }
+
+  const { cardsInGame, werewolfCards, villagerCards } = startingCharacters(settings, numberOfPlayers, currentCharacters);
+  const balance = new DeckBalancer(currentCharacters, werewolfCards, villagerCards);
   cardsInGame.forEach((character) => {
     balance.addCharacterPoints(character)
   });

@@ -1,7 +1,11 @@
 const _ = require("lodash");
-const { characterData } = require("../util/botMessages/player-roles");
+const { characterData: defaultCharacters } = require("../util/botMessages/player-roles");
 const { updateAdminSettings, findAdminSettings } = require("../werewolf_db");
 const { characters } = require("../util/characterHelpers/characterUtil");
+const { ButtonBuilder } = require("@discordjs/builders");
+const { ActionRowBuilder } = require("@discordjs/builders");
+const { ButtonStyle } = require("discord.js");
+const { getCapitalizeCharacterName } = require("../util/userHelpers");
 
 
 async function sendNewMessage(guildId, channel, characterMessage) {
@@ -12,10 +16,12 @@ async function sendNewMessage(guildId, channel, characterMessage) {
 module.exports = {
   data: { name: 'character-selection' },
   sendResponse: async (interaction) => {
+    await interaction.deferReply({ ephemeral: true });
+
     let charactersInGame = interaction.values
     const guildId = interaction.guild.id
     if (interaction.values.length === 1 && charactersInGame[0] === "select-all") {
-      charactersInGame = _.map(characterData, (c) => c.tag)
+      charactersInGame = _.map(defaultCharacters, (c) => c.tag)
     }
     charactersInGame = _.filter(charactersInGame, (character) => character !== "select-all")
 
@@ -23,6 +29,7 @@ module.exports = {
       characters.WEREWOLF,
       characters.VAMPIRE,
       characters.CHAOS_DEMON,
+      characters.CUB,
     ]
 
     const hasVillain = _.some(charactersInGame, (character) => {
@@ -39,26 +46,55 @@ module.exports = {
       return
     }
 
-    await updateAdminSettings(guildId, { characters: charactersInGame })
-
-    const characterMessage = ` # Current Selection
-## ${charactersInGame.map(c => c === characters.VAMPIRE ? `Vampire ${_.capitalize(c)}` : _.capitalize(c)).sort().join("\n## ")}`
     const adminSettings = await findAdminSettings(guildId)
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
-
-    if (adminSettings.message_id) {
+    if (!_.isEmpty(adminSettings?.characters)) {
       try {
-        const oldMessage = await channel.messages.fetch(adminSettings.message_id)
-        oldMessage.edit(characterMessage)
+        const oldMessages = []
+        for (const characterDbInfo of adminSettings.characters) {
+          oldMessages.push(await channel.messages.fetch(characterDbInfo.message_id));
+        }
+        await channel.bulkDelete(oldMessages)
       } catch (error) {
         console.warn(error)
-        await sendNewMessage(guildId, channel, characterMessage)
       }
     } else {
-      await sendNewMessage(guildId, channel, characterMessage)
+      await channel.send("# Current Selection")
     }
 
-    await interaction.reply({
+    const characterData = []
+    
+    for (const characterName of charactersInGame) {
+      const removeCard = new ButtonBuilder()
+        .setCustomId(`remove-character&&${characterName}`)
+        .setLabel('-1')
+        .setStyle(ButtonStyle.Primary);
+
+      const addCard = new ButtonBuilder()
+        .setCustomId(`add-character&&${characterName}`)
+        .setLabel('+1')
+        .setStyle(ButtonStyle.Primary);
+
+      const row = new ActionRowBuilder()
+			.addComponents(removeCard, addCard);
+
+      const characterMessage = getCapitalizeCharacterName(characterName)
+
+      const message = await channel.send({
+        content: `## ${characterMessage}: 1`,
+        components: [row],
+      })
+
+      characterData.push({
+        character: characterName,
+        count: 1,
+        message_id: message.id,
+      })
+    }
+
+    await updateAdminSettings(guildId, { characters: characterData })
+
+    await interaction.editReply({
       content: "Successfully selected characters for game.",
       ephemeral: true,
     });

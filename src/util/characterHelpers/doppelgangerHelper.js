@@ -19,7 +19,7 @@ async function copyCharacters(interaction) {
 
 function validateCopiedCharacter(copiedCharacter) {
   if (copiedCharacter === characters.CHAOS_DEMON) {
-    return characters.VILLAGER
+    return characters.DOPPELGANGER
   }
 
   if (copiedCharacter === characters.CUB) {

@@ -13,6 +13,7 @@ const SettingCommands = {
   HARD_MODE: "hard_mode",
   ENABLE_POWER_UPS: "enable_power_ups",
   DOUBLE_HANGING: "double_hanging",
+  ADMIN_CONTROLS_CARDS: "admin_controls_cards",
 };
 
 module.exports = {
@@ -140,6 +141,14 @@ Turn this on to give a power to each player at the start of the game. The powers
       emoji: '2️⃣',
       description: `### Double Hanging
 This setting will hang two people instead of one. It will take the top two voted players and if there is a three way tie it will randomly kill two of them. If there is one with higher votes then the others they will die and the rest that tied second will be picked at random.
+`,
+    },
+    {
+      id: SettingCommands.ADMIN_CONTROLS_CARDS,
+      label: 'Admin Controls Cards',
+      emoji: '🧑‍⚖️',
+      description: `### Admin Controls Cards
+Lets Admins select each card amount in the game. (If there are less cards than people then the remaining players will become Doppelgangers)
 `,
     },
   ],

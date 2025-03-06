@@ -219,6 +219,9 @@ async function giveChannelPermissions({
     case characters.GROUCHY_GRANNY:
       channel = organizedChannels.outCasts;
       break;
+    case characters.MONARCH:
+      channel = organizedChannels.monarch;
+      break;
   }
 
   if (!channel) {
@@ -482,8 +485,8 @@ async function createChannels(interaction, users) {
 }
 
 async function possibleCharactersInGame(interaction) {
-  const adminCharacters = await getCurrentCharacters(interaction.guild.id)
-  const { wolfCards, villagerCards, otherCards } = getCards(adminCharacters);
+  const { currentCharacters } = await getCurrentCharacters(interaction.guild.id)
+  const { wolfCards, villagerCards, otherCards } = getCards(currentCharacters);
   const vampireName = `Vampire ${_.capitalize(characters.VAMPIRE)}`
   const soloCards = _.map(otherCards, (name) => name === characters.VAMPIRE ? vampireName : name)
   return _.map([...wolfCards, ...villagerCards, ...soloCards], _.capitalize)

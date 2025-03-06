@@ -57,6 +57,7 @@ module.exports = {
         allow_lycan_guard: true,
         enable_power_ups: false,
         double_hanging: false,
+        admin_controls_cards: false,
       });
     }
 

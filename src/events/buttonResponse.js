@@ -1,6 +1,12 @@
 module.exports = {
   async buttonResponse(interaction) {
-    const button = interaction.client.buttons.get(interaction.customId)
+    let customId = interaction.customId
+    if (customId.includes("&&")) {
+      const [id, data] = customId.split("&&")
+      customId = id
+      interaction.buttonData = data
+    }
+    const button = interaction.client.buttons.get(customId)
     if (!button) return;
 
     console.log(

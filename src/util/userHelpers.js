@@ -51,6 +51,10 @@ function shuffleUsers(users) {
   return _.shuffle(users);
 }
 
+function getCapitalizeCharacterName(characterName) {
+  return characterName === characters.VAMPIRE ? `Vampire ${_.capitalize(characterName)}` : _.capitalize(characterName);
+}
+
 async function crateUserData(interaction, newCharacters, discordUsers) {
   const dbUsers = [];
   const settings = await findSettings(interaction.guild.id);
@@ -60,7 +64,7 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
     const user = shuffledUsers[i];
     
     const newCharacter = _.isEmpty(newCharacters)
-      ? characters.VILLAGER
+      ? characters.DOPPELGANGER
       : newCharacters.pop();
   
     user.info = await buildUserInfo(interaction, user, newCharacter)
@@ -130,4 +134,5 @@ module.exports = {
   getPlayingCount,
   crateUserData,
   getPlayersCharacter,
+  getCapitalizeCharacterName
 };

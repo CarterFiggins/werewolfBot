@@ -70,7 +70,8 @@ module.exports = {
       let characterMessage = "";
       if (channel.name === channelNames.AFTER_LIFE || (user.is_dead && !settings.hard_mode)) {
         const vampireMessage = user.is_vampire ? "vampire " : "";
-        characterMessage = `: **${vampireMessage}${user.character}**`;
+        const cubMessage = user.is_cub ? " cub" : "";
+        characterMessage = `: **${vampireMessage}${user.character}${cubMessage}**`;
       }
       if (!user.is_dead) {
         message += `${members.get(user.user_id)}${characterMessage}\n`;
