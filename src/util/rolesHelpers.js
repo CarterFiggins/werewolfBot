@@ -82,8 +82,8 @@ async function removeGameRolesFromMembers(members, roles, reset) {
     members.map(async (member) => {
       await member.roles.remove(organizedRoles.dead);
       await member.roles.remove(organizedRoles.alive);
-      if (process.env.TESTING_MODE || reset) {
-        await member.roles.add(organizedRoles.playing);
+      await member.roles.remove(organizedRoles.playing);
+      if (process.env.TESTING_MODE) {
       }
     })
   );
