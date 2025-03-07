@@ -80,10 +80,12 @@ async function removeGameRolesFromMembers(members, roles, reset) {
   const organizedRoles = organizeRoles(roles);
   await Promise.all(
     members.map(async (member) => {
+      const markAsPlaying = reset && (isAlive(member) || isDead(member))
       await member.roles.remove(organizedRoles.dead);
       await member.roles.remove(organizedRoles.alive);
-      await member.roles.remove(organizedRoles.playing);
-      if (process.env.TESTING_MODE) {
+
+      if (markAsPlaying) {
+        await member.roles.add(organizedRoles.playing);
       }
     })
   );
