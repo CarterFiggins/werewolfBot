@@ -16,6 +16,7 @@ making a channel for character
  1. removeAllGameChannels
  2. createChannel in gameHelpers
  3. add the channel to the channelHelpers
+ 4. add character back to channel after being muted from granny
 */
 
 const characters = {

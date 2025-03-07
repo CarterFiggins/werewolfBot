@@ -169,10 +169,10 @@ async function orderAllPlayers(interaction) {
   return { aliveUsers, deadUsers };
 }
 
-async function endGame(interaction, roles, members) {
+async function endGame(interaction, roles, members, reset) {
   const guildId = interaction.guild.id;
   // remove all discord roles from players
-  await removeGameRolesFromMembers(members, roles);
+  await removeGameRolesFromMembers(members, roles, reset);
 
   // delete all game info from database
   await deleteAllUsers(guildId);

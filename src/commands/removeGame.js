@@ -53,22 +53,7 @@ module.exports = {
 
     // stop scheduling day and night
     await interaction.deferReply({ ephemeral: true });
-    await endGuildJobs(interaction);
-
-    // Remove Channels
-    const currentChannels = await interaction.guild.channels.fetch();
-    await removeAllGameChannels(currentChannels);
-
-    // remove all discord roles from players
-    const roles = await interaction.guild.roles.fetch();
-    const currentMembers = await interaction.guild.members.fetch();
-    await removeGameRolesFromMembers(currentMembers, roles);
-
-    // delete all game info from database
-    await deleteAllUsers(interaction.guild.id);
-    await deleteGame(interaction.guild.id);
-    await deleteManyVotes({ guild_id: interaction.guild.id });
-
+    await endGame(interaction, roles, currentMembers, true)
     await interaction.editReply({ content: "Game Ended", ephemeral: true });
   },
 };
