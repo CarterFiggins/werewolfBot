@@ -1,14 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { removeGameRolesFromMembers, isAdmin } = require("../util/rolesHelpers");
-const { channelNames, removeAllGameChannels } = require("../util/channelHelpers");
-const {
-  deleteAllUsers,
-  deleteGame,
-  deleteManyVotes,
-} = require("../werewolf_db");
+const { isAdmin } = require("../util/rolesHelpers");
+const { channelNames } = require("../util/channelHelpers");
 const { commandNames } = require("../util/commandHelpers");
-const { endGuildJobs } = require("../util/schedulHelper");
 const { permissionCheck } = require("../util/permissionCheck");
+const { endGame } = require("../util/endGameHelper");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -53,7 +48,9 @@ module.exports = {
 
     // stop scheduling day and night
     await interaction.deferReply({ ephemeral: true });
-    await endGame(interaction, roles, currentMembers, true)
+    const roles = await interaction.guild.roles.fetch();
+    const currentMembers = await interaction.guild.members.fetch();
+    await endGame(interaction, roles, currentMembers, true);
     await interaction.editReply({ content: "Game Ended", ephemeral: true });
   },
 };

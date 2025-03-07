@@ -183,4 +183,5 @@ async function endGame(interaction, roles, members, reset) {
 
 module.exports = {
   checkGame,
+  endGame,
 };
