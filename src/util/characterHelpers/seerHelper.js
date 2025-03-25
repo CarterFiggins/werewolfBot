@@ -37,7 +37,7 @@ async function handleApprenticeSeer(interaction, deadDbSeer) {
   });
 
   await deadSeerChannel.send(
-    `${discordApprenticeUser} With the Seer's death, you have gained their power. Each night, you can investigate a player\nThe spirts will tell you if the player is a villager or a werewolf. Good luck!`
+    `${discordApprenticeUser} With the Seer's death, you have gained their power. Each night, you can investigate a player\nThe spirits will tell you if the player is a villager or a werewolf. Good luck!`
   );
 }
 

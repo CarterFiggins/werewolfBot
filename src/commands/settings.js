@@ -25,7 +25,7 @@ function buildSlashCommand() {
       subcommand
         .setName(valueSettings.DAY_TIME)
         .setDescription(
-          "ADMIN COMMAND: The time when day starts. The bot will announce who died durning the night"
+          "ADMIN COMMAND: The time when day starts. The bot will announce who died during the night."
         )
         .addNumberOption((option) =>
           option

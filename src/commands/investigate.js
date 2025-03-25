@@ -73,7 +73,7 @@ module.exports = {
     }
     if (targetDbUser.user_id === interaction.user.id) {
       await interaction.reply({
-        content: `${targetedUser} is a seer... hmm thats you right? You don't have to investigate to know that! try again.`,
+        content: `${targetedUser} is a seer... hmm that's you right? You don't have to investigate to know that! Try again.`,
         ephemeral: false,
       });
       return;

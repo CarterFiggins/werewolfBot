@@ -110,7 +110,7 @@ module.exports = {
       }
     });
 
-    gameInstructionsCategory = await createCategory(interaction, { name: setupChannelNames.GAME_INSTRUCTIONS, poosition: 1 });
+    gameInstructionsCategory = await createCategory(interaction, { name: setupChannelNames.GAME_INSTRUCTIONS });
     gameInstructionsCategory.setPosition(0);
 
     
