@@ -23,8 +23,11 @@ async function cursePlayers(interaction) {
       if (witch.target_cursed_user_id) {
         const targetDbUser = await findUser(witch.target_cursed_user_id, guildId)
         if (targetDbUser.is_dead) {
+          await updateUser(witch.target_cursed_user_id, guildId, {
+            is_cursed: false,
+          });
           await organizedChannels.witch.send(
-            `${members.get(witch.user_id)} Your dark magic has failed. ${members.get(witch.target_cursed_user_id)} has died and this cures works on the living.`
+            `${members.get(witch.user_id)} Your dark magic has failed. ${members.get(witch.target_cursed_user_id)} has died and this curse works on the living.`
           );
           return;
         }
