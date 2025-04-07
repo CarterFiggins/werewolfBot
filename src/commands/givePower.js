@@ -84,14 +84,14 @@ module.exports = {
       });
       return;
     }
-    if (dbUser.given_to_user_ids.includes(targetedUser.id)) {
+    if (dbUser.given_to_user_ids?.includes(targetedUser.id)) {
       await interaction.reply({
         content: `You have already given a power to ${targetedUser}`,
         ephemeral: true,
       });
       return;
     }
-    if (dbUser.given_power_ups.includes(power)) {
+    if (dbUser.given_power_ups?.includes(power)) {
       await interaction.reply({
         content: `You have already given out ${power} to a player`,
         ephemeral: true,

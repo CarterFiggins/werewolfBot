@@ -17,6 +17,8 @@ async function givePower(interaction) {
   const organizedChannels = organizeChannels(channels);
 
   for (const monarch of monarchs) {
+    monarch.given_power_ups = monarch.given_power_ups || [];
+    monarch.given_to_user_ids = monarch.given_to_user_ids || [];
     if (monarch.giving_user_id === 'bot') {
       await updateGame(interaction.guild.id, {
         bot_has_gun: true,

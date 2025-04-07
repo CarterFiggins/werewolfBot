@@ -32,22 +32,15 @@ function validateCopiedCharacter(copiedCharacter) {
 async function copy(interaction, doppelgangerUserId, copyUserId) {
   const guildId = interaction.guild.id;
   const members = interaction.guild.members.cache;
-  let copiedCharacter;
-  let copiedAssignedIdentity;
   let copiedUserDb;
   if (!copyUserId) {
     copiedUserDb = await randomUser(guildId)
-    copiedCharacter = copiedUserDb.character;
-    copiedAssignedIdentity = copiedUserDb.assigned_identity;
     copyUserId = copiedUserDb.user_id
   } else {
     copiedUserDb = await findUser(copyUserId, guildId);
-    copiedCharacter = copiedUserDb.character;
-    copiedAssignedIdentity = copiedUserDb.assigned_identity;
   }
-
-  copiedCharacter = validateCopiedCharacter(copiedCharacter)
-  copiedAssignedIdentity = validateCopiedCharacter(copiedAssignedIdentity)
+  const copiedCharacter = validateCopiedCharacter(copiedUserDb.character)
+  const copiedAssignedIdentity = validateCopiedCharacter(copiedUserDb.assigned_identity)
 
   const copiedVampireKing = copiedCharacter === characters.VAMPIRE;
 

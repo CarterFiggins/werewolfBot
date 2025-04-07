@@ -8,7 +8,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.RESET_SCHEDULING)
     .setDescription(
-      "ADMIN COMMAND: Reset the time schedulers for day and nigh time"
+      "ADMIN COMMAND: Reset the time schedulers for day and night time"
     ),
   async execute(interaction) {
     const deniedMessage = await permissionCheck({

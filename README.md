@@ -168,4 +168,8 @@ Commands are actions you can do in the game. To browse the commands type **/** i
 
 > When the bot goes offline the day and night schedulers get turned off. This will reset the scheduling so day and night time will happen according to the settings in the database.
 
+**/announce_new_game**
+
+> Announces a new game to the main channel. Includes a button so that players can easily join.
+
 
