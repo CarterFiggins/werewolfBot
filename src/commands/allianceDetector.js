@@ -5,7 +5,7 @@ const { characters, teams } = require("../util/characterHelpers/characterUtil")
 const { isAlive } = require("../util/rolesHelpers");
 const { findUser, updateUser, findGame } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
-const { PowerUpNames } = require("../util/powerUpHelpers");
+const { PowerUpNames, usePowerUp} = require("../util/powerUpHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
 
 
@@ -109,11 +109,7 @@ module.exports = {
     await organizedChannels.afterLife.send(
       `${interaction.member} used Alliance Detector on ${targetedOneMember} and ${targetedTwoMember}. They ${message}`
     );
-
-    dbUser.power_ups[PowerUpNames.ALLIANCE_DETECTOR] = false
-    await updateUser(dbUser.user_id, interaction.guild.id, {
-      power_ups: dbUser.power_ups,
-    });
+    await usePowerUp(dbUser, interaction, PowerUpNames.ALLIANCE_DETECTOR);
   }
 }
 

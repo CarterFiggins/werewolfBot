@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const {updateUser} = require("../werewolf_db");
 
 const PowerUpNames = {
   GUN: "gun",
@@ -59,7 +60,39 @@ function randomWeightPowerUp(isWerewolf) {
   return power.name
 }
 
+async function grantPowerUp(user, interaction, powerUp) {
+  user.power_ups = user.power_ups || {};
+  if (!user.power_ups[powerUp]) {
+    user.power_ups[powerUp] = 1;
+  } else if (user.power_ups[powerUp] === true) {
+    user.power_ups[powerUp] = 2;
+  } else {
+    user.power_ups[powerUp]++;
+  }
+  await updateUser(user.user_id, interaction.guild.id, {
+    power_ups: user.power_ups,
+  })
+}
+
+async function usePowerUp(user, interaction, powerUp) {
+  if (!user.power_ups) {
+    return;
+  }
+  if (user.power_ups[powerUp] === true) {
+    user.power_ups[powerUp] = 0;
+  } else if (user.power_ups[powerUp] > 0) {
+    user.power_ups[powerUp]--;
+  } else {
+    user.power_ups[powerUp] = 0;
+  }
+  await updateUser(user.user_id, interaction.guild.id, {
+    power_ups: user.power_ups,
+  })
+}
+
 module.exports = {
   PowerUpNames,
   randomWeightPowerUp,
+  usePowerUp,
+  grantPowerUp,
 };

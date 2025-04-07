@@ -4,6 +4,7 @@ const { characters } = require("./characterUtil");
 const { sendMemberMessage } = require("../botMessages/sendMemberMessages");
 const { powerUpMessages } = require("../commandHelpers");
 const { organizeChannels } = require("../channelHelpers");
+const {grantPowerUp} = require("../powerUpHelpers");
 
 async function givePower(interaction) {
   const cursorMonarchs = await findManyUsers({
@@ -37,16 +38,10 @@ async function givePower(interaction) {
       const monarchMember = members.get(monarch.user_id)
       const targetDbUser = await findUser(monarch.giving_user_id, interaction.guild.id)
       if (!targetDbUser.is_dead) {
-        if (!targetDbUser.power_ups) {
-          targetDbUser.power_ups = {}
-        }
-        targetDbUser.power_ups[monarch.giving_power] = true
-        await updateUser(monarch.giving_user_id, interaction.guild.id, {
-          power_ups: targetDbUser.power_ups,
-        });
+        await grantPowerUp(targetDbUser, interaction, monarch.giving_power);
         await sendMemberMessage(targetMember, `You have been given a Power Up! ${powerUpMessages.get(monarch.giving_power)}`)
         organizedChannels.monarch.send(`${monarchMember} you have successfully given ${targetMember} the power ${monarch.giving_power}`)
-        organizedChannels.afterLife.send(`The monarch ${monarchMember} send the power ${monarch.giving_power} to ${targetMember}`)
+        organizedChannels.afterLife.send(`The monarch ${monarchMember} sent the power ${monarch.giving_power} to ${targetMember}`)
       }
       monarch.given_power_ups.push(monarch.giving_power)
       monarch.given_to_user_ids.push(monarch.giving_user_id)

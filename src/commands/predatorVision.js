@@ -4,7 +4,7 @@ const { commandNames } = require("../util/commandHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { findUser, updateUser, findGame } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
-const { PowerUpNames } = require("../util/powerUpHelpers");
+const { PowerUpNames, usePowerUp} = require("../util/powerUpHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
 const { getPlayersCharacter } = require("../util/userHelpers");
 
@@ -83,11 +83,7 @@ module.exports = {
     await organizedChannels.afterLife.send(
       `${interaction.member} used predator vision on ${targetedMember} and saw they are the ${playersCharacter}`
     );
-    
-    dbUser.power_ups[PowerUpNames.PREDATOR_VISION] = false
-    await updateUser(dbUser.user_id, interaction.guild.id, {
-      power_ups: dbUser.power_ups,
-    });
+    await usePowerUp(dbUser, interaction, PowerUpNames.PREDATOR_VISION);
   }
 }
 

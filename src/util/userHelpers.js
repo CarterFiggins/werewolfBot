@@ -110,7 +110,7 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
     if (settings.enable_power_ups) {
       const randomPowerUp = randomWeightPowerUp(characters.WEREWOLF === newCharacter)
       if (randomPowerUp) {
-        user.info.power_ups[randomPowerUp] = true;
+        user.info.power_ups[randomPowerUp] = 1;
       }
     }
     dbUsers.push(user.info);
