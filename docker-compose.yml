@@ -1,6 +1,6 @@
 services:
   werewolf-bot:
-    image: werewolf-dev
+    image: werewolf-dev:latest
     build:
       context: ./
       dockerfile: Dev.Dockerfile
@@ -10,6 +10,7 @@ services:
     environment:
       MONGO_URI: "mongodb://sa:password@db"
       MONGODB_NAME: "werewolf"
+      TESTING_MODE: ${TESTING_MODE}
     depends_on:
       - db
   werewolf-library-install:
@@ -23,5 +24,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
       - mongo-db:/data/db
+    ports:
+      - "27017:27017"
 volumes:
   mongo-db:

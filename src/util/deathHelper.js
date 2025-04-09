@@ -18,7 +18,7 @@ const { handleApprenticeSeer } = require("./characterHelpers/seerHelper");
 const { characters } = require("./characterHelpers/characterUtil");
 const { checkGame } = require("./endGameHelper");
 const { organizeRoles } = require("./rolesHelpers");
-const { PowerUpNames } = require("./powerUpHelpers");
+const { PowerUpNames, usePowerUp} = require("./powerUpHelpers");
 const { getAliveUsersIds } = require("./discordHelpers");
 const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
 
@@ -43,10 +43,7 @@ async function removesDeadPermissions(
   const settings = await findSettings(guildId);
 
   if (deadUser?.power_ups && deadUser?.power_ups[PowerUpNames.SHIELD]) {
-    deadUser.power_ups[PowerUpNames.SHIELD] = false;
-    await updateUser(deadUser.user_id, interaction.guild.id, {
-      power_ups: deadUser.power_ups,
-    });
+    await usePowerUp(deadUser, interaction, PowerUpNames.SHIELD);
     await sendMemberMessage(deadMember, "🛡️Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again🛡️")
     return PowerUpNames.SHIELD
   }
@@ -214,10 +211,7 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
       is_injured: false,
     });
   } else {
-    userWhoShot.power_ups[PowerUpNames.GUN] = false
-    await updateUser(userWhoShot.user_id, interaction.guild.id, {
-      power_ups: userWhoShot.power_ups,
-    });
+    await usePowerUp(userWhoShot, interaction, PowerUpNames.GUN)
   }
 
   await sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire })
