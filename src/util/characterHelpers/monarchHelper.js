@@ -20,6 +20,7 @@ async function givePower(interaction) {
   for (const monarch of monarchs) {
     monarch.given_power_ups = monarch.given_power_ups || [];
     monarch.given_to_user_ids = monarch.given_to_user_ids || [];
+    const monarchMember = members.get(monarch.user_id)
     if (monarch.giving_user_id === 'bot') {
       await updateGame(interaction.guild.id, {
         bot_has_gun: true,
@@ -35,7 +36,6 @@ async function givePower(interaction) {
       organizedChannels.monarch.send(`${monarchMember} thank you for the gun :)`)
     } else if (monarch.giving_user_id) {
       const targetMember = members.get(monarch.giving_user_id)
-      const monarchMember = members.get(monarch.user_id)
       const targetDbUser = await findUser(monarch.giving_user_id, interaction.guild.id)
       if (!targetDbUser.is_dead) {
         await grantPowerUp(targetDbUser, interaction, monarch.giving_power);
