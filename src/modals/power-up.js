@@ -21,10 +21,10 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
     const guildId = interaction.guild.id
     const amount = _.toNumber(interaction.fields.getTextInputValue('power-up-amount'));
-    if (!amount) {
+    if (!amount || amount <= 0) {
       await interaction.editReply({
         content: `\`\`\`diff
-- Bad input. Needs a number. Try again
+- Bad input. Needs a number grater than 0. Try again!
 \`\`\``,
         ephemeral: true,
       });

@@ -11,15 +11,15 @@ const PowerUpNames = {
 const PowersWithWeightsVillagers = {
   [PowerUpNames.PREDATOR_VISION]: 1,
   [PowerUpNames.GUN]: 3,
-  [PowerUpNames.SHIELD]: 4,
-  [PowerUpNames.ALLIANCE_DETECTOR]: 5,
+  [PowerUpNames.SHIELD]: 3,
+  [PowerUpNames.ALLIANCE_DETECTOR]: 2,
 };
 
 const PowersWithWeightsWerewolves = {
   [PowerUpNames.ALLIANCE_DETECTOR]: 1,
   [PowerUpNames.GUN]: 3,
-  [PowerUpNames.SHIELD]: 4,
-  [PowerUpNames.PREDATOR_VISION]: 5,
+  [PowerUpNames.SHIELD]: 3,
+  [PowerUpNames.PREDATOR_VISION]: 2,
 };
 
 function filterPowerUps(dbPowers, powerWeights) {
@@ -32,8 +32,13 @@ function filterPowerUps(dbPowers, powerWeights) {
 }
 
 async function randomWeightPowerUp(interaction, isWerewolf) {
-  const {powers: dbPowers, powerUpAmount} = await findAdminSettings(interaction.guild.id)
+  const { powers: adminSettingPowers, powerUpAmount } = await findAdminSettings(interaction.guild.id)
   const playerPowers = {};
+  let dbPowers = adminSettingPowers
+
+  if (!dbPowers) {
+    dbPowers = _.map(PowerUpNames, (v) => v);
+  }
 
   let currentWeight = 0
   const powerWeights = isWerewolf ? PowersWithWeightsWerewolves : PowersWithWeightsVillagers
@@ -42,7 +47,7 @@ async function randomWeightPowerUp(interaction, isWerewolf) {
     return {name, weight: currentWeight}
   })
 
-  _.forEach(_.range(powerUpAmount), () => {
+  _.forEach(_.range(powerUpAmount || 1), () => {
     const randomWeight = Math.floor(Math.random() * _.last(powers).weight);
     const power = _.find(powers, (power) => power.weight > randomWeight)
     if (playerPowers[power.name]) {
