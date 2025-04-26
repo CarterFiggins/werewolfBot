@@ -22,7 +22,7 @@ function selectCharacterActionRow() {
 
 function selectPowerUpModal() {  
   const modal = new ModalBuilder()
-    .setCustomId('number-modal')
+    .setCustomId('power-up-setting-modal')
     .setTitle('Power Up Settings');
 
   const input = new TextInputBuilder()

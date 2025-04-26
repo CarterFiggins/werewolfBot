@@ -21,6 +21,7 @@ mongoUtil.connectToServer(function (err, mongoClient) {
   client.commands = createHandler('commands')
   client.selectMenus = createHandler('selectMenus')
   client.buttons = createHandler('buttons')
+  client.modals = createHandler('modals')
 
   // **************************
   // ***** Event Handling *****

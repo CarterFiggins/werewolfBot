@@ -1,5 +1,6 @@
 const { buttonResponse } = require("./buttonResponse");
 const { commandResponse } = require("./command");
+const { modalResponse } = require("./modalResponse");
 const { selectMenuResponse } = require("./selectMenuResponse");
 
 module.exports = {
@@ -12,10 +13,7 @@ module.exports = {
     } else if (interaction.isButton()) {
       buttonResponse(interaction)
     } else if (interaction.isModalSubmit()) {
-      await interaction.reply({
-        content: "You did a good thing",
-        ephemeral: true,
-      });
+      modalResponse(interaction)
     }
   },
 };
