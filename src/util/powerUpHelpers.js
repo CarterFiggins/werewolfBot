@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const {updateUser} = require("../werewolf_db");
+const {updateUser, findAdminSettings} = require("../werewolf_db");
 
 const PowerUpNames = {
   GUN: "gun",
@@ -8,56 +8,50 @@ const PowerUpNames = {
   PREDATOR_VISION: "predator_vision",
 }
 
-const PowersWithWeightsVillagers = [
-  {
-    name: PowerUpNames.PREDATOR_VISION,
-    weight: 1,
-  },
-  {
-    name: PowerUpNames.GUN,
-    weight: 3,
-  },
-  {
-    name: PowerUpNames.SHIELD,
-    weight: 4,
-  },
-  {
-    name: PowerUpNames.ALLIANCE_DETECTOR,
-    weight: 5,
-  },
-]
+const PowersWithWeightsVillagers = {
+  [PowerUpNames.PREDATOR_VISION]: 1,
+  [PowerUpNames.GUN]: 3,
+  [PowerUpNames.SHIELD]: 4,
+  [PowerUpNames.ALLIANCE_DETECTOR]: 5,
+};
 
+const PowersWithWeightsWerewolves = {
+  [PowerUpNames.ALLIANCE_DETECTOR]: 1,
+  [PowerUpNames.GUN]: 3,
+  [PowerUpNames.SHIELD]: 4,
+  [PowerUpNames.PREDATOR_VISION]: 5,
+};
 
-const PowersWithWeightsWerewolves = [
-  {
-    name: PowerUpNames.ALLIANCE_DETECTOR,
-    weight: 1,
-  },
-  {
-    name: PowerUpNames.GUN,
-    weight: 3,
-  },
-  {
-    name: PowerUpNames.SHIELD,
-    weight: 4,
-  },
-  {
-    name: PowerUpNames.PREDATOR_VISION,
-    weight: 5,
-  },
-]
+function filterPowerUps(dbPowers, powerWeights) {
+  return _.reduce(powerWeights, (powers, weight, name) => {
+    if (dbPowers.includes(name)) {
+      powers[name] = weight
+    }
+    return powers
+  }, {})
+}
 
-function randomWeightPowerUp(isWerewolf) {
+async function randomWeightPowerUp(interaction, isWerewolf) {
+  const {powers: dbPowers, powerUpAmount} = await findAdminSettings(interaction.guild.id)
+  const playerPowers = {};
+
   let currentWeight = 0
   const powerWeights = isWerewolf ? PowersWithWeightsWerewolves : PowersWithWeightsVillagers
-  const powers = _.map(powerWeights, (power) => {
-    currentWeight += power.weight
-    return {name: power.name, weight: currentWeight}
+  const powers = _.map(filterPowerUps(dbPowers, powerWeights), (weight, name) => {
+    currentWeight += weight
+    return {name, weight: currentWeight}
   })
 
-  const randomWeight = Math.floor(Math.random() * _.last(powers).weight);
-  const power = _.find(powers, (power) => power.weight > randomWeight)
-  return power.name
+  _.forEach(_.range(powerUpAmount), () => {
+    const randomWeight = Math.floor(Math.random() * _.last(powers).weight);
+    const power = _.find(powers, (power) => power.weight > randomWeight)
+    if (playerPowers[power.name]) {
+      playerPowers[power.name] += 1;
+    } else {
+      playerPowers[power.name] = 1;
+    }
+  })
+  return playerPowers
 }
 
 async function grantPowerUp(user, interaction, powerUp) {
