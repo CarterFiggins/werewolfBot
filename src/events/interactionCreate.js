@@ -11,6 +11,11 @@ module.exports = {
       selectMenuResponse(interaction)
     } else if (interaction.isButton()) {
       buttonResponse(interaction)
+    } else if (interaction.isModalSubmit()) {
+      await interaction.reply({
+        content: "You did a good thing",
+        ephemeral: true,
+      });
     }
   },
 };
