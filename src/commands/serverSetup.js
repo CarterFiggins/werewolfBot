@@ -12,9 +12,10 @@ const {
 const { findSettings, createSettings } = require("../werewolf_db");
 const { createChannel, setupChannelNames, createCategory } = require("../util/channelHelpers");
 const { howToPlayIntro, howToPlayRoles, villagerTeam, werewolfTeam, vampireTeam, undeterminedTeam, soloCharacters, orderOfOperations } = require("../util/botMessages/howToPlay");
-const { commandList, commandsIntro } = require("../util/botMessages/commandsDescriptions");
-const { playerRolesIntro, roleList, characterSelectionIntro, selectCharacterList } = require("../util/botMessages/player-roles");
-const { settingsList, settingsIntro } = require("../util/botMessages/settings");
+const { playerRolesIntro, characterSelectionIntro } = require("../util/botMessages/player-roles");
+const { settingsIntro } = require("../util/botMessages/settings");
+const { selectCharacterActionRow, selectSettingsActionRow, selectPowerUpActionRow, selectCommandsActionRow, selectRolesActionRow } = require("../util/componentBuilders");
+const { powerUpSelectionIntro } = require("../util/botMessages/powerUpMessages");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -137,22 +138,9 @@ module.exports = {
       gameInstructionsCategory
     );
 
-    const selectMenuRoles = new StringSelectMenuBuilder()
-    .setCustomId("roles")
-    .setPlaceholder("Select Role")
-    .setMinValues(1)
-    .setMaxValues(1)
-    .addOptions(_.map(roleList, (role) => new StringSelectMenuOptionBuilder()
-      .setLabel(role.label)
-      .setDescription(`team ${role.team}`)
-      .setValue(role.label)
-      .setEmoji(role.emoji)
-    ))
-  
-    const actionRowRoles = new ActionRowBuilder().addComponents(selectMenuRoles)
     await playerRolesChannel.send(playerRolesIntro);
     await playerRolesChannel.send({
-      components: [actionRowRoles],
+      components: [selectRolesActionRow()],
     });
     
 
@@ -163,22 +151,8 @@ module.exports = {
       gameInstructionsCategory
     );
 
-    await commandsChannel.send(commandsIntro);
-    const selectMenuCommands = new StringSelectMenuBuilder()
-      .setCustomId("commands")
-      .setPlaceholder("Select command")
-      .setMinValues(1)
-      .setMaxValues(1)
-      .addOptions(_.map(commandList, (command) => new StringSelectMenuOptionBuilder()
-        .setLabel(command.label)
-        .setDescription(command.role)
-        .setValue(command.label)
-        .setEmoji(command.emoji)
-      ))
-
-    const actionRowCommands = new ActionRowBuilder().addComponents(selectMenuCommands)
     await commandsChannel.send({
-      components: [actionRowCommands],
+      components: [selectCommandsActionRow()],
     })
 
     settingChannnel = await createChannel(
@@ -187,24 +161,10 @@ module.exports = {
       [adminPermissions, nonPlayersPermissions],
       gameInstructionsCategory
     );
-
-    const selectMenuSettings = new StringSelectMenuBuilder()
-    .setCustomId("settings")
-    .setPlaceholder("Select Setting")
-    .setMinValues(1)
-    .setMaxValues(1)
-    .addOptions(_.map(settingsList, (setting) => {
-      return new StringSelectMenuOptionBuilder()
-        .setLabel(setting.label)
-        .setValue(setting.label)
-        .setEmoji(setting.emoji)
-      }
-    ))
   
-    const actionRowSettings = new ActionRowBuilder().addComponents(selectMenuSettings)
     await settingChannnel.send(settingsIntro);
     await settingChannnel.send({
-      components: [actionRowSettings],
+      components: [selectSettingsActionRow()],
     });
 
     const adminSettingsChannel = await createChannel(
@@ -214,22 +174,14 @@ module.exports = {
       gameInstructionsCategory
     );
 
-    const selectMenuCharacterSelection = new StringSelectMenuBuilder()
-    .setCustomId("character-selection")
-    .setPlaceholder("Select characters")
-    .setMinValues(1)
-    .setMaxValues(selectCharacterList.length)  
-    .addOptions(_.map(selectCharacterList, (character) => new StringSelectMenuOptionBuilder()
-      .setLabel(character.label)
-      .setDescription(`team ${character.team}`)
-      .setValue(character.tag)
-      .setEmoji(character.emoji)
-    ))
-    const actionRowMenuCharacterSelection = new ActionRowBuilder().addComponents(selectMenuCharacterSelection)
     await adminSettingsChannel.send("# Admin Settings");
-    await adminSettingsChannel.send(characterSelectionIntro);
     await adminSettingsChannel.send({
-      components: [actionRowMenuCharacterSelection],
+      content: powerUpSelectionIntro,
+      components: [selectPowerUpActionRow()],
+    });
+    await adminSettingsChannel.send({
+      content: characterSelectionIntro,
+      components: [selectCharacterActionRow()],
     });
 
     await interaction.editReply({

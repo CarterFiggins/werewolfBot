@@ -7,12 +7,6 @@ const { ActionRowBuilder } = require("@discordjs/builders");
 const { ButtonStyle } = require("discord.js");
 const { getCapitalizeCharacterName } = require("../util/userHelpers");
 
-
-async function sendNewMessage(guildId, channel, characterMessage) {
-  const message = await channel.send(characterMessage)
-  await updateAdminSettings(guildId, { message_id: message.id})
-}
-
 module.exports = {
   data: { name: 'character-selection' },
   sendResponse: async (interaction) => {
@@ -37,7 +31,7 @@ module.exports = {
     })
 
     if (!hasVillain) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `\`\`\`diff
 - Character Selection Failed: Need to have a villain in character selection e.g. werewolf
 \`\`\``,
@@ -49,14 +43,22 @@ module.exports = {
     const adminSettings = await findAdminSettings(guildId)
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     if (!_.isEmpty(adminSettings?.characters)) {
+      const oldMessages = []
       try {
-        const oldMessages = []
         for (const characterDbInfo of adminSettings.characters) {
           oldMessages.push(await channel.messages.fetch(characterDbInfo.message_id));
         }
+        // If message is older than 14 days it will throw an error
         await channel.bulkDelete(oldMessages)
       } catch (error) {
-        console.warn(error)
+        if (error.message = "You can only bulk delete messages that are under 14 days old.") {
+          for (const oldMessage of oldMessages) {
+            // deleting messages one by one.
+            oldMessage.delete()
+          }
+        } else {
+          console.warn(error)
+        }
       }
     } else {
       await channel.send("# Current Selection")
