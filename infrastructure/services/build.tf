@@ -194,7 +194,7 @@ resource "aws_codebuild_project" "build_werewolf_app" {
     location        = "https://github.com/${var.github_source_repo}.git"
     git_clone_depth = 1
     report_build_status = true
-    buildspec       = templatefile("buildspec.yml.tftpl", {
+    buildspec       = templatefile("buildspec.tpl.yaml", {
       tag_parameter = aws_ssm_parameter.bot_deployed_tag.name,
       aws_region = var.primary_region,
       ecr_host = local.ecr_host,
