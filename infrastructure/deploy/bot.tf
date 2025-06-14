@@ -48,8 +48,7 @@ resource "aws_ecs_task_definition" "bot" {
     {
       name: "bot",
       image: "${data.aws_ecr_repository.bot.repository_url}:${data.aws_ssm_parameter.bot_deployed_tag.value}",
-      cpu: 512,
-      memory: 128,
+      memoryReservation: 128,
       essential: true,
       environment: [ for key, value in local.environment_variables : { name = upper(key), value = value } ],
       secrets: [ for key, arn in local.secret_variables: { name = upper(key), valueFrom: arn }]
