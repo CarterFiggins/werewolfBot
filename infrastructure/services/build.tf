@@ -193,6 +193,7 @@ resource "aws_codebuild_project" "build_werewolf_app" {
     type            = "GITHUB"
     location        = "https://github.com/${var.github_source_repo}.git"
     git_clone_depth = 1
+    report_build_status = true
     buildspec       = templatefile("buildspec.yml.tftpl", {
       tag_parameter = aws_ssm_parameter.bot_deployed_tag.name,
       aws_region = var.primary_region,
@@ -208,4 +209,5 @@ resource "aws_codebuild_project" "build_werewolf_app" {
       group_name = aws_cloudwatch_log_group.build_werewolf_app.name
     }
   }
+
 }

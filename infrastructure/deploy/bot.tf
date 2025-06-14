@@ -75,4 +75,17 @@ resource "aws_ecs_service" "bot" {
   desired_count = 1
   launch_type = "EC2"
   task_definition = aws_ecs_task_definition.bot.arn
+
+  deployment_controller {
+    type = "ECS"
+  }
+
+  deployment_maximum_percent = 200
+  deployment_minimum_healthy_percent = 50
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
 }
