@@ -55,7 +55,7 @@ resource "aws_ssm_parameter" "deploy_backend" {
   name = "deploy-backend"
   type = "String"
   value = "change-me"
-  description = "This is automatically updated by the build pipeline."
+  description = "The tfvars file for initiating the Terraform deploy backend. See infrastructure/deploy/backend.example.tfvars for a template."
 
   lifecycle {
     ignore_changes = [value]

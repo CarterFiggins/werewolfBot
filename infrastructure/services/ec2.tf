@@ -73,7 +73,7 @@ resource "aws_launch_template" "server" {
 resource "aws_autoscaling_group" "server" {
   name = "werewolf-bot"
   vpc_zone_identifier = module.primary_vpc.public_subnets
-  max_size = 2
+  max_size = 1
   min_size = 1
   desired_capacity = 1
   health_check_type = "EC2"
