@@ -27,6 +27,6 @@ const tag = `${data.buildRepo}:latest`;
 
 process.chdir("./builder-image");
 await exec(`aws ecr get-login-password --region ${data.awsRegion} | docker login --username AWS --password-stdin ${data.ecrHost}`);
-await exec(`docker build --platform linux/arm64 -t ${tag} --push .`);
+await exec(`docker buildx build --platform linux/arm64 -t ${tag} --push .`);
 
 process.exit(0);

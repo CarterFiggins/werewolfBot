@@ -57,7 +57,7 @@ values.
 
 #### Builder Image
 
-In the `builder-image` directory:
+In the `infrastructure` directory:
 
 1. Make sure you run `terraform apply` in `infrastructure/services` before this if any changes have been made or you are 
    running off a freshly cloned project. 
