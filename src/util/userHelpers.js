@@ -36,6 +36,7 @@ async function buildUserInfo(interaction, user, newCharacter) {
     is_vampire: false,
     is_cub: false,
     is_dead: false,
+    is_injured: false,
     whisper_count: 0,
     vampire_bites: 0,
     has_lycan_guard: false,
@@ -81,9 +82,6 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
         break;
       case characters.BODYGUARD:
         user.info.last_guarded_user_id = null;
-        break;
-      case characters.HUNTER:
-        user.info.is_injured = false;
         break;
       case characters.VAMPIRE:
         user.info.bite_user_id = null;

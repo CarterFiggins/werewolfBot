@@ -46,7 +46,7 @@ module.exports = {
       });
       return;
     }
-    if (targetDbUser.is_dead) {
+    if (dbUser.is_injured) {
       await interaction.reply({
         content: "You can't bite because you are injured",
         ephemeral: true,
