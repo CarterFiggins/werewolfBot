@@ -23,13 +23,12 @@ const { getAliveUsersIds } = require("./discordHelpers");
 const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
 
 const WaysToDie = {
-  HANGED: 'hanged',
-  WEREWOLF: 'werewolf',
-  SHOT: 'shot',
-  CURSED: 'cursed',
-  STARVED: 'starved',
-  INJURED: 'injured',
-  CHAOS: 'chaos',
+  HANGED: 'Hanged',
+  WEREWOLF: 'Werewolf Attack',
+  SHOT: 'Shot',
+  CURSED: 'Cursed',
+  STARVED: 'Starved',
+  CHAOS: 'Failed At Causing Chaos',
 }
 
 async function removesDeadPermissions(

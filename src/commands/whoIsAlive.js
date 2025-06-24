@@ -68,13 +68,14 @@ module.exports = {
 
     _.shuffle(dbUsers).forEach((user) => {
       let characterMessage = "";
+      const currentMember = members.get(user.user_id) || "Player left server"
       if (channel.name === channelNames.AFTER_LIFE || (user.is_dead && !settings.hard_mode)) {
         const vampireMessage = user.is_vampire ? "vampire " : "";
         const cubMessage = user.is_cub ? " cub" : "";
         characterMessage = `: **${vampireMessage}${user.character}${cubMessage}**`;
       }
       if (!user.is_dead) {
-        message += `${members.get(user.user_id)}${characterMessage}\n`;
+        message += `${currentMember}${characterMessage}\n`;
         if (user.character === characters.WEREWOLF || ( someWolves && user.character === characters.WITCH )) {
           werewolfCount += 1;
         } else if (user.is_vampire) {
@@ -86,7 +87,11 @@ module.exports = {
         }
       } else {
         someoneIsDead = true;
-        deadMessage += `${members.get(user.user_id) || "Player left"}${characterMessage}\n`;
+        deadMessage += `${currentMember}${characterMessage}`;
+        if (user.cause_of_death) {
+          deadMessage += ` Cause of death: ${user.cause_of_death}`
+        }
+        deadMessage += "\n"
       }
     });
 

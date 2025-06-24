@@ -26,16 +26,27 @@ module.exports = {
       return;
     }
 
-    const game = await findGame(interaction.guild.id);
+    const guildId = interaction.guild.id;
+    const members = await interaction.guild.members.fetch();
+    const dbUser = await findUser(interaction.user.id, guildId);
+    const game = await findGame(guildId);
+
+    const cursorAlivePlayers = await findManyUsers({
+      guild_id: guildId,
+      is_dead: false,
+      isMuted: { $ne: true },
+    });
+
+    const aliveDbUsers = await cursorAlivePlayers.toArray();
+    const votedDbUser = _.sample(aliveDbUsers);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
-    const aliveMembers = await getAliveMembers(interaction, false)
-    const votedMember = _.sample(aliveMembers)
+    const votedMember = members.get(votedDbUser.user_id)
     const mapRoles = votedMember.roles.cache;
     const roles = mapRoles.map((role) => {
       return role.name;
     });
 
-    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
+    
 
     if (channel.name !== channelNames.TOWN_SQUARE) {
       await interaction.reply({
@@ -45,7 +56,7 @@ module.exports = {
       });
       return;
     }
-    if (dbUser.is_dead) {
+    if (dbUser.is_injured) {
       await interaction.reply({
         content: "You can't vote because you are injured",
         ephemeral: true,
@@ -83,8 +94,8 @@ module.exports = {
       return;
     }
 
-    await upsertVote(interaction.user.id, interaction.guild.id, {
-      guild_id: interaction.guild.id,
+    await upsertVote(interaction.user.id, guildId, {
+      guild_id: guildId,
       user_id: interaction.user.id,
       username: interaction.user.username,
       voted_user_id: votedMember.id,

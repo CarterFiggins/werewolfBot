@@ -24,28 +24,6 @@ module.exports = {
       return;
     }
 
-    const interactionChannel = interaction.guild.channels.cache.get(
-      interaction.channelId
-    );
-
-    let wrongChannel = false;
-    await Promise.all(
-      Object.entries(channelNames).map(async ([_, channelName]) => {
-        if (channelName === interactionChannel.name) {
-          await interaction.reply({
-            content:
-              "Don't end game in channel that will be deleted. Try a channel outside of the game.",
-            ephemeral: true,
-          });
-          wrongChannel = true;
-        }
-      })
-    );
-
-    if (wrongChannel) {
-      return;
-    }
-
     // stop scheduling day and night
     await interaction.deferReply({ ephemeral: true });
     const roles = await interaction.guild.roles.fetch();
