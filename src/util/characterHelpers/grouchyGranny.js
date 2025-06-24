@@ -36,7 +36,7 @@ async function returnMutedPlayers(interaction, guildId) {
         const channels = await interaction.guild.channels.fetch();
         const organizedChannels = organizeChannels(channels);
         const member = members.get(user.user_id)
-        await updateUser(user.user_id, guildId, { is_muted: false, : true });
+        await updateUser(user.user_id, guildId, { is_muted: false, safe_from_mutes: true });
         message = `${member} has returned from being muted.`
         giveChannelPermissions({
           interaction,
