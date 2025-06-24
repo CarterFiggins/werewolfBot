@@ -1,9 +1,10 @@
+const _ = require("lodash")
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { characters } = require("../util/characterHelpers/characterUtil")
 const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { isAlive } = require("../util/rolesHelpers");
-const { findGame, findUser, updateGame } = require("../werewolf_db");
+const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
@@ -18,6 +19,7 @@ module.exports = {
     ),
   async execute(interaction) {
     const dbUser = await findUser(interaction.user.id, interaction.guild?.id);
+    const discordUser = interaction.user;
 
     const deniedMessage = await permissionCheck({
       interaction,
@@ -43,8 +45,8 @@ module.exports = {
 
     let message;
 
-    if (game.user_death_id) {
-      message = `You have changed your target to ${targetedUser}\n`;
+    if (!_.isEmpty(dbUser.kill_targeted_user_ids)) {
+      message = `${discordUser} has changed their target to ${targetedUser}\n`;
     }
 
     if (channel.name !== channelNames.WEREWOLVES) {
@@ -62,13 +64,13 @@ module.exports = {
       });
       return;
     }
-    if (targetedUser.bot) {
-      await interaction.reply({
-        content: `You can't kill me!\n${getRandomBotGif()}`,
-        ephemeral: false,
-      });
-      return;
-    }
+    // if (targetedUser.bot) {
+    //   await interaction.reply({
+    //     content: `You can't kill me!\n${getRandomBotGif()}`,
+    //     ephemeral: false,
+    //   });
+    //   return;
+    // }
     if (!isAlive(targetedMember)) {
       await interaction.reply({
         content: `${targetedUser} is dead. \nhttps://tenor.com/blWe0.gif`,
@@ -83,17 +85,14 @@ module.exports = {
       });
       return;
     }
-    if (
-      targetedUser.id === game.user_death_id ||
-      targetedUser.id === game.second_user_death_id
-    ) {
+    if (dbUser.kill_targeted_user_ids.includes(targetedUser.id)) {
       await interaction.reply({
         content: `Already targeting ${targetedUser}`,
         ephemeral: false,
       });
       return;
     }
-    if (dbTargetUser.isMuted) {
+    if (dbTargetUser.is_muted) {
       await interaction.reply({
         content: `${targetedUser} is safely locked away in the Granny's house. Try again`,
         ephemeral: false,
@@ -101,15 +100,22 @@ module.exports = {
       return;
     }
 
-    await updateGame(interaction.guild.id, {
-      user_death_id: targetedUser.id,
-      second_user_death_id: game.wolf_double_kill ? game.user_death_id : null,
+    const killTargetedUserIds = [targetedUser.id]
+    if (game.wolf_double_kill) {
+      const lastTarget = _.first(dbUser.kill_targeted_user_ids)
+      if (lastTarget) {
+        killTargetedUserIds.push(lastTarget)
+      }
+    }
+
+    await updateUser(interaction.user.id, interaction.guild.id, {
+      kill_targeted_user_ids: killTargetedUserIds,
     });
-    const secondKill = interaction.guild.members.cache.get(game.user_death_id);
 
     let secondKillMassage = "";
-    if (secondKill && game.wolf_double_kill) {
-      secondKillMassage = `and second target is ${secondKill}\n`;
+    if (killTargetedUserIds.length >= 2) {
+      const secondKill = interaction.guild.members.cache.get(killTargetedUserIds[1]);
+      secondKillMassage = `and their second target is ${secondKill}\n`;
       if (message) {
         message += secondKillMassage;
       }
@@ -118,7 +124,7 @@ module.exports = {
     await interaction.reply(
       message
         ? message
-        : `Targeting ${targetedUser} ${
+        : `${discordUser} is targeting ${targetedUser} ${
             game.wolf_double_kill ? "You can target another player" : ""
           }`
     );

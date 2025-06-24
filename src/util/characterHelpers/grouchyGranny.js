@@ -32,11 +32,11 @@ async function returnMutedPlayers(interaction, guildId) {
 
   await Promise.all(
     users.map(async (user) => {
-      if (user.isMuted && !user.is_dead) {
+      if (user.is_muted && !user.is_dead) {
         const channels = await interaction.guild.channels.fetch();
         const organizedChannels = organizeChannels(channels);
         const member = members.get(user.user_id)
-        await updateUser(user.user_id, guildId, { isMuted: false, safeFromMutes: true });
+        await updateUser(user.user_id, guildId, { is_muted: false, : true });
         message = `${member} has returned from being muted.`
         giveChannelPermissions({
           interaction,
@@ -86,14 +86,14 @@ async function removeSafeFromMutes(guildId) {
   const users = await cursor.toArray();
   await Promise.all(
     users.map(async (user) => {
-      await updateUser(user.user_id, guildId, { safeFromMutes: false });
+      await updateUser(user.user_id, guildId, { safe_from_mutes: false });
     })
   );
 }
 
 async function castOutUser(interaction, member) {
   await updateUser(member.id, interaction.guild.id, {
-    isMuted: true,
+    is_muted: true,
   });
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);

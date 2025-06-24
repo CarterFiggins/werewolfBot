@@ -21,7 +21,7 @@ const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers
 const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
-const { killPlayers } = require("./characterHelpers/werewolfHelper");
+const { killPlayers, getKillTargetedUsers } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
 const { votingDeathMessage } = require("./botMessages/deathMessages");
@@ -92,16 +92,19 @@ async function killReminder(interaction) {
     return;
   }
 
+  const noTargetSelected = _.every(werewolves, (wolf) => _.isEmpty(wolf.kill_targeted_user_ids))
+  const hasDoubleTargetSelected = _.some(werewolves, (wolf) => wolf.kill_targeted_user_ids.length >= 2)
+
   const game = await findGame(guildId);
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
-  if (game.wolf_double_kill && !game.second_user_death_id) {
+  if (game.wolf_double_kill && !hasDoubleTargetSelected) {
     return organizedChannels?.werewolves?.send(
       `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target`
     )
   }
-  if (!game.user_death_id) {
+  if (noTargetSelected) {
     return organizedChannels?.werewolves?.send(
       `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
     )
@@ -150,8 +153,8 @@ async function dayTimeJob(interaction) {
   await copyCharacters(interaction);
 
   const guardedIds = await guardPlayers(interaction);
-  const werewolfKills = [game.user_death_id, game.second_user_death_id]
-  const successfulGuardIds = _.intersection([game.user_death_id, game.second_user_death_id], guardedIds)
+  const werewolfKills = await getKillTargetedUsers(interaction);
+  const successfulGuardIds = _.intersection(werewolfKills, guardedIds)
   await sendSuccessfulGuardMessage(interaction, successfulGuardIds)
   const deathIds = _.difference(
     werewolfKills,
@@ -180,8 +183,6 @@ async function dayTimeJob(interaction) {
   await mutePlayers(interaction, guildId)
 
   await updateGame(guildId, {
-    user_death_id: null,
-    second_user_death_id: null,
     wolf_double_kill: false,
     is_day: true,
     first_night: false,

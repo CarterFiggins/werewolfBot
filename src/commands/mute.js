@@ -79,14 +79,14 @@ module.exports = {
       });
       return;
     }
-    if (mutedDbUser.isMuted === true) { 
+    if (mutedDbUser.is_muted === true) { 
       await interaction.reply({
         content: `Player currently muted`,
         ephemeral: false,
       });
       return;
     }
-    if (mutedDbUser.safeFromMutes === true) { 
+    if (mutedDbUser.safe_from_mutes === true) { 
       await interaction.reply({
         content: `Player has already been muted this game. Try again`,
         ephemeral: false,

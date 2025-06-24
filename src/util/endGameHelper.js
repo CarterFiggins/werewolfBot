@@ -89,7 +89,7 @@ ${listUsers(deadUsers.villagers)}`
   if (werewolfCount >= villagerCount + vampireCount + chaosCount) {
     interaction.townAnnouncements.push(
       `# Werewolves Win!
-      Werewolves now outnumber the town's remaining population.
+      Werewolves now equal or outnumber the town's remaining population.
       ## Winners
 ### Alive:
 ${listUsers([...aliveUsers.werewolves, ...aliveUsers.witches])}
@@ -102,7 +102,7 @@ ${listUsers([deadUsers.werewolves, ...deadUsers.witches])}`
   if (vampireCount >= villagerCount + werewolfCount + chaosCount) {
     interaction.townAnnouncements.push(
       `# Vampires Win!
-      Vampires now outnumber the town's remaining population.
+      Vampires now equal or outnumber the town's remaining population.
       ## Winners
 ### Alive:
 ${listUsers(aliveUsers.vampires)}

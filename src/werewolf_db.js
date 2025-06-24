@@ -43,6 +43,13 @@ async function updateUser(user_id, guild_id, updatedUser) {
     .updateOne({ user_id, guild_id }, { $set: updatedUser });
 }
 
+async function updateManyUsers(where, updatedUser) {
+  await db
+    .collection("users")
+    .updateOne({ where }, { $set: updatedUser });
+}
+
+
 async function resetUserWhisperCount(guild_id) {
   await db
     .collection("users")
@@ -149,6 +156,7 @@ module.exports = {
   findAllUsers,
   findUsersWithIds,
   updateUser,
+  updateManyUsers,
   createUsers,
   upsertVote,
   getCountedVotes,

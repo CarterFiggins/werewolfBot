@@ -43,9 +43,7 @@ async function createGameDocument(interaction) {
     is_day: false,
     first_night: true,
     is_baker_dead: false,
-    user_death_id: null,
     wolf_double_kill: false,
-    second_user_death_id: null,
   });
 }
 

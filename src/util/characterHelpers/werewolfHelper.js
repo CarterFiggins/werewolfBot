@@ -1,11 +1,46 @@
 const _ = require("lodash");
-const { findUsersWithIds, updateUser, findSettings } = require("../../werewolf_db");
+const { findUsersWithIds, updateUser, findSettings, findGame, findManyUsers, updateManyUsers } = require("../../werewolf_db");
 const {
   giveChannelPermissions,
   organizeChannels,
 } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
 const { werewolfKillDeathMessage } = require("../deathHelper");
+
+async function getKillTargetedUsers(interaction) {
+  const guildId = interaction.guild.id;
+  const game = await findGame(guildId);
+  const cursorWerewolves = await findManyUsers({
+    guild_id: guildId,
+    is_dead: false,
+    character: characters.WEREWOLF,
+  });
+  const werewolves = await cursorWerewolves.toArray();
+  if (_.isEmpty(werewolves)) {
+    return [];
+  }
+
+  const targetedIds = []
+  const usersIdsToBeKilled = []
+
+  _.forEach(werewolves, (wolf) => targetedIds.push(...wolf.kill_targeted_user_ids));
+  const randomTargetId = _.sample(targetedIds);
+  if (randomTargetId) {
+    usersIdsToBeKilled.push(randomTargetId);
+  }
+
+  if (game.wolf_double_kill) {
+    const secondRandomTarget = _.sample(_.reject(targetedIds, (id) => id === randomTargetId));
+    if (secondRandomTarget) {
+      usersIdsToBeKilled.push(secondRandomTarget);
+    }
+  }
+
+  // reset werewolves targets
+  await updateManyUsers({ guild_id: guildId, character: characters.WEREWOLF }, { kill_targeted_user_ids: [] });
+
+  return usersIdsToBeKilled
+}
 
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;
@@ -70,4 +105,5 @@ async function killPlayers(interaction, deathIds) {
 
 module.exports = {
   killPlayers,
+  getKillTargetedUsers,
 };

@@ -72,11 +72,11 @@ async function computeCharacters(numberOfPlayers, guildId) {
 
   if (process.env.TESTING_MODE) {
     return [
-      characters.VILLAGER,
-      characters.DOPPELGANGER,
-      characters.WEREWOLF,
-      characters.CHAOS_DEMON,
-      characters.SEER,
+      characters.GROUCHY_GRANNY, // AJ test
+      characters.WEREWOLF, // computing
+      characters.MONARCH, // werewolf bot
+      characters.MONARCH, // encourage bot
+      characters.WEREWOLF, // carter
     ] 
   }
 

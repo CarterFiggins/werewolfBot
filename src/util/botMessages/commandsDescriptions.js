@@ -73,7 +73,7 @@ Shows who is alive in the game. This will also show the number of werewolf and v
       role: 'werewolf, cub',
       emoji: '🗡️',
       description: `### /kill (target)
-This is a Werewolf command. It is used at night in the werewolf channel to target an alive player to die. You may change your target using this same command. Use by typing the command hitting enter and choosing a player to kill.`
+This is a Werewolf command. It is used at night in the werewolf channel to target an alive player to die. You may change your target using this same command. Use by typing the command hitting enter and choosing a player to kill. Each werewolf will be able to target a player and if the werewolves target do not match then the bot will pick one of the targets selected.`
     },
     {
       label: '/guard (target)',

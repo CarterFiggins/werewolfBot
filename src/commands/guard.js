@@ -83,7 +83,7 @@ module.exports = {
       });
       return;
     }
-    if (guardUser.isMuted) {
+    if (guardUser.is_muted) {
       await interaction.reply({
         content: `${targetedUser} is safely locked away in the Granny's house. You don't want to go there! try again.`,
         ephemeral: false,

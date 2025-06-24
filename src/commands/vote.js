@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
-const { findGame, upsertVote, findUser } = require("../werewolf_db");
+const { findGame, upsertVote, findUser, deleteManyVotes } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
@@ -13,7 +13,6 @@ module.exports = {
       option
         .setName("voted")
         .setDescription("name of player to vote off")
-        .setRequired(true)
     ),
   async execute(interaction) {
     const deniedMessage = await permissionCheck({
@@ -31,6 +30,16 @@ module.exports = {
     }
 
     const votedUser = interaction.options.getUser("voted");
+
+    if (!votedUser) {
+      await deleteManyVotes({
+        guild_id: interaction.guild.id,
+        user_id: interaction.user.id,
+      });
+      await interaction.reply(`${interaction.user} has removed their vote.`);
+      return;
+    }
+
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const votedMember = interaction.guild.members.cache.get(votedUser.id);
@@ -50,7 +59,7 @@ module.exports = {
       });
       return;
     }
-    if (dbUser.is_dead) {
+    if (dbUser.is_injured) {
       await interaction.reply({
         content: "You can't vote because you are injured",
         ephemeral: true,
@@ -87,7 +96,7 @@ module.exports = {
       });
       return;
     }
-    if (votedDbUser.isMuted) {
+    if (votedDbUser.is_muted) {
       await interaction.reply({
         content: `${votedUser} is safely locked away in the Granny's house. They will not be here for the hanging and can not be voted.`,
         ephemeral: true,

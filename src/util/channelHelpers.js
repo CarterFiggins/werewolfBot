@@ -513,7 +513,7 @@ const townSquareStart =
   "Welcome to the town-square! Here you will vote for who you think the werewolves are.";
 
 const werewolfStart =
-  "Welcome to the werewolf channel! Talk to your fellow werewolves and mark your next target with the `/kill` command at night to kill the villagers";
+  "Welcome to the werewolf channel! Talk to your fellow werewolves and mark your next target with the `/kill` command at night to eat the villagers. Each werewolf can mark their own target. If the werewolf target do not match the werewolf bot will choose the villager to be eaten.";
 
 const seerStart =
   "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager. Oh and there is a chance you could be a fool... but we are all counting on you!";

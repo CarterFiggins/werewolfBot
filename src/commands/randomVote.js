@@ -3,7 +3,7 @@ const _ = require("lodash");
 const { commandNames } = require("../util/commandHelpers");
 const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
-const { findGame, upsertVote, findUser } = require("../werewolf_db");
+const { findGame, upsertVote, findUser, findManyUsers } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { getAliveMembers } = require("../util/discordHelpers");
 
@@ -34,7 +34,7 @@ module.exports = {
     const cursorAlivePlayers = await findManyUsers({
       guild_id: guildId,
       is_dead: false,
-      isMuted: { $ne: true },
+      is_muted: { $ne: true },
     });
 
     const aliveDbUsers = await cursorAlivePlayers.toArray();

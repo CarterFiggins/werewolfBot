@@ -132,7 +132,7 @@ Turn this setting on to hide the werewolf and vampire count in the who_is_alive 
       label: 'Power Ups',
       emoji: '🦸‍♂️',
       description: `### Power Ups
-Turn this on to give a power to each player at the start of the game. The powers are the same that the monarch can give. Players are given a one power randomly
+Turn this on to give a power to each player at the start of the game. The powers are the same that the monarch can give. Players are given powers randomly
 `,
     },
     {

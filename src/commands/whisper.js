@@ -51,7 +51,7 @@ module.exports = {
       });
       return;
     }
-    if (userDb.isMuted) {
+    if (userDb.is_muted) {
       await interaction.editReply({
         content:
           "You are to far away! They can not hear you. https://tenor.com/uRgx.gif",
@@ -79,7 +79,7 @@ module.exports = {
       return;
     }
 
-    if (playerUserDb.isMuted) {
+    if (playerUserDb.is_muted) {
       await interaction.editReply({
         content: "They have been muted by the granny. Looks like your whispers will have to wait until they find their way back from Granny's bad side!",
         ephemeral: true,

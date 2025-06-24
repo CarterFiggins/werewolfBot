@@ -98,7 +98,7 @@ module.exports = {
       });
       return;
     }
-    if (targetDbUser.isMuted) {
+    if (targetDbUser.is_muted) {
       await interaction.reply({
         content: `${targetedUser} is safely locked away in the Granny's house. Fun fact: it's made of reinforced metal! This place can stop a bullet, a werewolf, and even Grandma's hard candy collection. Try again`,
         ephemeral: true,

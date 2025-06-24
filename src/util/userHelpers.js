@@ -79,6 +79,10 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
         user.info.is_cub = true;
         user.info.character = characters.WEREWOLF;
         user.info.assigned_identity = characters.WEREWOLF;
+        user.info.kill_targeted_user_ids = [];
+        break;
+      case characters.WEREWOLF:
+        user.info.kill_targeted_user_ids = [];
         break;
       case characters.BODYGUARD:
         user.info.last_guarded_user_id = null;
