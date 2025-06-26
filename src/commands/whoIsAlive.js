@@ -89,7 +89,7 @@ module.exports = {
         someoneIsDead = true;
         deadMessage += `${currentMember}${characterMessage}`;
         if (user.cause_of_death) {
-          deadMessage += `(${user.cause_of_death})`
+          deadMessage += ` (${user.cause_of_death})`
         }
         deadMessage += "\n"
       }
