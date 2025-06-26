@@ -24,7 +24,7 @@ const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
 
 const WaysToDie = {
   HANGED: 'Hanged',
-  WEREWOLF: 'Werewolf Attack',
+  WEREWOLF: 'Werewolf',
   SHOT: 'Shot',
   CURSED: 'Cursed',
   STARVED: 'Starved',
