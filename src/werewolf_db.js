@@ -46,7 +46,7 @@ async function updateUser(user_id, guild_id, updatedUser) {
 async function updateManyUsers(where, updatedUser) {
   await db
     .collection("users")
-    .updateOne({ where }, { $set: updatedUser });
+    .updateMany(where, { $set: updatedUser });
 }
 
 

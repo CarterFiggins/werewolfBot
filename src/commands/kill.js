@@ -64,13 +64,13 @@ module.exports = {
       });
       return;
     }
-    // if (targetedUser.bot) {
-    //   await interaction.reply({
-    //     content: `You can't kill me!\n${getRandomBotGif()}`,
-    //     ephemeral: false,
-    //   });
-    //   return;
-    // }
+    if (targetedUser.bot) {
+      await interaction.reply({
+        content: `You can't kill me!\n${getRandomBotGif()}`,
+        ephemeral: false,
+      });
+      return;
+    }
     if (!isAlive(targetedMember)) {
       await interaction.reply({
         content: `${targetedUser} is dead. \nhttps://tenor.com/blWe0.gif`,
