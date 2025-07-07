@@ -43,13 +43,21 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   const copiedAssignedIdentity = validateCopiedCharacter(copiedUserDb.assigned_identity)
 
   const copiedVampireKing = copiedCharacter === characters.VAMPIRE;
+  const copiedWerewolf = copiedCharacter === characters.WEREWOLF;
 
-  await updateUser(doppelgangerUserId, guildId, {
+
+  const userData = {
     character: copiedCharacter,
     first_bite: copiedVampireKing,
-    is_vampire: copiedVampireKing,
+    is_vampire: copiedUserDb.is_vampire,
     is_cub: copiedUserDb.is_cub,
-  });
+  }
+
+  if (copiedWerewolf) {
+    userData.kill_targeted_user_ids = [];
+  }
+
+  await updateUser(doppelgangerUserId, guildId, userData);
 
   const doppelgangerMember = members.get(doppelgangerUserId);
   const copiedMember = members.get(copyUserId);
