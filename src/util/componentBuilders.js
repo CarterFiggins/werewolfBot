@@ -52,6 +52,22 @@ function selectPowerUpActionRow() {
   return new ActionRowBuilder().addComponents(selectMenuPowerUpSelection);
 }
 
+function selectPowerUpDescriptionActionRow() {
+  const selectMenuPowerUpSelection = new StringSelectMenuBuilder()
+  .setCustomId("power-up-description")
+  .setPlaceholder("Select power up")
+  .setMinValues(1)
+  .setMaxValues(1)
+  .addOptions(_.map(powerUpList, (powerUp) => new StringSelectMenuOptionBuilder()
+    .setLabel(powerUp.label)
+    .setDescription(powerUp.shortDescription)
+    .setValue(powerUp.tag)
+    .setEmoji(powerUp.emoji)
+  ))
+
+  return new ActionRowBuilder().addComponents(selectMenuPowerUpSelection);
+}
+
 function selectSettingsActionRow() {
   const selectMenuSettings = new StringSelectMenuBuilder()
     .setCustomId("settings")
@@ -104,6 +120,7 @@ function selectRolesActionRow() {
 
 module.exports = {
   selectCharacterActionRow,
+  selectPowerUpDescriptionActionRow,
   selectPowerUpModal,
   selectPowerUpActionRow,
   selectSettingsActionRow,

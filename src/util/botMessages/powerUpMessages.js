@@ -23,7 +23,7 @@ powerUpList = [
     description: `Using this power will tell you the true role of the player.`
   },
   {
-    label: "SHIELD",
+    label: "Shield",
     tag: PowerUpNames.SHIELD,
     emoji: "🛡️",
     shortDescription: "Automatically applies",

@@ -14,7 +14,7 @@ const { createChannel, setupChannelNames, createCategory } = require("../util/ch
 const { howToPlayIntro, howToPlayRoles, villagerTeam, werewolfTeam, vampireTeam, undeterminedTeam, soloCharacters, orderOfOperations } = require("../util/botMessages/howToPlay");
 const { playerRolesIntro, characterSelectionIntro } = require("../util/botMessages/player-roles");
 const { settingsIntro } = require("../util/botMessages/settings");
-const { selectCharacterActionRow, selectSettingsActionRow, selectPowerUpActionRow, selectCommandsActionRow, selectRolesActionRow } = require("../util/componentBuilders");
+const { selectCharacterActionRow, selectSettingsActionRow, selectPowerUpActionRow, selectCommandsActionRow, selectRolesActionRow, selectPowerUpDescriptionActionRow } = require("../util/componentBuilders");
 const { powerUpSelectionIntro } = require("../util/botMessages/powerUpMessages");
 
 module.exports = {
@@ -150,6 +150,10 @@ module.exports = {
       [adminPermissions, nonPlayersPermissions],
       gameInstructionsCategory
     );
+
+    await commandsChannel.send({
+      components: [selectPowerUpDescriptionActionRow()],
+    })
 
     await commandsChannel.send({
       components: [selectCommandsActionRow()],

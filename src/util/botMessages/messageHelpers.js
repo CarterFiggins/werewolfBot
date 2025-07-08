@@ -29,8 +29,13 @@ async function replyWithLongMessage({ interaction, message, lastIndex, maxLength
   }
 }
 
-async function replyViewAll(interaction, replyList) {
-  const descriptions = _.map(replyList, (listItem) => listItem.description);
+async function replyViewAll(interaction, replyList, withLabel) {
+  const descriptions = _.map(replyList, (listItem) => {
+    if (withLabel && listItem.description) {
+      return `${listItem.label}: ${listItem.description}`
+    }
+    return listItem.description
+  });
       replyWithLongMessage({
         interaction,
         message: descriptions.join("\n"),
