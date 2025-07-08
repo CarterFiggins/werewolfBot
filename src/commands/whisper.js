@@ -27,9 +27,10 @@ module.exports = {
     await interaction.deferReply({ ephemeral: true });
 
     const settings = await findSettings(interaction.guild?.id);
-
+    const userDb = await findUser(interaction.user.id, interaction.guild.id)
     const deniedMessage = await permissionCheck({
       interaction,
+      dbUser: userDb,
       guildOnly: true,
       check: () => !isAlive(interaction.member) || !settings.can_whisper,
     });
@@ -42,19 +43,10 @@ module.exports = {
       return;
     }
 
-    const userDb = await findUser(interaction.user.id, interaction.guild.id)
     if (userDb.character === characters.MONARCH) {
       await interaction.editReply({
         content:
           "The Monarch can not whisper.",
-        ephemeral: true,
-      });
-      return;
-    }
-    if (userDb.is_muted) {
-      await interaction.editReply({
-        content:
-          "You are to far away! They can not hear you. https://tenor.com/uRgx.gif",
         ephemeral: true,
       });
       return;

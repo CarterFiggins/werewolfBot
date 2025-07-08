@@ -41,6 +41,7 @@ module.exports = {
 
     const deniedMessage = await permissionCheck({
       interaction,
+      dbUser,
       guildOnly: true,
       check: () =>
         !isAlive(interaction.member) ||

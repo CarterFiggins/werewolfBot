@@ -51,6 +51,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     first_bite: copiedVampireKing,
     is_vampire: copiedUserDb.is_vampire,
     is_cub: copiedUserDb.is_cub,
+    copy_user_id: null,
   }
 
   if (copiedWerewolf) {

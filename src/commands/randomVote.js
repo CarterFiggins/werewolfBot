@@ -12,8 +12,10 @@ module.exports = {
     .setName(commandNames.RANDOM_VOTE)
     .setDescription("randomly vote for a user"),
   async execute(interaction) {
+    const dbUser = await findUser(interaction.user.id, guildId);
     const deniedMessage = await permissionCheck({
       interaction,
+      dbUser,
       guildOnly: true,
       check: () => !isAlive(interaction.member),
     });
@@ -28,7 +30,6 @@ module.exports = {
 
     const guildId = interaction.guild.id;
     const members = await interaction.guild.members.fetch();
-    const dbUser = await findUser(interaction.user.id, guildId);
     const game = await findGame(guildId);
 
     const cursorAlivePlayers = await findManyUsers({

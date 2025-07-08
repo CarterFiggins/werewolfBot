@@ -25,6 +25,7 @@ module.exports = {
         dbUser.character === characters.FOOL);
     const deniedMessage = await permissionCheck({
       interaction,
+      dbUser,
       guildOnly: true,
       check: () => !isAlive(interaction.member) || !seerOrFool,
     });

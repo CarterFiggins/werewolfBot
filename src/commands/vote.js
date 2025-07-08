@@ -15,8 +15,10 @@ module.exports = {
         .setDescription("name of player to vote off")
     ),
   async execute(interaction) {
+    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
     const deniedMessage = await permissionCheck({
       interaction,
+      dbUser,
       guildOnly: true,
       check: () => !isAlive(interaction.member),
     });
@@ -48,7 +50,6 @@ module.exports = {
       return role.name;
     });
 
-    const dbUser = await findUser(interaction.user.id, interaction.guild.id);
     const votedDbUser = await findUser(votedUser.id, interaction.guild.id);
 
     if (channel.name !== channelNames.TOWN_SQUARE) {

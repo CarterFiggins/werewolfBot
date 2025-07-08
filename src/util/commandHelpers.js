@@ -48,6 +48,8 @@ const commandNames = {
   // power up commands
   ALLIANCE_DETECTOR: "alliance_detector",
   PREDATOR_VISION: "predator_vision",
+  STUN: "stun",
+  STEAL: "steal",
 };
 
 const voteText =
@@ -69,6 +71,14 @@ const powerUpMessages = new Map([
   [
     PowerUpNames.PREDATOR_VISION,
     "You have Predator vision witch allows you to look at a player and find their true character. Use command `/predator_vision` to see the players true role.",
+  ],
+  [
+    PowerUpNames.STEAL,
+    "You can steal a power up from another player. Use command `/steal` to steal.",
+  ],
+  [
+    PowerUpNames.STUN,
+    "You can stun a player removing their ability to vote or night ability. Use command `/stun` to stun a player",
   ],
 ]);
 

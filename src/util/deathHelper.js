@@ -397,4 +397,5 @@ module.exports = {
   werewolfKillDeathMessage,
   castWitchCurse,
   botShoots,
+  removeUserVotes,
 };

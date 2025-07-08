@@ -144,7 +144,7 @@ roles = [
   {
     label: "Doppelganger",
     tag: characters.DOPPELGANGER,
-    emoji: "©️",
+    emoji: "©",
     team: "unknown",
     description: `### Doppelganger
 * During the first night, the doppelganger may copy another player and become that character. The player copied is unaware (s)he was copied

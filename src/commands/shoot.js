@@ -24,6 +24,7 @@ module.exports = {
     const dbUser = await findUser(interaction.user.id, interaction.guild?.id);
     const deniedMessage = await permissionCheck({
       interaction,
+      dbUser,
       guildOnly: true,
       check: () =>
         !isAlive(interaction.member) || (dbUser.character !== characters.HUNTER && !dbUser?.power_ups[PowerUpNames.GUN]),

@@ -6,20 +6,26 @@ const PowerUpNames = {
   SHIELD: "shield",
   ALLIANCE_DETECTOR: "alliance_detector",
   PREDATOR_VISION: "predator_vision",
+  STUN: "stun",
+  STEAL: "steal",
 }
 
 const PowersWithWeightsVillagers = {
   [PowerUpNames.PREDATOR_VISION]: 1,
   [PowerUpNames.GUN]: 3,
   [PowerUpNames.SHIELD]: 3,
-  [PowerUpNames.ALLIANCE_DETECTOR]: 2,
+  [PowerUpNames.STUN]: 4,
+  [PowerUpNames.STEAL]: 3,
+  [PowerUpNames.ALLIANCE_DETECTOR]: 1,
 };
 
 const PowersWithWeightsWerewolves = {
   [PowerUpNames.ALLIANCE_DETECTOR]: 1,
   [PowerUpNames.GUN]: 3,
   [PowerUpNames.SHIELD]: 3,
-  [PowerUpNames.PREDATOR_VISION]: 2,
+  [PowerUpNames.STUN]: 4,
+  [PowerUpNames.STEAL]: 3,
+  [PowerUpNames.PREDATOR_VISION]: 1,
 };
 
 function filterPowerUps(dbPowers, powerWeights) {

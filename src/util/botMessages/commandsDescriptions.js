@@ -120,7 +120,7 @@ This is the Vampires command. Use it in the vampire channel. Each vampire is abl
     {
       label: '/copy (target)',
       role: 'doppelganger',
-      emoji: '©️',
+      emoji: '©',
       description: `### /copy (target)
 This is the Doppelganger command. Use it to copy a players character and become that charter the next day. This command only works on the first day/night and will not work after that. If the doppelganger does not use the bot will pick a character for them. This command can be used anywhere and will keep the bot reply private. You can change your target multiply times before the next day.`
     },

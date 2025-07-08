@@ -29,6 +29,7 @@ const { markChaosTarget, didChaosWin } = require("./characterHelpers/chaosDemonH
 const { givePower } = require("./characterHelpers/monarchHelper");
 const { characters } = require("./commandHelpers");
 const { handleHangingVotes } = require("./voteHelpers");
+const { removeStunnedUsers } = require("./powerUp/stunHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -181,6 +182,7 @@ async function dayTimeJob(interaction) {
   await investigatePlayers(interaction)
   await givePower(interaction)
   await mutePlayers(interaction, guildId)
+  await removeStunnedUsers(interaction)
 
   await updateGame(guildId, {
     wolf_double_kill: false,
@@ -238,6 +240,7 @@ async function nightTimeJob(interaction) {
   if (settings.can_whisper) {
     await resetUserWhisperCount(guildId)
   }
+  await removeStunnedUsers(interaction)
 
   const chaosWins = await handleVotingDeath(interaction)
   await checkGame(interaction, chaosWins);

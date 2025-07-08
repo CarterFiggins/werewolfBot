@@ -36,6 +36,20 @@ powerUpList = [
     shortDescription: "/alliance_detector",
     description: `Using this power will tell you if two players are on the same team.`
   },
+  {
+    label: "Stun",
+    tag: PowerUpNames.STUN,
+    emoji: "👊",
+    shortDescription: "/stun",
+    description: `Use this power to stun a player. Stunning a player will stop them from voting if used in the day. If used at night it will stop them from using a power at night.`,
+  },
+  {
+    label: "Steal",
+    tag: PowerUpNames.STEAL,
+    emoji: "🥷",
+    shortDescription: "/steal",
+    description: `Steal a random power from a player. If they have no power then you get nothing. Can't steal the steal power from another player.`,
+  },
 ]
 
 module.exports = {
