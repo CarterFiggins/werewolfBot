@@ -32,7 +32,7 @@ powerUpList = [
   {
     label: "Alliance Detector",
     tag: PowerUpNames.ALLIANCE_DETECTOR,
-    emoji: "🛡️",
+    emoji: "🕵️",
     shortDescription: "/alliance_detector",
     description: `Using this power will tell you if two players are on the same team.`
   },
