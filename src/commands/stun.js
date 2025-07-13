@@ -90,6 +90,12 @@ module.exports = {
     await removeNightPowerForUser(interaction, targetDbUser);
     await sendMemberMessage(targetedMember, `You got stunned and will not be able to use your commands.`)
 
+    const channels = interaction.guild.channels.cache;
+    const organizedChannels = organizeChannels(channels);
+    await organizedChannels.afterLife.send(
+      `${interaction.member} has stuned ${targetedUser}`
+    );
+
     await interaction.reply({
       content: `${targetedUser} has been stunned!`,
       ephemeral: true,
