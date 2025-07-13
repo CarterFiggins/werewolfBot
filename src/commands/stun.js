@@ -8,6 +8,7 @@ const { PowerUpNames, usePowerUp } = require("../util/powerUpHelpers");
 const { removeNightPowerForUser } = require("../util/powerUp/stunHelper");
 const { removeUserVotes } = require("../util/deathHelper");
 const { sendMemberMessage } = require("../util/botMessages/sendMemberMessages");
+const { organizeChannels } = require("../util/channelHelpers");
 
 
 module.exports = {
