@@ -6,6 +6,7 @@ const { findUser, findGame } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames, usePowerUp, grantPowerUp } = require("../util/powerUpHelpers");
 const { sendMemberMessage } = require("../util/botMessages/sendMemberMessages");
+const { organizeChannels } = require("../util/channelHelpers");
 
 
 module.exports = {
