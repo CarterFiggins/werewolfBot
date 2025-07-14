@@ -94,7 +94,7 @@ module.exports = {
     const channels = interaction.guild.channels.cache;
     const organizedChannels = organizeChannels(channels);
     await organizedChannels.afterLife.send(
-      `${interaction.member} has stuned ${targetedUser}`
+      `${interaction.member} has stunned ${targetedUser}`
     );
 
     await interaction.reply({

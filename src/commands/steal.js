@@ -105,13 +105,13 @@ module.exports = {
       content: `You stole from ${targetedUser}! You have stolen the power ${stolenPowerName}.`,
       ephemeral: true,
     });
-  }
 
     const channels = interaction.guild.channels.cache;
     const organizedChannels = organizeChannels(channels);
     await organizedChannels.afterLife.send(
       `${interaction.member} has stolen ${stolenPowerName} from ${targetedUser}!`
     );
+  }
 }
 
 const botGIFs = [
