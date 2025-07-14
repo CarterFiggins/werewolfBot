@@ -132,4 +132,5 @@ const stolenGIFs = [
   'https://tenor.com/bjAfK.gif',
   'https://tenor.com/dYgOTqyjv2b.gif',
   'https://tenor.com/bhTs8.gif',
+  'https://tenor.com/bJj36.gif',
 ]
