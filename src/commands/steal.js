@@ -99,7 +99,8 @@ module.exports = {
     await usePowerUp(dbUser, interaction, PowerUpNames.STEAL)
     await grantPowerUp(dbUser, interaction, stolenPowerName)
     await usePowerUp(targetDbUser, interaction, stolenPowerName)
-    await sendMemberMessage(targetedMember, `The power up ${stolenPowerName} was stolen from you! ${_.sample(stolenGIFs)}`)
+    const displayStolenGif = _.sample(stolenGIFs);
+    await sendMemberMessage(targetedMember, `The power up ${stolenPowerName} was stolen from you! ${displayStolenGif}`)
 
     await interaction.reply({
       content: `You stole from ${targetedUser}! You have stolen the power ${stolenPowerName}.`,
@@ -109,7 +110,7 @@ module.exports = {
     const channels = interaction.guild.channels.cache;
     const organizedChannels = organizeChannels(channels);
     await organizedChannels.afterLife.send(
-      `${interaction.member} has stolen ${stolenPowerName} from ${targetedUser}!`
+      `${interaction.member} has stolen ${stolenPowerName} from ${targetedUser}! ${displayStolenGif}`
     );
   }
 }
@@ -118,7 +119,6 @@ const botGIFs = [
   'https://tenor.com/bAaSt.gif',
   'https://tenor.com/djM7dHJw1uU.gif',
   'https://tenor.com/uXQE5n4hMUE.gif',
-  'https://tenor.com/dYgOTqyjv2b.gif',
   'https://tenor.com/bWuvj.gif',
 ]
 
@@ -130,4 +130,6 @@ const stolenGIFs = [
   'https://tenor.com/5pT3.gif',
   'https://tenor.com/bQii4.gif',
   'https://tenor.com/bjAfK.gif',
+  'https://tenor.com/dYgOTqyjv2b.gif',
+  'https://tenor.com/bhTs8.gif',
 ]
