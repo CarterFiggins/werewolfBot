@@ -3,6 +3,7 @@ const { getRole, roleNames, organizeRoles } = require("../util/rolesHelpers");
 const { characters } = require("./commandHelpers");
 const { createUsers, findSettings } = require("../werewolf_db");
 const { randomWeightPowerUp } = require("./powerUpHelpers");
+const { possibleCharactersInGame } = require("./channelHelpers");
 require("dotenv").config();
 
 async function getPlayingCount(interaction) {
@@ -61,6 +62,14 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
   const dbUsers = [];
   const settings = await findSettings(interaction.guild.id);
   let shuffledUsers = shuffleUsers(discordUsers)
+  const possibleFakeAssignment = _.intersection(
+    [characters.VILLAGER, characters.BAKER, characters.HUNTER],
+    await possibleCharactersInGame(interaction),
+  )
+
+  if (_.isEmpty(possibleFakeAssignment)) {
+    possibleFakeAssignment.push(characters.VILLAGER)
+  }
 
   for (let i = 0; i < shuffledUsers.length; i++) {
     const user = shuffledUsers[i];
@@ -97,10 +106,10 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
         if (settings.allow_lycan_guard) {
           user.info.has_lycan_guard = true;
         }
-        user.info.assigned_identity = _.sample([characters.VILLAGER, characters.BAKER, characters.HUNTER])
+        user.info.assigned_identity = _.sample(possibleFakeAssignment)
         break;
       case characters.MUTATED:
-        user.info.assigned_identity = _.sample([characters.VILLAGER, characters.BAKER, characters.HUNTER])
+        user.info.assigned_identity = _.sample(possibleFakeAssignment)
         break;
       case characters.MONARCH:
         user.info.given_power_ups = [];

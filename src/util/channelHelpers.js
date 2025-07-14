@@ -71,7 +71,7 @@ async function sendStartMessages(interaction, users) {
   });
 
   await organizedChannels.townSquare.send(townSquareStart);
-  const townSquarePlayerMessage =  await organizedChannels.townSquare.send(`Possible characters in game:\n${(await possibleCharactersInGame(interaction)).join(", ")}`)
+  const townSquarePlayerMessage =  await organizedChannels.townSquare.send(`Possible characters in game:\n${(await possibleCharactersInGameCap(interaction)).join(", ")}`)
   townSquarePlayerMessage.pin()
 
   await organizedChannels?.werewolves?.send(
@@ -111,6 +111,11 @@ function showUsersCharacter(users) {
       wasTold = `I told them they were a ${user.info.assigned_identity}`
     }
     message += `${user} is a ${character}. ${wasTold}\n`;
+    for (const powerKey in user.info?.power_ups) {
+      if (user.info.power_ups[powerKey]) {
+        message += `${powerKey}: ${user.info.power_ups[powerKey]}\n`
+      }
+    }
   });
   return message;
 }
@@ -489,7 +494,12 @@ async function possibleCharactersInGame(interaction) {
   const { wolfCards, villagerCards, otherCards } = getCards(currentCharacters);
   const vampireName = `Vampire ${_.capitalize(characters.VAMPIRE)}`
   const soloCards = _.map(otherCards, (name) => name === characters.VAMPIRE ? vampireName : name)
-  return _.map([...wolfCards, ...villagerCards, ...soloCards], _.capitalize)
+  return [...wolfCards, ...villagerCards, ...soloCards];
+}
+
+async function possibleCharactersInGameCap(interaction) {
+  const possibleCharacters = await possibleCharactersInGame(interaction);
+  return _.map(possibleCharacters, _.capitalize);
 }
 
 module.exports = {
@@ -505,6 +515,7 @@ module.exports = {
   createChannels,
   removeAllGameChannels,
   flatOrganizedChannels,
+  possibleCharactersInGame,
   channelNames,
   setupChannelNames,
 };
