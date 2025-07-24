@@ -94,7 +94,7 @@ async function killReminder(interaction) {
   }
 
   const noTargetSelected = _.every(werewolves, (wolf) => _.isEmpty(wolf.kill_targeted_user_ids))
-  const hasDoubleTargetSelected = _.some(werewolves, (wolf) => wolf.kill_targeted_user_ids.length >= 2)
+  const hasDoubleTargetSelected = _.some(werewolves, (wolf) => wolf.kill_targeted_user_ids?.length >= 2)
 
   const game = await findGame(guildId);
   const channels = await interaction.guild.channels.fetch();

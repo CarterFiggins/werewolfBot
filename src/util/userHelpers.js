@@ -43,6 +43,7 @@ async function buildUserInfo(interaction, user, newCharacter) {
     vampire_bites: 0,
     has_lycan_guard: false,
     assigned_identity: newCharacter,
+    kill_targeted_user_ids: [],
     power_ups: {},
   };
 }
