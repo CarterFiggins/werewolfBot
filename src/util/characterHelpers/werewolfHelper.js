@@ -61,6 +61,7 @@ async function killPlayers(interaction, deathIds) {
         // join werewolf team
         await updateUser(deadUser.user_id, interaction.guild.id, {
           character: characters.WEREWOLF,
+          kill_targeted_user_ids: [],
         });
         await giveChannelPermissions({
           interaction,
