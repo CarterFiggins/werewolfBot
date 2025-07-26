@@ -59,9 +59,11 @@ async function votingDeathMessage({ interaction, playersDeathInfo }) {
       is_day: false,
     });
   
-    await organizedChannels.townSquare.send(
-      `${deathMessage}${cursedMessage}`
-    );
+    if (deathMessage || cursedMessage) {
+      await organizedChannels.townSquare.send(
+        `${deathMessage}${cursedMessage}`
+      );
+    }
   }
 
   await organizedChannels.townSquare.send(

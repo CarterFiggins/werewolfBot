@@ -94,7 +94,7 @@ ${listUsers(deadUsers.villagers)}`
 ### Alive:
 ${listUsers([...aliveUsers.werewolves, ...aliveUsers.witches])}
 ### Dead:
-${listUsers([deadUsers.werewolves, ...deadUsers.witches])}`
+${listUsers([...deadUsers.werewolves, ...deadUsers.witches])}`
     );
     return true;
   }
