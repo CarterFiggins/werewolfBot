@@ -59,6 +59,7 @@ module.exports = {
         enable_power_ups: false,
         double_hanging: false,
         admin_controls_cards: false,
+        werewolf_creates_henchman: false,
       });
     }
 

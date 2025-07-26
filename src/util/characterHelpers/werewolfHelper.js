@@ -6,6 +6,7 @@ const {
 } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
 const { werewolfKillDeathMessage } = require("../deathHelper");
+const { sendMemberMessage } = require("../botMessages/sendMemberMessages");
 
 async function getKillTargetedUsers(interaction) {
   const guildId = interaction.guild.id;
@@ -45,6 +46,7 @@ async function getKillTargetedUsers(interaction) {
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;
   const members = await interaction.guild.members.fetch();
+  const game = await findGame(guildId);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const cursor = await findUsersWithIds(guildId, deathIds);
@@ -81,11 +83,29 @@ async function killPlayers(interaction, deathIds) {
           user: deadMember,
           character: characters.WEREWOLF,
         });
-        organizedChannels.werewolves.send(
+        await organizedChannels.werewolves.send(
           `You went after ${deadMember} last night, but guess what? ${deadMember} was the witch, and your attack didn't quite go as planned. The twist? The witch has now joined your chat!\nWelcome, ${deadMember}! The hunt just got a little more magical.`
         );
         isDead = false;
-      } else if (deadUser.has_lycan_guard) {
+      } else if (game.first_night && settings.werewolf_creates_henchman) {
+        const canNotBeHenchman = [characters.VAMPIRE, characters.CHAOS_DEMON]
+        if (!canNotBeHenchman.includes(deadUser.character)) {
+          isDead = false;
+          await updateUser(deadUser.user_id, interaction.guild.id, {
+            is_henchman: true,
+          });
+          await sendMemberMessage(
+            deadMember,
+            `Under cover of darkness, the werewolves approached—but instead of tearing you apart, they whispered a sinister offer.
+You are no longer a mere villager. You are now the Henchman — a secret agent of deception working from within. The villagers still believe you are one of them, but your loyalty lies with the wolves.
+Your new goal: sow confusion, mislead the town, and protect the werewolves at all costs. Use your influence to misdirect, cast suspicion, and sabotage the villagers’ efforts. Do whatever it takes to keep the wolves hidden and help them win... from the shadows.
+You do not count as a villager or a werewolf for victory.`
+          );
+          await organizedChannels.werewolves.send(`${deadMember} now serves the pack as your hidden Henchman.`)
+          await organizedChannels.afterLife.send(`${deadMember} now serves the werewolves as the Henchman.`)
+        }
+      }
+      else if (deadUser.has_lycan_guard) {
         await organizedChannels.werewolves.send(
           `${deadMember} is a lycan! It turns out they were tougher than you expected! Your attack was unsuccessful this time. However, now you know what you’re up against, and next time you’ll be prepared to take them down.`
         );

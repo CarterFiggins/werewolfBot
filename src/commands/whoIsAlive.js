@@ -59,6 +59,7 @@ module.exports = {
     let werewolfCount = 0;
     let villagerCount = 0;
     let soloCount = 0;
+    let henchmanCount = 0;
     let vampireCount = 0;
     let someoneIsDead = false;
 
@@ -70,9 +71,17 @@ module.exports = {
       let characterMessage = "";
       const currentMember = members.get(user.user_id) || "Player left server"
       if (channel.name === channelNames.AFTER_LIFE || (user.is_dead && !settings.hard_mode)) {
-        const vampireMessage = user.is_vampire ? "vampire " : "";
-        const cubMessage = user.is_cub ? " cub" : "";
-        characterMessage = `: **${vampireMessage}${user.character}${cubMessage}**`;
+        const sideCharacters = []
+        if (user.is_cub) {
+          sideCharacters.push("cub")
+        }
+        if (user.is_vampire) {
+          sideCharacters.push("vampire")
+        }
+        if (user.is_henchman) {
+          sideCharacters.push("henchman")
+        }
+        characterMessage = `: **${user.character} ${sideCharacters.join(", ")}**`;
       }
       if (!user.is_dead) {
         message += `${currentMember}${characterMessage}\n`;
@@ -82,6 +91,8 @@ module.exports = {
           vampireCount += 1;
         } else if (soloCharacters.includes(user.character)) {
           soloCount += 1;
+        } else if (user.is_henchman) {
+          henchmanCount += 1;
         } else {
           villagerCount += 1;
         }
@@ -107,8 +118,12 @@ module.exports = {
       const soloMessage = soloCount
         ? `Solo Character Count: ${soloCount}\n`
         : "";
+      
+      const henchmanMessage = henchmanCount
+        ? `Henchman Count: ${henchmanCount}\n`
+        : "";
 
-      message += `${werewolfMessage}${vampireMessage}${soloMessage}Villager Count: ${villagerCount}\n`;
+      message += `${werewolfMessage}${vampireMessage}${soloMessage}${henchmanMessage}Villager Count: ${villagerCount}\n`;
     }
 
     await interaction.reply({

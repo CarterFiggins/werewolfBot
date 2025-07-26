@@ -121,7 +121,7 @@ function findCharactersTeam(user) {
   if (user.character === characters.CHAOS_DEMON) {
     return teams.CHAOS
   }
-  if ([characters.WEREWOLF, characters.WITCH].includes(user.character)) {
+  if ([characters.WEREWOLF, characters.WITCH].includes(user.character) || user.is_henchman) {
     return teams.WEREWOLF
   }
   return teams.VILLAGER

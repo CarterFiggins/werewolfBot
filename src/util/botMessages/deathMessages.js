@@ -52,7 +52,14 @@ async function votingDeathMessage({ interaction, playersDeathInfo }) {
     } else if (deadUser.character === characters.WITCH) {
       cursedMessage = await castWitchCurse(interaction);
     } else if (deadUser.character === characters.HUNTER) {
-      deathMessage = `## The town has injured the **${deathCharacter}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
+      const sideCharacters = [];
+      if (deadUser.is_vampire) {
+        sideCharacters.push("vampire")
+      }
+      if (deadUser.is_henchman) {
+        sideCharacters.push("henchman")
+      }
+      deathMessage = `## The town has injured the **${deathCharacter} ${sideCharacters.join(", ")}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
     }
   
     await updateGame(interaction.guild.id, {

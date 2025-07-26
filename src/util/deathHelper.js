@@ -117,6 +117,10 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     return `${deadCharacter} (who was a vampire!)`;
   }
 
+  if (deadUser.is_henchman) {
+    return `${deadCharacter} (who was the henchman!)`;
+  }
+
   return deadCharacter;
 }
 

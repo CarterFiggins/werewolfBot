@@ -34,6 +34,16 @@ module.exports = {
       });
       return;
     }
+
+    let vampire = ""
+    if (dbUser.is_vampire) {
+      vampire = "vampire "
+    }
+    let henchman = ""
+    if (dbUser.is_henchman) {
+      henchman = " henchman"
+    }
+
     if (isPlaying(interaction.member)) {
       await interaction.reply({
         content: 'When the game starts I will let you know who you are.',
@@ -42,12 +52,8 @@ module.exports = {
       return;
     }
     if (dbUser.is_dead) {
-      const vampire = ""
-      if (dbUser.is_vampire) {
-        vampire = "vampire "
-      }
       await interaction.reply({
-        content: `You WERE the ${vampire}${dbUser.character}, but now you're dead lol`,
+        content: `You WERE the ${vampire}${dbUser.character}${henchman}, but now you're dead lol`,
         ephemeral: true,
       });
       return;
@@ -62,13 +68,8 @@ module.exports = {
       powerMessage = `\nCurrent Powers\n${powerUps.join("\n")}`
     }
 
-    let vampire = ""
-    if (dbUser.is_vampire) {
-      vampire = "vampire "
-    }
-
     await interaction.reply({
-      content: `Your character is: ${vampire}${dbUser.assigned_identity}${powerMessage}`,
+      content: `Your character is: ${vampire}${dbUser.assigned_identity}${henchman}${powerMessage}`,
       ephemeral: true,
     });
   },

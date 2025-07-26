@@ -92,9 +92,9 @@ ${listUsers(deadUsers.villagers)}`
       Werewolves now equal or outnumber the town's remaining population.
       ## Winners
 ### Alive:
-${listUsers([...aliveUsers.werewolves, ...aliveUsers.witches])}
+${listUsers([...aliveUsers.werewolves, ...aliveUsers.witches, ...aliveUsers.henchmen])}
 ### Dead:
-${listUsers([...deadUsers.werewolves, ...deadUsers.witches])}`
+${listUsers([...deadUsers.werewolves, ...deadUsers.witches, ...deadUsers.henchmen])}`
     );
     return true;
   }
@@ -138,6 +138,7 @@ async function orderAllPlayers(interaction) {
     vampires: [],
     witches: [],
     villagers: [],
+    henchmen: [],
     chaosDemon: [],
   };
   const deadUsers = {
@@ -145,6 +146,7 @@ async function orderAllPlayers(interaction) {
     vampires: [],
     witches: [],
     villagers: [],
+    henchmen: [],
     chaosDemon: [],
   };
 
@@ -161,6 +163,8 @@ async function orderAllPlayers(interaction) {
       userArray.witches.push(dbUser);
     } else if (dbUser.character === characters.CHAOS_DEMON) {
       userArray.chaosDemon.push(dbUser);
+    } else if (dbUser.is_henchman) {
+      userArray.henchmen.push(dbUser)
     } else {
       userArray.villagers.push(dbUser);
     }

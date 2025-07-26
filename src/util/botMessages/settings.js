@@ -14,6 +14,7 @@ const SettingCommands = {
   ENABLE_POWER_UPS: "enable_power_ups",
   DOUBLE_HANGING: "double_hanging",
   ADMIN_CONTROLS_CARDS: "admin_controls_cards",
+  WEREWOLF_CREATES_HENCHMAN: "werewolf_creates_henchman",
 };
 
 module.exports = {
@@ -149,6 +150,14 @@ This setting will hang two people instead of one. It will take the top two voted
       emoji: '🧑‍⚖️',
       description: `### Admin Controls Cards
 Lets Admins select each card amount in the game. (If there are less cards than people then the remaining players will become Doppelgangers)
+`,
+    },
+    {
+      id: SettingCommands.WEREWOLF_CREATES_HENCHMAN,
+      label: 'Werewolf Creates Henchman',
+      emoji: '🧑‍⚖️',
+      description: `### Werewolf Creates Henchman
+On the first night the werewolves will not kill a player and will convert them into a henchman. Henchman will be on the werewolf teams. They will not be counted for the werewolf win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman.
 `,
     },
   ],

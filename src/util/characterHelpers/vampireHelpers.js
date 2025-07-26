@@ -48,6 +48,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
         victim.character === characters.WITCH ||
         victim.character === characters.BODYGUARD ||
         victim.character === characters.CHAOS_DEMON ||
+        victim.is_henchman ||
         guarded
       ) {
         await organizedChannels.vampires.send(protectedMemberMessage);

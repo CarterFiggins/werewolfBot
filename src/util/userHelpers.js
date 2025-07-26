@@ -35,6 +35,7 @@ async function buildUserInfo(interaction, user, newCharacter) {
     character: newCharacter,
     guild_id: interaction.guild.id,
     is_vampire: false,
+    is_henchman: false,
     is_cub: false,
     is_dead: false,
     is_injured: false,
@@ -135,6 +136,9 @@ function getPlayersCharacter(dbUser) {
   }
   if (dbUser.is_cub) {
     return `Werewolf cub`
+  }
+  if (dbUser.is_henchman) {
+    return `${dbUser.character} Henchman`
   }
 
   return dbUser.character
