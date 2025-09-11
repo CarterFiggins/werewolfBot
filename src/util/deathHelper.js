@@ -84,7 +84,7 @@ async function removesDeadPermissions(
 
   deadCharacter = await handleCharactersDeath(interaction, deadCharacter, deadUser, deadMember)
 
-  if (deadUser.is_chaos_target && causeOfDeath !== WaysToDie.HANGED) {
+  if (deadUser?.is_chaos_target && causeOfDeath !== WaysToDie.HANGED) {
     await killChaosDemon(interaction, deadMember)
   }
 

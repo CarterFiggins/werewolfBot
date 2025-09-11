@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { updateManyUsers, updateUser } = require("../../werewolf_db");
+const { updateManyUsers, updateUser, deleteManyVotes } = require("../../werewolf_db");
 
 async function removeNightPowerForUser(interaction, dbUser) {
   const updatedUser = {
@@ -17,6 +17,13 @@ async function removeNightPowerForUser(interaction, dbUser) {
   await updateUser(dbUser.user_id, interaction.guild.id, updatedUser)
 }
 
+async function removeVotesFromStun(guildId, userId) {
+  await deleteManyVotes({
+    guild_id: guildId,
+    user_id: userId,
+  });
+}
+
 async function removeStunnedUsers(interaction) {
   await updateManyUsers(
     {
@@ -32,4 +39,5 @@ async function removeStunnedUsers(interaction) {
 module.exports = {
   removeNightPowerForUser,
   removeStunnedUsers,
+  removeVotesFromStun,
 };

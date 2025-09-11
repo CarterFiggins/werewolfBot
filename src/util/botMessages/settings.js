@@ -155,9 +155,9 @@ Lets Admins select each card amount in the game. (If there are less cards than p
     {
       id: SettingCommands.WEREWOLF_CREATES_HENCHMAN,
       label: 'Werewolf Creates Henchman',
-      emoji: '🧑‍⚖️',
+      emoji: '👻',
       description: `### Werewolf Creates Henchman
-On the first night the werewolves will not kill a player and will convert them into a henchman. Henchman will be on the werewolf teams. They will not be counted for the werewolf win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman.
+On the first night the werewolves will not kill a player and will convert them into a henchman. Henchman will be on the werewolf's team. They will not be counted for the werewolf or villager  win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman.
 `,
     },
   ],

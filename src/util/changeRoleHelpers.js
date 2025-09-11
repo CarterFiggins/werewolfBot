@@ -7,16 +7,20 @@ const {
   isDead,
 } = require("./rolesHelpers");
 
+async function alreadyPlayingReplay(interaction, member, message, editReply) {
+  if (isAlive(member) || isPlaying(member) || isDead(member)) {
+    await interaction.reply({
+      content: message,
+      ephemeral: true,
+    });
+    return true;
+  }
+  return false;
+}
 
 async function playingResponse(interaction) {
   const member = interaction.member;
-  if (isAlive(member) || isPlaying(member) || isDead(member)) {
-    await interaction.reply({
-      content: "You are already Playing",
-      ephemeral: true,
-    });
-    return;
-  }
+  if (await alreadyPlayingReplay(interaction, member, "You are already Playing")) return;
 
   await interaction.deferReply();
 
@@ -83,4 +87,5 @@ module.exports = {
   playingResponse,
   stopPlayingResponse,
   joinTheDeadResponse,
+  alreadyPlayingReplay,
 };

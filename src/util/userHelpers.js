@@ -65,7 +65,7 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
   const settings = await findSettings(interaction.guild.id);
   let shuffledUsers = shuffleUsers(discordUsers)
   const possibleFakeAssignment = _.intersection(
-    [characters.VILLAGER, characters.BAKER, characters.HUNTER],
+    [characters.VILLAGER, characters.BAKER, characters.HUNTER, characters.APPRENTICE_SEER],
     await possibleCharactersInGame(interaction),
   )
 

@@ -117,7 +117,7 @@ roles = [
     emoji: "☣️",
     team: "villager/werewolf",
     description: `### Mutated Villager
-* A mutated villager will be told (s)he is a villager, hunter, or baker and is initially on the villager team. If attacked by a werewolf, the mutated villager will turn into a werewolf. If bitten by a vampire, the mutated villager will turn into a vampire king.
+* A mutated villager will be told (s)he is a villager, hunter, apprentice seer or baker and is initially on the villager team. If attacked by a werewolf, the mutated villager will turn into a werewolf. If bitten by a vampire, the mutated villager will turn into a vampire king.
 * Channels: none
 * Commands: none`,
   },
@@ -200,10 +200,18 @@ module.exports = {
       emoji: "🧛",
       team: "vampire",
       description: `### Vampire
-  * A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. Each night, a vampire may attack a player. It takes two bites to turn a player into a vampire. If a vampire attacks a werewolf or targets the same player as the werewolves, (s)he will die.
-  * Channels: vampires
-  * Commands: \`/vampire_bite\``,
+* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. Each night, a vampire may attack a player. It takes two bites to turn a player into a vampire. If a vampire attacks a werewolf or targets the same player as the werewolves, (s)he will die.
+* Channels: vampires
+* Commands: \`/vampire_bite\``,
     },
+    {
+      label: "Henchman",
+      emoji: "👻",
+      team: "werewolf",
+      description: `### Henchman
+* If the "Werewolf creates henchman" setting is turned on the first night werewolf kill will turn a villager into a henchman. They will be the same role they are now but work for the Werewolves. Henchman will be on the werewolf's team. They will not be counted for the werewolf or villager win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman. The henchman will still not know the identity of the werewolves.
+      `
+    }
   ],
   selectCharacterList: [
     {

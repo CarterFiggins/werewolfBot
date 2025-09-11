@@ -42,15 +42,19 @@ async function givePower(interaction) {
         await sendMemberMessage(targetMember, `You have been given a Power Up! ${powerUpMessages.get(monarch.giving_power)}`)
         organizedChannels.monarch.send(`${monarchMember} you have successfully given ${targetMember} the power ${monarch.giving_power}`)
         organizedChannels.afterLife.send(`The monarch ${monarchMember} sent the power ${monarch.giving_power} to ${targetMember}`)
+        
+        monarch.given_power_ups.push(monarch.giving_power)
+        monarch.given_to_user_ids.push(monarch.giving_user_id)
+        await updateUser(monarch.user_id, interaction.guild.id, {
+          giving_user_id: null,
+          giving_power: null,
+          given_power_ups: monarch.given_power_ups,
+          given_to_user_ids: monarch.given_to_user_ids,
+        });
+      } else {
+        organizedChannels.monarch.send(`${monarchMember} you have failed to give a power to ${targetMember}. They are no longer with us... 👻`)
       }
-      monarch.given_power_ups.push(monarch.giving_power)
-      monarch.given_to_user_ids.push(monarch.giving_user_id)
-      await updateUser(monarch.user_id, interaction.guild.id, {
-        giving_user_id: null,
-        giving_power: null,
-        given_power_ups: monarch.given_power_ups,
-        given_to_user_ids: monarch.given_to_user_ids,
-      });
+
     }
   }
 }

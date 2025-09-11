@@ -37,7 +37,7 @@ async function markChaosTarget(interaction) {
 }
 
 async function isDeadChaosTarget(interaction, deadUser) {
-  if (deadUser.is_chaos_target) {
+  if (deadUser?.is_chaos_target) {
     const chaosDemon = await findOneUser({
       guild_id: interaction.guild.id,
       character: characters.CHAOS_DEMON,

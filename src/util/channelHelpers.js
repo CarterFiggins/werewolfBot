@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { findSettings, updateUser } = require("../werewolf_db");
+const { findSettings, updateUser, findAdminSettings } = require("../werewolf_db");
 const { characters, getCards, getCurrentCharacters } = require("./characterHelpers/characterUtil");
 const { ChannelType, PermissionsBitField } = require("discord.js");
 const { getRole, roleNames } = require("./rolesHelpers");
@@ -70,9 +70,13 @@ async function sendStartMessages(interaction, users) {
     }
   });
 
+  const adminSettings = await findAdminSettings(interaction.guild.id)
+
   await organizedChannels.townSquare.send(townSquareStart);
   const townSquarePlayerMessage =  await organizedChannels.townSquare.send(`Possible characters in game:\n${(await possibleCharactersInGameCap(interaction)).join(", ")}`)
   townSquarePlayerMessage.pin()
+  const townSquarePowerUpMessage = await organizedChannels.townSquare.send(`Possible Power-ups in game:\n${adminSettings.powers.join(", ")}`)
+  townSquarePowerUpMessage.pin()
 
   await organizedChannels?.werewolves?.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`

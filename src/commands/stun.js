@@ -5,8 +5,7 @@ const { isAlive } = require("../util/rolesHelpers");
 const { findUser, findGame, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames, usePowerUp } = require("../util/powerUpHelpers");
-const { removeNightPowerForUser } = require("../util/powerUp/stunHelper");
-const { removeUserVotes } = require("../util/deathHelper");
+const { removeNightPowerForUser, removeVotesFromStun } = require("../util/powerUp/stunHelper");
 const { sendMemberMessage } = require("../util/botMessages/sendMemberMessages");
 const { organizeChannels } = require("../util/channelHelpers");
 
@@ -86,8 +85,8 @@ module.exports = {
     await updateUser(targetDbUser.user_id, guildId, {
       is_stunned: true,
     })
-    await usePowerUp(dbUser, interaction, PowerUpNames.STUN)
-    await removeUserVotes(guildId, targetDbUser.user_id);
+    await usePowerUp(dbUser, interaction, PowerUpNames.STUN);
+    await removeVotesFromStun(guildId, targetDbUser.user_id);
     await removeNightPowerForUser(interaction, targetDbUser);
     await sendMemberMessage(targetedMember, `You got stunned and will not be able to use your commands.`)
 

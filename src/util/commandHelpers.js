@@ -16,6 +16,7 @@ const commandNames = {
   PING: "ping",
   // Admin commands
   SERVER_SETUP: "server_setup",
+  FORCE_PLAYING: "force_playing",
   CREATE_GAME: "start_game",
   REMOVE_GAME: "end",
   RESET_SCHEDULING: "reset_scheduling",
