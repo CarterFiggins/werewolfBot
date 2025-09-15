@@ -64,10 +64,20 @@ async function handleHangingVotes(interaction) {
   let playersDeathInfo = []
 
   if (noVotes) {
+    console.log("No Votes")
     return playersDeathInfo;
   }
 
-  for (const userVoted of votingData.votedOff){
+  if (!_.isEmpty(votingData.votedOff)) {
+    console.log("votingData.votedOff");
+    console.log(votingData.votedOff);
+  }
+  if (!_.isEmpty(votingData.randomVoteOff)) {
+    console.log("votingData.randomVoteOff");
+    console.log(votingData.randomVoteOff);
+  }
+
+  for (const userVoted of votingData.votedOff) {
     const playerDeathInfo = await hangPlayer(interaction, userVoted, false)
     playersDeathInfo.push(playerDeathInfo)
   }
@@ -86,10 +96,14 @@ async function handleHangingVotes(interaction) {
 
 async function hangPlayer(interaction, userVoted, isRandom) {
   const guildId = interaction.guild.id;
+  console.log("userVoted._id.voted_user_id")
+  console.log(userVoted?._id?.voted_user_id)
   const deadUser = await findUser(userVoted._id.voted_user_id, guildId);
   const deadMember = interaction.guild.members.cache.get(userVoted._id.voted_user_id);
   const isChaosTarget = await isDeadChaosTarget(interaction, deadUser);
 
+  console.log("deadUser in hangPlayer")
+  console.log(deadUser)
   const deathCharacter = await removesDeadPermissions(
     interaction,
     deadUser,

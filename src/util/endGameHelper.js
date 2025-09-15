@@ -57,21 +57,24 @@ async function checkForWinner(interaction, chaosWins) {
     if (_.isEmpty(deadUsers)) {
       return "None"
     }
-    const sideCharacters = []
-    if (user.is_cub) {
-      sideCharacters.push("cub")
-    }
-    if (user.is_vampire) {
-      sideCharacters.push("vampire")
-    }
-    if (user.is_henchman) {
-      sideCharacters.push("henchman")
-    }
     
     return _.map(
       dbUsers,
-      (dbUser) =>
-        `${members.get(dbUser.user_id) || (dbUser.nickname ?? dbUser.name)}! playing as ${dbUser.character} ${sideCharacters.join(", ")}`
+      (dbUser) => {
+        const sideCharacters = []
+        if (dbUser.is_cub) {
+          sideCharacters.push("cub")
+        }
+        if (dbUser.is_vampire) {
+          sideCharacters.push("vampire")
+        }
+        if (dbUser.is_henchman) {
+          sideCharacters.push("henchman")
+        }
+        return (
+          `${members.get(dbUser.user_id) || (dbUser.nickname ?? dbUser.name)}! playing as ${dbUser.character} ${sideCharacters.join(", ")}`
+        )
+      }
     ).join("\n");
   };
 

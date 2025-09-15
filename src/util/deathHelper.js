@@ -132,6 +132,7 @@ async function removePlayer(
 ) {
   const guildId = interaction.guild.id;
   const roles = await interaction.guild.roles.fetch();
+  await deadMember.fetch()
   const organizedRoles = organizeRoles(roles);
 
   await deadMember.roles.remove(organizedRoles.alive);
