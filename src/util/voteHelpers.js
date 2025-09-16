@@ -68,15 +68,6 @@ async function handleHangingVotes(interaction) {
     return playersDeathInfo;
   }
 
-  if (!_.isEmpty(votingData.votedOff)) {
-    console.log("votingData.votedOff");
-    console.log(votingData.votedOff);
-  }
-  if (!_.isEmpty(votingData.randomVoteOff)) {
-    console.log("votingData.randomVoteOff");
-    console.log(votingData.randomVoteOff);
-  }
-
   for (const userVoted of votingData.votedOff) {
     const playerDeathInfo = await hangPlayer(interaction, userVoted, false)
     playersDeathInfo.push(playerDeathInfo)
@@ -94,16 +85,33 @@ async function handleHangingVotes(interaction) {
   return playersDeathInfo
 }
 
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
 async function hangPlayer(interaction, userVoted, isRandom) {
   const guildId = interaction.guild.id;
-  console.log("userVoted._id.voted_user_id")
-  console.log(userVoted?._id?.voted_user_id)
-  const deadUser = await findUser(userVoted._id.voted_user_id, guildId);
+  let deadUser = await findUser(userVoted._id.voted_user_id, guildId);
+
+  if (!deadUser) {
+    console.log("guildId")
+    console.log(guildId)
+    console.log("userVoted?._id?.voted_user_id")
+    console.log(userVoted?._id?.voted_user_id)
+    // Running into error where we can't find the user in db. Works when night command is run after.
+    // Delaying 1 sec to see if we can call db again to get user.
+    await delay(1000);
+    deadUser = await findUser(userVoted._id.voted_user_id, guildId);
+  }
+
+  if (!deadUser) {
+    console.log("Could not find user with this id:", userVoted?._id?.voted_user_id)
+    console.log("guild id:", guildId)
+    throw new Error(`This user id:${userVoted?._id?.voted_user_id} does not exist`)
+  }
   const deadMember = interaction.guild.members.cache.get(userVoted._id.voted_user_id);
   const isChaosTarget = await isDeadChaosTarget(interaction, deadUser);
 
-  console.log("deadUser in hangPlayer")
-  console.log(deadUser)
   const deathCharacter = await removesDeadPermissions(
     interaction,
     deadUser,
