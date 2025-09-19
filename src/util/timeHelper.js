@@ -25,11 +25,12 @@ const { killPlayers, getKillTargetedUsers } = require("./characterHelpers/werewo
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
 const { votingDeathMessage } = require("./botMessages/deathMessages");
-const { markChaosTarget, didChaosWin } = require("./characterHelpers/chaosDemonHelpers");
+const { markChaosTarget, getChaosWinIds } = require("./characterHelpers/chaosDemonHelpers");
 const { givePower } = require("./characterHelpers/monarchHelper");
 const { characters } = require("./commandHelpers");
 const { handleHangingVotes } = require("./voteHelpers");
 const { removeStunnedUsers } = require("./powerUp/stunHelper");
+const { shootCupidsArrows } = require("./characterHelpers/cupidHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -152,6 +153,7 @@ async function dayTimeJob(interaction) {
   let message = "";
 
   await copyCharacters(interaction);
+  await shootCupidsArrows(interaction);
 
   const guardedIds = await guardPlayers(interaction);
   const werewolfKills = await getKillTargetedUsers(interaction);
@@ -242,8 +244,8 @@ async function nightTimeJob(interaction) {
   }
   await removeStunnedUsers(interaction)
 
-  const chaosWins = await handleVotingDeath(interaction)
-  await checkGame(interaction, chaosWins);
+  const chaosWinsIds = await handleVotingDeath(interaction)
+  await checkGame(interaction, chaosWinsIds);
 }
 
 async function handleVotingDeath(interaction) {
@@ -253,7 +255,7 @@ async function handleVotingDeath(interaction) {
   await updateGame(interaction.guild.id, {
     is_day: false,
   });
-  return didChaosWin(playersDeathInfo);
+  return getChaosWinIds(playersDeathInfo);
 }
 
 function warningTime(hour, minute) {

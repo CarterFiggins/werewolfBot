@@ -36,6 +36,7 @@ _All alive players can communicate in the town square and vote to lynch a player
 * Lycan
 * Monarch
 * Mutated Villager (Until attacked by werewolf)
+* Cupid (creates a couple team with their arrows)
   `,
 
   werewolfTeam: `## WerewolfTeam

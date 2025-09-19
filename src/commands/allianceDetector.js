@@ -1,9 +1,9 @@
 const _ = require("lodash");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
-const { characters, teams } = require("../util/characterHelpers/characterUtil")
+const { findCharactersTeam } = require("../util/characterHelpers/characterUtil")
 const { isAlive } = require("../util/rolesHelpers");
-const { findUser, updateUser, findGame } = require("../werewolf_db");
+const { findUser, findGame } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames, usePowerUp} = require("../util/powerUpHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
@@ -26,6 +26,7 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
     const dbUser = await findUser(interaction.user.id, interaction.guild?.id);
     const deniedMessage = await permissionCheck({
       interaction,
@@ -36,7 +37,7 @@ module.exports = {
     });
 
     if (deniedMessage) {
-      await interaction.reply({
+      await interaction.editReply({
         content: deniedMessage,
         ephemeral: true,
       });
@@ -51,7 +52,7 @@ module.exports = {
     const targetTwoDbUser = await findUser(targetedTwoUser.id, interaction.guild.id);
 
     if (game.first_night) {
-      await interaction.reply({
+      await interaction.editReply({
         content:
           "It is the first night. Try again tomorrow",
         ephemeral: true,
@@ -59,35 +60,35 @@ module.exports = {
       return;
     }
     if (targetedOneUser.bot || targetedTwoUser.bot) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "Can't select a bot. Try again",
         ephemeral: true,
       });
       return;
     }
     if (!isAlive(targetedOneMember)) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `${targetedOneMember} is already dead and can't be chosen. Try again.`,
         ephemeral: true,
       });
       return;
     }
     if (!isAlive(targetedTwoMember)) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `${targetedTwoMember} is already dead and can't be chosen. Try again.`,
         ephemeral: true,
       });
       return;
     }
     if (targetedOneUser.id === targetedTwoUser.id) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "hmmm that is the same person! https://tenor.com/G8M4.gif",
         ephemeral: true,
       });
       return;
     }
     if (targetedOneUser.id === interaction.user.id || targetedTwoUser.id === interaction.user.id) {
-      await interaction.reply({
+      await interaction.editReply({
         content: "# You thought you could trick me! You can't pick yourself. Try again! https://tenor.com/bL0SD.gif",
         ephemeral: true,
       });
@@ -100,7 +101,7 @@ module.exports = {
     if (sameTeam) {
       message = `are on the same team!`
     }
-    await interaction.reply({
+    await interaction.editReply({
       content: `${targetedOneMember} and ${targetedTwoMember} ${message}`,
       ephemeral: true,
     });
@@ -113,17 +114,3 @@ module.exports = {
     await usePowerUp(dbUser, interaction, PowerUpNames.ALLIANCE_DETECTOR);
   }
 }
-
-function findCharactersTeam(user) {
-  if (user.is_vampire) {
-    return teams.VAMPIRE
-  }
-  if (user.character === characters.CHAOS_DEMON) {
-    return teams.CHAOS
-  }
-  if ([characters.WEREWOLF, characters.WITCH].includes(user.character) || user.is_henchman) {
-    return teams.WEREWOLF
-  }
-  return teams.VILLAGER
-}
-

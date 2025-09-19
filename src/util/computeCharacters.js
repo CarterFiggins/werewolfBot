@@ -10,6 +10,7 @@ function startingCharacters(settings, numberOfPlayers, currentCharacters) {
   vampireIsPlaying = isPlaying(characters.VAMPIRE)
   cubIsPlaying = isPlaying(characters.CUB)
   chaosDemonIsPlaying = isPlaying(characters.CHAOS_DEMON)
+  cupidIsPlaying = isPlaying(characters.CUPID)
   masonIsPlaying = isPlaying(characters.MASON)
   bodyguardIsPlaying = isPlaying(characters.BODYGUARD)
   seerIsPlaying = isPlaying(characters.SEER)
@@ -31,6 +32,10 @@ function startingCharacters(settings, numberOfPlayers, currentCharacters) {
   }
   if (chaosDemonIsPlaying) {
     startingCards.unshift(characters.CHAOS_DEMON)
+  }
+
+  if (cupidIsPlaying) {
+    startingCards.unshift(characters.CUPID)
   }
 
   if (settings.random_cards) {

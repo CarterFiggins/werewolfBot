@@ -17,6 +17,7 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
     const dbUser = await findUser(interaction.user.id, interaction.guild?.id);
     const deniedMessage = await permissionCheck({
       interaction,
@@ -27,7 +28,7 @@ module.exports = {
     });
 
     if (deniedMessage) {
-      await interaction.reply({
+      await interaction.editReply({
         content: deniedMessage,
         ephemeral: true,
       });
@@ -37,7 +38,7 @@ module.exports = {
 
     if (!game.first_night) {
       const preTargetedUser = interaction.guild.members.cache.get(dbUser.chaos_target_user_id)
-      await interaction.reply({
+      await interaction.editReply({
         content: `You are targeting ${preTargetedUser}. Try and convince the villagers to hang ${preTargetedUser}`,
         ephemeral: true,
       });
@@ -48,21 +49,21 @@ module.exports = {
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
 
     if (targetedUser.bot) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `You can't target me!\n${getRandomBotGif()}`,
         ephemeral: true,
       });
       return;
     }
     if (targetedUser.id === interaction.user.id) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `Can't pick yourself. try again`,
         ephemeral: true,
       });
       return;
     }
     if (!isAlive(targetedMember)) {
-      await interaction.reply({
+      await interaction.editReply({
         content: `${targetedUser} is dead. You don't what to target that.`,
         ephemeral: true,
       });
@@ -73,7 +74,7 @@ module.exports = {
       chaos_target_user_id: targetedUser.id,
     });
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `You are going to target ${targetedUser}. After the first night is over it will be locked in.`,
       ephemeral: true,
     });

@@ -1,70 +1,97 @@
 const _ = require("lodash");
-const { findOneUser, updateUser } = require("../../werewolf_db");
+const { findOneUser, updateUser, findManyUsers } = require("../../werewolf_db");
 const { getAliveUsersIds } = require("../discordHelpers");
 const { characters } = require("./characterUtil");
 const { organizeChannels } = require("../channelHelpers");
+const { sendMemberMessage } = require("../botMessages/sendMemberMessages");
 
 async function markChaosTarget(interaction) {
-  const chaosDemon = await findOneUser({
+  const cursorChaosDemon = await findManyUsers({
     guild_id: interaction.guild.id,
     character: characters.CHAOS_DEMON,
     is_dead: false
   })
+  const chaosDemons = await cursorChaosDemon.toArray();
 
-  if (!chaosDemon) {
+  if (_.isEmpty(chaosDemons)) {
     return
   }
 
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const members = await interaction.guild.members.cache;
-  
-  let selectedChaosUserId = chaosDemon.chaos_target_user_id
-  if (!selectedChaosUserId) {
-    let aliveUserIds = await getAliveUsersIds(interaction);
-    aliveUserIds = _.filter(aliveUserIds, (id) => id != chaosDemon.user_id)
-    const targetUserId = _.sample(aliveUserIds);
-    await updateUser(chaosDemon.user_id, interaction.guild.id, {
-      chaos_target_user_id: targetUserId,
-    });
-    selectedChaosUserId = targetUserId
-  }
+  const members = interaction.guild.members.cache;
 
-  organizedChannels.afterLife.send(`${members.get(chaosDemon.user_id)} the chaos demon has chosen ${members.get(selectedChaosUserId)}`)
-  await updateUser(selectedChaosUserId, interaction.guild.id, {
-    is_chaos_target: true,
-  })
+  for (const chaosDemon of chaosDemons) {
+    let selectedChaosUserId = chaosDemon.chaos_target_user_id
+    if (!selectedChaosUserId) {
+      let aliveUserIds = await getAliveUsersIds(interaction);
+      aliveUserIds = _.filter(aliveUserIds, (id) => id != chaosDemon.user_id)
+      const targetUserId = _.sample(aliveUserIds);
+      await updateUser(chaosDemon.user_id, interaction.guild.id, {
+        chaos_target_user_id: targetUserId,
+      });
+      selectedChaosUserId = targetUserId
+    }
+    const demonMember = members.get(chaosDemon.user_id)
+    const targetMember = members.get(selectedChaosUserId)
+    const targetUsername = targetMember.nickname || targetMember.username
+    organizedChannels.afterLife.send(`${demonMember} the chaos demon has chosen ${targetMember}`)
+    await updateUser(selectedChaosUserId, interaction.guild.id, {
+      is_chaos_target: true,
+    })
+    await sendMemberMessage(demonMember, `You have chosen to target ${targetUsername}. Get the villagers to hang this player. If they die in any other way you will die. Let Chaos reign, then rein in Chaos!`)
+  }
 }
 
-async function isDeadChaosTarget(interaction, deadUser) {
+async function foundAliveChaosDemonsWithTarget(interaction, deadUser) {
   if (deadUser?.is_chaos_target) {
-    const chaosDemon = await findOneUser({
+    const cursorChaosDemons = await findManyUsers({
       guild_id: interaction.guild.id,
       character: characters.CHAOS_DEMON,
+      chaos_target_user_id: deadUser.user_id,
       is_dead: false,
     });
-    if (chaosDemon) {
-      return true;
-    }
+    return await cursorChaosDemons.toArray();
   }
-  return false;
+  return [];
 }
 
-async function didChaosWin(playersDeathInfo) {
-  const targetsHanged = _.filter(playersDeathInfo, { chaosWins: true })
-  const targetsHangedIds = _.map(targetsHanged, (info) => info.user.user_id)
+async function getChaosWinIds(playersDeathInfo) {
+  const targetsHanged = _.filter(playersDeathInfo, (p) => !_.isEmpty(p.chaosWinsIds))
   
-  if (!_.isEmpty(targetsHangedIds)) {
-    const chaosDemonsDeathInfo = _.filter(playersDeathInfo, { user: { character: characters.CHAOS_DEMON } });
-    const targetIds = _.map(chaosDemonsDeathInfo, (info) => info.user.chaos_target_user_id)
-    const successfulHangedTargets = _.difference(targetsHangedIds, targetIds)
-    return !_.isEmpty(successfulHangedTargets)
+  if (!_.isEmpty(targetsHanged)) {
+    return _.flatMap(targetsHanged, (t) => t.chaosWinsIds)
   }
-  return false
+  return []
+}
+
+async function chaosDemonInLove(interaction, demon, inLoveWithUser) {
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  if (demon.chaos_target_user_id) {
+    await updateUser(demon.chaos_target_user_id, interaction.guild.id, {
+      is_chaos_target: false
+    });
+  }
+
+  await updateUser(demon.user_id, interaction.guild.id, {
+    chaos_target_user_id: inLoveWithUser.user_id,
+  });
+  await updateUser(inLoveWithUser.user_id, interaction.guild.id, {
+    is_chaos_target: true
+  });
+  
+  const members = interaction.guild.members.cache;
+  const demonMember = members.get(demon.user_id)
+  const loverMember = members.get(inLoveWithUser.user_id)
+  const username = loverMember.nickname || loverMember.username
+  await sendMemberMessage(demonMember, `Cupid has struck you with their arrow. Instead of love you want Chaos! Your new target will now be ${username} (the player that is in love with you. Don't let them know you want them to be hanged!)`)
+  organizedChannels.afterLife.send(`Cupid has struck the chaos demon ${demonMember} and has cause them to change their chaos target to ${loverMember}. (the player that they are in love with)`)
 }
 
 module.exports = {
   markChaosTarget,
-  isDeadChaosTarget,
-  didChaosWin,
+  foundAliveChaosDemonsWithTarget,
+  getChaosWinIds,
+  chaosDemonInLove,
 }

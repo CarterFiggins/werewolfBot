@@ -7,16 +7,18 @@ const {
   findOneUser,
   findAllUsers,
 } = require("../werewolf_db");
-const { characters } = require("./characterHelpers/characterUtil");
+const { characters, teams } = require("./characterHelpers/characterUtil");
 const { removeGameRolesFromMembers } = require("./rolesHelpers");
 const { endGuildJobs } = require("./schedulHelper");
 const { organizeChannels } = require("./channelHelpers");
+const { buildCoupleTeam } = require("./characterHelpers/cupidHelper");
+const { getSideCharacters } = require("./userHelpers");
 
-async function checkGame(interaction, chaosWins) {
+async function checkGame(interaction, chaosWinsIds) {
   const members = interaction.guild.members.cache;
   const roles = interaction.guild.roles.cache;
 
-  const isGameOver = await checkForWinner(interaction, chaosWins);
+  const isGameOver = await checkForWinner(interaction, chaosWinsIds);
 
   if (!_.isEmpty(interaction.townAnnouncements)) {
     const channels = interaction.guild.channels.cache;
@@ -31,8 +33,8 @@ async function checkGame(interaction, chaosWins) {
   }
 }
 
-async function checkForWinner(interaction, chaosWins) {
-  const { aliveUsers, deadUsers } = await orderAllPlayers(interaction);
+async function checkForWinner(interaction, chaosWinsIds) {
+  const { aliveUsers, deadUsers, loverTeams } = await orderAllPlayers(interaction);
   const game = await findGame(interaction.guild.id);
   const chaosCount = aliveUsers?.chaosDemon?.length || 0;
   const villagerCount = aliveUsers.villagers.length || 0;
@@ -42,8 +44,8 @@ async function checkForWinner(interaction, chaosWins) {
   const vampireCount = aliveUsers.vampires.length || 0;
   const witchCount = aliveUsers.witches.length || 0;
 
-  if (chaosWins) {
-    await sendChaosWinMessage(interaction);
+  if (!_.isEmpty(chaosWinsIds)) {
+    await sendChaosWinMessage(interaction, chaosWinsIds);
     return true;
   }
 
@@ -61,16 +63,7 @@ async function checkForWinner(interaction, chaosWins) {
     return _.map(
       dbUsers,
       (dbUser) => {
-        const sideCharacters = []
-        if (dbUser.is_cub) {
-          sideCharacters.push("cub")
-        }
-        if (dbUser.is_vampire) {
-          sideCharacters.push("vampire")
-        }
-        if (dbUser.is_henchman) {
-          sideCharacters.push("henchman")
-        }
+        const sideCharacters = getSideCharacters(interaction, dbUser)
         return (
           `${members.get(dbUser.user_id) || (dbUser.nickname ?? dbUser.name)}! playing as ${dbUser.character} ${sideCharacters.join(", ")}`
         )
@@ -86,7 +79,19 @@ async function checkForWinner(interaction, chaosWins) {
     return true;
   }
 
+  if (werewolfCount + vampireCount + villagerCount + witchCount + chaosCount === 2 && !_.isEmpty(loverTeams)) {
+    coupleWinMessage(interaction, loverTeams)
+    return true;
+  }
+
   if (werewolfCount + vampireCount + chaosCount === 0) {
+    const cupidTeamWinners = _.filter(loverTeams, (loveTeam) => loveTeam.couplesTeam === teams.VILLAGER)
+
+    if (!_.isEmpty(cupidTeamWinners)) {
+      coupleWinMessage(interaction, cupidTeamWinners)
+      return true;
+    }
+
     interaction.townAnnouncements.push(
       `# Villagers Win!
 There are no more evil in the town. The town is saved!
@@ -100,6 +105,13 @@ ${listUsers(deadUsers.villagers)}`
   }
 
   if (werewolfCount >= villagerCount + vampireCount + chaosCount) {
+    const cupidTeamWinners = _.filter(loverTeams, (loveTeam) => loveTeam.couplesTeam === teams.WEREWOLF)
+
+    if (!_.isEmpty(cupidTeamWinners)) {
+      coupleWinMessage(interaction, cupidTeamWinners)
+      return true;
+    }
+
     interaction.townAnnouncements.push(
       `# Werewolves Win!
       Werewolves now equal or outnumber the town's remaining population.
@@ -113,6 +125,13 @@ ${listUsers([...deadUsers.werewolves, ...deadUsers.witches, ...deadUsers.henchme
   }
 
   if (vampireCount >= villagerCount + werewolfCount + chaosCount) {
+
+        const cupidTeamWinners = _.filter(loverTeams, (loveTeam) => loveTeam.couplesTeam === teams.VAMPIRE)
+
+    if (!_.isEmpty(cupidTeamWinners)) {
+      coupleWinMessage(interaction, cupidTeamWinners)
+      return true;
+    }
     interaction.townAnnouncements.push(
       `# Vampires Win!
       Vampires now equal or outnumber the town's remaining population.
@@ -128,18 +147,38 @@ ${listUsers(deadUsers.vampires)}`
   return false;
 }
 
-async function sendChaosWinMessage(interaction) {
+function coupleWinMessage(interaction, cupidTeamWinners) {
   const members = interaction.guild.members.cache;
-  const chaosDemon = await findOneUser({
-    guild_id: interaction.guild.id,
-    character: characters.CHAOS_DEMON,
-  });
-  const chaosDemonMember = members.get(chaosDemon.user_id);
+  const userStatus = (user) => user.is_dead ? "(dead)" : "(alive)"
+  interaction.townAnnouncements.push(`# Cupid and Couple Wins!`)
+  cupidTeamWinners.forEach((coupleTeam) => {
+    const cupidMember = members.get(coupleTeam.cupid.user_id);
+    const sideCharacters = getSideCharacters(interaction, coupleTeam.cupid)
+    interaction.townAnnouncements.push(`## Cupid: ${cupidMember} ${userStatus(coupleTeam.cupid)} ${sideCharacters.join(", ")}`)
+    interaction.townAnnouncements.push(`## Cupid's Couple`)
+    _.forEach(coupleTeam.cupidsCouple, (coupleUser) => {
+      const coupleMember = members.get(coupleUser.user_id);
+      const sideCharacters = getSideCharacters(interaction, coupleUser)
+      interaction.townAnnouncements.push(`### * ${coupleMember} ${coupleUser.character} ${userStatus(coupleUser)} ${sideCharacters.join(", ")}`)
+    })
+  })
+}
+
+async function sendChaosWinMessage(interaction, chaosWinsIds) {
+  const members = interaction.guild.members.cache;
+
+  if (chaosWinsIds.length === 1) {
+    const chaosDemonMember = members.get(chaosWinsIds[0]);
+    interaction.townAnnouncements.push(
+      `# Chaos Demon Victory!\nThe player you lynched was the Chaos Demon's marked target!\nAs a result, the village is plunged into chaos, and everyone loses... except for ${chaosDemonMember} the devious Chaos Demon`
+    );
+    return;
+  }
+
+  const memberMessage = _.map(chaosWinsIds, (id) => `${members.get(id)}`)
 
   interaction.townAnnouncements.push(
-    `# Chaos Demon Victory!
-The player you lynched was the Chaos Demon's marked target!
-As a result, the village is plunged into chaos, and everyone loses... except for ${chaosDemonMember} the devious Chaos Demon`
+    `# Multiple Chaos Demon Victory!\nThe player you lynched was multiple Chaos Demon's marked target!\nAs a result, the village is plunged into chaos, and everyone loses... except for ${memberMessage.join(" and ")} the devious Chaos Demons`
   );
 }
 
@@ -162,9 +201,16 @@ async function orderAllPlayers(interaction) {
     henchmen: [],
     chaosDemon: [],
   };
+  const loverTeams = []
 
-  _.forEach(allDbUsers, (dbUser) => {
+  for (const dbUser of allDbUsers) {
     let userArray = aliveUsers;
+    if (dbUser.character === characters.CUPID) {
+      const couple = buildCoupleTeam(dbUser, allDbUsers)
+      if (couple) {
+        loverTeams.push(couple)
+      }
+    }
     if (dbUser.is_dead && !dbUser.is_injured) {
       userArray = deadUsers;
     }
@@ -181,9 +227,9 @@ async function orderAllPlayers(interaction) {
     } else {
       userArray.villagers.push(dbUser);
     }
-  });
+  };
 
-  return { aliveUsers, deadUsers };
+  return { aliveUsers, deadUsers, loverTeams };
 }
 
 async function endGame(interaction, roles, members, reset) {

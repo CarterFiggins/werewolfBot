@@ -2,6 +2,7 @@ const _ = require("lodash");
 const { findUser, updateUser, findManyUsers } = require("../../werewolf_db");
 const { giveChannelPermissions } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
+const { randomUser } = require("../userHelpers");
 
 async function copyCharacters(interaction) {
   const cursorDoppelganger = await findManyUsers({
@@ -34,7 +35,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   const members = interaction.guild.members.cache;
   let copiedUserDb;
   if (!copyUserId) {
-    copiedUserDb = await randomUser(guildId)
+    copiedUserDb = await randomUser(guildId, { character: { $not: new RegExp(characters.DOPPELGANGER, "g") } })
     copyUserId = copiedUserDb.user_id
   } else {
     copiedUserDb = await findUser(copyUserId, guildId);
@@ -87,15 +88,6 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     console.error(e);
     console.log("Failed to send doppelganger new character message");
   }
-}
-
-async function randomUser(guildId) {
-  const cursor = await findManyUsers({
-    guild_id: guildId,
-    character: { $not: new RegExp(characters.DOPPELGANGER, "g") },
-  });
-  const users = await cursor.toArray();
-  return _.sample(users);
 }
 
 module.exports = {

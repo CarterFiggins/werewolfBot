@@ -70,7 +70,13 @@ module.exports = {
       });
       return;
     }
-
+    if (userDb.cupid_hit_ids.includes(playerUserDb.user_id)) {
+      await interaction.editReply({
+        content: "Cupid can not whisper to the players they have hit with an arrow. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (playerUserDb.is_muted) {
       await interaction.editReply({
         content: "They have been muted by the granny. Looks like your whispers will have to wait until they find their way back from Granny's bad side!",

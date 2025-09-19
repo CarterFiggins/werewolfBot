@@ -133,10 +133,17 @@ This is the Grouchy Granny command. Use it in the town square channel. Can be us
     },
     {
       label: '/bestow_power (target) (power)',
-      role: 'grouchy granny',
+      role: 'Monarch',
       emoji: '🎁',
       description: `### /bestow_power (target) (power)
 This is the Monarch command. It is used to give powers to another player. The Monarch can not give powers to themselves because that would be selfish. Powers that can be given.\n${showAllPowerUpMessages()}`
+    },
+    {
+      label: '/cupids_arrows (target1) (target2)',
+      role: 'cupid',
+      emoji: '🏹',
+      description: `### /cupids_arrows (target1) (target2)
+This is the Cupids command. It is used to cause two players to fall in love. The two players in love will join a private channel where they can ~~discuss strategies about the game~~ flirt. The two lovers want to be alive at the end of the game and be on the winning team to win. If they are on separate teams they have to be the last ones alive to win.`
     },
   ]
 }

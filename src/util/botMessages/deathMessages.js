@@ -59,6 +59,12 @@ async function votingDeathMessage({ interaction, playersDeathInfo }) {
       if (deadUser.is_henchman) {
         sideCharacters.push("henchman")
       }
+      if (!_.isEmpty(deadUser.in_love_with_ids)) {
+        deadUser.in_love_with_ids.forEach((id) => {
+          const memberInLove = members.get(id)
+          sideCharacters.push(`in love with ${memberInLove}`)
+        })
+      } 
       deathMessage = `## The town has injured the **${deathCharacter} ${sideCharacters.join(", ")}**\n${deadMember} you don't have long to live. Grab your gun and \`/shoot\` someone.\n`;
     }
   

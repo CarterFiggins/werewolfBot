@@ -34,12 +34,7 @@ module.exports = {
       return;
     }
 
-    const targetedUser = await interaction.options.getUser("target");
-    const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
-    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
-    const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
-
     if (channel.name !== channelNames.WITCH) {
       await interaction.reply({
         content: "Your dark magic only works in the witch channel",
@@ -47,7 +42,14 @@ module.exports = {
       });
       return;
     }
+
     await interaction.deferReply({ ephemeral: false });
+
+    const targetedUser = await interaction.options.getUser("target");
+    const game = await findGame(interaction.guild.id);
+    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
+
     if (game.is_day) {
       await interaction.editReply({
         content:
