@@ -15,6 +15,7 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: false });
     const deniedMessage = await permissionCheck({
       interaction,
       guildOnly: true,
@@ -24,7 +25,6 @@ module.exports = {
     if (deniedMessage) {
       await interaction.editReply({
         content: deniedMessage,
-        ephemeral: true,
       });
       return;
     }
@@ -34,8 +34,6 @@ module.exports = {
     await discordMember.fetch();
 
     if (await alreadyPlayingReplay(interaction, discordMember, "Player already playing")) return;
-
-    await interaction.deferReply({ ephemeral: false });
 
     const playingRole = await getRole(interaction, roleNames.PLAYING);
     await discordMember.roles.add(playingRole);

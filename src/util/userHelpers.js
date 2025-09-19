@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const { getRole, roleNames, organizeRoles } = require("../util/rolesHelpers");
 const { characters } = require("./commandHelpers");
-const { createUsers, findSettings } = require("../werewolf_db");
+const { createUsers, findSettings, findManyUsers } = require("../werewolf_db");
 const { randomWeightPowerUp } = require("./powerUpHelpers");
 const { possibleCharactersInGame } = require("./channelHelpers");
 require("dotenv").config();
@@ -40,6 +40,11 @@ async function buildUserInfo(interaction, user, newCharacter) {
     is_dead: false,
     is_injured: false,
     is_stunned: false,
+    is_muted: false,
+    safe_from_mutes: false,
+    in_love_with_ids: [],
+    cupid_hit_ids: [],
+    cupid_success_hits: false,
     whisper_count: 0,
     vampire_bites: 0,
     has_lycan_guard: false,
@@ -144,9 +149,46 @@ function getPlayersCharacter(dbUser) {
   return dbUser.character
 }
 
+async function randomUser(guildId, findQuery, amount = 1) {
+  const cursor = await findManyUsers({
+    guild_id: guildId,
+    ...findQuery,
+  });
+  const users = await cursor.toArray();
+  if (amount === 1) {
+    return _.sample(users)
+  }
+  return _.sampleSize(users, amount);
+}
+
+function getSideCharacters(interaction, user) {
+  const members = interaction.guild.members.cache;
+  const sideCharacters = []
+
+  if (user.is_cub) {
+    sideCharacters.push("cub")
+  }
+  if (user.is_vampire) {
+    sideCharacters.push("vampire")
+  }
+  if (user.is_henchman) {
+      sideCharacters.push("henchman")
+  }
+  if (!_.isEmpty(user.in_love_with_ids)) {
+    user.in_love_with_ids.forEach((id) => {
+      const memberInLove = members.get(id)
+      sideCharacters.push(`in love with ${memberInLove}`)
+    })
+  }
+
+  return sideCharacters
+}
+
 module.exports = {
   getPlayingCount,
   crateUserData,
   getPlayersCharacter,
-  getCapitalizeCharacterName
+  getCapitalizeCharacterName,
+  getSideCharacters,
+  randomUser,
 };

@@ -29,6 +29,7 @@ const WaysToDie = {
   CURSED: 'Cursed',
   STARVED: 'Starved',
   CHAOS: 'Failed At Causing Chaos',
+  BROKEN_HEART: 'Broken Heart',
 }
 
 async function removesDeadPermissions(
@@ -41,7 +42,7 @@ async function removesDeadPermissions(
   let deadCharacter = deadUser.character; 
   const settings = await findSettings(guildId);
 
-  if (deadUser?.power_ups && deadUser?.power_ups[PowerUpNames.SHIELD]) {
+  if (deadUser?.power_ups && deadUser?.power_ups[PowerUpNames.SHIELD] && causeOfDeath !== WaysToDie.BROKEN_HEART) {
     await usePowerUp(deadUser, interaction, PowerUpNames.SHIELD);
     await sendMemberMessage(deadMember, "🛡️Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again🛡️")
     return PowerUpNames.SHIELD
@@ -86,6 +87,23 @@ async function removesDeadPermissions(
 
   if (deadUser?.is_chaos_target && causeOfDeath !== WaysToDie.HANGED) {
     await killChaosDemon(interaction, deadMember)
+  }
+
+  if (!_.isEmpty(deadUser?.in_love_with_ids)) {
+    const cursorInLoveWith = await findManyUsers({
+      guild_id: guildId,
+      user_id: { $in: deadUser.in_love_with_ids },
+      is_dead: false,
+    });
+    const loverDbUsers = await cursorInLoveWith.toArray();
+
+    for (const loverDbUser of loverDbUsers) {
+      // Don't kill demon if lover is target.
+      const loverHangedByChaosDemon = loverDbUser.chaos_target_user_id === deadUser.user_id && causeOfDeath === WaysToDie.HANGED
+      if (!loverDbUser.is_dead && !loverHangedByChaosDemon) {
+        await killLover(interaction, loverDbUser, deadMember);
+      }
+    }
   }
 
   return deadCharacter
@@ -144,24 +162,52 @@ async function removePlayer(
 
 async function killChaosDemon(interaction, targetMember) {
   const members = interaction.guild.members.cache;
-  const chaosDemon = await findOneUser({
+  const cursorChaosDemons = await findManyUsers({
     guild_id: interaction.guild.id,
     character: characters.CHAOS_DEMON,
     is_dead: false,
   })
+  const chaosDemons = await cursorChaosDemons.toArray();
 
-  if (!chaosDemon) {
+  if (_.isEmpty(chaosDemons)) {
     return;
   }
-  const chaosDemonMember = members.get(chaosDemon.user_id)
 
-  await removePlayer(
+  for (const chaosDemon of chaosDemon) {
+    const chaosDemonMember = members.get(chaosDemon.user_id)
+  
+    await removePlayer(
+      interaction,
+      chaosDemon,
+      chaosDemonMember,
+      WaysToDie.CHAOS
+    )
+    interaction.townAnnouncements.push(`## * In a twist of fate, the Chaos Demon, ${chaosDemonMember}, has met their end! Their sinister plan failed because their marked target, ${targetMember}, died, but not by hanging. Without their target's demise by lynching, the Chaos Demon's power has been vanquished.`)
+  }
+}
+
+function randomLoversDeathMessage(loverMember, loversCharacter, deadUserMember) {
+  const messages = [
+    `## * A chilling wail echoes through the night! ${loverMember}, the ${loversCharacter}, has perished of a broken heart after the loss of ${deadUserMember}.`,
+    `## * The silence is shattered by a mournful cry. ${loverMember}, the ${loversCharacter}, could not bear the grief of losing ${deadUserMember}, and has joined them in death.`,
+    `## * Love's bond proves stronger than life itself. ${loverMember}, the ${loversCharacter}, has succumbed to sorrow, following ${deadUserMember} into the darkness.`,
+    `## * Heartbreak takes its toll ${loverMember}, the ${loversCharacter}, has passed on, unable to live without ${deadUserMember}.`,
+  ]
+  return _.sample(messages)
+}
+
+async function killLover(interaction, loverDbUser, deadUserMember) {
+  const members = interaction.guild.members.cache;
+  const loverMember = members.get(loverDbUser.user_id)
+
+  interaction.townAnnouncements.push(randomLoversDeathMessage(loverMember, loversCharacter, deadUserMember))
+
+  const loversCharacter = await removesDeadPermissions(
     interaction,
-    chaosDemon,
-    chaosDemonMember,
-    WaysToDie.CHAOS
-  )
-  interaction.townAnnouncements.push(`## * In a twist of fate, the Chaos Demon, ${chaosDemonMember}, has met their end! Their sinister plan failed because their marked target, ${targetMember}, died, but not by hanging. Without their target's demise by lynching, the Chaos Demon's power has been vanquished.`)
+    loverDbUser,
+    loverMember,
+    WaysToDie.BROKEN_HEART
+  );
 }
 
 async function removeUserVotes(guildId, userId) {

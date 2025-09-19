@@ -9,7 +9,7 @@ module.exports = {
     .setName(commandNames.ANNOUNCE_NEW_GAME)
     .setDescription("ADMIN COMMAND: announce new game and add buttons to join game"),
   async execute(interaction) {
-
+    await interaction.deferReply({ ephemeral: false });
     const deniedMessage = await permissionCheck({
       interaction,
       guildOnly: true,
@@ -37,7 +37,7 @@ module.exports = {
 		const row = new ActionRowBuilder()
 			.addComponents(joinGame, leaveGame);
     
-    await interaction.reply({
+    await interaction.editReply({
       content: `New game! Click Here to join the next game.`,
       ephemeral: false,
       components: [row],

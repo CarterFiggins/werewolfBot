@@ -41,6 +41,7 @@ const characters = {
   // Other teams
   VAMPIRE: "king",
   CHAOS_DEMON: "chaos demon",
+  CUPID: "cupid"
 };
 
 const teams = {
@@ -73,6 +74,7 @@ const characterInfoMap = new Map([
   [characters.MONARCH, {          weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
   [characters.VAMPIRE, {          weight: 0, points: 0, helpsTeam: teams.VAMPIRE }],
   [characters.CHAOS_DEMON, {      weight: 0, points: 0, helpsTeam: teams.CHAOS }],
+  [characters.CUPID, {      weight: 0, points: 0, helpsTeam: teams.VILLAGER }],
 ]);
 
 defaultCharacters = [
@@ -123,6 +125,19 @@ async function getCurrentCharacters(guildId) {
   return { currentCharacters, cardsInGame }
 }
 
+function findCharactersTeam(user) {
+  if (user.is_vampire) {
+    return teams.VAMPIRE
+  }
+  if (user.character === characters.CHAOS_DEMON) {
+    return teams.CHAOS
+  }
+  if ([characters.WEREWOLF, characters.WITCH].includes(user.character) || user.is_henchman) {
+    return teams.WEREWOLF
+  }
+  return teams.VILLAGER
+}
+
 
 module.exports = {
   characterInfoMap,
@@ -131,4 +146,5 @@ module.exports = {
   getCards,
   defaultCharacters,
   getCurrentCharacters,
+  findCharactersTeam,
 };

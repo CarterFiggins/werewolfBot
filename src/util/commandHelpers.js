@@ -46,6 +46,7 @@ const commandNames = {
   CHAOS_TARGET: "chaos_target",
   RANDOM_VOTE: "random_vote",
   BESTOW_POWER: "bestow_power",
+  CUPIDS_ARROWS: "cupids_arrows",
   // power up commands
   ALLIANCE_DETECTOR: "alliance_detector",
   PREDATOR_VISION: "predator_vision",
@@ -169,6 +170,10 @@ async function sendGreeting(interaction, user) {
           `You are a **Monarch**\n${voteText}\nYou can \`/bestow_power\` to a player, but each power can only be given once, and not to the same player twice. Choose wisely who gets them. Help the villagers win!\nHere are all the powers you can give the the message that will be sent to the player who gets them.\n${showAllPowerUpMessages()}`
         );
         break;
+      case characters.CUPID:
+        await member.send(
+          `You are **Cupid**\n${voteText}\nOn the first night use \`/cupids_arrows\` to pick two users that will fall in love and be on the same team. Cupid will not be able to whisper to the couple (They think it's true love don't ruin it!) If one of them dies the other will die from a broken heart. As Cupid you will win with the cupid couple. Help them survive to the end. Cupid counts as a villager.`
+        )
     }
 
     if (settings.enable_power_ups) {

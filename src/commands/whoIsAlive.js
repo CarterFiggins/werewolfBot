@@ -81,6 +81,12 @@ module.exports = {
         if (user.is_henchman) {
           sideCharacters.push("henchman")
         }
+        if (!_.isEmpty(user.in_love_with_ids)) {
+          user.in_love_with_ids.forEach((id) => {
+            const memberInLove = members.get(id)
+            sideCharacters.push(`in love with ${memberInLove}`)
+          })
+        }
         characterMessage = `: **${user.character} ${sideCharacters.join(", ")}**`;
       }
       if (!user.is_dead) {

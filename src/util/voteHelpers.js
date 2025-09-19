@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { getCountedVotes, findSettings, findUser, deleteManyVotes } = require("../werewolf_db");
-const { isDeadChaosTarget } = require("./characterHelpers/chaosDemonHelpers");
+const { foundAliveChaosDemonsWithTarget } = require("./characterHelpers/chaosDemonHelpers");
 const { PowerUpNames } = require("./powerUpHelpers");
 const { removesDeadPermissions, WaysToDie } = require("./deathHelper");
 
@@ -110,7 +110,7 @@ async function hangPlayer(interaction, userVoted, isRandom) {
     throw new Error(`This user id:${userVoted?._id?.voted_user_id} does not exist`)
   }
   const deadMember = interaction.guild.members.cache.get(userVoted._id.voted_user_id);
-  const isChaosTarget = await isDeadChaosTarget(interaction, deadUser);
+  const chaosDemons = await foundAliveChaosDemonsWithTarget(interaction, deadUser);
 
   const deathCharacter = await removesDeadPermissions(
     interaction,
@@ -119,13 +119,13 @@ async function hangPlayer(interaction, userVoted, isRandom) {
     WaysToDie.HANGED,
   );
 
-  let chaosWins = false;
-  if (isChaosTarget && deathCharacter !== PowerUpNames.SHIELD) {
-    chaosWins = true;
+  let chaosWinsIds = [];
+  if (!_.isEmpty(chaosDemons) && deathCharacter !== PowerUpNames.SHIELD) {
+    chaosWinsIds = _.map(chaosDemons, (c) => c.user_id);
   }
 
   return {
-    chaosWins,
+    chaosWinsIds,
     deathCharacter,
     member: deadMember,
     user: deadUser,
