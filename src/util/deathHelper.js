@@ -200,14 +200,13 @@ async function killLover(interaction, loverDbUser, deadUserMember) {
   const members = interaction.guild.members.cache;
   const loverMember = members.get(loverDbUser.user_id)
 
-  interaction.townAnnouncements.push(randomLoversDeathMessage(loverMember, loversCharacter, deadUserMember))
-
   const loversCharacter = await removesDeadPermissions(
     interaction,
     loverDbUser,
     loverMember,
     WaysToDie.BROKEN_HEART
   );
+  interaction.townAnnouncements.push(randomLoversDeathMessage(loverMember, loversCharacter, deadUserMember))
 }
 
 async function removeUserVotes(guildId, userId) {

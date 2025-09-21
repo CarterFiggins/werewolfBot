@@ -15,11 +15,9 @@ async function shootCupidsArrows(interaction) {
 
 
 
-  await Promise.all(
-    _.map(cupids, async (cupid) => {
-      return shootArrows(interaction, cupid)
-    })
-  );
+  for (const cupid of cupids) {
+    await shootArrows(interaction, cupid)
+  }
 }
 
 async function shootArrows(interaction, cupid) {
@@ -40,16 +38,13 @@ async function shootArrows(interaction, cupid) {
   });
   const usersInLove = await cursorLoveMatch.toArray();
 
-  await Promise.all(
-    _.map(usersInLove, (user) => {
-      const inLoveWith = usersInLove.filter((u) => u.user_id !== user.user_id)
-      return updateUser(user.user_id, interaction.guild.id, {
-        in_love_with_ids: [...user.in_love_with_ids, ...inLoveWith.map((u) => u.user_id)],
-        cupid_id: cupid.user_id,
-      })
+  for (const user of usersInLove) {
+    const inLoveWith = usersInLove.filter((u) => u.user_id !== user.user_id)
+    await updateUser(user.user_id, interaction.guild.id, {
+      in_love_with_ids: [...user.in_love_with_ids, ...inLoveWith.map((u) => u.user_id)],
+      cupid_id: cupid.user_id,
     })
-  );
-
+  }
   const chaosDemons = _.filter(usersInLove, (u) => u.character === characters.CHAOS_DEMON)
   if (!_.isEmpty(chaosDemons)) {
     for (const demon of chaosDemons) {
