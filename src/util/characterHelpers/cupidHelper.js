@@ -24,7 +24,7 @@ async function shootArrows(interaction, cupid) {
   let userIdsHitByArrow = cupid.cupid_hit_ids
   if (_.isEmpty(userIdsHitByArrow)) {
     const randomLovers = await randomUser(interaction.guild.id, {
-      user_id: { $not: cupid.user_id },
+      user_id: { $ne: cupid.user_id },
       is_dead: false,
       is_injured: false,
       is_muted: false,
