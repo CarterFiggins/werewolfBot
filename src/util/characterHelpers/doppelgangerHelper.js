@@ -35,7 +35,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   const members = interaction.guild.members.cache;
   let copiedUserDb;
   if (!copyUserId) {
-    copiedUserDb = await randomUser(guildId, { character: { $not: new RegExp(characters.DOPPELGANGER, "g") } })
+    copiedUserDb = await randomUser(guildId, { character: { $ne: characters.DOPPELGANGER } })
     copyUserId = copiedUserDb.user_id
   } else {
     copiedUserDb = await findUser(copyUserId, guildId);
