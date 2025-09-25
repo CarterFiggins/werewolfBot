@@ -27,9 +27,11 @@ async function shootArrows(interaction, cupid) {
       user_id: { $ne: cupid.user_id },
       is_dead: false,
       is_injured: false,
-      is_muted: false,
     }, 2)
     userIdsHitByArrow = _.map(randomLovers, (u) => u.user_id)
+    await updateUser(cupid.user_id, interaction.guild.id, {
+      cupid_hit_ids: userIdsHitByArrow
+    })
   }
 
   const cursorLoveMatch = await findManyUsers({
