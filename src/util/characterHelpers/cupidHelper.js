@@ -70,7 +70,7 @@ async function shootArrows(interaction, cupid) {
 
 function buildCoupleTeam(cupid, allDbUsers) {
   const cupidsCouple = allDbUsers.filter((u) => cupid.cupid_hit_ids.includes(u.user_id));
-  if (_.some(cupidsCouple, ['is_dead', true])) {
+  if (_.some(cupidsCouple, ['is_dead', true]) || _.isEmpty(cupidsCouple)) {
     return false
   }
   let currentTeam = false;

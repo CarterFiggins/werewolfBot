@@ -202,6 +202,7 @@ async function dayTimeJob(interaction) {
 
 // Handles town votes and death
 async function nightTimeJob(interaction) {
+  console.log("Running Night Job")
   const guildId = interaction.guild.id;
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);

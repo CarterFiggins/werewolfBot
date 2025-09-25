@@ -17,6 +17,9 @@ module.exports = {
         continue;
       }
       const guild = await results.fetch()
+      await guild.members.fetch()
+      await guild.roles.fetch()
+      await guild.channels.fetch()
       const interaction = {
         guild,
         reply: () => {}

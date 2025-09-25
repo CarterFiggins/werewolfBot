@@ -69,6 +69,7 @@ async function handleHangingVotes(interaction) {
   }
 
   for (const userVoted of votingData.votedOff) {
+    console.log("hangPlayer votedOff")
     const playerDeathInfo = await hangPlayer(interaction, userVoted, false)
     playersDeathInfo.push(playerDeathInfo)
   }
@@ -77,6 +78,7 @@ async function handleHangingVotes(interaction) {
     const randomVotes = _.shuffle(votingData.randomVoteOff)
     while (randomVotes.length > 0 && playersDeathInfo.length < votingOutAmount) {
       const userVoted = randomVotes.pop()
+      console.log("hangPlayer randomVotes")
       const playerDeathInfo = await hangPlayer(interaction, userVoted, true)
       playersDeathInfo.push(playerDeathInfo)
     }
@@ -92,6 +94,7 @@ function delay(time) {
 async function hangPlayer(interaction, userVoted, isRandom) {
   const guildId = interaction.guild.id;
   let deadUser = await findUser(userVoted._id.voted_user_id, guildId);
+  console.log("Hanging:", userVoted._id.voted_user_id)
 
   if (!deadUser) {
     console.log("guildId")
