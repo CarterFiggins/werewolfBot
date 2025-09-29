@@ -208,8 +208,6 @@ async function orderAllPlayers(interaction) {
     if (dbUser.character === characters.CUPID) {
       const couple = buildCoupleTeam(dbUser, allDbUsers)
       if (couple) {
-        console.log("couple")
-        console.log(couple)
         loverTeams.push(couple)
       }
     }
