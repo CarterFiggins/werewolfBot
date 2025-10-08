@@ -173,7 +173,7 @@ async function killChaosDemon(interaction, targetMember) {
     return;
   }
 
-  for (const chaosDemon of chaosDemon) {
+  for (const chaosDemon of chaosDemons) {
     const chaosDemonMember = members.get(chaosDemon.user_id)
   
     await removePlayer(
