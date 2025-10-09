@@ -9,6 +9,7 @@ async function votingDeathMessage({ interaction, playersDeathInfo }) {
   const settings = await findSettings(interaction.guild.id);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
+  const members = interaction.guild.members.cache;
 
   if (_.isEmpty(playersDeathInfo)) {
     await organizedChannels.townSquare.send("## No one has voted...\n# **It is night time**");
