@@ -29,7 +29,7 @@ module.exports = {
     }
 
     const aliveUsersId = await getAliveUsersIds(interaction);
-    const members = await interaction.guild.members.fetch();
+    const members = await interaction.guild.members.cache;
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
 
     const cursor = await findAllUsers(interaction.guild.id, aliveUsersId);
