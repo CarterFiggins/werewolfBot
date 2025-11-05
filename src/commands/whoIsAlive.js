@@ -15,15 +15,16 @@ module.exports = {
       "Shows which players are alive in the game and number of villagers and werewolves"
     ),
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: false });
     const deniedMessage = await permissionCheck({
       interaction,
       guildOnly: true,
     });
 
     if (deniedMessage) {
-      await interaction.reply({
+      await interaction.editReply({
         content: deniedMessage,
-        ephemeral: true,
+        ephemeral: false,
       });
       return;
     }
@@ -39,7 +40,7 @@ module.exports = {
       const { playersCount, playingMembers } = await getPlayingCount(
         interaction
       );
-      await interaction.reply({
+      await interaction.editReply({
         content: `Player count: ${playersCount}\n${_.join(
           playingMembers,
           "\n"
@@ -132,7 +133,7 @@ module.exports = {
       message += `${werewolfMessage}${vampireMessage}${soloMessage}${henchmanMessage}Villager Count: ${villagerCount}\n`;
     }
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `${message}${someoneIsDead ? deadMessage : ""}`,
       ephemeral: false,
       allowedMentions: {
