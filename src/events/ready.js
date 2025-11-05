@@ -11,20 +11,27 @@ module.exports = {
     const games = await findAllGames()
     const guilds = await client.guilds.fetch()
 
-    for (game of games) {
-      const results = guilds.get(game.guild_id)
-      if (!results) {
-        continue;
-      }
-      const guild = await results.fetch()
-      await guild.members.fetch()
-      await guild.roles.fetch()
-      await guild.channels.fetch()
-      const interaction = {
-        guild,
-        reply: () => {}
-      }
-      await timeScheduling(interaction)
-    }
+// Process guilds in parallel with error handling
+    await Promise.allSettled(
+      games.map(async (game) => {
+        try {
+          const guildResult = guilds.get(game.guild_id);
+          if (!guildResult) return;
+
+          const guild = await guildResult.fetch();
+          await guild.roles.fetch();
+          await guild.channels.fetch();
+          
+          const interaction = {
+            guild,
+            reply: () => {}
+          };
+          
+          await timeScheduling(interaction);
+        } catch (error) {
+          console.error(`Error processing guild ${game.guild_id}:`, error);
+        }
+      })
+    );
   },
 };
