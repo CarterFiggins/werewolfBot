@@ -22,29 +22,17 @@ async function getPlayingCount(interaction) {
   
   const cacheAge = now - guildCache.timestamp;
   const cacheIsValid = cacheAge < 60000 && guildCache.roleId === playingRole.id;
-    const currentMembers = interaction.guild.members.cache.filter(member =>
-        member._roles.includes(playingRole.id)
-  );
-  let playingMembers = Array.from(currentMembers.values());
+  let members = interaction.guild.members.cache
 
-  if (cacheIsValid) {
-      return {
-      playersCount: playingMembers.length,
-      playingMembers: playingMembers
-    };
-  }
-  
-  try {
-      const members = await interaction.guild.members.fetch({ 
+  if (!cacheIsValid) {
+    try {
+      members = await interaction.guild.members.fetch({ 
         role: playingRole.id 
       }).catch(() => {
         return interaction.guild.members.cache.filter(member =>
           member._roles.includes(playingRole.id)
         );
       });
-      
-      playingMembers = Array.from(members.values());
-      
       // Update cache for this specific guild
       playingMembersCache.set(interaction.guild.id, {
         timestamp: now,
@@ -52,12 +40,20 @@ async function getPlayingCount(interaction) {
       });
     } catch (error) {
       console.error('Error fetching playing members:', error);
+      members = interaction.guild.members.cache
     }
+  }
   
-  return {
-    playersCount: playingMembers.length,
-    playingMembers: playingMembers
-  };
+  
+  let playersCount = 0;
+  const playingMembers = [];
+  members.forEach((member) => {
+    if (member._roles.includes(playingRole.id)) {
+      playersCount += 1;
+      playingMembers.push(member)
+    }
+  });
+  return {playersCount, playingMembers};
 }
 
 
