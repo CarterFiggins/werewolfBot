@@ -54,7 +54,7 @@ async function getPlayingDiscordUsers(interaction) {
     throw new Error("No playing role created");
   }
 
-  const members = await interaction.guild.members.fetch();
+  const members = interaction.guild.members.cache;
   const playingDiscordUsers = members
     .map((member) => {
       if (member._roles.includes(playingRole.id)) {

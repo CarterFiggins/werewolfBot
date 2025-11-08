@@ -68,7 +68,7 @@ module.exports = {
     }
     if (interaction.options.getSubcommand() === commandNames.SHOW_VOTERS_FOR) {
       const targetUser = interaction.options.getUser("target");
-      const members = await interaction.guild.members.fetch();
+      const members = interaction.guild.members.cache;
       const guildId = interaction.guild.id;
       let cursorVotes = null;
       if (targetUser) {

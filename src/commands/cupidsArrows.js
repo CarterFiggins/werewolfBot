@@ -42,7 +42,7 @@ module.exports = {
       return;
     }
 
-    const members = await interaction.guild.members.fetch()
+    const members = interaction.guild.members.cache
 
     const targetedOneUser = await interaction.options.getUser("target1");
     const targetedTwoUser = await interaction.options.getUser("target2");

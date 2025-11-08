@@ -29,7 +29,7 @@ module.exports = {
       return;
     }
 
-    const members = await interaction.guild.members.fetch();
+    const members = interaction.guild.members.cache;
     const game = await findGame(guildId);
 
     const cursorAlivePlayers = await findManyUsers({

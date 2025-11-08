@@ -8,7 +8,7 @@ require("dotenv").config();
 
 async function getPlayingCount(interaction) {
   let playingRole = await getRole(interaction, roleNames.PLAYING);
-  const members = await interaction.guild.members.fetch();
+  const members = interaction.guild.members.cache;
 
   let playersCount = 0;
   const playingMembers = [];

@@ -238,7 +238,7 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
   }
   interaction.townAnnouncements = [];
 
-  const members = await interaction.guild.members.fetch();
+  const members = interaction.guild.members.cache;
   const deadTargetMember = members.get(targetDbUser.user_id);
   const memberWhoShot = members.get(userWhoShot.user_id);
 

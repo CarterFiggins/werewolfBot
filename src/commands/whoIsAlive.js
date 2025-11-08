@@ -30,11 +30,10 @@ module.exports = {
     }
 
     const aliveUsersId = await getAliveUsersIds(interaction);
-    const members = await interaction.guild.members.cache;
-    const channel = interaction.guild.channels.cache.get(interaction.channelId);
-
     const cursor = await findAllUsers(interaction.guild.id, aliveUsersId);
     const dbUsers = await cursor.toArray();
+    const members = interaction.guild.members.cache;
+    const channel = interaction.guild.channels.cache.get(interaction.channelId);
 
     if (_.isEmpty(dbUsers)) {
       const { playersCount, playingMembers } = await getPlayingCount(

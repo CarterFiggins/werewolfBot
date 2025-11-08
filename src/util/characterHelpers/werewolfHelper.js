@@ -45,7 +45,7 @@ async function getKillTargetedUsers(interaction) {
 
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;
-  const members = await interaction.guild.members.fetch();
+  const members = interaction.guild.members.cache;
   const game = await findGame(guildId);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);

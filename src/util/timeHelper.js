@@ -142,8 +142,6 @@ async function dayTimeJob(interaction) {
     return;
   }
 
-  await interaction.guild.members.fetch();
-
   if (game.first_night) {
     await markChaosTarget(interaction);
   }

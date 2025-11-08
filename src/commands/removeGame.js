@@ -27,7 +27,7 @@ module.exports = {
     // stop scheduling day and night
     await interaction.deferReply({ ephemeral: true });
     const roles = await interaction.guild.roles.fetch();
-    const currentMembers = await interaction.guild.members.fetch();
+    const currentMembers = interaction.guild.members.cache;
     await endGame(interaction, roles, currentMembers, true);
     await interaction.editReply({ content: "Game Ended", ephemeral: true });
   },

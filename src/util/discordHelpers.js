@@ -2,7 +2,7 @@ const { getRole, roleNames } = require("./rolesHelpers");
 
 async function getAliveMembers(interaction, getId) {
   let aliveRole = await getRole(interaction, roleNames.ALIVE);
-  const members = await interaction.guild.members.fetch();
+  const members = interaction.guild.members.cache;
 
   return members
     .map((member) => {
