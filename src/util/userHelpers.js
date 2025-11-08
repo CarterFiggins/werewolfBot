@@ -6,20 +6,60 @@ const { randomWeightPowerUp } = require("./powerUpHelpers");
 const { possibleCharactersInGame } = require("./channelHelpers");
 require("dotenv").config();
 
+let playingMembersCache = new Map();
+
 async function getPlayingCount(interaction) {
   let playingRole = await getRole(interaction, roleNames.PLAYING);
-  const members = interaction.guild.members.cache;
+  const guildId = interaction.guild.id;
+  const now = Date.now();
+  
+  // Get cache for this specific guild
+  const guildCache = playingMembersCache.get(guildId) || {
+    data: null,
+    timestamp: 0,
+    roleId: null
+  };
+  
+  const cacheAge = now - guildCache.timestamp;
+  const cacheIsValid = cacheAge < 60000 && guildCache.roleId === playingRole.id;
+    const currentMembers = interaction.guild.members.cache.filter(member =>
+        member._roles.includes(playingRole.id)
+  );
+  let playingMembers = Array.from(currentMembers.values());
 
-  let playersCount = 0;
-  const playingMembers = [];
-  members.forEach((member) => {
-    if (member._roles.includes(playingRole.id)) {
-      playersCount += 1;
-      playingMembers.push(member)
+  if (cacheIsValid) {
+      return {
+      playersCount: playingMembers.length,
+      playingMembers: playingMembers
+    };
+  }
+  
+  try {
+      const members = await interaction.guild.members.fetch({ 
+        role: playingRole.id 
+      }).catch(() => {
+        return interaction.guild.members.cache.filter(member =>
+          member._roles.includes(playingRole.id)
+        );
+      });
+      
+      playingMembers = Array.from(members.values());
+      
+      // Update cache for this specific guild
+      playingMembersCache.set(interaction.guild.id, {
+        timestamp: now,
+        roleId: playingRole.id
+      });
+    } catch (error) {
+      console.error('Error fetching playing members:', error);
     }
-  });
-  return {playersCount, playingMembers};
+  
+  return {
+    playersCount: playingMembers.length,
+    playingMembers: playingMembers
+  };
 }
+
 
 async function buildUserInfo(interaction, user, newCharacter) {
   const roles = await interaction.guild.roles.fetch();
