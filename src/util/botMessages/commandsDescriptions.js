@@ -24,7 +24,7 @@ This is how you let the werewolf bot know you want to play the next round. It wi
       role: 'everyone',
       emoji: '⏹️',
       description: `### /stop_playing
-If you decide you don\`t want to play use this command and it will remove the Playing role.`
+If you decide you don't want to play use this command and it will remove the Playing role.`
     },
     {
       label: '/join_the_dead',
@@ -38,7 +38,7 @@ Join the dead when a game has already started so you can talk about what is happ
       role: 'everyone',
       emoji: '✉️',
       description: `### /vote (target)
-When you are have the Alive Role you will be able to use the \'/vote\' command. The vote command only works during the day. To use select the command and hit enter. You will then see options to select a user. Select a user with the Alive Role to vote for them to be hanged. This is the best way the village could think of to decide who should die. Daily hanging is at 8pm MST who ever gets the most votes gets the noose.`
+When you have the Alive Role you will be able to use the \`/vote\` command. The vote command only works during the day. To use, select the command and hit enter. You will then see options to select a user. Select a user with the Alive Role to vote for them to be hanged. This is the best way the village could think of to decide who should die. Daily hanging is at 8pm MST. Whoever gets the most votes gets the noose.`
     },
     {
       label: '/show votes',
@@ -57,86 +57,86 @@ Shows who voted for who. Can target a user or run without a target to see who ev
     {
       label: '/who_is_alive',
       role: 'everyone',
-      emoji: '🥸',
+      emoji: '❤️',
       description: `### /who_is_alive
-Shows you your character in the game`
+Shows who is alive in the game. This will also show the number of werewolves and villagers left in the game.`
     },
     {
       label: '/who_am_i',
       role: 'everyone',
-      emoji: '❤️',
-      description: `### /who_is_alive
-Shows who is alive in the game. This will also show the number of werewolf and villagers left in the game.`
+      emoji: '🥸',
+      description: `### /who_am_i
+Shows you your character in the game.`
     },
     {
       label: '/kill (target)',
       role: 'werewolf, cub',
       emoji: '🗡️',
       description: `### /kill (target)
-This is a Werewolf command. It is used at night in the werewolf channel to target an alive player to die. You may change your target using this same command. Use by typing the command hitting enter and choosing a player to kill. Each werewolf will be able to target a player and if the werewolves target do not match then the bot will pick one of the targets selected.`
+This is a Werewolf command. It is used at night in the werewolf channel to target an alive player to die. You may change your target using this same command. Use by typing the command hitting enter and choosing a player to kill. Each werewolf will be able to target a player, and if the werewolves' targets do not match, the bot will pick one of the targets selected.`
     },
     {
       label: '/guard (target)',
       role: 'bodyguard',
       emoji: '🛡️',
       description: `### /guard (target)
-This is a Bodyguard command. It is used at night in the bodyguard channel to guard an alive player. If a werewolf targets this player they will not die. If someone is going to get hanged the guard can not save them. Use by type the command and hitting enter and choosing a player to guard.`
+This is a Bodyguard command. It is used at night in the bodyguard channel to guard an alive player. If a werewolf targets this player they will not die. If someone is going to get hanged, the guard cannot save them. Use by typing the command and hitting enter and choosing a player to guard.`
     },
     {
       label: '/investigate (target)',
       role: 'seer, fool',
       emoji: '🔍',
       description: `### /investigate (target)
-This is a Seer and fool\`s command. It is used at night in the seer channel to investigate an alive player. After selecting a player the Werewolf Bot will tell you in the morning if that player is a werewolf or not. Use by type the command and hitting enter and choosing a player to investigate`
+This is a Seer and Fool's command. It is used at night in the seer channel to investigate an alive player. After selecting a player, the Werewolf Bot will tell you in the morning if that player is a werewolf or not. Use by typing the command and hitting enter and choosing a player to investigate.`
     },
     {
       label: '/shoot (target)',
       role: 'hunter or gun ability',
       emoji: '🔫',
       description: `### /shoot (target)
-If the hunter is killed they will be in an injured state and can use this command to shoot a target. This command is also used when a player has a gun. If a player has a gun they can use the command at any time to shoot a player. A hunter can also be give a gun. They can shoot using the gun ability and then shoot again when injured.`
+If the hunter is killed they will be in an injured state and can use this command to shoot a target. This command is also used when a player has a gun. If a player has a gun they can use the command at any time to shoot a player. A hunter can also be given a gun. They can shoot using the gun ability and then shoot again when injured.`
     },
     {
       label: '/whisper (player) (message)',
       role: 'everyone',
       emoji: '🔉',
       description: `### /whisper (player) (message)
-Players can use this command to talk to other players in private. (dead and non players will be able to see what is being said in the after-life channel) The message will be sent by the bot and it will also display in the after life for dead to see. You can only whisper once per day. Whispering resets after the day cycle ends`
+Players can use this command to talk to other players in private. (Dead and non-players will be able to see what is being said in the after-life channel.) The message will be sent by the bot and it will also display in the afterlife for the dead to see. You can only whisper once per day. Whispering resets after the day cycle ends.`
     },
     {
       label: '/curse (target)',
       role: 'witch',
       emoji: '💀',
       description: `### /curse (target)
-This is the Witch command. Use it in the witch channel. Uses this command to select who will be cursed. If you change your mind use the command on a different player. The curse will be final when it becomes day. If the witch dies from the villagers then whoever is cured will die except werewolves and vampires.`
+This is the Witch command. Use it in the witch channel. Use this command to select who will be cursed. If you change your mind, use the command on a different player. The curse will be final when it becomes day. If the witch dies from the villagers, then whoever is cursed will die, except werewolves and vampires.`
     },
     {
       label: '/vampire_bite (target)',
       role: 'vampire king, vampire',
       emoji: '🧛',
       description: `### /vampire_bite (target)
-This is the Vampires command. Use it in the vampire channel. Each vampire is able to bite one other player each night. When a villager is bitten twice they turn into a vampire and are able to use this command. If they try to bite a werewolf or bite the same target as the werewolves they will die. The admin can change the settings to protect the first vampire (vampire king) from dying this way. The bodyguard, witch, werewolves, and chaos demon can not be converted into a vampire.`
+This is the Vampires command. Use it in the vampire channel. Each vampire is able to bite one other player each night. When a villager is bitten twice they turn into a vampire and are able to use this command. If they try to bite a werewolf or bite the same target as the werewolves they will die. The admin can change the settings to protect the first vampire (vampire king) from dying this way. The bodyguard, witch, werewolves, and chaos demon cannot be converted into a vampire.`
     },
     {
       label: '/copy (target)',
       role: 'doppelganger',
       emoji: '©',
       description: `### /copy (target)
-This is the Doppelganger command. Use it to copy a players character and become that charter the next day. This command only works on the first day/night and will not work after that. If the doppelganger does not use the bot will pick a character for them. This command can be used anywhere and will keep the bot reply private. You can change your target multiply times before the next day.`
+This is the Doppelganger command. Use it to copy a players character and become that charter the next day. This command only works on the first day/night and will not work after that. If the doppelganger does not use it, the bot will pick a character for them. This command can be used anywhere and will keep the bot reply private. You can change your target multiple times before the next day.`
     },
     {
       label: '/mute (target)',
       role: 'grouchy granny',
       emoji: '🔇',
       description: `### /mute (target)
-This is the Grouchy Granny command. Use it in the town square channel. Can be used any time during the day. It will last the rest of the day and through the night. While the player is muted they will be able to leave massages on the out cast channel. The mute will be removed the next morning and the granny will not be able to mute them again. This will stop a player from using a night power. eg (seer will not be able to use see or vampire will not be able to bite)`
+This is the Grouchy Granny command. Use it in the town square channel. Can be used any time during the day. It will last the rest of the day and through the night. While the player is muted they will be able to leave messages in the outcast channel. The mute will be removed the next morning and the granny will not be able to mute them again. This will stop a player from using a night power, e.g., the seer will not be able to investigate, or the vampire will not be able to bite.`
     },
     {
       label: '/bestow_power (target) (power)',
       role: 'Monarch',
       emoji: '🎁',
       description: `### /bestow_power (target) (power)
-This is the Monarch command. It is used to give powers to another player. The Monarch can not give powers to themselves because that would be selfish. Powers that can be given.\n${showAllPowerUpMessages()}`
+This is the Monarch command. It is used to give powers to another player. The Monarch cannot give powers to themselves because that would be selfish. Powers that can be given.\n${showAllPowerUpMessages()}`
     },
     {
       label: '/cupids_arrows (target1) (target2)',

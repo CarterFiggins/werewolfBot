@@ -35,7 +35,7 @@ Use these commands (\`/settings night_time\`, \`/settings day_time\`) to set the
       label: 'King Vampire biting werewolf',
       emoji: '🧛‍♂️',
       description: `### King Vampire biting werewolf
-If this setting is on it will protect the King Vampire if they try and bite a werewolf. They will get a message saying that that user is protect or can defend against their attacks.
+If this setting is on it will protect the King Vampire if they try and bite a werewolf. They will get a message saying that the user is protected or can defend against their attacks.
 This will only apply to the vampire king and the other vampires will die if they try to bite a werewolf.
 `,
     },
@@ -69,7 +69,7 @@ If this setting is on the werewolf will kill the witch. If this setting is off t
       label: 'Lycan guard',
       emoji: '🛡️',
       description: `### Lycan guard
-If this setting is on the lycan will be protected one werewolf attack. After that they will die if the werewolf attacks them. The werewolves will be told if they tired to kill the lycan.
+If this setting is on the lycan will be protected from one werewolf attack. After that they will die if the werewolf attacks them. The werewolves will be told if they tried to kill the lycan.
 `,
     },
     {
@@ -101,7 +101,7 @@ If this setting is on the hunter will auto kill a random werewolf if they are at
       label: 'Discord Reactions',
       emoji: '😂',
       description: `### Discord Reactions
-Because discord lets people add to existing reactions when they can view the channel there is a chance to cheat when dead. If this setting is off it will disable reactions so people will not be able to cheat.
+Because Discord lets people add to existing reactions when they can view the channel, there is a chance to cheat when dead. If this setting is off it will disable reactions so people will not be able to cheat.
 `,
     },
     {
@@ -133,7 +133,7 @@ Turn this setting on to hide the werewolf and vampire count in the who_is_alive 
       label: 'Power Ups',
       emoji: '🦸‍♂️',
       description: `### Power Ups
-Turn this on to give a power to each player at the start of the game. The powers are the same that the monarch can give. Players are given powers randomly
+Turn this on to give a power to each player at the start of the game. The powers are the same that the monarch can give. Players are given powers randomly.
 `,
     },
     {
@@ -157,7 +157,7 @@ Lets Admins select each card amount in the game. (If there are less cards than p
       label: 'Werewolf Creates Henchman',
       emoji: '👻',
       description: `### Werewolf Creates Henchman
-On the first night the werewolves will not kill a player and will convert them into a henchman. Henchman will be on the werewolf's team. They will not be counted for the werewolf or villager  win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman.
+On the first night the werewolves will not kill a player and will convert them into a henchman. Henchman will be on the werewolf's team. They will not be counted for the werewolf or villager win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman.
 `,
     },
   ],

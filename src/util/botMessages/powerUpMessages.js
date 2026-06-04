@@ -53,6 +53,6 @@ powerUpList = [
 ]
 
 module.exports = {
-  powerUpSelectionIntro: `## Power Up Selection\nSelect Power ups and the amount for the next game`,
+  powerUpSelectionIntro: `## Power Up Selection\nSelect Power Ups and the amount for the next game`,
   powerUpList,
 }

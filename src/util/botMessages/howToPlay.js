@@ -39,7 +39,7 @@ _All alive players can communicate in the town square and vote to lynch a player
 * Cupid (creates a couple team with their arrows)
   `,
 
-  werewolfTeam: `## WerewolfTeam
+  werewolfTeam: `## Werewolf Team
 * Werewolf
 * Werewolf Cub
 * Witch

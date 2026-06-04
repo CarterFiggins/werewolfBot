@@ -103,12 +103,12 @@ async function killReminder(interaction) {
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   if (game.wolf_double_kill && !hasDoubleTargetSelected) {
     return organizedChannels?.werewolves?.send(
-      `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target`
+      `${aliveRole} You've got a double serving on the menu tonight! But don't just feast on one unlucky soul, pick another before the moon sets. We wouldn't want you to miss out on dessert, would we? Use the \`/kill\` command again to select the second target.`
     )
   }
   if (noTargetSelected) {
     return organizedChannels?.werewolves?.send(
-      `${aliveRole} it's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
+      `${aliveRole} It's dinnertime! We wouldn't want any hangry werewolves roaming the village, now would we? It's time to pick your prey and satisfy those growling stomachs. Happy hunting!`
     )
   }
 }
@@ -121,7 +121,7 @@ async function nightTimeWarning(interaction) {
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   if (game.first_night) {
     await organizedChannels.townSquare.send(
-      `## ${aliveRole} This is the first night. Voting will start tomorrow`
+      `## ${aliveRole} This is the first night. Voting will start tomorrow.`
     );
     return;
   }
@@ -214,22 +214,22 @@ async function nightTimeJob(interaction) {
       is_day: false,
     });
     await organizedChannels?.werewolves?.send(
-      "This is the first night. Choose someone to kill with the `/kill` command"
+      "This is the first night. Choose someone to kill with the `/kill` command."
     );
     await organizedChannels?.bodyguard?.send(
-      "This is the first night. Choose someone to guard with the `/guard` command"
+      "This is the first night. Choose someone to guard with the `/guard` command."
     );
     await organizedChannels?.seer?.send(
-      "This is the first night. Choose someone to see with the `/investigate` command"
+      "This is the first night. Choose someone to investigate with the `/investigate` command."
     );
     await organizedChannels?.witch?.send(
-      "This is the first night. Choose someone to curse with the `/curse` command"
+      "This is the first night. Choose someone to curse with the `/curse` command."
     );
     await organizedChannels?.vampires?.send(
-      "This is the first night. Choose someone to bite with the `/vampire_bite` command"
+      "This is the first night. Choose someone to bite with the `/vampire_bite` command."
     );
     await organizedChannels?.outCasts?.send(
-      "This is the first night. Choose someone to mute with the `/mute` command"
+      "This is the first night. Choose someone to mute with the `/mute` command."
     )
     return;
   }

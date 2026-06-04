@@ -94,7 +94,7 @@ async function checkForWinner(interaction, chaosWinsIds) {
 
     interaction.townAnnouncements.push(
       `# Villagers Win!
-There are no more evil in the town. The town is saved!
+There is no more evil in the town. The town is saved!
 ## Winners
 ### Alive:
 ${listUsers(aliveUsers.villagers)}
@@ -170,7 +170,7 @@ async function sendChaosWinMessage(interaction, chaosWinsIds) {
   if (chaosWinsIds.length === 1) {
     const chaosDemonMember = members.get(chaosWinsIds[0]);
     interaction.townAnnouncements.push(
-      `# Chaos Demon Victory!\nThe player you lynched was the Chaos Demon's marked target!\nAs a result, the village is plunged into chaos, and everyone loses... except for ${chaosDemonMember} the devious Chaos Demon`
+      `# Chaos Demon Victory!\nThe player you lynched was the Chaos Demon's marked target!\nAs a result, the village is plunged into chaos, and everyone loses... except for ${chaosDemonMember}, the devious Chaos Demon.`
     );
     return;
   }
@@ -178,7 +178,7 @@ async function sendChaosWinMessage(interaction, chaosWinsIds) {
   const memberMessage = _.map(chaosWinsIds, (id) => `${members.get(id)}`)
 
   interaction.townAnnouncements.push(
-    `# Multiple Chaos Demon Victory!\nThe player you lynched was multiple Chaos Demon's marked target!\nAs a result, the village is plunged into chaos, and everyone loses... except for ${memberMessage.join(" and ")} the devious Chaos Demons`
+    `# Multiple Chaos Demon Victory!\nThe player you lynched was multiple Chaos Demons' marked target!\nAs a result, the village is plunged into chaos, and everyone loses... except for ${memberMessage.join(" and ")}, the devious Chaos Demons.`
   );
 }
 

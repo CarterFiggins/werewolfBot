@@ -496,31 +496,31 @@ const townSquareStart =
   "Welcome to the town-square! Here you will vote for who you think the werewolves are.";
 
 const werewolfStart =
-  "Welcome to the werewolf channel! Talk to your fellow werewolves and mark your next target with the `/kill` command at night to eat the villagers. Each werewolf can mark their own target. If the werewolf target do not match the werewolf bot will choose the villager to be eaten.";
+  "Welcome to the werewolf channel! Talk to your fellow werewolves and mark your next target with the `/kill` command at night to eat the villagers. Each werewolf can mark their own target. If the werewolf targets do not match, the werewolf bot will choose the villager to be eaten.";
 
 const seerStart =
-  "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager. Oh and there is a chance you could be a fool... but we are all counting on you!";
+  "Welcome to the seer channel! At night use the command `/investigate` to pick a player to find out if they are a werewolf or villager. Oh, and there is a chance you could be a fool... but we are all counting on you!";
 
 const afterLifeStart =
-  "You are dead... There's not much to do except talk to other dead players and watch the game";
+  "You are dead... There's not much to do except talk to other dead players and watch the game.";
 
 const masonStart =
-  "You are the masons. You can't tell anyone! This is a secretive group. If the body guard protects one of you than he/she will join! You are on the villager's side and you know everyone in this group is not a werewolf";
+  "You are the masons. You can't tell anyone! This is a secretive group. If the bodyguard protects one of you, then he/she will join! You are on the villager's side and you know everyone in this group is not a werewolf.";
 
 const bodyguardStart =
-  "You are a bodyguard who protects this town! Use the `/guard` command to guard people at night. If you guard a player that the werewolves attack you will save them and they will not die. You can guard yourself but you can't guard someone twice in a row";
+  "You are a bodyguard who protects this town! Use the `/guard` command to guard people at night. If you guard a player that the werewolves attack, you will save them and they will not die. You can guard yourself, but you can't guard someone twice in a row.";
 
 const witchStart =
-  "You are a witch! You help the werewolves by cursing villagers with the `/curse` command. If the villagers kill you than all the villagers who have the curse will die.";
+  "You are a witch! You help the werewolves by cursing villagers with the `/curse` command. If the villagers kill you, then all the villagers who have the curse will die.";
 
 const vampireStart =
-  "You are a vampire! Use the '/vampire_bite' command to turn villagers into vampires. **Vampire king's first bite might transform a player into a vampire depending on the settings** after that it takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey. Depending on the settings this might not apply to the vampire king";
+  "You are a vampire! Use the `/vampire_bite` command to turn villagers into vampires. **Vampire king's first bite might transform a player into a vampire depending on the settings.** After that, it takes two bites for them to transform. Watch out for werewolves! They will kill you if you try to bite them or get in the way of their prey. Depending on the settings, this might not apply to the vampire king.";
 
 const outCastStart =
   "Welcome to the Grouchy Granny's House. This is where players will be kicked to when they are muted.";
 
 const monarchStart =
-  `You are a monarch! Use the \`/bestow_power <target_user> <power>\` command to give away power. You will not be able to give power to yourself. You can only give out a power once and can not give power twice to the same player.\nAll powers that can be used with the messages that will be told to the player who get the power\n${showAllPowerUpMessages()}`
+  `You are a monarch! Use the \`/bestow_power <target_user> <power>\` command to give away power. You will not be able to give power to yourself. You can only give out a power once and cannot give power twice to the same player.\nAll powers that can be used with the messages that will be told to the player who gets the power\n${showAllPowerUpMessages()}`
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

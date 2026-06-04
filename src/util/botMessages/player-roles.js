@@ -27,7 +27,7 @@ roles = [
     emoji: "🔮",
     team: "villager",
     description: `### Seer
-* At night the seer may choose someone to investigate. Lycans and werewolves will appear as werewolves and vampires and villagers will appear as villagers.
+* At night the seer may choose someone to investigate. Lycans and werewolves will appear as werewolves, and vampires and villagers will appear as villagers.
 * Channels: seer
 * Commands: \`/investigate\``,
   },
@@ -49,7 +49,7 @@ roles = [
     description: `### Apprentice Seer
 * The apprentice seer takes over the seer seat if the seer is killed. They will join the old seer's channel and see the history of what they have done. They will not become the fool if the fool dies.
 * Channels: seer
-* Commands \`/investigate\``,
+* Commands: \`/investigate\``,
   },
 
   {
@@ -107,7 +107,7 @@ roles = [
     emoji: "👵",
     team: "villager",
     description: `### Grouchy Granny
-  * The grouchy granny is a villager. Each night, she can choose to mute one player, preventing them from speaking the next day and stops them from using their power.
+  * The grouchy granny is a villager. Each night, she can choose to mute one player, preventing them from speaking the next day and stopping them from using their power.
   * Channels: grannys-house
   * Commands: \`/mute\``,
   },
@@ -129,7 +129,7 @@ roles = [
     description: `### Werewolf
 * Werewolves appear as regular villagers during the day, but turn into bloodthirsty monsters at night. Each night, the pack of werewolves decide amongst themselves who to target that night. One werewolf uses the command.
 * Channels: werewolves
-* Commands: \`kill\``,
+* Commands: \`/kill\``,
   },
   {
     label: "Werewolf Cub",
@@ -139,7 +139,7 @@ roles = [
     description: `### Werewolf Cub
 * The werewolf cub is a baby werewolf. When the werewolf cub is lynched, the remaining werewolves can use the kill command twice the following night.
 * Channels: werewolves
-* Commands: \`kill\``,
+* Commands: \`/kill\``,
   },
   {
     label: "Doppelganger",
@@ -147,9 +147,9 @@ roles = [
     emoji: "©",
     team: "unknown",
     description: `### Doppelganger
-* During the first night, the doppelganger may copy another player and become that character. The player copied is unaware (s)he was copied
+* During the first night, the doppelganger may copy another player and become that character. The player copied is unaware (s)he was copied.
 * Channels: same as the copied player
-* Commands: \`copy\``,
+* Commands: \`/copy\``,
   },
   {
     label: "Witch",
@@ -157,7 +157,7 @@ roles = [
     emoji: "🧙",
     team: "werewolf",
     description: `### Witch
-* Each night, the witch chooses someone to curse. If the witch is lynched or shot, all players that the witch has cursed will die. If the witch starves the cursed will not die. The curse will not affect werewolves. The witch will appear as a vampire to the bodyguard. If the werewolves try to target the witch the witch will join werewolves. The witch will not be in the who is alive werewolf count but will count on the werewolf team when checking if the game is over.
+* Each night, the witch chooses someone to curse. If the witch is lynched or shot, all players that the witch has cursed will die. If the witch starves, the cursed will not die. The curse will not affect werewolves. The witch will appear as a vampire to the bodyguard. If the werewolves try to target the witch the witch will join werewolves. The witch will not be in the who is alive werewolf count but will count on the werewolf team when checking if the game is over.
 * Channels: witch (potentially werewolves)
 * Commands: \`/curse\``,
   },
@@ -167,7 +167,7 @@ roles = [
     emoji: "😈",
     team: "chaos",
     description: `### Chaos Demon
-* The first night the Chaos Demon will pick any player. For the Chaos Demon to win they must convince the town to hang the target player. If the target dies any other way the chaos demon will die. The Chaos demon is on their own team.
+* The first night the Chaos Demon will pick any player. For the Chaos Demon to win, they must convince the town to hang the target player. If the target dies any other way the chaos demon will die. The Chaos demon is on their own team.
 * Channels: none
 * Commands: \`/chaos_target\``,
   },
@@ -177,7 +177,7 @@ roles = [
     emoji: "💘",
     team: "chaos",
     description: `### Cupid
-* The first night Cupid can pick two players using \`/cupids_arrows\` to cause the two players to fall in love and be on the same team. Cupid will not be able to whisper to the lovers (They think it's true love don't ruin it!) If one of the lovers dies the other will die from a broken heart. As Cupid you will win with the lovers even if you are converted to a different team. Help them survive to the end. Cupid counts as a villager. Cupid can not fall in love with their own arrows. If the Chaos Demon is hit by the arrow they will join the lovers channel but their chaos target will switch to the person they are in love with.
+* The first night Cupid can pick two players using \`/cupids_arrows\` to cause the two players to fall in love and be on the same team. Cupid will not be able to whisper to the lovers (They think it's true love, don't ruin it!) If one of the lovers dies, the other will die from a broken heart. As Cupid you will win with the lovers even if you are converted to a different team. Help them survive to the end. Cupid counts as a villager. Cupid can not fall in love with their own arrows. If the Chaos Demon is hit by the arrow they will join the lovers channel but their chaos target will switch to the person they are in love with.
 * Channels: none
 * Commands: \`/cupids_arrows\``,
   },
@@ -210,7 +210,7 @@ module.exports = {
       emoji: "🧛",
       team: "vampire",
       description: `### Vampire
-* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever roll (s)he started with. Each night, a vampire may attack a player. It takes two bites to turn a player into a vampire. If a vampire attacks a werewolf or targets the same player as the werewolves, (s)he will die.
+* A vampire is a player that has been turned into a vampire. (S)he will be a vampire in addition to whatever role (s)he started with. Each night, a vampire may attack a player. It takes two bites to turn a player into a vampire. If a vampire attacks a werewolf or targets the same player as the werewolves, (s)he will die.
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
     },
@@ -219,7 +219,7 @@ module.exports = {
       emoji: "👻",
       team: "werewolf",
       description: `### Henchman
-* If the "Werewolf creates henchman" setting is turned on the first night werewolf kill will turn a villager into a henchman. They will be the same role they are now but work for the Werewolves. Henchman will be on the werewolf's team. They will not be counted for the werewolf or villager win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman. The henchman will still not know the identity of the werewolves.
+* If the "Werewolf creates henchman" setting is turned on, the first night werewolf kill will turn a villager into a henchman. They will be the same role they are now but work for the Werewolves. Henchman will be on the werewolf's team. They will not be counted for the werewolf or villager win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman. The henchman will still not know the identity of the werewolves.
       `
     }
   ],

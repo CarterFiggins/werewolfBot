@@ -44,7 +44,7 @@ async function removesDeadPermissions(
 
   if (deadUser?.power_ups && deadUser?.power_ups[PowerUpNames.SHIELD] && causeOfDeath !== WaysToDie.BROKEN_HEART) {
     await usePowerUp(deadUser, interaction, PowerUpNames.SHIELD);
-    await sendMemberMessage(deadMember, "🛡️Your life saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again🛡️")
+    await sendMemberMessage(deadMember, "🛡️ Your life-saving shield has been activated, saving you from death. The shield has been consumed and cannot be used again. 🛡️")
     return PowerUpNames.SHIELD
   }
 
@@ -121,7 +121,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
       wolf_double_kill: true,
     });
     await organizedChannels?.werewolves?.send(
-      `We have unfortunate news: ${deadMember}, our cub, has been killed. However, this loss has fueled your rage.:rage:\n Tonight, you can target not just one, but two villagers.\nhttps://tenor.com/86LT.gif`
+      `We have unfortunate news: ${deadMember}, our cub, has been killed. However, this loss has fueled your rage. :rage:\nTonight, you can target not just one, but two villagers.\nhttps://tenor.com/86LT.gif`
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
@@ -191,7 +191,7 @@ function randomLoversDeathMessage(loverMember, loversCharacter, deadUserMember) 
     `## * A chilling wail echoes through the night! ${loverMember}, the ${loversCharacter}, has perished of a broken heart after the loss of ${deadUserMember}.`,
     `## * The silence is shattered by a mournful cry. ${loverMember}, the ${loversCharacter}, could not bear the grief of losing ${deadUserMember}, and has joined them in death.`,
     `## * Love's bond proves stronger than life itself. ${loverMember}, the ${loversCharacter}, has succumbed to sorrow, following ${deadUserMember} into the darkness.`,
-    `## * Heartbreak takes its toll ${loverMember}, the ${loversCharacter}, has passed on, unable to live without ${deadUserMember}.`,
+    `## * Heartbreak takes its toll, ${loverMember}, the ${loversCharacter}, has passed on, unable to live without ${deadUserMember}.`,
   ]
   return _.sample(messages)
 }
@@ -300,7 +300,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     WaysToDie.WEREWOLF
   );
   if (deathCharacter === PowerUpNames.SHIELD) { 
-    return `🛡️Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their shield has been consumed🛡️`;
+    return `🛡️ Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their shield has been consumed. 🛡️`;
   }
   
   if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
@@ -318,9 +318,9 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
       WaysToDie.SHOT
     );
     if (deadWerewolfCharacter === PowerUpNames.SHIELD) {
-      return `🛡️Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they shot at their attacker and hit a werewolves shield! Next time that werewolf won't be so lucky🛡️`
+      return `🛡️ Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit a werewolf's shield! Next time that werewolf won't be so lucky. 🛡️`
     } 
-    return `Last night the werewolves killed the **${deathCharacter}**\n Before ${deadMember} died they shot at their attacker and hit the ${deadWerewolfCharacter} named ${deadWerewolfMember}\n`;
+    return `Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit the ${deadWerewolfCharacter} named ${deadWerewolfMember}.\n`;
   }
   
   if (deadUser.character === characters.HUNTER) { 
@@ -336,7 +336,7 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
 
 
   if (targetDbUser.character === characters.HUNTER && !userWasProtected) {
-    message = `${deadTargetMember} you have been injured and don't have long to live. Grab you gun and \`/shoot\` someone.`;
+    message = `${deadTargetMember} you have been injured and don't have long to live. Grab your gun and \`/shoot\` someone.`;
   }
 
   if (targetDbUser.character === characters.WITCH && !userWasProtected) {
@@ -390,7 +390,7 @@ async function botShoots(interaction) {
   );
 
   if (botShotCharacter === PowerUpNames.SHIELD) {
-    interaction.townAnnouncements.push("## * 🛡️Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss!🛡️")
+    interaction.townAnnouncements.push("## * 🛡️ Guess what? I've got a gun! I took aim and fired at a villager, but surprise — they had a shield! Consider this a warning shot. Watch your back, because next time, I won't miss! 🛡️")
     return
   }
 
