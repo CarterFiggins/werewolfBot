@@ -160,6 +160,9 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
         user.info.giving_user_id = null;
         user.info.giving_power = null;
         break;
+      case characters.SERIAL_KILLER:
+        user.info.serial_kill_target_id = null;
+        break;
     }
 
     if (settings.enable_power_ups) {

@@ -63,7 +63,7 @@ module.exports = {
     let vampireCount = 0;
     let someoneIsDead = false;
 
-    const soloCharacters = [characters.CHAOS_DEMON]
+    const soloCharacters = [characters.CHAOS_DEMON, characters.SERIAL_KILLER]
 
     const someWolves = _.some(dbUsers, (u) => u.character === characters.WEREWOLF)
 

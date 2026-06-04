@@ -59,6 +59,10 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
     userData.kill_targeted_user_ids = [];
   }
 
+  if (copiedCharacter === characters.SERIAL_KILLER) {
+    userData.serial_kill_target_id = null;
+  }
+
   await updateUser(doppelgangerUserId, guildId, userData);
 
   const doppelgangerMember = members.get(doppelgangerUserId);

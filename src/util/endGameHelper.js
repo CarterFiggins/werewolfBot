@@ -43,13 +43,14 @@ async function checkForWinner(interaction, chaosWinsIds) {
     : 0;
   const vampireCount = aliveUsers.vampires.length || 0;
   const witchCount = aliveUsers.witches.length || 0;
+  const serialKillerCount = aliveUsers.serialKillers.length || 0;
 
   if (!_.isEmpty(chaosWinsIds)) {
     await sendChaosWinMessage(interaction, chaosWinsIds);
     return true;
   }
 
-  if (villagerCount === 0 && werewolfCount === vampireCount && game.is_day) {
+  if (villagerCount === 0 && serialKillerCount === 0 && werewolfCount === vampireCount && game.is_day) {
     return false;
   }
 
@@ -71,20 +72,36 @@ async function checkForWinner(interaction, chaosWinsIds) {
     ).join("\n");
   };
 
-  if (
-    werewolfCount + vampireCount + villagerCount + witchCount + chaosCount ===
-    0
-  ) {
+  const totalCount = werewolfCount + vampireCount + villagerCount + witchCount + chaosCount + serialKillerCount;
+
+  if (totalCount === 0) {
     interaction.townAnnouncements.push("# I WIN! Everyone is dead!");
     return true;
   }
 
-  if (werewolfCount + vampireCount + villagerCount + witchCount + chaosCount === 2 && !_.isEmpty(loverTeams)) {
+  if (totalCount === 2 && !_.isEmpty(loverTeams)) {
     coupleWinMessage(interaction, loverTeams)
     return true;
   }
 
-  if (werewolfCount + vampireCount + chaosCount === 0) {
+  if (serialKillerCount > 0 && werewolfCount + vampireCount + chaosCount + villagerCount + witchCount === 0) {
+    interaction.townAnnouncements.push(
+      `# Serial Killer Wins!
+The serial killer has eliminated everyone else. They are the last one standing.
+## Winners
+### Alive:
+${listUsers(aliveUsers.serialKillers)}
+### Dead:
+${listUsers(deadUsers.serialKillers)}`
+    );
+    return true;
+  }
+
+  if (serialKillerCount > 0) {
+    return false;
+  }
+
+  if (werewolfCount + vampireCount + chaosCount + serialKillerCount === 0) {
     const cupidTeamWinners = _.filter(loverTeams, (loveTeam) => loveTeam.couplesTeam === teams.VILLAGER)
 
     if (!_.isEmpty(cupidTeamWinners)) {
@@ -104,7 +121,7 @@ ${listUsers(deadUsers.villagers)}`
     return true;
   }
 
-  if (werewolfCount >= villagerCount + vampireCount + chaosCount) {
+  if (werewolfCount >= villagerCount + vampireCount + chaosCount + serialKillerCount) {
     const cupidTeamWinners = _.filter(loverTeams, (loveTeam) => loveTeam.couplesTeam === teams.WEREWOLF)
 
     if (!_.isEmpty(cupidTeamWinners)) {
@@ -124,9 +141,8 @@ ${listUsers([...deadUsers.werewolves, ...deadUsers.witches, ...deadUsers.henchme
     return true;
   }
 
-  if (vampireCount >= villagerCount + werewolfCount + chaosCount) {
-
-        const cupidTeamWinners = _.filter(loverTeams, (loveTeam) => loveTeam.couplesTeam === teams.VAMPIRE)
+  if (vampireCount >= villagerCount + werewolfCount + chaosCount + serialKillerCount) {
+    const cupidTeamWinners = _.filter(loverTeams, (loveTeam) => loveTeam.couplesTeam === teams.VAMPIRE)
 
     if (!_.isEmpty(cupidTeamWinners)) {
       coupleWinMessage(interaction, cupidTeamWinners)
@@ -192,6 +208,7 @@ async function orderAllPlayers(interaction) {
     villagers: [],
     henchmen: [],
     chaosDemon: [],
+    serialKillers: [],
   };
   const deadUsers = {
     werewolves: [],
@@ -200,6 +217,7 @@ async function orderAllPlayers(interaction) {
     villagers: [],
     henchmen: [],
     chaosDemon: [],
+    serialKillers: [],
   };
   const loverTeams = []
 
@@ -222,6 +240,8 @@ async function orderAllPlayers(interaction) {
       userArray.witches.push(dbUser);
     } else if (dbUser.character === characters.CHAOS_DEMON) {
       userArray.chaosDemon.push(dbUser);
+    } else if (dbUser.character === characters.SERIAL_KILLER) {
+      userArray.serialKillers.push(dbUser);
     } else if (dbUser.is_henchman) {
       userArray.henchmen.push(dbUser)
     } else {

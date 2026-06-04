@@ -30,6 +30,7 @@ const WaysToDie = {
   STARVED: 'Starved',
   CHAOS: 'Failed At Causing Chaos',
   BROKEN_HEART: 'Broken Heart',
+  MURDERED: 'Murdered',
 }
 
 async function removesDeadPermissions(

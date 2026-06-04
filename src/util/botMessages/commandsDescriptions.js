@@ -70,10 +70,10 @@ Shows you your character in the game.`
     },
     {
       label: '/kill (target)',
-      role: 'werewolf, cub',
+      role: 'werewolf, cub, serial killer',
       emoji: '🗡️',
       description: `### /kill (target)
-This is a Werewolf command. It is used at night in the werewolf channel to target an alive player to die. You may change your target using this same command. Use by typing the command hitting enter and choosing a player to kill. Each werewolf will be able to target a player, and if the werewolves' targets do not match, the bot will pick one of the targets selected.`
+This is a Werewolf and Serial Killer command. Werewolves use it at night in the werewolf channel; serial killers use it in the serial-killer channel. You may change your target using this same command. Each werewolf can target a player — if targets don't match, the bot picks one. The serial killer can only target one player per night and cannot target other serial killers.`
     },
     {
       label: '/guard (target)',

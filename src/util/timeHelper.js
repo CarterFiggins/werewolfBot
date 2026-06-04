@@ -31,6 +31,7 @@ const { characters } = require("./commandHelpers");
 const { handleHangingVotes } = require("./voteHelpers");
 const { removeStunnedUsers } = require("./powerUp/stunHelper");
 const { shootCupidsArrows } = require("./characterHelpers/cupidHelper");
+const { executeSerialKillerKill, getAliveSerialKillerIds } = require("./characterHelpers/serialKillerHelper");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -154,13 +155,12 @@ async function dayTimeJob(interaction) {
   await shootCupidsArrows(interaction);
 
   const guardedIds = await guardPlayers(interaction);
+  const serialKillerIds = await getAliveSerialKillerIds(guildId);
   const werewolfKills = await getKillTargetedUsers(interaction);
-  const successfulGuardIds = _.intersection(werewolfKills, guardedIds)
-  await sendSuccessfulGuardMessage(interaction, successfulGuardIds)
-  const deathIds = _.difference(
-    werewolfKills,
-    [...guardedIds, null]
-  );
+  const blockedIds = [...guardedIds, ...serialKillerIds];
+  const successfulGuardIds = _.intersection(werewolfKills, blockedIds);
+  await sendSuccessfulGuardMessage(interaction, successfulGuardIds);
+  const deathIds = _.difference(werewolfKills, [...blockedIds, null]);
   const vampireDeathMessages = await vampiresAttack(
     interaction,
     deathIds,
@@ -168,6 +168,7 @@ async function dayTimeJob(interaction) {
   );
 
   message += await killPlayers(interaction, deathIds);
+  message += await executeSerialKillerKill(interaction, guardedIds, deathIds);
   let starveMessage = ""
   if (game.is_baker_dead) {
     starveMessage = await starveUser(interaction, deathIds);
@@ -230,7 +231,10 @@ async function nightTimeJob(interaction) {
     );
     await organizedChannels?.outCasts?.send(
       "This is the first night. Choose someone to mute with the `/mute` command."
-    )
+    );
+    for (const channel of organizedChannels?.serialKillerChannels || []) {
+      await channel.send("This is the first night. Choose someone to kill with the `/kill` command.");
+    }
     return;
   }
   if (!game.is_day) {

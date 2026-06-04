@@ -173,7 +173,13 @@ async function sendGreeting(interaction, user) {
       case characters.CUPID:
         await member.send(
           `You are **Cupid**\n${voteText}\nOn the first night, use \`/cupids_arrows\` to pick two users that will fall in love and be on the same team. Cupid will not be able to whisper to the couple (They think it's true love, don't ruin it!) If one of them dies, the other will die from a broken heart. As Cupid, you will win with the cupid couple. Help them survive to the end. Cupid counts as a villager.`
-        )
+        );
+        break;
+      case characters.SERIAL_KILLER:
+        await member.send(
+          `You are a **Serial Killer!**\nYour goal is to be the last one standing — eliminate everyone else.\n${voteText}\nEach night, use the \`/kill\` command in the #serial-killer channel to target a player.\nThe werewolves cannot harm you, but a bodyguard can block your kill.\nThe town will never suspect you.\n`
+        );
+        break;
     }
 
     if (settings.enable_power_ups) {

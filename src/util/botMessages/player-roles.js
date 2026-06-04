@@ -191,6 +191,21 @@ roles = [
 * Channels: vampires
 * Commands: \`/vampire_bite\``,
   },
+  {
+    label: "Serial Killer",
+    tag: characters.SERIAL_KILLER,
+    emoji: "🔪",
+    team: "solo",
+    description: `### Serial Killer
+* The Serial Killer is a solo character. Their goal is to be the last one standing. Each night, they use \`/kill\` in their private channel to eliminate a target.
+* The werewolves cannot kill the serial killer at night. The bodyguard can block their attack.
+* Multiple serial killers cannot kill each other.
+* The seer sees them as a villager.
+* The serial killer dies from the witch's curse and can starve if the baker dies.
+* If struck by Cupid's arrow, their win condition changes to surviving alongside their lover.
+* Channels: serial-killer
+* Commands: \`/kill\``,
+  },
 ],
 
 module.exports = {
@@ -232,5 +247,5 @@ module.exports = {
       description: "# Select all characters",
     },
     ...roles,
-  ]
+  ],
 };

@@ -10,7 +10,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandNames.KILL)
-    .setDescription("WEREWOLF COMMAND: Targets the next villager to kill")
+    .setDescription("WEREWOLF/SERIAL KILLER COMMAND: Targets the next player to kill")
     .addUserOption((option) =>
       option
         .setName("target")
@@ -20,6 +20,7 @@ module.exports = {
   async execute(interaction) {
     const dbUser = await findUser(interaction.user.id, interaction.guild?.id);
     const discordUser = interaction.user;
+    const isSerialKiller = dbUser?.character === characters.SERIAL_KILLER;
 
     const deniedMessage = await permissionCheck({
       interaction,
@@ -27,7 +28,7 @@ module.exports = {
       guildOnly: true,
       check: () =>
         !isAlive(interaction.member) ||
-        dbUser.character !== characters.WEREWOLF,
+        (dbUser.character !== characters.WEREWOLF && !isSerialKiller),
     });
 
     if (deniedMessage) {
@@ -44,8 +45,58 @@ module.exports = {
     const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
     const dbTargetUser = await findUser(targetedUser.id, interaction.guild.id);
 
-    let message;
+    if (isSerialKiller) {
+      if (!channel.name.includes(channelNames.SERIAL_KILLER)) {
+        await interaction.reply({
+          content: "Don't use kill here! Someone might see you! Go to the serial-killer channel.",
+          ephemeral: true,
+        });
+        return;
+      }
+      if (game.is_day) {
+        await interaction.reply({
+          content: "It is day time. You hunt at night.",
+          ephemeral: false,
+        });
+        return;
+      }
+      if (targetedUser.bot) {
+        await interaction.reply({
+          content: `You can't kill me!\n${getRandomBotGif()}`,
+          ephemeral: false,
+        });
+        return;
+      }
+      if (!isAlive(targetedMember)) {
+        await interaction.reply({
+          content: `${targetedUser} is already dead. \nhttps://tenor.com/blWe0.gif`,
+          ephemeral: false,
+        });
+        return;
+      }
+      if (dbTargetUser.is_muted) {
+        await interaction.reply({
+          content: `${targetedUser} is safely locked away in the Granny's house. Try again.`,
+          ephemeral: false,
+        });
+        return;
+      }
 
+      const hadPreviousTarget = dbUser.serial_kill_target_id;
+      await updateUser(interaction.user.id, interaction.guild.id, {
+        serial_kill_target_id: targetedUser.id,
+      });
+
+      await interaction.reply(
+        hadPreviousTarget
+          ? `${discordUser} has changed their target to ${targetedUser}`
+          : `${discordUser} is targeting ${targetedUser}`
+      );
+      return;
+    }
+
+    // Werewolf path
+    let message;
     if (!_.isEmpty(dbUser.kill_targeted_user_ids)) {
       message = `${discordUser} has changed their target to ${targetedUser}\n`;
     }

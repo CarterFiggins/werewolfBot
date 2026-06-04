@@ -41,14 +41,15 @@ const characters = {
   // Other teams
   VAMPIRE: "king",
   CHAOS_DEMON: "chaos demon",
-  CUPID: "cupid"
+  CUPID: "cupid",
+  SERIAL_KILLER: "serial killer",
 };
 
 const teams = {
   WEREWOLF: 'werewolf_team',
   VILLAGER: 'villager_team',
   VAMPIRE: 'vampire_team',
-  CHAOS: 'chaos_tem'
+  SOLO: 'solo_team'
 }
 
 // weight = higher numbers are more likely to be picked
@@ -73,8 +74,9 @@ const characterInfoMap = new Map([
   [characters.GROUCHY_GRANNY, {   weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
   [characters.MONARCH, {          weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
   [characters.VAMPIRE, {          weight: 0, points: 0, helpsTeam: teams.VAMPIRE }],
-  [characters.CHAOS_DEMON, {      weight: 0, points: 0, helpsTeam: teams.CHAOS }],
-  [characters.CUPID, {      weight: 0, points: 0, helpsTeam: teams.VILLAGER }],
+  [characters.CHAOS_DEMON, {      weight: 0, points: 0, helpsTeam: teams.SOLO }],
+  [characters.CUPID, {          weight: 0, points: 0, helpsTeam: teams.VILLAGER }],
+  [characters.SERIAL_KILLER, {  weight: 0, points: 0, helpsTeam: teams.SOLO }],
 ]);
 
 defaultCharacters = [
@@ -129,8 +131,9 @@ function findCharactersTeam(user) {
   if (user.is_vampire) {
     return teams.VAMPIRE
   }
-  if (user.character === characters.CHAOS_DEMON) {
-    return teams.CHAOS
+  if (user.character === characters.CHAOS_DEMON || user.character === characters.SERIAL_KILLER) {
+    // They are not on a team return their user id.
+    return user.user_id;
   }
   if ([characters.WEREWOLF, characters.WITCH].includes(user.character) || user.is_henchman) {
     return teams.WEREWOLF

@@ -19,6 +19,7 @@ const channelNames = {
   OUT_CASTS: "grannys-house",
   MONARCH: "monarch",
   LOVERS: "cupid-couple",
+  SERIAL_KILLER: "serial-killer",
 };
 
 const setupChannelNames = {
@@ -39,6 +40,7 @@ async function sendStartMessages(interaction, users) {
   const bodyguards = [];
   const grannies = [];
   const monarchs = [];
+  const serialKillers = [];
 
   _.forEach(users, (user) => {
     switch (user.info.character) {
@@ -56,6 +58,9 @@ async function sendStartMessages(interaction, users) {
         break;
       case characters.MONARCH:
         monarchs.push(user);
+        break;
+      case characters.SERIAL_KILLER:
+        serialKillers.push(user);
         break;
     }
   });
@@ -87,6 +92,12 @@ async function sendStartMessages(interaction, users) {
   if (!_.isEmpty(organizedChannels?.seerChannels)) {
     for (const channel of organizedChannels.seerChannels) {
       await channel.send(`${seerStart}`);
+    }
+  }
+
+  if (!_.isEmpty(organizedChannels?.serialKillerChannels)) {
+    for (const channel of organizedChannels.serialKillerChannels) {
+      await channel.send(serialKillerStart);
     }
   }
 
@@ -127,7 +138,7 @@ function showUsersCharacter(users) {
 }
 
 function organizeChannels(channels) {
-  const channelObject = {seerChannels: []};
+  const channelObject = {seerChannels: [], serialKillerChannels: []};
   channels.forEach((channel) => {
     switch (channel.name) {
       case channelNames.TOWN_SQUARE:
@@ -161,8 +172,27 @@ function organizeChannels(channels) {
     if (channel.name.includes(channelNames.SEER)) {
       channelObject.seerChannels.push(channel)
     }
+    if (channel.name.includes(channelNames.SERIAL_KILLER)) {
+      channelObject.serialKillerChannels.push(channel)
+    }
   });
   return channelObject;
+}
+
+async function createSerialKillerChannel(interaction, member) {
+  const channels = await interaction.guild.channels.fetch();
+  const guildSettings = await findSettings(interaction.guild.id);
+  const aliveRole = await getRole(interaction, roleNames.ALIVE);
+  const deadRole = await getRole(interaction, roleNames.DEAD);
+  const category = channels.find((c) => c.name === channelNames.THE_TOWN);
+  const defaultPermissions = getDefaultPermissions(interaction, aliveRole, deadRole);
+  const userPermissions = createPermissions(
+    [{ id: member.id, info: { character: characters.SERIAL_KILLER } }],
+    [characters.SERIAL_KILLER],
+    guildSettings
+  );
+  const channelName = `${member.user.username.substring(0, 50)}-the-serial-killer`;
+  return await createChannel(interaction, channelName, [...defaultPermissions, ...userPermissions], category);
 }
 
 async function addLoversInChannel(interaction, usersInLove) {
@@ -261,6 +291,10 @@ async function giveChannelPermissions({
     case characters.MONARCH:
       channel = organizedChannels.monarch;
       break;
+    case characters.SERIAL_KILLER:
+      channel = await createSerialKillerChannel(interaction, user);
+      await updateUser(user.id, interaction.guild.id, { channel_id: channel.id });
+      break;
   }
 
   if (!channel) {
@@ -342,8 +376,12 @@ async function removeAllGameChannels(channels) {
         case channelNames.OUT_CASTS:
         case channelNames.MONARCH:
           await channel.delete();
+          break;
       }
       if (channel.name.includes(channelNames.SEER)) {
+        await channel.delete();
+      }
+      if (channel.name.includes(channelNames.SERIAL_KILLER)) {
         await channel.delete();
       }
       if (channel.name.includes(channelNames.LOVERS)) {
@@ -409,6 +447,16 @@ async function createChannels(interaction, users) {
       characterNames: [characters.MONARCH],
     },
   ];
+
+  const serialKillerUsers = _.filter(users, (u) => u.info.character === characters.SERIAL_KILLER);
+  serialKillerUsers.forEach((user) => {
+    allChannelsData.push({
+      channelName: `${user.username.substring(0, 40)}-the-serial-killer`,
+      singlePermission: true,
+      characterNames: [characters.SERIAL_KILLER],
+      player: user,
+    });
+  });
 
   seerOrFoolUsers.forEach((user) => {
     allChannelsData.push({
@@ -521,6 +569,9 @@ const outCastStart =
 
 const monarchStart =
   `You are a monarch! Use the \`/bestow_power <target_user> <power>\` command to give away power. You will not be able to give power to yourself. You can only give out a power once and cannot give power twice to the same player.\nAll powers that can be used with the messages that will be told to the player who gets the power\n${showAllPowerUpMessages()}`
+
+const serialKillerStart =
+  `Welcome to the serial killer's lair. Your goal is simple — be the last one standing. Each night, use \`/kill\` in this channel to eliminate a target. The werewolves cannot harm you, but a bodyguard can block your attack. The town will never know it was you.`
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

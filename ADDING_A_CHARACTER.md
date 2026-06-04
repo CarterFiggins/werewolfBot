@@ -25,7 +25,7 @@ const characterInfoMap = new Map([
   [characters.NEW_CHARACTER, {
     weight: 3,         // 1–6: higher = more likely to be randomly selected
     points: 5,         // how much it balances the team it helps
-    helpsTeam: teams.VILLAGER,  // or teams.WEREWOLF / teams.VAMPIRE / teams.CHAOS
+    helpsTeam: teams.VILLAGER,  // or teams.WEREWOLF / teams.VAMPIRE / teams.SOLO
     // onlyOne: true,  // uncomment if only one of this character is allowed per game
   }],
 ]);
