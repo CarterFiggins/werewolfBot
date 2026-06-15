@@ -77,7 +77,7 @@ async function sendSuccessfulGuardMessage(interaction, successfulGuardIds) {
   const savedMembers = _.map(successfulGuardIds, (id) => members.get(id))
 
   if (!_.isEmpty(savedMembers)) {
-    organizedChannels.werewolves.send(`Last night's attack didn't go as planned because you got scared off! The bodyguard was on duty, protecting ${savedMembers.join(", ")}, and you decided it wasn't worth the risk.`)
+    organizedChannels.werewolves.send(`Your attack on ${savedMembers.join(", ")} failed last night. They were either protected by a bodyguard or are able to defend against your attacks.`)
   }
 }
 
