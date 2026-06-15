@@ -48,6 +48,7 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
         victim.character === characters.WITCH ||
         victim.character === characters.BODYGUARD ||
         victim.character === characters.CHAOS_DEMON ||
+        victim.character === characters.SERIAL_KILLER ||
         victim.is_henchman ||
         guarded
       ) {

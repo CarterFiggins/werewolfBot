@@ -155,6 +155,7 @@ async function dayTimeJob(interaction) {
   await shootCupidsArrows(interaction);
 
   const guardedIds = await guardPlayers(interaction);
+  // serial killers can't be killed by werewolves. Message will send as being blocked by guard.
   const serialKillerIds = await getAliveSerialKillerIds(guildId);
   const werewolfKills = await getKillTargetedUsers(interaction);
   const blockedIds = [...guardedIds, ...serialKillerIds];

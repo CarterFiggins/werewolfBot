@@ -4,7 +4,7 @@ const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
 const { isAdmin } = require("../util/rolesHelpers");
 const { updateSettings, findSettings } = require("../werewolf_db");
-const { settingsList } = require("../util/botMessages/settings");
+const { settingsList, buildSettingsView } = require("../util/botMessages/settings");
 
 const valueSettings = {
   DAY_TIME: "day_time",
@@ -104,15 +104,8 @@ module.exports = {
     }
 
     if (command === valueSettings.VIEW) {
-      let message = "";
-      delete settings._id;
-      delete settings.server_name;
-      delete settings.guild_id;
-      Object.entries(settings).forEach(([key, value]) => {
-        message += `${key.replaceAll("_", " ")}: ${value}\n`;
-      });
       await interaction.editReply({
-        content: message,
+        content: buildSettingsView(settings),
         ephemeral: true,
       });
       return;

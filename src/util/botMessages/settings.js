@@ -17,8 +17,52 @@ const SettingCommands = {
   WEREWOLF_CREATES_HENCHMAN: "werewolf_creates_henchman",
 };
 
+function formatTime(timeStr) {
+  if (!timeStr) return "Not set";
+  const [hourStr, minuteStr] = timeStr.split(":");
+  const hour = parseInt(hourStr, 10);
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${minuteStr || "00"} ${period}`;
+}
+
+function b(value) {
+  return value ? "👍" : "👎";
+}
+
+function buildSettingsView(settings) {
+  return [
+    `**BASIC SETTINGS:**`,
+    `Admin(s) choose Roles (& amounts)?: ${b(settings.admin_controls_cards)}`,
+    `All players start game with Powerup?: ${b(settings.enable_power_ups)}`,
+    `Bot includes Roles randomly?: ${b(settings.random_cards)}`,
+    `Day begins: ${formatTime(settings.day_time)}`,
+    `Emoji reactions allowed?: ${b(settings.allow_reactions)}`,
+    `Hard Mode?: ${b(settings.hard_mode)}`,
+    `Night begins: ${formatTime(settings.night_time)}`,
+    `Top 2 voted-for players get hanged?: ${b(settings.double_hanging)}`,
+    `Whispering allowed?: ${b(settings.can_whisper)}`,
+    ``,
+    `**MISC. ROLES:**`,
+    `Bodyguard is a Mason after guarding one?: ${b(settings.bodyguard_joins_masons)}`,
+    `Lycan survives 1st Wolf attack?: ${b(settings.allow_lycan_guard)}`,
+    `Seer is a Mason after investigating one?: ${b(settings.seer_joins_masons)}`,
+    `Wolves kill Witch OR recruit Witch?: ${settings.wolf_kills_witch ? "💀" : "🐺"}`,
+    ``,
+    `**VAMPIRES:**`,
+    `Vampire King lives when biting Wolf?: ${b(settings.king_bite_wolf_safe)}`,
+    `Vampire King lives when biting Wolf target?: ${b(settings.king_victim_attack_safe)}`,
+    `Vampire King turns 1st victim on 1st bite?: ${b(settings.allow_first_bite)}`,
+    ``,
+    `**WEREWOLVES:**`,
+    `Random Wolf shot when Hunter dies?: ${b(settings.hunter_guard)}`,
+    `Wolf victim on 1st night = Henchman?: ${b(settings.werewolf_creates_henchman)}`,
+  ].join("\n");
+}
+
 module.exports = {
   SettingCommands,
+  buildSettingsView,
   settingsIntro: `# Settings
   Admins can use the command \`/settings edit\` to turn settings off or on.
   `,

@@ -74,6 +74,13 @@ module.exports = {
         });
         return;
       }
+      if (targetedUser.id === interaction.user.id) {
+        await interaction.reply({
+          content: `https://tenor.com/gelzdhVkZVV.gif`,
+          ephemeral: false,
+        });
+        return;
+      }
       if (dbTargetUser.is_muted) {
         await interaction.reply({
           content: `${targetedUser} is safely locked away in the Granny's house. Try again.`,
