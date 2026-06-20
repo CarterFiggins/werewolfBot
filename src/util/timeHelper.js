@@ -32,6 +32,7 @@ const { handleHangingVotes } = require("./voteHelpers");
 const { removeStunnedUsers } = require("./powerUp/stunHelper");
 const { shootCupidsArrows } = require("./characterHelpers/cupidHelper");
 const { executeSerialKillerKill, getAliveSerialKillerIds } = require("./characterHelpers/serialKillerHelper");
+const { getRandomGif } = require("./botMessages/randomGif");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -192,10 +193,13 @@ async function dayTimeJob(interaction) {
     first_night: false,
   });
 
-  const backUpMessage = "No one died from a werewolf last night.\n";
+  if (!message) {
+    const survivedGif = await getRandomGif("we survived");
+    message = `No one died last night.${survivedGif ? `\n${survivedGif}` : ""}`;
+  }
 
   await organizedChannels.townSquare.send(
-    `## ${message || backUpMessage}${starveMessage}${vampireDeathMessages}\n**It is day time**`
+    `## ${message}${starveMessage}${vampireDeathMessages}\n**It is day time**`
   );
   await checkGame(interaction);
 }

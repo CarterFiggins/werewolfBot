@@ -7,6 +7,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames, usePowerUp, grantPowerUp } = require("../util/powerUpHelpers");
 const { sendMemberMessage } = require("../util/botMessages/sendMemberMessages");
 const { organizeChannels } = require("../util/channelHelpers");
+const { getRandomGif } = require("../util/botMessages/randomGif");
 
 
 module.exports = {
@@ -52,7 +53,7 @@ module.exports = {
     }
     if (targetedUser.bot) {
       await interaction.reply({
-        content: `You have been caught STEALING! ${_.sample(botGIFs)}`,
+        content: `You have been caught STEALING! ${_.sample(["don't touch me", "caught", "stop it"])}`,
         ephemeral: true,
       });
       return;
@@ -99,7 +100,7 @@ module.exports = {
     await usePowerUp(dbUser, interaction, PowerUpNames.STEAL)
     await grantPowerUp(dbUser, interaction, stolenPowerName)
     await usePowerUp(targetDbUser, interaction, stolenPowerName)
-    const displayStolenGif = _.sample(stolenGIFs);
+    const displayStolenGif = await getRandomGif(_.sample(["stolen", "robbed", "gone"]));
     await sendMemberMessage(targetedMember, `The power up ${stolenPowerName} was stolen from you! ${displayStolenGif}`)
 
     await interaction.reply({
@@ -114,23 +115,3 @@ module.exports = {
     );
   }
 }
-
-const botGIFs = [
-  'https://tenor.com/bAaSt.gif',
-  'https://tenor.com/djM7dHJw1uU.gif',
-  'https://tenor.com/uXQE5n4hMUE.gif',
-  'https://tenor.com/bWuvj.gif',
-]
-
-const stolenGIFs = [
-  'https://tenor.com/SbOveYJKlE.gif',
-  'https://tenor.com/qsA7.gif',
-  'https://tenor.com/sZ47PvXlpyl.gif',
-  'https://tenor.com/o1Qm.gif',
-  'https://tenor.com/5pT3.gif',
-  'https://tenor.com/bQii4.gif',
-  'https://tenor.com/bjAfK.gif',
-  'https://tenor.com/dYgOTqyjv2b.gif',
-  'https://tenor.com/bhTs8.gif',
-  'https://tenor.com/bJj36.gif',
-]

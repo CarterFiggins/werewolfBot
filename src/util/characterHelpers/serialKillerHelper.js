@@ -3,6 +3,7 @@ const { findManyUsers, findUser, updateUser } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
 const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
 const { PowerUpNames } = require("../powerUpHelpers");
+const { getRandomGif } = require("../botMessages/randomGif");
 
 async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds = []) {
   const guildId = interaction.guild.id;
@@ -30,12 +31,14 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
       const skChannel = channels.get(sk.channel_id?.toString());
 
       if (guardedIds.includes(targetId)) {
-        await skChannel?.send(`Your target was protected by a bodyguard last night. Your kill was blocked.`);
+        const guardGif = await getRandomGif("bodyguard");
+        await skChannel?.send(`Your target was protected by a bodyguard last night. Your kill was blocked.${guardGif ? `\n${guardGif}` : ""}`);
         return;
       }
 
       if (existingDeathIds.includes(targetId)) {
-        await skChannel?.send(`Your target was already killed last night before you could act.`);
+        const slowGif = await getRandomGif("slow");
+        await skChannel?.send(`Your target was already killed last night before you could act.${slowGif ? `\n${slowGif}` : ""}`);
         return;
       }
 
@@ -52,7 +55,12 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
       );
 
       if (deathCharacter === PowerUpNames.SHIELD) {
-        await skChannel?.send(`🛡️ Your target had a shield and survived your attack! The shield has been consumed.`);
+        const shieldGif = await getRandomGif("shield");
+        await skChannel?.send(`🛡️ Your target had a shield and survived your attack! The shield has been consumed.${shieldGif ? `\n${shieldGif}` : ""}`);
+        const missedGGif = await getRandomGif("shielded");
+        messages.push(
+          `* Last night, a player got away from a serial killer attack. Their shield was consumed.\n${_.sample(murderGif)}\n`
+        );
         return;
       }
 
@@ -83,6 +91,16 @@ const murderGif = [
   'https://tenor.com/Yw05.gif',
   'https://tenor.com/bortz.gif',
   'https://tenor.com/bmpHd.gif',
+  'https://tenor.com/t4Ul.gif',
+  'https://tenor.com/gXlYg44WHSm.gif',
+  'https://tenor.com/j5Q0LXSj6Tb.gif',
+  'https://tenor.com/bxz2d.gif',
+  'https://tenor.com/rxnin5tL5XH.gif',
+  'https://tenor.com/bfC6H.gif',
+  'https://tenor.com/bjD8W.gif',
+  'https://tenor.com/bvZbv.gif',
+  'https://tenor.com/byuPF.gif',
+  'https://tenor.com/bWxR8.gif',
 ];
 
 module.exports = { executeSerialKillerKill, getAliveSerialKillerIds };

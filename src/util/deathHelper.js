@@ -21,6 +21,7 @@ const { organizeRoles } = require("./rolesHelpers");
 const { PowerUpNames, usePowerUp} = require("./powerUpHelpers");
 const { getAliveUsersIds } = require("./discordHelpers");
 const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
+const { getRandomGif } = require("./botMessages/randomGif");
 
 const WaysToDie = {
   HANGED: 'Hanged',
@@ -301,7 +302,8 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     WaysToDie.WEREWOLF
   );
   if (deathCharacter === PowerUpNames.SHIELD) { 
-    return `🛡️ Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their shield has been consumed. 🛡️`;
+    const survivedGif = await getRandomGif("shield");
+    return `🛡️ Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their shield has been consumed. 🛡️ ${survivedGif ? `\n${survivedGif}` : ""}`;
   }
   
   if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
@@ -319,16 +321,19 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
       WaysToDie.SHOT
     );
     if (deadWerewolfCharacter === PowerUpNames.SHIELD) {
-      return `🛡️ Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit a werewolf's shield! Next time that werewolf won't be so lucky. 🛡️`
+      const shieldGif = await getRandomGif("shield");
+      return `🛡️ Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit a werewolf's shield! Next time that werewolf won't be so lucky. 🛡️ ${shieldGif ? `\n${shieldGif}` : ""}`;
     } 
     return `Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit the ${deadWerewolfCharacter} named ${deadWerewolfMember}.\n`;
   }
   
   if (deadUser.character === characters.HUNTER) { 
-     return `Last night, the werewolves attacked and injured the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.\n`;
+    const injuredGif = await getRandomGif("injured");
+     return `Last night, the werewolves attacked and injured the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.\n${injuredGif ? `\n${injuredGif}` : ""}`;
   }
   
-  return `Last night, ${deadMember} was found dead, playing the character of ${deathCharacter}. They have been killed by a werewolf attack.\n`;
+  const deathGif = await getRandomGif("werewolf");
+  return `Last night, ${deadMember} was found dead, playing the character of ${deathCharacter}. They have been killed by a werewolf attack.\n ${deathGif ? `\n${deathGif}` : ""}`;
 }
 
 async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire }) {

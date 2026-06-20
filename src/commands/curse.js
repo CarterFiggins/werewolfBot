@@ -5,6 +5,7 @@ const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
+const { getRandomGif } = require("../util/botMessages/randomGif");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -51,9 +52,9 @@ module.exports = {
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
 
     if (game.is_day) {
+      const gif = await getRandomGif("I love magic");
       await interaction.editReply({
-        content:
-          "It is day time. Your dark magic works at night.\nhttps://tenor.com/bJMLr.gif",
+        content: `It is day time. Your dark magic works at night.${gif ? `\n${gif}` : ""}`,
         ephemeral: false,
       });
       return;
@@ -66,8 +67,9 @@ module.exports = {
       return;
     }
     if (!isAlive(targetedMember)) {
+      const gif = await getRandomGif("they are dead");
       await interaction.editReply({
-        content: `${targetedUser} is dead. This curse doesn't work on dead people. Try again.\nhttps://tenor.com/bcD0a.gif`,
+        content: `${targetedUser} is dead. This curse doesn't work on dead people. Try again.${gif ? `\n${gif}` : ""}`,
         ephemeral: false,
       });
       return;
@@ -76,15 +78,17 @@ module.exports = {
       targetDbUser.user_id === interaction.user.id ||
       targetDbUser.character === characters.WITCH
     ) {
+      const gif = await getRandomGif("burn the witch");
       await interaction.editReply({
-        content: `Can't curse a witch. Try again.\nhttps://tenor.com/w80x.gif`,
+        content: `Can't curse a witch. Try again.${gif ? `\n${gif}` : ""}`,
         ephemeral: false,
       });
       return;
     }
     if (targetDbUser.is_cursed) {
+      const gif = await getRandomGif("I curse you");
       await interaction.editReply({
-        content: `This player is already cursed\nhttps://tenor.com/bgyEU.gif`,
+        content: `This player is already cursed${gif ? `\n${gif}` : ""}`,
         ephemeral: false,
       });
       return;

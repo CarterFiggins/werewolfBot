@@ -7,6 +7,7 @@ const { findUser, findGame } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames, usePowerUp} = require("../util/powerUpHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
+const { getRandomGif } = require("../util/botMessages/randomGif");
 
 
 module.exports = {
@@ -81,15 +82,17 @@ module.exports = {
       return;
     }
     if (targetedOneUser.id === targetedTwoUser.id) {
+      const gif = await getRandomGif("confused neo robot");
       await interaction.editReply({
-        content: "hmmm that is the same person! https://tenor.com/G8M4.gif",
+        content: `hmmm that is the same person!${gif ? `\n${gif}` : ""}`,
         ephemeral: true,
       });
       return;
     }
     if (targetedOneUser.id === interaction.user.id || targetedTwoUser.id === interaction.user.id) {
+      const gif = await getRandomGif("unamused");
       await interaction.editReply({
-        content: "# You thought you could trick me! You can't pick yourself. Try again! https://tenor.com/bL0SD.gif",
+        content: `# You thought you could trick me! You can't pick yourself. Try again!${gif ? `\n${gif}` : ""}`,
         ephemeral: true,
       });
       return;
