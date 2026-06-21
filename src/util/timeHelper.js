@@ -33,6 +33,7 @@ const { removeStunnedUsers } = require("./powerUp/stunHelper");
 const { shootCupidsArrows } = require("./characterHelpers/cupidHelper");
 const { executeSerialKillerKill, getAliveSerialKillerIds } = require("./characterHelpers/serialKillerHelper");
 const { getRandomGif } = require("./botMessages/randomGif");
+const { buildAlivePlayersMessage } = require("./userHelpers");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -201,6 +202,8 @@ async function dayTimeJob(interaction) {
   await organizedChannels.townSquare.send(
     `## ${message}${starveMessage}${vampireDeathMessages}\n**It is day time**`
   );
+  const alivePlayersMessage = await buildAlivePlayersMessage(interaction, organizedChannels.townSquare);
+  await organizedChannels.townSquare.send(alivePlayersMessage);
   await checkGame(interaction);
 }
 

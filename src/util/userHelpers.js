@@ -1,9 +1,10 @@
 const _ = require("lodash");
 const { getRole, roleNames, organizeRoles } = require("../util/rolesHelpers");
 const { characters } = require("./commandHelpers");
-const { createUsers, findSettings, findManyUsers } = require("../werewolf_db");
+const { createUsers, findSettings, findManyUsers, findAllUsers } = require("../werewolf_db");
 const { randomWeightPowerUp } = require("./powerUpHelpers");
-const { possibleCharactersInGame } = require("./channelHelpers");
+const { possibleCharactersInGame, channelNames } = require("./channelHelpers");
+const { getAliveUsersIds } = require("./discordHelpers");
 require("dotenv").config();
 
 let playingMembersCache = new Map();
@@ -223,6 +224,70 @@ function getSideCharacters(interaction, user) {
   return sideCharacters
 }
 
+async function buildAlivePlayersMessage(interaction, channel) {
+  const cursor = await findAllUsers(interaction.guild.id);
+  const dbUsers = await cursor.toArray();
+  const members = interaction.guild.members.cache;
+
+  if (_.isEmpty(dbUsers)) {
+    const { playersCount, playingMembers } = await getPlayingCount(interaction);
+    return `Player count: ${playersCount}\n${_.join(playingMembers, "\n")}`;
+  }
+
+  const settings = await findSettings(interaction.guild.id);
+  const soloCharacters = [characters.CHAOS_DEMON, characters.SERIAL_KILLER];
+  const someWolves = _.some(dbUsers, (u) => u.character === characters.WEREWOLF);
+
+  let message = "## Players Alive:\n";
+  let deadMessage = "## Players Dead:\n";
+  let werewolfCount = 0;
+  let villagerCount = 0;
+  let soloCount = 0;
+  let henchmanCount = 0;
+  let vampireCount = 0;
+  let someoneIsDead = false;
+
+  shuffleUsers(dbUsers).forEach((user) => {
+    const currentMember = members.get(user.user_id) || "Player left server";
+    let characterMessage = "";
+    if (channel.name === channelNames.AFTER_LIFE || (user.is_dead && !settings.hard_mode)) {
+      const sideCharacters = getSideCharacters(interaction, user);
+      characterMessage = `: **${user.character}${sideCharacters.length ? ` ${sideCharacters.join(", ")}` : ""}**`;
+    }
+    if (!user.is_dead) {
+      message += `${currentMember}${characterMessage}\n`;
+      if (user.character === characters.WEREWOLF || (someWolves && user.character === characters.WITCH)) {
+        werewolfCount += 1;
+      } else if (user.is_vampire) {
+        vampireCount += 1;
+      } else if (soloCharacters.includes(user.character)) {
+        soloCount += 1;
+      } else if (user.is_henchman) {
+        henchmanCount += 1;
+      } else {
+        villagerCount += 1;
+      }
+    } else {
+      someoneIsDead = true;
+      deadMessage += `${currentMember}${characterMessage}`;
+      if (user.cause_of_death) {
+        deadMessage += ` (${user.cause_of_death})`;
+      }
+      deadMessage += "\n";
+    }
+  });
+
+  if (!settings.hard_mode) {
+    const werewolfMessage = werewolfCount ? `Werewolf Count: ${werewolfCount}\n` : "";
+    const vampireMessage = vampireCount ? `Vampire Count: ${vampireCount}\n` : "";
+    const soloMessage = soloCount ? `Solo Character Count: ${soloCount}\n` : "";
+    const henchmanMessage = henchmanCount ? `Henchman Count: ${henchmanCount}\n` : "";
+    message += `${werewolfMessage}${vampireMessage}${soloMessage}${henchmanMessage}Villager Count: ${villagerCount}\n`;
+  }
+
+  return `${message}${someoneIsDead ? deadMessage : ""}`;
+}
+
 module.exports = {
   getPlayingCount,
   crateUserData,
@@ -230,4 +295,5 @@ module.exports = {
   getCapitalizeCharacterName,
   getSideCharacters,
   randomUser,
+  buildAlivePlayersMessage,
 };
