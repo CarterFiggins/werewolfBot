@@ -54,7 +54,7 @@ module.exports = {
     if (game.is_day) {
       const gif = await getRandomGif("I love magic");
       await interaction.editReply({
-        content: `It is day time. Your dark magic works at night.${gif ? `\n${gif}` : ""}`,
+        content: `It is day time. Your [dark magic](${gif || ""}) works at night.`,
         ephemeral: false,
       });
       return;
@@ -69,7 +69,7 @@ module.exports = {
     if (!isAlive(targetedMember)) {
       const gif = await getRandomGif("they are dead");
       await interaction.editReply({
-        content: `${targetedUser} is dead. This curse doesn't work on dead people. Try again.${gif ? `\n${gif}` : ""}`,
+        content: `${targetedUser} is [dead](${gif || ""}). This curse doesn't work on dead people. Try again.`,
         ephemeral: false,
       });
       return;
@@ -80,7 +80,7 @@ module.exports = {
     ) {
       const gif = await getRandomGif("burn the witch");
       await interaction.editReply({
-        content: `Can't curse a witch. Try again.${gif ? `\n${gif}` : ""}`,
+        content: `Can't curse a [witch](${gif || ""}). Try again.`,
         ephemeral: false,
       });
       return;
@@ -88,7 +88,7 @@ module.exports = {
     if (targetDbUser.is_cursed) {
       const gif = await getRandomGif("I curse you");
       await interaction.editReply({
-        content: `This player is already cursed${gif ? `\n${gif}` : ""}`,
+        content: `This player is already [cursed](${gif || ""})`,
         ephemeral: false,
       });
       return;

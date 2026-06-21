@@ -196,7 +196,7 @@ async function dayTimeJob(interaction) {
 
   if (!message) {
     const survivedGif = await getRandomGif("we survived");
-    message = `No one died last night.${survivedGif ? `\n${survivedGif}` : ""}`;
+    message = `[No one died](${survivedGif || ""}) last night.`;
   }
 
   await organizedChannels.townSquare.send(

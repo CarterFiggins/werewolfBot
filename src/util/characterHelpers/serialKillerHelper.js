@@ -32,13 +32,13 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
 
       if (guardedIds.includes(targetId)) {
         const guardGif = await getRandomGif("bodyguard");
-        await skChannel?.send(`Your target was protected by a bodyguard last night. Your kill was blocked.${guardGif ? `\n${guardGif}` : ""}`);
+        await skChannel?.send(`Your target was protected by a bodyguard last night. Your kill was [blocked](${guardGif || ""}).`);
         return;
       }
 
       if (existingDeathIds.includes(targetId)) {
         const slowGif = await getRandomGif("slow");
-        await skChannel?.send(`Your target was already killed last night before you could act.${slowGif ? `\n${slowGif}` : ""}`);
+        await skChannel?.send(`Your target was already killed last night [before you could act.](${slowGif || ""})`);
         return;
       }
 
@@ -56,16 +56,14 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
 
       if (deathCharacter === PowerUpNames.SHIELD) {
         const shieldGif = await getRandomGif("shield");
-        await skChannel?.send(`🛡️ Your target had a shield and survived your attack! The shield has been consumed.${shieldGif ? `\n${shieldGif}` : ""}`);
-        const missedGGif = await getRandomGif("shielded");
-        messages.push(
-          `* Last night, a player got away from a serial killer attack. Their shield was consumed.\n${_.sample(murderGif)}\n`
-        );
+        await skChannel?.send(`🛡️ Your target had a [shield](${shieldGif || ""}) and survived your attack! The shield has been consumed.`);
+        const missedGif = await getRandomGif("shielded");
+        messages.push(`\n* Last night, a player got away from a serial killer attack. Their [shield](${missedGif || ""}) was consumed.\n`);
         return;
       }
 
       messages.push(
-        `* Last night, the ${deathCharacter} ${targetMember} was MURDERED.\n${_.sample(murderGif)}\n`
+        `\n* Last night, the ${deathCharacter} ${targetMember} was [MURDERED](${_.sample(murderGif)}).\n`
       );
     })
   );

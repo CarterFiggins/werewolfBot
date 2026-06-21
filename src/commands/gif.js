@@ -21,6 +21,6 @@ module.exports = {
       return;
     }
 
-    await interaction.reply(gif);
+    await interaction.reply(`[${category}](${gif})`);
   },
 };

@@ -84,7 +84,7 @@ module.exports = {
     if (targetedOneUser.id === targetedTwoUser.id) {
       const gif = await getRandomGif("confused neo robot");
       await interaction.editReply({
-        content: `hmmm that is the same person!${gif ? `\n${gif}` : ""}`,
+        content: `hmmm that is the [same person](${gif || ""})!\n`,
         ephemeral: true,
       });
       return;
@@ -92,7 +92,7 @@ module.exports = {
     if (targetedOneUser.id === interaction.user.id || targetedTwoUser.id === interaction.user.id) {
       const gif = await getRandomGif("unamused");
       await interaction.editReply({
-        content: `# You thought you could trick me! You can't pick yourself. Try again!${gif ? `\n${gif}` : ""}`,
+        content: `# You thought you could [trick me](${gif || ""})! You can't pick yourself. Try again!\n`,
         ephemeral: true,
       });
       return;

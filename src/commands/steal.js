@@ -101,7 +101,7 @@ module.exports = {
     await grantPowerUp(dbUser, interaction, stolenPowerName)
     await usePowerUp(targetDbUser, interaction, stolenPowerName)
     const displayStolenGif = await getRandomGif(_.sample(["stolen", "robbed", "gone"]));
-    await sendMemberMessage(targetedMember, `The power up ${stolenPowerName} was stolen from you! ${displayStolenGif}`)
+    await sendMemberMessage(targetedMember, `The power up ${stolenPowerName} was [stolen](${displayStolenGif || ""}) from you!\n`)
 
     await interaction.reply({
       content: `You stole from ${targetedUser}! You have stolen the power ${stolenPowerName}.`,
@@ -111,7 +111,7 @@ module.exports = {
     const channels = interaction.guild.channels.cache;
     const organizedChannels = organizeChannels(channels);
     await organizedChannels.afterLife.send(
-      `${interaction.member} has stolen ${stolenPowerName} from ${targetedUser}! ${displayStolenGif}`
+      `${interaction.member} has stolen [${stolenPowerName}](${displayStolenGif || ""}) from ${targetedUser}!`
     );
   }
 }

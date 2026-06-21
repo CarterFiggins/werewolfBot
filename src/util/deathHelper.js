@@ -122,8 +122,9 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     await updateGame(guildId, {
       wolf_double_kill: true,
     });
+    const cubGif = await getRandomGif("rage anger");
     await organizedChannels?.werewolves?.send(
-      `We have unfortunate news: ${deadMember}, our cub, has been killed. However, this loss has fueled your rage. :rage:\nTonight, you can target not just one, but two villagers.\nhttps://tenor.com/86LT.gif`
+      `We have unfortunate news: ${deadMember}, our cub, has been [killed](${cubGif || ""}). However, this loss has fueled your rage. :rage:\nTonight, you can target not just one, but two villagers.`
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
@@ -302,8 +303,8 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     WaysToDie.WEREWOLF
   );
   if (deathCharacter === PowerUpNames.SHIELD) { 
-    const survivedGif = await getRandomGif("shield");
-    return `🛡️ Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their shield has been consumed. 🛡️ ${survivedGif ? `\n${survivedGif}` : ""}`;
+    const shieldGif = await getRandomGif("shield");
+    return `🛡️ Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their [shield](${shieldGif ? `${shieldGif} ` : ""}) has been consumed. 🛡️\n`;
   }
   
   if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
@@ -322,18 +323,18 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     );
     if (deadWerewolfCharacter === PowerUpNames.SHIELD) {
       const shieldGif = await getRandomGif("shield");
-      return `🛡️ Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit a werewolf's shield! Next time that werewolf won't be so lucky. 🛡️ ${shieldGif ? `\n${shieldGif}` : ""}`;
+      return `🛡️ Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit a werewolf's [shield](${shieldGif || ""})! Next time that werewolf won't be so lucky. 🛡️`;
     } 
     return `Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit the ${deadWerewolfCharacter} named ${deadWerewolfMember}.\n`;
   }
   
   if (deadUser.character === characters.HUNTER) { 
     const injuredGif = await getRandomGif("injured");
-     return `Last night, the werewolves attacked and injured the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.\n${injuredGif ? `\n${injuredGif}` : ""}`;
+     return `Last night, the werewolves attacked and [injured](${injuredGif || ""}) the **${deathCharacter}**, ${deadMember}. Despite their injuries, the hunter has one last chance to fight back. ${deadMember} now has the opportunity to shoot any player with their gun before succumbing to their wounds.\nChoose wisely, ${deadMember}. The fate of the village may rest on your final shot.`;
   }
   
   const deathGif = await getRandomGif("werewolf");
-  return `Last night, ${deadMember} was found dead, playing the character of ${deathCharacter}. They have been killed by a werewolf attack.\n ${deathGif ? `\n${deathGif}` : ""}`;
+  return `Last night, ${deadMember} was found [dead](${deathGif || ""}), playing the character of ${deathCharacter}. They have been killed by a werewolf attack.`;
 }
 
 async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire }) {
@@ -440,9 +441,11 @@ async function castWitchCurse(interaction) {
   );
 
   if (!_.isEmpty(deathCharacters)) {
-    return `## The witch's curse has killed:\n${deathCharacters}https://tenor.com/NYMC.gif\n`;
+    const curseGif = await getRandomGif("witch curse magic");
+    return `## The witch's curse has [killed](${curseGif || ""}):\n${deathCharacters}`;
   }
-  return "## The witch's curse did not kill anyone.\nhttps://tenor.com/TPjK.gif\n";
+  const noKillGif = await getRandomGif("witch magic fail");
+  return `## The witch's curse did not [kill](${noKillGif || ""}) anyone.\n`;
 }
 
 module.exports = {
