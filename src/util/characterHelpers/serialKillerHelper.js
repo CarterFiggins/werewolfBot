@@ -32,7 +32,7 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
 
       if (guardedIds.includes(targetId)) {
         const guardGif = await getRandomGif("bodyguard");
-        await skChannel?.send(`Your target was protected by a bodyguard last night. Your kill was [blocked](${guardGif || ""}).`);
+        await skChannel?.send(`Your target was protected by a bodyguard last night. Your kill was [blocked](${guardGif || ""})`);
         return;
       }
 
@@ -63,7 +63,7 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
       }
 
       messages.push(
-        `\n* Last night, the ${deathCharacter} ${targetMember} was [MURDERED](${_.sample(murderGif)}).\n`
+        `\n* Last night, the ${deathCharacter} ${targetMember} was [MURDERED](${_.sample(murderGif)})\n`
       );
     })
   );

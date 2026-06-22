@@ -124,7 +124,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     });
     const cubGif = await getRandomGif("rage anger");
     await organizedChannels?.werewolves?.send(
-      `We have unfortunate news: ${deadMember}, our cub, has been [killed](${cubGif || ""}). However, this loss has fueled your rage. :rage:\nTonight, you can target not just one, but two villagers.`
+      `We have unfortunate news: ${deadMember}, our cub, has been [killed](${cubGif || ""}) However, this loss has fueled your rage. :rage:\nTonight, you can target not just one, but two villagers.`
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {

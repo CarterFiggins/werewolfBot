@@ -69,7 +69,7 @@ module.exports = {
     if (!isAlive(targetedMember)) {
       const gif = await getRandomGif("they are dead");
       await interaction.editReply({
-        content: `${targetedUser} is [dead](${gif || ""}). This curse doesn't work on dead people. Try again.`,
+        content: `${targetedUser} is [dead](${gif || ""}) This curse doesn't work on dead people. Try again.`,
         ephemeral: false,
       });
       return;
@@ -80,7 +80,7 @@ module.exports = {
     ) {
       const gif = await getRandomGif("burn the witch");
       await interaction.editReply({
-        content: `Can't curse a [witch](${gif || ""}). Try again.`,
+        content: `Can't curse a [witch](${gif || ""}) Try again.`,
         ephemeral: false,
       });
       return;
