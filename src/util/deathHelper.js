@@ -445,7 +445,7 @@ async function castWitchCurse(interaction) {
 
   if (!_.isEmpty(deathCharacters)) {
     const curseGif = await getRandomGif("witch curse magic");
-    return `## The witch's curse has [killed:](${curseGif || ""})\n${deathCharacters}`;
+    return `## The witch's curse has [killed:](${curseGif || ""})\n${deathCharacters.join("\n")}`;
   }
   const noKillGif = await getRandomGif("witch magic fail");
   return `## The witch's curse did not [kill](${noKillGif || ""}) anyone.\n`;

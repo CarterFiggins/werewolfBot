@@ -194,14 +194,23 @@ async function dayTimeJob(interaction) {
     first_night: false,
   });
 
-  if (!message) {
+  if (!message && !starveMessage && !vampireDeathMessages) {
     const survivedGif = await getRandomGif("we survived");
     message = `[No one died](${survivedGif || ""}) last night.`;
   }
 
-  await organizedChannels.townSquare.send(
-    `## ${message}${starveMessage}${vampireDeathMessages}\n**It is day time**`
-  );
+  if (message) {
+    await organizedChannels.townSquare.send(
+      `## ${message}`
+    );
+  }
+  if (starveMessage) {
+    await organizedChannels.townSquare.send(`## ${starveMessage}`)
+  }
+  if (vampireDeathMessages) {
+    await organizedChannels.townSquare.send(`## ${vampireDeathMessages}`)
+  }
+  await organizedChannels.townSquare.send('# **It is day time**')
   const alivePlayersMessage = await buildAlivePlayersMessage(interaction, organizedChannels.townSquare);
   await organizedChannels.townSquare.send(alivePlayersMessage);
   await checkGame(interaction);
