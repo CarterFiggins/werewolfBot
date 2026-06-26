@@ -231,7 +231,8 @@ async function checkBakers(interaction) {
     await updateGame(interaction.guild.id, {
       is_baker_dead: true,
     });
-    interaction.townAnnouncements.push(`## * Hold onto your hats, because we've got a loafing crisis on our hands! Our baker has bitten the baguette, leaving us with fewer carbs than a gluten-free cookbook. Starting tomorrow, one unlucky villager will face the dreaded "empty stomach o'doom" and, well, let's just say it won't end well.`)
+    const breadLoafGif = await getRandomGif("empty fridge");
+    interaction.townAnnouncements.push(`## * Hold onto your hats, because we've got a loafing crisis on our hands! Our baker has bitten the baguette, leaving us with fewer carbs than a gluten-free cookbook. Starting tomorrow, one unlucky villager will face the dreaded "[empty stomach](${breadLoafGif}) o'doom" and, well, let's just say it won't end well.`)
   }
 }
 
@@ -343,7 +344,8 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
 
 
   if (targetDbUser.character === characters.HUNTER && !userWasProtected) {
-    message = `${deadTargetMember} you have been injured and don't have long to live. Grab your gun and \`/shoot\` someone.`;
+    const injuredGif = await getRandomGif("injured");
+    message = `${deadTargetMember} you have been [injured](${injuredGif || ""}) and don't have long to live. Grab your gun and \`/shoot\` someone.`;
   }
 
   if (targetDbUser.character === characters.WITCH && !userWasProtected) {
@@ -351,7 +353,6 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
   }
 
   if (randomFire) {
-    
     let finalMessage = `${memberWhoShot} didn't have time to shoot and died. They dropped their gun and it shot `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
     if (userWasProtected) {
@@ -359,7 +360,7 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
     }
     interaction.townAnnouncements.push(`## * ${finalMessage}${targetMessage}`);
   } else {
-    const gunGif = await ("gun");
+    const gunGif = await getRandomGif("gun");
     let finalMessage = `${memberWhoShot} took aim and [shot](${gunGif || ""}) `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
     if (userWasProtected) {
