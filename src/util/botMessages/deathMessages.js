@@ -100,7 +100,7 @@ async function vampireDeathMessage({ werewolfAttacked, victim, deadCharacter, va
 async function starveDeathMessage({ starvedCharacter, starvedMember, starvedUser }) {
   if (starvedCharacter === PowerUpNames.SHIELD) {
     const survivedGif = await getRandomGif("sandwich");
-    return `🛡️ A villager was about to [starve](${survivedGif || ""})! But surprise, the villager's shield turned into a sandwich and saved the day! The shield (now a tasty snack) is gone. 🥪`
+    return `🛡️ A villager was about to [starve!](${survivedGif || ""}) But surprise, the villager's shield turned into a sandwich and saved the day! The shield (now a tasty snack) is gone. 🥪`
   }
 
   let deadMessage = "";

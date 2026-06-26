@@ -276,7 +276,6 @@ async function giveChannelPermissions({
       break;
     case characters.SEER:
     case characters.FOOL:
-      const channels = interaction.guild.channels.cache;
       channel = channels.get(joiningDbUser.channel_id.toString());
       await updateUser(user.id, interaction.guild.id, {
         channel_id: channel.id,
@@ -292,8 +291,11 @@ async function giveChannelPermissions({
       channel = organizedChannels.monarch;
       break;
     case characters.SERIAL_KILLER:
-      channel = await createSerialKillerChannel(interaction, user);
-      await updateUser(user.id, interaction.guild.id, { channel_id: channel.id });
+      channel = channels.get(joiningDbUser.channel_id.toString());
+      if (!channel) {
+        channel = await createSerialKillerChannel(interaction, user);
+        await updateUser(user.id, interaction.guild.id, { channel_id: channel.id });
+      }
       break;
   }
 

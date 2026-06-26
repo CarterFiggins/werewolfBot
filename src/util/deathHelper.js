@@ -124,7 +124,7 @@ async function handleCharactersDeath(interaction, deadCharacter, deadUser, deadM
     });
     const cubGif = await getRandomGif("rage anger");
     await organizedChannels?.werewolves?.send(
-      `We have unfortunate news: ${deadMember}, our cub, has been [killed](${cubGif || ""}) However, this loss has fueled your rage. :rage:\nTonight, you can target not just one, but two villagers.`
+      `We have unfortunate news: ${deadMember}, our cub, has been killed. However, this loss has [fueled your rage](${cubGif || ""}) :rage:\nTonight, you can target not just one, but two villagers.`
     );
     deadCharacter = characters.CUB;
   } else if (deadCharacter === characters.SEER) {
@@ -304,7 +304,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
   );
   if (deathCharacter === PowerUpNames.SHIELD) { 
     const shieldGif = await getRandomGif("shield");
-    return `🛡️ Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their [shield](${shieldGif ? `${shieldGif} ` : ""}) has been consumed. 🛡️\n`;
+    return `🛡️ Last night the werewolves attacked a villager. However, the villager had a shield that protected them from the werewolf attack. Their [shield](${shieldGif || ""}) has been consumed. 🛡️\n`;
   }
   
   if (deadUser.character === characters.HUNTER && settings.hunter_guard) {
@@ -323,7 +323,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     );
     if (deadWerewolfCharacter === PowerUpNames.SHIELD) {
       const shieldGif = await getRandomGif("shield");
-      return `🛡️ Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit a werewolf's [shield](${shieldGif || ""})! Next time that werewolf won't be so lucky. 🛡️`;
+      return `🛡️ Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit a werewolf's [shield!](${shieldGif || ""}) Next time that werewolf won't be so lucky. 🛡️`;
     } 
     return `Last night the werewolves killed the **${deathCharacter}**\nBefore ${deadMember} died, they shot at their attacker and hit the ${deadWerewolfCharacter} named ${deadWerewolfMember}.\n`;
   }
@@ -334,7 +334,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
   }
   
   const deathGif = await getRandomGif("werewolf");
-  return `Last night, ${deadMember} was found [dead](${deathGif || ""}), playing the character of ${deathCharacter}. They have been killed by a werewolf attack.`;
+  return `Last night, ${deadMember} was found dead, playing the character of ${deathCharacter}. They have been killed by a [werewolf](${deathGif || ""}) attack.`;
 }
 
 async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire }) {
@@ -351,6 +351,7 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
   }
 
   if (randomFire) {
+    
     let finalMessage = `${memberWhoShot} didn't have time to shoot and died. They dropped their gun and it shot `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
     if (userWasProtected) {
@@ -358,10 +359,12 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
     }
     interaction.townAnnouncements.push(`## * ${finalMessage}${targetMessage}`);
   } else {
-    let finalMessage = `${memberWhoShot} took aim and shot `
+    const gunGif = await ("gun");
+    let finalMessage = `${memberWhoShot} took aim and [shot](${gunGif || ""}) `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
     if (userWasProtected) {
-      targetMessage = `🛡️${deadTargetMember}. The bullet bounced off ${deadTargetMember} and their shield has been consumed🛡️`
+      const failedGif = await getRandomGif("you failed");
+      targetMessage = `🛡️${deadTargetMember}. The [bullet bounced off](${failedGif || ""}) ${deadTargetMember} and their shield has been consumed🛡️`
     }
     await interaction.editReply(`${finalMessage}${targetMessage}`);
   }
@@ -442,7 +445,7 @@ async function castWitchCurse(interaction) {
 
   if (!_.isEmpty(deathCharacters)) {
     const curseGif = await getRandomGif("witch curse magic");
-    return `## The witch's curse has [killed](${curseGif || ""}):\n${deathCharacters}`;
+    return `## The witch's curse has [killed:](${curseGif || ""})\n${deathCharacters}`;
   }
   const noKillGif = await getRandomGif("witch magic fail");
   return `## The witch's curse did not [kill](${noKillGif || ""}) anyone.\n`;

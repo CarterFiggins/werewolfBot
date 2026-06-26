@@ -80,7 +80,7 @@ module.exports = {
     ) {
       const gif = await getRandomGif("burn the witch");
       await interaction.editReply({
-        content: `Can't curse a [witch](${gif || ""}) Try again.`,
+        content: `Can't curse a [witch!](${gif || ""}) Try again.`,
         ephemeral: false,
       });
       return;
