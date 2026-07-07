@@ -52,7 +52,7 @@ module.exports = {
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
 
     if (game.is_day) {
-      const gif = await getRandomGif("I love magic");
+      const gif = await getRandomGif("magic");
       await interaction.editReply({
         content: `It is day time. Your [dark magic](${gif || ""}) works at night.`,
         ephemeral: false,
