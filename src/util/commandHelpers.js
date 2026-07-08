@@ -186,8 +186,6 @@ async function sendGreeting(interaction, user) {
       let powerUpAmount = []
       for (const powerKey in user.info.power_ups) {
         if (user.info.power_ups[powerKey]) {
-          console.log("user.info.power_ups");
-          console.log(user.info.power_ups);
           member.send(`POWER UP! ${powerUpMessages.get(powerKey)}`);
           powerUpAmount.push(`${powerKey}: ${user.info.power_ups[powerKey]}`);
         }
