@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const { commandNames } = require("../util/commandHelpers");
 const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
-const { findGame, upsertVote, findUser, deleteManyVotes } = require("../werewolf_db");
+const { findGame, findSettings, upsertVote, findUser, deleteManyVotes } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 
 module.exports = {
@@ -31,6 +31,9 @@ module.exports = {
       return;
     }
 
+    const game = await findGame(interaction.guild.id);
+    const settings = await findSettings(interaction.guild.id);
+    const isMayorElection = settings.mayor_election && game.first_night;
     const votedUser = interaction.options.getUser("voted");
 
     if (!votedUser) {
@@ -38,11 +41,13 @@ module.exports = {
         guild_id: interaction.guild.id,
         user_id: interaction.user.id,
       });
-      await interaction.reply(`${interaction.user} has removed their vote.`);
+      await interaction.reply({
+        content: `${interaction.user} has removed their vote.`,
+        ephemeral: isMayorElection,
+      });
       return;
     }
 
-    const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const votedMember = interaction.guild.members.cache.get(votedUser.id);
     const mapRoles = votedMember.roles.cache;
@@ -67,7 +72,7 @@ module.exports = {
       });
       return;
     }
-    if (game.first_night) {
+    if (game.first_night && !isMayorElection) {
       await interaction.reply({
         content:
           "Can't vote before the first night wait until tomorrow\nhttps://tenor.com/VZNU.gif",
@@ -75,7 +80,7 @@ module.exports = {
       });
       return;
     }
-    if (!game.is_day) {
+    if (!game.is_day && !isMayorElection) {
       await interaction.reply({
         content:
           "It is night time. Get some rest and vote tomorrow\nhttps://tenor.com/bFIfb.gif",
@@ -111,7 +116,16 @@ module.exports = {
       username: interaction.user.username,
       voted_user_id: votedUser.id,
       voted_username: votedUser.username,
+      weight: dbUser.is_mayor ? 2 : 1,
     });
+
+    if (isMayorElection) {
+      await interaction.reply({
+        content: `You have voted for ${votedUser}. Your vote for Mayor has been recorded. It won't be revealed.\n Thanks for voting!`,
+        ephemeral: true,
+      });
+      return;
+    }
 
     await interaction.reply(`${interaction.user} has voted for ${votedUser}`);
   },

@@ -15,6 +15,7 @@ const SettingCommands = {
   DOUBLE_HANGING: "double_hanging",
   ADMIN_CONTROLS_CARDS: "admin_controls_cards",
   WEREWOLF_CREATES_HENCHMAN: "werewolf_creates_henchman",
+  MAYOR_ELECTION: "mayor_election",
 };
 
 function formatTime(timeStr) {
@@ -42,6 +43,7 @@ function buildSettingsView(settings) {
     `Night begins: ${formatTime(settings.night_time)}`,
     `Top 2 voted-for players get hanged?: ${b(settings.double_hanging)}`,
     `Whispering allowed?: ${b(settings.can_whisper)}`,
+    `Mayor Election?: ${b(settings.mayor_election)}`,
     ``,
     `**MISC. ROLES:**`,
     `Bodyguard is a Mason after guarding one?: ${b(settings.bodyguard_joins_masons)}`,
@@ -202,6 +204,14 @@ Lets Admins select each card amount in the game. (If there are less cards than p
       emoji: '👻',
       description: `### Werewolf Creates Henchman
 On the first night the werewolves will not kill a player and will convert them into a henchman. Henchman will be on the werewolf's team. They will not be counted for the werewolf or villager win condition. Some players will die instead of becoming the henchman. e.g. Chaos demon and vampire king. Vampires will not be able to bite the henchman.
+`,
+    },
+    {
+      id: SettingCommands.MAYOR_ELECTION,
+      label: 'Mayor Election',
+      emoji: '🎩',
+      description: `### Mayor Election
+If this setting is on, players vote for a Mayor on the first night using \`/vote\` in town-square. These votes are secret and are not announced. The winner is elected and announced the next morning. If the werewolves target the newly elected Mayor that same first night, the attack is blocked and the werewolves are told their target was protected for being elected Mayor. This protection only applies on the night they are elected. From then on the Mayor's vote counts as 2 votes during hangings.
 `,
     },
   ],

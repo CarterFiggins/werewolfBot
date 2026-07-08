@@ -86,7 +86,7 @@ async function getCountedVotes(guild_id) {
     {
       $group: {
         _id: { voted_user_id: "$voted_user_id" },
-        count: { $sum: 1 },
+        count: { $sum: { $ifNull: ["$weight", 1] } },
       },
     },
     {

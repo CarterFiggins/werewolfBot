@@ -78,6 +78,7 @@ async function buildUserInfo(interaction, user, newCharacter) {
     is_injured: false,
     is_stunned: false,
     is_muted: false,
+    is_mayor: false,
     safe_from_mutes: false,
     in_love_with_ids: [],
     cupid_hit_ids: [],

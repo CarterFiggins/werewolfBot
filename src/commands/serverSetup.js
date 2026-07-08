@@ -60,6 +60,7 @@ module.exports = {
         double_hanging: false,
         admin_controls_cards: false,
         werewolf_creates_henchman: false,
+        mayor_election: false,
       });
     }
 

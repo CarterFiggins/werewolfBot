@@ -89,6 +89,12 @@ async function sendStartMessages(interaction, users) {
   const settingsMessage = await organizedChannels.townSquare.send(buildSettingsView(settings))
   await settingsMessage.pin()
 
+  if (settings.mayor_election) {
+    await organizedChannels.townSquare.send(
+      `## 🎩 Mayor Election\nTonight players will vote for a Mayor using \`/vote\` here in town-square. Votes are secret and will not be revealed. The winner is announced tomorrow, is protected from the werewolves' attack that first night, and will have a vote worth 2 in every hanging vote from then on.`
+    );
+  }
+
   await organizedChannels?.werewolves?.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );

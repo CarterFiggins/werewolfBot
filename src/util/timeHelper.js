@@ -31,6 +31,7 @@ const { characters } = require("./commandHelpers");
 const { handleHangingVotes } = require("./voteHelpers");
 const { removeStunnedUsers } = require("./powerUp/stunHelper");
 const { shootCupidsArrows } = require("./characterHelpers/cupidHelper");
+const { electMayor } = require("./mayorHelper");
 const { executeSerialKillerKill, getAliveSerialKillerIds } = require("./characterHelpers/serialKillerHelper");
 const { getRandomGif } = require("./botMessages/randomGif");
 const { buildAlivePlayersMessage } = require("./userHelpers");
@@ -119,13 +120,15 @@ async function killReminder(interaction) {
 async function nightTimeWarning(interaction) {
   const guildId = interaction.guild.id;
   const game = await findGame(guildId);
+  const settings = await findSettings(guildId);
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   if (game.first_night) {
-    await organizedChannels.townSquare.send(
-      `## ${aliveRole} This is the first night. Voting will start tomorrow.`
-    );
+    const message = settings.mayor_election
+      ? `## ${aliveRole} This is the first night. Mayor voting closes soon, use \`/vote\` in town-square if you haven't voted yet!`
+      : `## ${aliveRole} This is the first night. Voting will start tomorrow.`;
+    await organizedChannels.townSquare.send(message);
     return;
   }
   await organizedChannels.townSquare.send(
@@ -137,6 +140,7 @@ async function nightTimeWarning(interaction) {
 async function dayTimeJob(interaction) {
   const guildId = interaction.guild.id;
   const game = await findGame(guildId);
+  const settings = await findSettings(guildId);
   // collect messages as players die
   interaction.townAnnouncements = [];
 
@@ -145,13 +149,28 @@ async function dayTimeJob(interaction) {
     return;
   }
 
-  if (game.first_night) {
-    await markChaosTarget(interaction);
-  }
-
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
   let message = "";
+
+  let electedMayorId = null;
+  if (game.first_night) {
+    await markChaosTarget(interaction);
+
+    if (settings.mayor_election) {
+      electedMayorId = await electMayor(guildId);
+      const mayorMember = electedMayorId && interaction.guild.members.cache.get(electedMayorId);
+      if (mayorMember) {
+        await organizedChannels.townSquare.send(
+          `## 🎩 ${mayorMember} has been elected Mayor! Their vote will now count as 2 during hangings.`
+        );
+      } else {
+        await organizedChannels.townSquare.send(
+          `## No one voted, so no Mayor was elected.`
+        );
+      }
+    }
+  }
 
   await copyCharacters(interaction);
   await shootCupidsArrows(interaction);
@@ -163,6 +182,15 @@ async function dayTimeJob(interaction) {
   const blockedIds = [...guardedIds, ...serialKillerIds];
   const successfulGuardIds = _.intersection(werewolfKills, blockedIds);
   await sendSuccessfulGuardMessage(interaction, successfulGuardIds);
+
+  if (electedMayorId && werewolfKills.includes(electedMayorId)) {
+    blockedIds.push(electedMayorId);
+    const mayorMember = interaction.guild.members.cache.get(electedMayorId);
+    await organizedChannels?.werewolves?.send(
+      `Your attack on ${mayorMember} failed last night. They were protected because they were just elected Mayor!`
+    );
+  }
+
   const deathIds = _.difference(werewolfKills, [...blockedIds, null]);
   const vampireDeathMessages = await vampiresAttack(
     interaction,
