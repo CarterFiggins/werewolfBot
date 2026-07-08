@@ -5,6 +5,7 @@ const { characters, getCards, getCurrentCharacters } = require("./characterHelpe
 const { ChannelType } = require("discord.js");
 const { getRole, roleNames } = require("./rolesHelpers");
 const { showAllPowerUpMessages } = require("./commandHelpers");
+const { buildSettingsView } = require("./botMessages/settings");
 
 const channelNames = {
   THE_TOWN: "the-town",
@@ -78,12 +79,15 @@ async function sendStartMessages(interaction, users) {
   });
 
   const adminSettings = await findAdminSettings(interaction.guild.id)
+  const settings = await findSettings(interaction.guild.id)
 
   await organizedChannels.townSquare.send(townSquareStart);
-  const townSquarePlayerMessage =  await organizedChannels.townSquare.send(`Possible characters in game:\n${(await possibleCharactersInGameCap(interaction)).join(", ")}`)
-  townSquarePlayerMessage.pin()
-  const townSquarePowerUpMessage = await organizedChannels.townSquare.send(`Possible Power-ups in game:\n${adminSettings.powers.join(", ")}`)
-  townSquarePowerUpMessage.pin()
+  const townSquarePlayerMessage =  await organizedChannels.townSquare.send(`## Possible characters in game:\n${(await possibleCharactersInGameCap(interaction)).join(", ")}`)
+  await townSquarePlayerMessage.pin()
+  const townSquarePowerUpMessage = await organizedChannels.townSquare.send(`## Possible Power-ups in game:\n${adminSettings.powers.join(", ")}`)
+  await townSquarePowerUpMessage.pin()
+  const settingsMessage = await organizedChannels.townSquare.send(buildSettingsView(settings))
+  await settingsMessage.pin()
 
   await organizedChannels?.werewolves?.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`

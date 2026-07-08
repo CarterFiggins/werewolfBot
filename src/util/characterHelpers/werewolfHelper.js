@@ -88,7 +88,7 @@ async function killPlayers(interaction, deathIds) {
         );
         isDead = false;
       } else if (game.first_night && settings.werewolf_creates_henchman) {
-        const canNotBeHenchman = [characters.VAMPIRE, characters.CHAOS_DEMON]
+        const canNotBeHenchman = [characters.VAMPIRE, characters.CHAOS_DEMON, characters.SERIAL_KILLER]
         if (!canNotBeHenchman.includes(deadUser.character)) {
           isDead = false;
           await updateUser(deadUser.user_id, interaction.guild.id, {
