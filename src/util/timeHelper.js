@@ -199,7 +199,7 @@ async function dayTimeJob(interaction) {
   );
 
   message += await killPlayers(interaction, deathIds);
-  message += await executeSerialKillerKill(interaction, guardedIds, deathIds);
+  message += await executeSerialKillerKill(interaction, guardedIds, deathIds, electedMayorId);
   let starveMessage = ""
   if (game.is_baker_dead) {
     starveMessage = await starveUser(interaction, deathIds);

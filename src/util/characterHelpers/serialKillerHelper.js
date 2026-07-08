@@ -5,7 +5,7 @@ const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
 const { PowerUpNames } = require("../powerUpHelpers");
 const { getRandomGif } = require("../botMessages/randomGif");
 
-async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds = []) {
+async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds = [], mayorId = null) {
   const guildId = interaction.guild.id;
   const members = interaction.guild.members.cache;
   const channels = interaction.guild.channels.cache;
@@ -29,6 +29,11 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
       if (!targetId) return;
 
       const skChannel = channels.get(sk.channel_id?.toString());
+
+      if (targetId === mayorId) {
+        await skChannel?.send(`Your target was protected last night. They were just elected Mayor!`);
+        return;
+      }
 
       if (guardedIds.includes(targetId)) {
         const guardGif = await getRandomGif("bodyguard");
