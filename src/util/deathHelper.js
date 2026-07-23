@@ -360,7 +360,7 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
     }
     interaction.townAnnouncements.push(`## * ${finalMessage}${targetMessage}`);
   } else {
-    const gunGif = await getRandomGif("gun");
+    const gunGif = await getRandomGif("shoot");
     let finalMessage = `${memberWhoShot} took aim and [shot](${gunGif || ""}) `
     let targetMessage = `the ${deadCharacter} named ${deadTargetMember} \n${message} \n`
     if (userWasProtected) {

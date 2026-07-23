@@ -8,7 +8,7 @@ async function getRandomGif(searchTerm) {
   if (!searchTerm) return null;
 
   try {
-    const url = `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(searchTerm)}&limit=20&rating=pg-13`;
+    const url = `https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(searchTerm)}&limit=20&rating=g`;
     const response = await fetch(url);
     const data = await response.json();
 
