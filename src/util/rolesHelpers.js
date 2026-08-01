@@ -9,6 +9,7 @@ const roleNames = {
 };
 
 function isAdmin(member) {
+  if (!member) return false;
   const mapRoles = member.roles.cache;
   const roles = mapRoles.map((role) => {
     return role.name;
@@ -17,6 +18,7 @@ function isAdmin(member) {
 }
 
 function isAlive(member) {
+  if (!member) return false;
   const mapRoles = member.roles.cache;
   const roles = mapRoles.map((role) => {
     return role.name;
@@ -25,6 +27,7 @@ function isAlive(member) {
 }
 
 function isPlaying(member) {
+  if (!member) return false;
   const mapRoles = member.roles.cache;
   const roles = mapRoles.map((role) => {
     return role.name;
@@ -33,6 +36,7 @@ function isPlaying(member) {
 }
 
 function isDead(member) {
+  if (!member) return false;
   const mapRoles = member.roles.cache;
   const roles = mapRoles.map((role) => {
     return role.name;

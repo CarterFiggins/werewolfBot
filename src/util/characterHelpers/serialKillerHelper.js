@@ -4,10 +4,10 @@ const { characters } = require("./characterUtil");
 const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
 const { PowerUpNames } = require("../powerUpHelpers");
 const { getRandomGif } = require("../botMessages/randomGif");
+const { fetchMember } = require("../discordHelpers");
 
 async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds = [], mayorId = null) {
   const guildId = interaction.guild.id;
-  const members = interaction.guild.members.cache;
   const channels = interaction.guild.channels.cache;
 
   const cursor = await findManyUsers({
@@ -50,7 +50,7 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
       const targetDbUser = await findUser(targetId, guildId);
       if (!targetDbUser || targetDbUser.is_dead) return;
 
-      const targetMember = members.get(targetId);
+      const targetMember = await fetchMember(interaction, targetId);
 
       const deathCharacter = await removesDeadPermissions(
         interaction,

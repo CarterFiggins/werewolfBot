@@ -5,6 +5,7 @@ const { characters } = require("../util/characterHelpers/characterUtil");
 const { permissionCheck } = require("../util/permissionCheck");
 const { isAlive } = require("../util/rolesHelpers");
 const { updateUser, findUser, findGame } = require("../werewolf_db");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -37,7 +38,7 @@ module.exports = {
     const game = await findGame(interaction.guild.id);
 
     if (!game.first_night) {
-      const preTargetedUser = interaction.guild.members.cache.get(dbUser.chaos_target_user_id)
+      const preTargetedUser = await fetchMember(interaction, dbUser.chaos_target_user_id)
       await interaction.editReply({
         content: `You are targeting ${preTargetedUser}. Try and convince the villagers to hang ${preTargetedUser}`,
         ephemeral: true,
@@ -46,8 +47,15 @@ module.exports = {
     }
 
     const targetedUser = await interaction.options.getUser("target");
-    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetedMember = await fetchMember(interaction, targetedUser.id);
 
+    if (!targetedMember) {
+      await interaction.editReply({
+        content: "Could not find that player in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (targetedUser.bot) {
       await interaction.editReply({
         content: `You can't target me!\n${getRandomBotGif()}`,

@@ -7,6 +7,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames, usePowerUp} = require("../util/powerUpHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
 const { getPlayersCharacter } = require("../util/userHelpers");
+const { fetchMember } = require("../util/discordHelpers");
 
 
 module.exports = {
@@ -38,10 +39,17 @@ module.exports = {
     }
 
     const targetedUser = await interaction.options.getUser("target");
-    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetedMember = await fetchMember(interaction, targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
     const game = await findGame(interaction.guild.id);
 
+    if (!targetedMember) {
+      await interaction.reply({
+        content: "Could not find that player in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (game.first_night) {
       await interaction.reply({
         content:

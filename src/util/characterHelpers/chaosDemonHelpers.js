@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { findOneUser, updateUser, findManyUsers } = require("../../werewolf_db");
-const { getAliveUsersIds } = require("../discordHelpers");
+const { getAliveUsersIds, fetchMember } = require("../discordHelpers");
 const { characters } = require("./characterUtil");
 const { organizeChannels } = require("../channelHelpers");
 const { sendMemberMessage } = require("../botMessages/sendMemberMessages");
@@ -19,7 +19,6 @@ async function markChaosTarget(interaction) {
 
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
-  const members = interaction.guild.members.cache;
 
   for (const chaosDemon of chaosDemons) {
     let selectedChaosUserId = chaosDemon.chaos_target_user_id
@@ -32,8 +31,12 @@ async function markChaosTarget(interaction) {
       });
       selectedChaosUserId = targetUserId
     }
-    const demonMember = members.get(chaosDemon.user_id)
-    const targetMember = members.get(selectedChaosUserId)
+    const demonMember = await fetchMember(interaction, chaosDemon.user_id)
+    const targetMember = await fetchMember(interaction, selectedChaosUserId)
+    if (!targetMember) {
+      console.warn(`markChaosTarget: could not find target member ${selectedChaosUserId}, skipping.`);
+      continue;
+    }
     const targetUsername = targetMember.nickname || targetMember.username
     organizedChannels.afterLife.send(`${demonMember} the chaos demon has chosen ${targetMember}`)
     await updateUser(selectedChaosUserId, interaction.guild.id, {
@@ -81,9 +84,12 @@ async function chaosDemonInLove(interaction, demon, inLoveWithUser) {
     is_chaos_target: true
   });
   
-  const members = interaction.guild.members.cache;
-  const demonMember = members.get(demon.user_id)
-  const loverMember = members.get(inLoveWithUser.user_id)
+  const demonMember = await fetchMember(interaction, demon.user_id)
+  const loverMember = await fetchMember(interaction, inLoveWithUser.user_id)
+  if (!loverMember) {
+    console.warn(`chaosDemonInLove: could not find lover member ${inLoveWithUser.user_id}, skipping.`);
+    return;
+  }
   const username = loverMember.nickname || loverMember.username
   await sendMemberMessage(demonMember, `Cupid has struck you with their arrow. Instead of love you want Chaos! Your new target will now be ${username} (the player that is in love with you. Don't let them know you want them to be hanged!)`)
   organizedChannels.afterLife.send(`Cupid has struck the chaos demon ${demonMember} and has cause them to change their chaos target to ${loverMember}. (the player that they are in love with)`)

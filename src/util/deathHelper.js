@@ -19,7 +19,7 @@ const { characters } = require("./characterHelpers/characterUtil");
 const { checkGame } = require("./endGameHelper");
 const { organizeRoles } = require("./rolesHelpers");
 const { PowerUpNames, usePowerUp} = require("./powerUpHelpers");
-const { getAliveUsersIds } = require("./discordHelpers");
+const { getAliveUsersIds, fetchMember } = require("./discordHelpers");
 const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
 const { getRandomGif } = require("./botMessages/randomGif");
 
@@ -152,19 +152,23 @@ async function removePlayer(
   causeOfDeath
 ) {
   const guildId = interaction.guild.id;
+  await removeUserVotes(guildId, deadUser.user_id);
+  await updateUser(deadUser.user_id, guildId, { is_dead: true, cause_of_death: causeOfDeath });
+
+  if (!deadMember) {
+    console.warn(`removePlayer: no Discord member found for ${deadUser.user_id}, skipping role/channel updates.`);
+    return;
+  }
+
   const roles = await interaction.guild.roles.fetch();
-  await deadMember.fetch()
   const organizedRoles = organizeRoles(roles);
 
   await deadMember.roles.remove(organizedRoles.alive);
   await deadMember.roles.add(organizedRoles.dead);
   await removeChannelPermissions(interaction, deadMember);
-  await removeUserVotes(guildId, deadUser.user_id);
-  await updateUser(deadUser.user_id, guildId, { is_dead: true, cause_of_death: causeOfDeath });
 }
 
 async function killChaosDemon(interaction, targetMember) {
-  const members = interaction.guild.members.cache;
   const cursorChaosDemons = await findManyUsers({
     guild_id: interaction.guild.id,
     character: characters.CHAOS_DEMON,
@@ -177,8 +181,8 @@ async function killChaosDemon(interaction, targetMember) {
   }
 
   for (const chaosDemon of chaosDemons) {
-    const chaosDemonMember = members.get(chaosDemon.user_id)
-  
+    const chaosDemonMember = await fetchMember(interaction, chaosDemon.user_id)
+
     await removePlayer(
       interaction,
       chaosDemon,
@@ -200,8 +204,7 @@ function randomLoversDeathMessage(loverMember, loversCharacter, deadUserMember) 
 }
 
 async function killLover(interaction, loverDbUser, deadUserMember) {
-  const members = interaction.guild.members.cache;
-  const loverMember = members.get(loverDbUser.user_id)
+  const loverMember = await fetchMember(interaction, loverDbUser.user_id)
 
   const loversCharacter = await removesDeadPermissions(
     interaction,
@@ -242,9 +245,8 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
   }
   interaction.townAnnouncements = [];
 
-  const members = interaction.guild.members.cache;
-  const deadTargetMember = members.get(targetDbUser.user_id);
-  const memberWhoShot = members.get(userWhoShot.user_id);
+  const deadTargetMember = await fetchMember(interaction, targetDbUser.user_id);
+  const memberWhoShot = await fetchMember(interaction, userWhoShot.user_id);
 
   const deadCharacter = await removesDeadPermissions(
     interaction,
@@ -295,7 +297,6 @@ async function hunterShootingLimitJob(
 
 async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
   const settings = await findSettings(interaction.guild.id);
-  const members = interaction.guild.members.cache;
 
   const deathCharacter = await removesDeadPermissions(
     interaction,
@@ -315,7 +316,7 @@ async function werewolfKillDeathMessage({ interaction, deadMember, deadUser }) {
     });
     const werewolves = await cursorWerewolf.toArray();
     const deadWerewolf = _.sample(werewolves)
-    const deadWerewolfMember = members.get(deadWerewolf.user_id);
+    const deadWerewolfMember = await fetchMember(interaction, deadWerewolf.user_id);
     const deadWerewolfCharacter = await removesDeadPermissions(
       interaction,
       deadWerewolf,
@@ -389,9 +390,7 @@ async function botShoots(interaction) {
   let aliveUsers = await cursor.toArray();
   const unluckyDbUser = _.sample(aliveUsers)
 
-  const unluckyMember = interaction.guild.members.cache.get(
-    unluckyDbUser.user_id
-  );
+  const unluckyMember = await fetchMember(interaction, unluckyDbUser.user_id);
 
   const botShotCharacter = await removesDeadPermissions(
     interaction,
@@ -428,11 +427,10 @@ async function castWitchCurse(interaction) {
   const cursedVillagers = _.filter(cursedPlayers, (player) => {
     return player.character !== characters.WEREWOLF && player.character !== characters.WITCH;
   });
-  const members = interaction.guild.members.cache;
 
   const deathCharacters = await Promise.all(
     _.map(cursedVillagers, async (villager) => {
-      const villagerMember = members.get(villager.user_id);
+      const villagerMember = await fetchMember(interaction, villager.user_id);
 
       const deadVillager = await removesDeadPermissions(
         interaction,

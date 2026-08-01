@@ -4,7 +4,7 @@ const { characters } = require("./commandHelpers");
 const { createUsers, findSettings, findManyUsers, findAllUsers } = require("../werewolf_db");
 const { randomWeightPowerUp } = require("./powerUpHelpers");
 const { possibleCharactersInGame, channelNames } = require("./channelHelpers");
-const { getAliveUsersIds } = require("./discordHelpers");
+const { getAliveUsersIds, fetchMember } = require("./discordHelpers");
 require("dotenv").config();
 
 let playingMembersCache = new Map();
@@ -61,7 +61,10 @@ async function getPlayingCount(interaction) {
 async function buildUserInfo(interaction, user, newCharacter) {
   const roles = await interaction.guild.roles.fetch();
   const organizedRoles = organizeRoles(roles)
-  const member = interaction.guild.members.cache.get(user.id);
+  const member = await fetchMember(interaction, user.id);
+  if (!member) {
+    throw new Error(`buildUserInfo: could not find member ${user.id} in guild ${interaction.guild.id}`);
+  }
   await member.roles.add(organizedRoles.alive);
   await member.roles.remove(organizedRoles.playing);
   

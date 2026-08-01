@@ -5,6 +5,7 @@ const { characters } = require("../util/characterHelpers/characterUtil");
 const { permissionCheck } = require("../util/permissionCheck");
 const { isAlive } = require("../util/rolesHelpers");
 const { updateUser, findUser } = require("../werewolf_db");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -36,8 +37,15 @@ module.exports = {
     }
 
     const targetedUser = await interaction.options.getUser("target");
-    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetedMember = await fetchMember(interaction, targetedUser.id);
 
+    if (!targetedMember) {
+      await interaction.editReply({
+        content: "Could not find that player in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (targetedUser.bot) {
       await interaction.editReply({
         content: `You can't copy me!\n${getRandomBotGif()}`,

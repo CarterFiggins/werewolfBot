@@ -7,6 +7,7 @@ const {
 const { characters } = require("./characterUtil");
 const { werewolfKillDeathMessage } = require("../deathHelper");
 const { sendMemberMessage } = require("../botMessages/sendMemberMessages");
+const { fetchMember } = require("../discordHelpers");
 
 async function getKillTargetedUsers(interaction) {
   const guildId = interaction.guild.id;
@@ -45,7 +46,6 @@ async function getKillTargetedUsers(interaction) {
 
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;
-  const members = interaction.guild.members.cache;
   const game = await findGame(guildId);
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
@@ -56,7 +56,7 @@ async function killPlayers(interaction, deathIds) {
 
   await Promise.all(
     _.map(deadUsers, async (deadUser) => {
-      const deadMember = members.get(deadUser.user_id);
+      const deadMember = await fetchMember(interaction, deadUser.user_id);
       let isDead = true;
 
       if (deadUser.character === characters.MUTATED) {

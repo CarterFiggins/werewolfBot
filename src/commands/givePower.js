@@ -7,6 +7,7 @@ const { channelNames } = require("../util/channelHelpers");
 const { findUser, updateUser, findGame } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames } = require("../util/powerUpHelpers");
+const { fetchMember } = require("../util/discordHelpers");
 
 
 function buildSlashCommand() {
@@ -61,8 +62,15 @@ module.exports = {
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const targetedUser = await interaction.options.getUser("target");
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
-    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetedMember = await fetchMember(interaction, targetedUser.id);
 
+    if (!targetedMember) {
+      await interaction.reply({
+        content: "Could not find that player in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (channel.name !== channelNames.MONARCH) {
       await interaction.reply({
         content:

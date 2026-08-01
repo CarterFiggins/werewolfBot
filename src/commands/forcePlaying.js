@@ -3,6 +3,7 @@ const { commandNames } = require("../util/commandHelpers");
 const { isAdmin, getRole, roleNames } = require("../util/rolesHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
 const { alreadyPlayingReplay } = require("../util/changeRoleHelpers");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -30,8 +31,12 @@ module.exports = {
     }
 
     const discordUser = await interaction.options.getUser("player");
-    const discordMember = interaction.guild.members.cache.get(discordUser.id);
-    await discordMember.fetch();
+    const discordMember = await fetchMember(interaction, discordUser.id);
+
+    if (!discordMember) {
+      await interaction.editReply({ content: "Could not find that player in the server." });
+      return;
+    }
 
     if (await alreadyPlayingReplay(interaction, discordMember, "Player already playing")) return;
 

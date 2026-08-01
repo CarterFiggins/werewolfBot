@@ -5,6 +5,7 @@ const { channelNames, getRandomBotGif } = require("../util/channelHelpers");
 const { isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -36,9 +37,16 @@ module.exports = {
     const targetedUser = await interaction.options.getUser("target");
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
-    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetedMember = await fetchMember(interaction, targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
 
+    if (!targetedMember) {
+      await interaction.reply({
+        content: "Could not find that player in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (channel.name !== channelNames.VAMPIRES) {
       await interaction.reply({
         content:

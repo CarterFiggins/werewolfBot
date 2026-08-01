@@ -3,6 +3,7 @@ const { getCountedVotes, findSettings, findUser, deleteManyVotes } = require("..
 const { foundAliveChaosDemonsWithTarget } = require("./characterHelpers/chaosDemonHelpers");
 const { PowerUpNames } = require("./powerUpHelpers");
 const { removesDeadPermissions, WaysToDie } = require("./deathHelper");
+const { fetchMember } = require("./discordHelpers");
 
 async function findVoteWinners(guildId, votingOutAmount) {
   // getCountedVotes will return the votes in descending order
@@ -112,7 +113,7 @@ async function hangPlayer(interaction, userVoted, isRandom) {
     console.log("guild id:", guildId)
     throw new Error(`This user id:${userVoted?._id?.voted_user_id} does not exist`)
   }
-  const deadMember = interaction.guild.members.cache.get(userVoted._id.voted_user_id);
+  const deadMember = await fetchMember(interaction, userVoted._id.voted_user_id);
   const chaosDemons = await foundAliveChaosDemonsWithTarget(interaction, deadUser);
 
   const deathCharacter = await removesDeadPermissions(

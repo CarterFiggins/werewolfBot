@@ -268,6 +268,11 @@ async function giveChannelPermissions({
   const guildSettings = await findSettings(interaction.guild.id);
   let channel;
 
+  if (!user) {
+    console.warn(`giveChannelPermissions: no member found for character ${character}, skipping permission edit.`);
+    return organizedChannels;
+  }
+
   switch (character) {
     case characters.WEREWOLF:
       channel = organizedChannels.werewolves;
@@ -310,11 +315,6 @@ async function giveChannelPermissions({
   }
 
   if (!channel) {
-    return organizedChannels;
-  }
-
-  if (!user) {
-    console.warn(`giveChannelPermissions: no member found for character ${character}, skipping permission edit.`);
     return organizedChannels;
   }
 

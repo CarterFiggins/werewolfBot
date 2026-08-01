@@ -3,6 +3,7 @@ const _ = require("lodash");
 const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
 const { getCountedVotes, findManyVotes } = require("../werewolf_db");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -54,10 +55,8 @@ module.exports = {
 
       await Promise.all(
         _.map(allVotes, async (vote) => {
-          const member = await interaction.guild.members.fetch(
-            vote._id.voted_user_id
-          );
-          message += `${member}: ${vote.count} votes\n`;
+          const member = await fetchMember(interaction, vote._id.voted_user_id);
+          message += `${member || "a player who left the server"}: ${vote.count} votes\n`;
         })
       );
 

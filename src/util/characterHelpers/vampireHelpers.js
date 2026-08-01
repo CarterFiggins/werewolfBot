@@ -13,9 +13,9 @@ const {
 const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
 const { vampireDeathMessage } = require("../botMessages/deathMessages");
 const { PowerUpNames } = require("../powerUpHelpers");
+const { fetchMember } = require("../discordHelpers");
 
 async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
-  const members = interaction.guild.members.cache;
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const guildId = interaction.guild.id;
@@ -36,8 +36,8 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
       }
 
       const victim = await findUser(vampire.bite_user_id, guildId);
-      const victimMember = members.get(vampire.bite_user_id);
-      const vampireMember = members.get(vampire.user_id);
+      const victimMember = await fetchMember(interaction, vampire.bite_user_id);
+      const vampireMember = await fetchMember(interaction, vampire.user_id);
       const isVampireKing = vampire.character === characters.VAMPIRE;
       await updateUser(vampire.user_id, guildId, { bite_user_id: null });
 

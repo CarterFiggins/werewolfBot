@@ -2,6 +2,7 @@ const _ = require("lodash");
 const { updateUser, findManyUsers, findUser, findSettings } = require("../../werewolf_db");
 const { giveChannelPermissions, organizeChannels, joinMasons } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
+const { fetchMember } = require("../discordHelpers");
 
 async function handleApprenticeSeer(interaction, deadDbSeer) {
   const guildId = interaction.guild.id;
@@ -21,9 +22,7 @@ async function handleApprenticeSeer(interaction, deadDbSeer) {
   const deadSeerChannel = channels.get(deadDbSeer.channel_id.toString());
 
   const apprenticeSeerUser = _.sample(apprenticeSeers);
-  const discordApprenticeUser = interaction.guild.members.cache.get(
-    apprenticeSeerUser.user_id
-  );
+  const discordApprenticeUser = await fetchMember(interaction, apprenticeSeerUser.user_id);
 
   await updateUser(apprenticeSeerUser.user_id, guildId, {
     character: characters.SEER,
@@ -44,11 +43,10 @@ async function handleApprenticeSeer(interaction, deadDbSeer) {
 async function sendInvestigateMessage(interaction, seer) {
   if (!seer.investigateUserId) return;
 
-  const members = interaction.guild.members.cache;
   const channels = await interaction.guild.channels.fetch();
   const organizedChannels = organizeChannels(channels);
-  const member = members.get(seer.investigateUserId)
-  const seerMember = members.get(seer.user_id)
+  const member = await fetchMember(interaction, seer.investigateUserId)
+  const seerMember = await fetchMember(interaction, seer.user_id)
   const targetDbUser = await findUser(seer.investigateUserId, interaction.guild?.id);
   const guildSettings = await findSettings(interaction.guild.id);
   let revealedCharacter = "villager!"

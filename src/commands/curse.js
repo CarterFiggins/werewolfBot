@@ -6,6 +6,7 @@ const { isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { getRandomGif } = require("../util/botMessages/randomGif");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -48,9 +49,16 @@ module.exports = {
 
     const targetedUser = await interaction.options.getUser("target");
     const game = await findGame(interaction.guild.id);
-    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetedMember = await fetchMember(interaction, targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
 
+    if (!targetedMember) {
+      await interaction.editReply({
+        content: "Could not find that player in the server. Try again.",
+        ephemeral: false,
+      });
+      return;
+    }
     if (game.is_day) {
       const gif = await getRandomGif("magic");
       await interaction.editReply({

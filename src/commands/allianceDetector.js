@@ -8,6 +8,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames, usePowerUp} = require("../util/powerUpHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
 const { getRandomGif } = require("../util/botMessages/randomGif");
+const { fetchMember } = require("../util/discordHelpers");
 
 
 module.exports = {
@@ -47,11 +48,18 @@ module.exports = {
     const game = await findGame(interaction.guild.id);
     const targetedOneUser = await interaction.options.getUser("target1");
     const targetedTwoUser = await interaction.options.getUser("target2");
-    const targetedOneMember = interaction.guild.members.cache.get(targetedOneUser.id);
-    const targetedTwoMember = interaction.guild.members.cache.get(targetedTwoUser.id);
+    const targetedOneMember = await fetchMember(interaction, targetedOneUser.id);
+    const targetedTwoMember = await fetchMember(interaction, targetedTwoUser.id);
     const targetOneDbUser = await findUser(targetedOneUser.id, interaction.guild.id);
     const targetTwoDbUser = await findUser(targetedTwoUser.id, interaction.guild.id);
 
+    if (!targetedOneMember || !targetedTwoMember) {
+      await interaction.editReply({
+        content: "Could not find one of those players in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (game.first_night) {
       await interaction.editReply({
         content:

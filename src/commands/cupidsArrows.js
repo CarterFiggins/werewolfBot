@@ -6,6 +6,7 @@ const { characters } = require("../util/characterHelpers/characterUtil");
 const { permissionCheck } = require("../util/permissionCheck");
 const { isAlive } = require("../util/rolesHelpers");
 const { updateUser, findUser } = require("../werewolf_db");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -46,9 +47,16 @@ module.exports = {
 
     const targetedOneUser = await interaction.options.getUser("target1");
     const targetedTwoUser = await interaction.options.getUser("target2");
-    const targetedOneMember = members.get(targetedOneUser.id);
-    const targetedTwoMember = members.get(targetedTwoUser.id);
+    const targetedOneMember = await fetchMember(interaction, targetedOneUser.id);
+    const targetedTwoMember = await fetchMember(interaction, targetedTwoUser.id);
 
+    if (!targetedOneMember || !targetedTwoMember) {
+      await interaction.editReply({
+        content: "Could not find one of those players in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
     if (dbUser.cupid_success_hits) {
       const CoupleMembers = _.map(dbUser.cupid_hit_ids, (id) => {
         return `${members.get(id)}`
