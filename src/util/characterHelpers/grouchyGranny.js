@@ -12,7 +12,10 @@ async function mutePlayers(interaction) {
   });
   const grannies = await cursorGrannies.toArray()
   for (const granny of grannies) {
-    if (granny.muteUserId) {
+    if (!granny.muteUserId) {
+      continue;
+    }
+    try {
       const muteMember = await fetchMember(interaction, granny.muteUserId)
       const muteUserDb = findUser(granny.muteUserId, interaction.guild.id)
       if (!muteMember) {
@@ -25,6 +28,8 @@ async function mutePlayers(interaction) {
       await updateUser(granny.user_id, interaction.guild.id, {
         muteUserId: null,
       });
+    } catch (err) {
+      console.error(`mutePlayers: failed to mute ${granny.muteUserId} for granny ${granny.user_id}:`, err);
     }
   }
 }
@@ -35,7 +40,10 @@ async function returnMutedPlayers(interaction, guildId) {
 
   await Promise.all(
     users.map(async (user) => {
-      if (user.is_muted && !user.is_dead) {
+      if (!user.is_muted || user.is_dead) {
+        return;
+      }
+      try {
         const channels = await interaction.guild.channels.fetch();
         const organizedChannels = organizeChannels(channels);
         const member = await fetchMember(interaction, user.user_id)
@@ -83,6 +91,8 @@ async function returnMutedPlayers(interaction, guildId) {
             ViewChannel: false,
           });
         }
+      } catch (err) {
+        console.error(`returnMutedPlayers: failed to restore permissions for ${user.user_id}:`, err);
       }
     })
   );
@@ -106,23 +116,27 @@ async function castOutUser(interaction, member) {
   const organizedChannels = organizeChannels(channels);
   await Promise.all(
     _.map(flatOrganizedChannels(organizedChannels), async (channel) => {
-      if (channel.name === channelNames.OUT_CASTS) {
-        await channel.permissionOverwrites.edit(member, {
-          SendMessages: true,
-          ViewChannel: true,
-        });
-      } else if (channel.name === channelNames.AFTER_LIFE) {
-        // Don't change permissions here
-      } else {
-        await channel.permissionOverwrites.edit(member, {
-          SendMessages: false,
-          CreatePrivateThreads: false,
-          CreatePublicThreads: false,
-          SendMessagesInThreads: false,
-        });
-        if (channel.name === channelNames.TOWN_SQUARE) {
-          channel.send(`Grouchy Granny has muted ${member}. They can talk tomorrow`)
+      try {
+        if (channel.name === channelNames.OUT_CASTS) {
+          await channel.permissionOverwrites.edit(member, {
+            SendMessages: true,
+            ViewChannel: true,
+          });
+        } else if (channel.name === channelNames.AFTER_LIFE) {
+          // Don't change permissions here
+        } else {
+          await channel.permissionOverwrites.edit(member, {
+            SendMessages: false,
+            CreatePrivateThreads: false,
+            CreatePublicThreads: false,
+            SendMessagesInThreads: false,
+          });
+          if (channel.name === channelNames.TOWN_SQUARE) {
+            channel.send(`Grouchy Granny has muted ${member}. They can talk tomorrow`)
+          }
         }
+      } catch (err) {
+        console.error(`castOutUser: failed to update permissions on channel ${channel.name} for ${member.id}:`, err);
       }
     })
   );
