@@ -313,6 +313,11 @@ async function giveChannelPermissions({
     return organizedChannels;
   }
 
+  if (!user) {
+    console.warn(`giveChannelPermissions: no member found for character ${character}, skipping permission edit.`);
+    return organizedChannels;
+  }
+
   await channel.permissionOverwrites.edit(user, {
     SendMessages: true,
     ViewChannel: true,

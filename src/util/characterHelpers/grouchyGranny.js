@@ -2,6 +2,7 @@ const _ = require("lodash");
 const { updateUser, findAllUsers, findManyUsers, findUser } = require("../../werewolf_db");
 const { characters } = require("./characterUtil");
 const { organizeChannels, channelNames, giveChannelPermissions, flatOrganizedChannels } = require("../channelHelpers");
+const { fetchMember } = require("../discordHelpers");
 
 async function mutePlayers(interaction) {
   const cursorGrannies = await findManyUsers({
@@ -9,12 +10,15 @@ async function mutePlayers(interaction) {
     is_dead: false,
     character: characters.GROUCHY_GRANNY,
   });
-  const members = interaction.guild.members.cache;
   const grannies = await cursorGrannies.toArray()
   for (const granny of grannies) {
     if (granny.muteUserId) {
-      const muteMember = members.get(granny.muteUserId)
+      const muteMember = await fetchMember(interaction, granny.muteUserId)
       const muteUserDb = findUser(granny.muteUserId, interaction.guild.id)
+      if (!muteMember) {
+        console.warn(`mutePlayers: could not find member ${granny.muteUserId} in guild, skipping.`);
+        continue;
+      }
       if (!muteUserDb.is_dead) {
         await castOutUser(interaction, muteMember)
       }
@@ -28,17 +32,20 @@ async function mutePlayers(interaction) {
 async function returnMutedPlayers(interaction, guildId) {
   const cursor = await findAllUsers(guildId);
   const users = await cursor.toArray();
-  const members = interaction.guild.members.cache;
 
   await Promise.all(
     users.map(async (user) => {
       if (user.is_muted && !user.is_dead) {
         const channels = await interaction.guild.channels.fetch();
         const organizedChannels = organizeChannels(channels);
-        const member = members.get(user.user_id)
+        const member = await fetchMember(interaction, user.user_id)
+        if (!member) {
+          console.warn(`returnMutedPlayers: could not find member ${user.user_id} in guild, skipping.`);
+          return;
+        }
         await updateUser(user.user_id, guildId, { is_muted: false, safe_from_mutes: true });
         message = `${member} has returned from being muted.`
-        giveChannelPermissions({
+        await giveChannelPermissions({
           interaction,
           user: member,
           character: user.character,
@@ -46,7 +53,7 @@ async function returnMutedPlayers(interaction, guildId) {
           joiningDbUser: user,
         });
         if (user.character !== characters.VILLAGER) {
-          giveChannelPermissions({
+          await giveChannelPermissions({
             interaction,
             user: member,
             character: characters.VILLAGER,
@@ -54,7 +61,7 @@ async function returnMutedPlayers(interaction, guildId) {
           });
         }
         if (user.is_vampire) {
-          giveChannelPermissions({
+          await giveChannelPermissions({
             interaction,
             user: member,
             character: characters.VAMPIRE,
@@ -62,7 +69,7 @@ async function returnMutedPlayers(interaction, guildId) {
           });
         }
         if (user.on_mason_channel) {
-          giveChannelPermissions({
+          await giveChannelPermissions({
             interaction,
             user: member,
             character: characters.MASON,

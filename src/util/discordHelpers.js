@@ -1,5 +1,17 @@
 const { getRole, roleNames } = require("./rolesHelpers");
 
+async function fetchMember(interaction, userId) {
+  if (!userId) return null;
+  const cached = interaction.guild.members.cache.get(userId);
+  if (cached) return cached;
+  try {
+    return await interaction.guild.members.fetch(userId);
+  } catch (err) {
+    console.warn(`fetchMember: could not fetch member ${userId} in guild ${interaction.guild.id}: ${err.message}`);
+    return null;
+  }
+}
+
 async function getAliveMembers(interaction, getId) {
   let aliveRole = await getRole(interaction, roleNames.ALIVE);
   const members = interaction.guild.members.cache;
@@ -24,4 +36,5 @@ async function getAliveUsersIds(interaction) {
 module.exports = {
   getAliveUsersIds,
   getAliveMembers,
+  fetchMember,
 };

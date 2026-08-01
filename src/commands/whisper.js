@@ -4,6 +4,7 @@ const { isAlive } = require("../util/rolesHelpers");
 const { organizeChannels } = require("../util/channelHelpers");
 const { findSettings, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -53,11 +54,18 @@ module.exports = {
     }
 
     const messageSender = interaction.user;
-    const senderMember = await interaction.guild.members.fetch(
-      messageSender.id
-    );
+    const senderMember = await fetchMember(interaction, messageSender.id);
     const player = interaction.options.getUser("player");
-    const playerMember = await interaction.guild.members.fetch(player.id);
+    const playerMember = await fetchMember(interaction, player.id);
+
+    if (!senderMember || !playerMember) {
+      await interaction.editReply({
+        content: "Could not find one of those players in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const playerUserDb = await findUser(player.id, interaction.guild.id)
     const message = interaction.options.getString("message");
     const channels = interaction.guild.channels.cache;
