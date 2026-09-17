@@ -93,6 +93,16 @@ roles = [
 * Commands: \`/bestow_power\``,
   },
   {
+    label: "Little Girl",
+    tag: characters.LITTLE_GIRL,
+    emoji: "👧",
+    team: "villager",
+    description: `### Little Girl
+* The Little Girl has her own private channel where every whisper sent between players is echoed to her. She will not know who sent or received any of them.
+* Channels: little-girl
+* Commands: none`,
+  },
+  {
     label: "Lycan",
     tag: characters.LYCAN,
     emoji: "🌝",

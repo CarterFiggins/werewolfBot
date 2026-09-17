@@ -180,6 +180,11 @@ async function sendGreeting(interaction, user) {
           `You are a **Serial Killer!**\nYour goal is to be the last one standing — eliminate everyone else.\n${voteText}\nEach night, use the \`/kill\` command in the #serial-killer channel to target a player.\nThe werewolves cannot harm you, but a bodyguard can block your kill.\nThe town will never suspect you.\n`
         );
         break;
+      case characters.LITTLE_GIRL:
+        await member.send(
+          `You are the **Little Girl**.\n${voteText}\nYou have your own private channel where every whisper sent between players will be echoed to you, but you will not be told who sent it or who received it.\nListen closely, the villagers are counting on you to piece together what you overhear.`
+        );
+        break;
     }
 
     if (settings.enable_power_ups) {

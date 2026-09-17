@@ -30,6 +30,7 @@ const characters = {
   GROUCHY_GRANNY: "grouchy granny",
   DOPPELGANGER: "doppelganger",
   MONARCH: "monarch",
+  LITTLE_GIRL: "little girl",
   // helps werewolves
   WEREWOLF: "werewolf",
   FOOL: "fool",
@@ -73,6 +74,7 @@ const characterInfoMap = new Map([
   [characters.DOPPELGANGER, {     weight: 3, points: 5, helpsTeam: teams.VILLAGER }],
   [characters.GROUCHY_GRANNY, {   weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
   [characters.MONARCH, {          weight: 3, points: 6, helpsTeam: teams.VILLAGER }],
+  [characters.LITTLE_GIRL, {      weight: 4, points: 3, helpsTeam: teams.VILLAGER }],
   [characters.VAMPIRE, {          weight: 0, points: 0, helpsTeam: teams.VAMPIRE }],
   [characters.CHAOS_DEMON, {      weight: 0, points: 0, helpsTeam: teams.SOLO }],
   [characters.CUPID, {          weight: 0, points: 0, helpsTeam: teams.VILLAGER }],

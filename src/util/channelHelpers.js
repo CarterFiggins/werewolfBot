@@ -21,6 +21,7 @@ const channelNames = {
   MONARCH: "monarch",
   LOVERS: "cupid-couple",
   SERIAL_KILLER: "serial-killer",
+  LITTLE_GIRL: "the-little-girl",
 };
 
 const setupChannelNames = {
@@ -111,6 +112,12 @@ async function sendStartMessages(interaction, users) {
     }
   }
 
+  if (!_.isEmpty(organizedChannels?.littleGirlChannels)) {
+    for (const channel of organizedChannels.littleGirlChannels) {
+      await channel.send(littleGirlStart);
+    }
+  }
+
   const afterLifeMessage = await organizedChannels.afterLife.send(
     `${afterLifeStart}\n${showUsersCharacter(users)}`
   );
@@ -148,7 +155,7 @@ function showUsersCharacter(users) {
 }
 
 function organizeChannels(channels) {
-  const channelObject = {seerChannels: [], serialKillerChannels: []};
+  const channelObject = {seerChannels: [], serialKillerChannels: [], littleGirlChannels: []};
   channels.forEach((channel) => {
     switch (channel.name) {
       case channelNames.TOWN_SQUARE:
@@ -184,6 +191,9 @@ function organizeChannels(channels) {
     }
     if (channel.name.includes(channelNames.SERIAL_KILLER)) {
       channelObject.serialKillerChannels.push(channel)
+    }
+    if (channel.name.includes(channelNames.LITTLE_GIRL)) {
+      channelObject.littleGirlChannels.push(channel)
     }
   });
   return channelObject;
@@ -291,6 +301,7 @@ async function giveChannelPermissions({
       break;
     case characters.SEER:
     case characters.FOOL:
+    case characters.LITTLE_GIRL:
       channel = channels.get(joiningDbUser.channel_id.toString());
       await updateUser(user.id, interaction.guild.id, {
         channel_id: channel.id,
@@ -404,6 +415,9 @@ async function removeAllGameChannels(channels) {
       if (channel.name.includes(channelNames.LOVERS)) {
         await channel.delete();
       }
+      if (channel.name.includes(channelNames.LITTLE_GIRL)) {
+        await channel.delete();
+      }
     })
   );
 }
@@ -422,6 +436,7 @@ async function createChannels(interaction, users) {
 
   const allUserCharacters = _.map(users, (u) => u.info.character)
   const seerOrFoolUsers = _.filter(users, (u) => u.info.character === characters.SEER || u.info.character === characters.FOOL)
+  const littleGirlUsers = _.filter(users, (u) => u.info.character === characters.LITTLE_GIRL)
 
   const allChannelsData = [
     {
@@ -468,7 +483,7 @@ async function createChannels(interaction, users) {
   const serialKillerUsers = _.filter(users, (u) => u.info.character === characters.SERIAL_KILLER);
   serialKillerUsers.forEach((user) => {
     allChannelsData.push({
-      channelName: `${user.username.substring(0, 40)}-the-serial-killer`,
+      channelName: `${channelNames.SERIAL_KILLER}-${user.id}`,
       singlePermission: true,
       characterNames: [characters.SERIAL_KILLER],
       player: user,
@@ -477,9 +492,18 @@ async function createChannels(interaction, users) {
 
   seerOrFoolUsers.forEach((user) => {
     allChannelsData.push({
-      channelName: `${user.username.substring(0, 50)}-the-seer`,
+      channelName: `${channelNames.SEER_OR_FOOL}-${user.id}`,
       singlePermission: true,
       characterNames: [user.info.character],
+      player: user,
+    })
+  })
+
+  littleGirlUsers.forEach((user) => {
+    allChannelsData.push({
+      channelName: `${channelNames.LITTLE_GIRL}-${user.id}`,
+      singlePermission: true,
+      characterNames: [characters.LITTLE_GIRL],
       player: user,
     })
   })
@@ -589,6 +613,9 @@ const monarchStart =
 
 const serialKillerStart =
   `Welcome to the serial killer's lair. Your goal is simple — be the last one standing. Each night, use \`/kill\` in this channel to eliminate a target. The werewolves cannot harm you, but a bodyguard can block your attack. The town will never know it was you.`
+
+const littleGirlStart =
+  "Welcome to your private channel! Every whisper sent between players will echo in here, but you won't be told who sent it or who received it. Use what you overhear to help the villagers, but keep it to yourself!";
 
 const botGifs = [
   "https://tenor.com/bgdxA.gif",

@@ -136,6 +136,11 @@ module.exports = {
       `${messageSender} has whisper to ${player}\n${message}`
     );
 
+    // let the little girl(s) overhear the whisper, anonymously
+    for (const channel of organizedChannels.littleGirlChannels) {
+      await channel.send(`A whisper was overheard:\n${message}`);
+    }
+
     await interaction.editReply({
       content: `Message was Sent\n${message}`,
       ephemeral: true,
