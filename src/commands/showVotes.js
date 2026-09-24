@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const _ = require("lodash");
 const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
-const { getCountedVotes, findManyVotes } = require("../werewolf_db");
+const { getCountedVotes, findManyVotes, findGame, findSettings } = require("../werewolf_db");
 const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
@@ -40,7 +40,21 @@ module.exports = {
       return;
     }
 
+    const game = await findGame(interaction.guild.id);
+    const settings = await findSettings(interaction.guild.id);
+    const isMayorElection = settings.mayor_election && game.first_night;
+
     if (interaction.options.getSubcommand() === commandNames.SHOW_VOTES) {
+      if (isMayorElection) {
+        const cursor = await findManyVotes({ guild_id: interaction.guild.id });
+        const votes = await cursor.toArray();
+        await interaction.editReply({
+          content: `🎩 Mayor votes are secret and won't be revealed.\n${votes.length} vote${votes.length === 1 ? "" : "s"} cast so far.`,
+          ephemeral: false,
+        });
+        return;
+      }
+
       const cursor = await getCountedVotes(interaction.guild.id);
       const allVotes = await cursor.toArray();
       if (_.isEmpty(allVotes)) {
@@ -66,6 +80,14 @@ module.exports = {
       });
     }
     if (interaction.options.getSubcommand() === commandNames.SHOW_VOTERS_FOR) {
+      if (isMayorElection) {
+        await interaction.editReply({
+          content: "🎩 Mayor votes are secret and can't be revealed until the election is over.",
+          ephemeral: false,
+        });
+        return;
+      }
+
       const targetUser = interaction.options.getUser("target");
       const members = interaction.guild.members.cache;
       const guildId = interaction.guild.id;
