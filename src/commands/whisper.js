@@ -5,6 +5,7 @@ const { organizeChannels } = require("../util/channelHelpers");
 const { findSettings, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { fetchMember } = require("../util/discordHelpers");
+const { getRandomGif } = require("../util/botMessages/randomGif");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -61,6 +62,15 @@ module.exports = {
     if (!senderMember || !playerMember) {
       await interaction.editReply({
         content: "Could not find one of those players in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (player.id === messageSender.id) {
+      const gif = await getRandomGif("talking to yourself");
+      await interaction.editReply({
+        content: `You can't whisper to yourself! [Talking to yourself](${gif || ""}) again?`,
         ephemeral: true,
       });
       return;

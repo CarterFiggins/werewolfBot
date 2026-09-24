@@ -180,17 +180,18 @@ async function crateUserData(interaction, newCharacters, discordUsers) {
 }
 
 function getPlayersCharacter(dbUser) {
+  const mayor = dbUser.is_mayor ? "🎩 Mayor " : ""
   if (dbUser.is_vampire) {
-    return `vampire ${dbUser.character}`
+    return `${mayor}vampire ${dbUser.character}`
   }
   if (dbUser.is_cub) {
-    return `Werewolf cub`
+    return `${mayor}Werewolf cub`
   }
   if (dbUser.is_henchman) {
-    return `${dbUser.character} Henchman`
+    return `${mayor}${dbUser.character} Henchman`
   }
 
-  return dbUser.character
+  return `${mayor}${dbUser.character}`
 }
 
 async function randomUser(guildId, findQuery, amount = 1) {
@@ -217,6 +218,9 @@ function getSideCharacters(interaction, user) {
   }
   if (user.is_henchman) {
       sideCharacters.push("henchman")
+  }
+  if (user.is_mayor) {
+    sideCharacters.push("🎩 Mayor")
   }
   if (!_.isEmpty(user.in_love_with_ids)) {
     user.in_love_with_ids.forEach((id) => {
@@ -252,7 +256,7 @@ async function buildAlivePlayersMessage(interaction, channel) {
   let someoneIsDead = false;
 
   shuffleUsers(dbUsers).forEach((user) => {
-    const currentMember = members.get(user.user_id) || "Player left server";
+    const currentMember = members.get(user.user_id) || user.nickname || user.name || "Player left server";
     let characterMessage = "";
     if (channel.name === channelNames.AFTER_LIFE || (user.is_dead && !settings.hard_mode)) {
       const sideCharacters = getSideCharacters(interaction, user);

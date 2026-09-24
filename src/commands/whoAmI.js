@@ -43,6 +43,10 @@ module.exports = {
     if (dbUser.is_henchman) {
       henchman = " henchman"
     }
+    let mayor = ""
+    if (dbUser.is_mayor) {
+      mayor = "🎩 Mayor "
+    }
 
     if (isPlaying(interaction.member)) {
       await interaction.reply({
@@ -53,7 +57,7 @@ module.exports = {
     }
     if (dbUser.is_dead) {
       await interaction.reply({
-        content: `You WERE the ${vampire}${dbUser.character}${henchman}, but now you're dead lol`,
+        content: `You WERE the ${mayor}${vampire}${dbUser.character}${henchman}, but now you're dead lol`,
         ephemeral: true,
       });
       return;
@@ -69,7 +73,7 @@ module.exports = {
     }
 
     await interaction.reply({
-      content: `Your character is: ${vampire}${dbUser.assigned_identity}${henchman}${powerMessage}`,
+      content: `Your character is: ${mayor}${vampire}${dbUser.assigned_identity}${henchman}${powerMessage}`,
       ephemeral: true,
     });
   },
