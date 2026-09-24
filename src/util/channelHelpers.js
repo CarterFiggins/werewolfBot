@@ -492,7 +492,7 @@ async function createChannels(interaction, users) {
 
   seerOrFoolUsers.forEach((user) => {
     allChannelsData.push({
-      channelName: `${channelNames.SEER_OR_FOOL}-${user.id}`,
+      channelName: `${channelNames.SEER}-${user.id}`,
       singlePermission: true,
       characterNames: [user.info.character],
       player: user,
