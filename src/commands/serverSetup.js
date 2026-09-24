@@ -61,6 +61,7 @@ module.exports = {
         admin_controls_cards: false,
         werewolf_creates_henchman: false,
         mayor_election: false,
+        anonymous_voting: false,
       });
     }
 

@@ -43,13 +43,18 @@ module.exports = {
     const game = await findGame(interaction.guild.id);
     const settings = await findSettings(interaction.guild.id);
     const isMayorElection = settings.mayor_election && game.first_night;
+    const isAnonymousVote = settings.anonymous_voting && !isMayorElection;
+    const isSecretVote = isMayorElection || isAnonymousVote;
 
     if (interaction.options.getSubcommand() === commandNames.SHOW_VOTES) {
-      if (isMayorElection) {
+      if (isSecretVote) {
+        const secretLabel = isMayorElection
+          ? "🎩 Mayor votes are secret and won't be revealed."
+          : "🕵️ Voting is anonymous and won't be revealed.";
         const cursor = await findManyVotes({ guild_id: interaction.guild.id });
         const votes = await cursor.toArray();
         await interaction.editReply({
-          content: `🎩 Mayor votes are secret and won't be revealed.\n${votes.length} vote${votes.length === 1 ? "" : "s"} cast so far.`,
+          content: `${secretLabel}\n${votes.length} vote${votes.length === 1 ? "" : "s"} cast so far.`,
           ephemeral: false,
         });
         return;
@@ -80,9 +85,12 @@ module.exports = {
       });
     }
     if (interaction.options.getSubcommand() === commandNames.SHOW_VOTERS_FOR) {
-      if (isMayorElection) {
+      if (isSecretVote) {
+        const secretLabel = isMayorElection
+          ? "🎩 Mayor votes are secret and can't be revealed until the election is over."
+          : "🕵️ Voting is anonymous — who voted for who can't be revealed.";
         await interaction.editReply({
-          content: "🎩 Mayor votes are secret and can't be revealed until the election is over.",
+          content: secretLabel,
           ephemeral: false,
         });
         return;

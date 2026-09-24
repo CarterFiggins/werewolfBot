@@ -35,6 +35,8 @@ module.exports = {
     const game = await findGame(interaction.guild.id);
     const settings = await findSettings(interaction.guild.id);
     const isMayorElection = settings.mayor_election && game.first_night;
+    const isAnonymousVote = settings.anonymous_voting && !isMayorElection;
+    const isSecretVote = isMayorElection || isAnonymousVote;
     const votedUser = interaction.options.getUser("voted");
 
     if (!votedUser) {
@@ -44,7 +46,7 @@ module.exports = {
       });
       await interaction.reply({
         content: `${interaction.user} has removed their vote.`,
-        ephemeral: isMayorElection,
+        ephemeral: isSecretVote,
       });
       return;
     }
@@ -132,6 +134,14 @@ module.exports = {
     if (isMayorElection) {
       await interaction.reply({
         content: `You have voted for ${votedUser}. Your vote for Mayor has been recorded. It won't be revealed.\n Thanks for voting!`,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (isAnonymousVote) {
+      await interaction.reply({
+        content: `You have voted for ${votedUser}. Your vote has been recorded anonymously and won't be revealed.\n Thanks for voting!`,
         ephemeral: true,
       });
       return;

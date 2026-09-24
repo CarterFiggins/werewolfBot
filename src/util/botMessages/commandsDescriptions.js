@@ -45,14 +45,14 @@ When you have the Alive Role you will be able to use the \`/vote\` command. The 
       role: 'everyone',
       emoji: '📬',
       description: `### /show votes
-This will show the current vote status in the game. It will show the players name and the vote count next to it. During the Mayor election on the first night, votes are secret — this will only show how many votes have been cast.`
+This will show the current vote status in the game. It will show the players name and the vote count next to it. During the Mayor election on the first night, or if Anonymous Voting is turned on, votes are secret — this will only show how many votes have been cast.`
     },
     {
       label: '/show voters_for (player optional)',
       role: 'everyone',
       emoji: '💌',
       description: `### /show voters_for (player optional)
-Shows who voted for who. Can target a user or run without a target to see who everyone voted for. During the Mayor election on the first night, votes are secret and this will show nothing.`
+Shows who voted for who. Can target a user or run without a target to see who everyone voted for. During the Mayor election on the first night, or if Anonymous Voting is turned on, votes are secret and this will show nothing.`
     },
     {
       label: '/who_is_alive',

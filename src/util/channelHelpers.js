@@ -96,6 +96,12 @@ async function sendStartMessages(interaction, users) {
     );
   }
 
+  if (settings.anonymous_voting) {
+    await organizedChannels.townSquare.send(
+      `## 🕵️ Anonymous Voting\nHanging votes are anonymous. Use \`/vote\` to vote, but only the total number of votes cast will be shown — who voted and who they voted for will stay hidden.`
+    );
+  }
+
   await organizedChannels?.werewolves?.send(
     `${werewolfStart}\nWerewolves:\n${werewolves}`
   );

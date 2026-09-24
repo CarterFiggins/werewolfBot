@@ -16,6 +16,7 @@ const SettingCommands = {
   ADMIN_CONTROLS_CARDS: "admin_controls_cards",
   WEREWOLF_CREATES_HENCHMAN: "werewolf_creates_henchman",
   MAYOR_ELECTION: "mayor_election",
+  ANONYMOUS_VOTING: "anonymous_voting",
 };
 
 function formatTime(timeStr) {
@@ -44,6 +45,7 @@ function buildSettingsView(settings) {
     `Top 2 voted-for players get hanged?: ${b(settings.double_hanging)}`,
     `Whispering allowed?: ${b(settings.can_whisper)}`,
     `Mayor Election?: ${b(settings.mayor_election)}`,
+    `Anonymous Voting?: ${b(settings.anonymous_voting)}`,
     ``,
     `**MISC. ROLES:**`,
     `Bodyguard is a Mason after guarding one?: ${b(settings.bodyguard_joins_masons)}`,
@@ -212,6 +214,14 @@ On the first night the werewolves will not kill a player and will convert them i
       emoji: '🎩',
       description: `### Mayor Election
 If this setting is on, players vote for a Mayor on the first night using \`/vote\` in town-square. These votes are secret and are not announced. The winner is elected and announced the next morning. If the werewolves target the newly elected Mayor that same first night, the attack is blocked and the werewolves are told their target was protected for being elected Mayor. This protection only applies on the night they are elected. From then on the Mayor's vote counts as 2 votes during hangings.
+`,
+    },
+    {
+      id: SettingCommands.ANONYMOUS_VOTING,
+      label: 'Anonymous Voting',
+      emoji: '🕵️',
+      description: `### Anonymous Voting
+If this setting is on, hanging votes are anonymous: \`/vote\` won't be announced publicly, and \`/show votes\`/\`/show voters_for\` will only show how many votes have been cast, not who voted or who they voted for.
 `,
     },
   ],
