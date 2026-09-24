@@ -2,10 +2,15 @@ require("dotenv").config();
 const mongoUtil = require("./mongoUtil");
 const fs = require("fs");
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
+const { deployCommands } = require("./deploy-commands");
 
 mongoUtil.connectToServer(function (err, mongoClient) {
   if (err) console.log(err);
   console.log("connected to Mongo DB");
+
+  deployCommands().catch((error) => {
+    console.error("Failed to deploy application (/) commands:", error);
+  });
 
   const client = new Client({
     intents: [

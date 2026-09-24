@@ -3,7 +3,7 @@ const { findAllGames } = require("../werewolf_db");
 const { timeScheduling } = require("../util/timeHelper");
 
 module.exports = {
-  name: "ready",
+  name: "clientReady",
   once: true, // only runs once
   async execute(client) {
     console.log(`Ready! Logged in as ${client.user.tag}`);
