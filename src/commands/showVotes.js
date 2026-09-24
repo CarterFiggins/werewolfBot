@@ -26,7 +26,28 @@ module.exports = {
         )
     ),
   async execute(interaction) {
-    await interaction.deferReply({ ephemeral: false });
+    // Ephemeral status is locked in at the initial reply, so we need to know
+    // isSecretVote (and which subcommand) before deferring - it can't be
+    // changed later on editReply.
+    const subcommand = interaction.options.getSubcommand();
+    const guildId = interaction.guild?.id;
+    let isMayorElection = false;
+    let isAnonymousVote = false;
+    let isSecretVote = false;
+
+    if (guildId) {
+      const game = await findGame(guildId);
+      const settings = await findSettings(guildId);
+      isMayorElection = settings.mayor_election && game.first_night;
+      isAnonymousVote = settings.anonymous_voting && !isMayorElection;
+      isSecretVote = isMayorElection || isAnonymousVote;
+    }
+
+    // /show votes only ever reveals a count, so it always stays public.
+    // /show voters_for reveals who voted for who, so hide it when secret.
+    const isEphemeral = subcommand === commandNames.SHOW_VOTERS_FOR && isSecretVote;
+
+    await interaction.deferReply({ ephemeral: isEphemeral });
 
     const deniedMessage = await permissionCheck({
       interaction,
@@ -36,37 +57,28 @@ module.exports = {
     if (deniedMessage) {
       await interaction.editReply({
         content: deniedMessage,
-        ephemeral: true,
       });
       return;
     }
 
-    const game = await findGame(interaction.guild.id);
-    const settings = await findSettings(interaction.guild.id);
-    const isMayorElection = settings.mayor_election && game.first_night;
-    const isAnonymousVote = settings.anonymous_voting && !isMayorElection;
-    const isSecretVote = isMayorElection || isAnonymousVote;
-
-    if (interaction.options.getSubcommand() === commandNames.SHOW_VOTES) {
+    if (subcommand === commandNames.SHOW_VOTES) {
       if (isSecretVote) {
         const secretLabel = isMayorElection
-          ? "🎩 Mayor votes are secret and won't be revealed."
-          : "🕵️ Voting is anonymous and won't be revealed.";
-        const cursor = await findManyVotes({ guild_id: interaction.guild.id });
+          ? "# 🎩 Mayor votes are secret and won't be revealed."
+          : "# 🕵️ Voting is anonymous and won't be revealed.";
+        const cursor = await findManyVotes({ guild_id: guildId });
         const votes = await cursor.toArray();
         await interaction.editReply({
-          content: `${secretLabel}\n${votes.length} vote${votes.length === 1 ? "" : "s"} cast so far.`,
-          ephemeral: false,
+          content: `${secretLabel}\n# ${votes.length} vote${votes.length === 1 ? "" : "s"} cast so far.`,
         });
         return;
       }
 
-      const cursor = await getCountedVotes(interaction.guild.id);
+      const cursor = await getCountedVotes(guildId);
       const allVotes = await cursor.toArray();
       if (_.isEmpty(allVotes)) {
         await interaction.editReply({
-          content: "There are no votes to be counted",
-          ephemeral: false,
+          content: "# There are no votes to be counted",
         });
         return;
       }
@@ -81,25 +93,22 @@ module.exports = {
       );
 
       await interaction.editReply({
-        content: `Current Votes\n${message}`,
-        ephemeral: false,
+        content: `# Current Votes\n${message}`,
       });
     }
-    if (interaction.options.getSubcommand() === commandNames.SHOW_VOTERS_FOR) {
+    if (subcommand === commandNames.SHOW_VOTERS_FOR) {
       if (isSecretVote) {
         const secretLabel = isMayorElection
-          ? "🎩 Mayor votes are secret and can't be revealed until the election is over."
-          : "🕵️ Voting is anonymous — who voted for who can't be revealed.";
+          ? "# 🎩 Mayor votes are secret and can't be revealed until the election is over."
+          : "# 🕵️ Voting is anonymous — who voted for who can't be revealed.";
         await interaction.editReply({
           content: secretLabel,
-          ephemeral: false,
         });
         return;
       }
 
       const targetUser = interaction.options.getUser("target");
       const members = interaction.guild.members.cache;
-      const guildId = interaction.guild.id;
       let cursorVotes = null;
       if (targetUser) {
         cursorVotes = await findManyVotes({
@@ -116,8 +125,7 @@ module.exports = {
       const message = buildVotersForMessage(votes, members);
 
       await interaction.editReply({
-        content: message || "No Votes Found",
-        ephemeral: false,
+        content: message || "# No Votes Found",
       });
     }
   },
