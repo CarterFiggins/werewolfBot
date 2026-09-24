@@ -482,8 +482,9 @@ async function createChannels(interaction, users) {
 
   const serialKillerUsers = _.filter(users, (u) => u.info.character === characters.SERIAL_KILLER);
   serialKillerUsers.forEach((user) => {
+    const userName = user.nickname || user.username
     allChannelsData.push({
-      channelName: `${channelNames.SERIAL_KILLER}-${user.id}`,
+      channelName: `${userName.substring(0, 35)}-the-serial-killer`,
       singlePermission: true,
       characterNames: [characters.SERIAL_KILLER],
       player: user,
@@ -491,8 +492,9 @@ async function createChannels(interaction, users) {
   });
 
   seerOrFoolUsers.forEach((user) => {
+    const userName = user.nickname || user.username
     allChannelsData.push({
-      channelName: `${channelNames.SEER}-${user.id}`,
+      channelName: `${userName.substring(0, 35)}-the-seer`,
       singlePermission: true,
       characterNames: [user.info.character],
       player: user,
@@ -500,8 +502,9 @@ async function createChannels(interaction, users) {
   })
 
   littleGirlUsers.forEach((user) => {
+    const userName = user.nickname || user.username
     allChannelsData.push({
-      channelName: `${channelNames.LITTLE_GIRL}-${user.id}`,
+      channelName: `${userName.substring(0, 35)}-the-little-girl`,
       singlePermission: true,
       characterNames: [characters.LITTLE_GIRL],
       player: user,
