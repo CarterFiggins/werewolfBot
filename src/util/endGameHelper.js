@@ -15,9 +15,6 @@ const { buildCoupleTeam } = require("./characterHelpers/cupidHelper");
 const { getSideCharacters } = require("./userHelpers");
 
 async function checkGame(interaction, chaosWinsIds) {
-  const members = interaction.guild.members.cache;
-  const roles = interaction.guild.roles.cache;
-
   const isGameOver = await checkForWinner(interaction, chaosWinsIds);
 
   if (!_.isEmpty(interaction.townAnnouncements)) {
@@ -29,6 +26,10 @@ async function checkGame(interaction, chaosWinsIds) {
   }
 
   if (isGameOver) {
+    // fetch the full member/role lists so dead/alive roles get cleared
+    // from every player, not just the ones Discord.js already has cached
+    const roles = await interaction.guild.roles.fetch();
+    const members = await interaction.guild.members.fetch();
     await endGame(interaction, roles, members);
   }
 }
