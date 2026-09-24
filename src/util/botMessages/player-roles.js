@@ -185,7 +185,7 @@ roles = [
     label: "Cupid",
     tag: characters.CUPID,
     emoji: "💘",
-    team: "chaos",
+    team: "villager",
     description: `### Cupid
 * The first night Cupid can pick two players using \`/cupids_arrows\` to cause the two players to fall in love and be on the same team. Cupid will not be able to whisper to the lovers (They think it's true love, don't ruin it!) If one of the lovers dies, the other will die from a broken heart. As Cupid you will win with the lovers even if you are converted to a different team. Help them survive to the end. Cupid counts as a villager. Cupid can not fall in love with their own arrows. If the Chaos Demon is hit by the arrow they will join the lovers channel but their chaos target will switch to the person they are in love with. If one of the lovers is a werewolf, neither they nor the rest of the pack can bring themselves to kill their partner. If one of the lovers is a serial killer, they can't bring themselves to kill their partner either.
 * Channels: none
