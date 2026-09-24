@@ -4,6 +4,7 @@ const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
 const { getCountedVotes, findManyVotes, findGame, findSettings } = require("../werewolf_db");
 const { fetchMember } = require("../util/discordHelpers");
+const { buildVotersForMessage } = require("../util/voteHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -111,31 +112,8 @@ module.exports = {
         });
       }
 
-      const votedForMap = new Map();
-      const usersIdsOnVoterBoard = [];
-
       const votes = await cursorVotes.toArray();
-
-      _.forEach(votes, (vote) => {
-        const voter = { member: members.get(vote.user_id), weight: vote.weight || 1 };
-        let votedFor = votedForMap.get(vote.voted_user_id);
-        if (votedFor) {
-          votedForMap.set(vote.voted_user_id, [...votedFor, voter]);
-        } else {
-          votedForMap.set(vote.voted_user_id, [voter]);
-          usersIdsOnVoterBoard.push(vote.voted_user_id);
-        }
-      });
-
-      let message = "";
-
-      _.forEach(usersIdsOnVoterBoard, (userId) => {
-        message += `Players voting for ${members.get(userId)}\n`;
-        _.forEach(votedForMap.get(userId), (voter) => {
-          const mayorTag = voter.weight >= 2 ? " 🎩 (Mayor, counts as 2)" : "";
-          message += `  ${voter.member}${mayorTag}\n`;
-        });
-      });
+      const message = buildVotersForMessage(votes, members);
 
       await interaction.editReply({
         content: message || "No Votes Found",

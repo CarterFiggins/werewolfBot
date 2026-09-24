@@ -1,9 +1,43 @@
 const _ = require("lodash");
-const { getCountedVotes, findSettings, findUser, deleteManyVotes } = require("../werewolf_db");
+const { getCountedVotes, findSettings, findUser, deleteManyVotes, findManyVotes } = require("../werewolf_db");
 const { foundAliveChaosDemonsWithTarget } = require("./characterHelpers/chaosDemonHelpers");
 const { PowerUpNames } = require("./powerUpHelpers");
 const { removesDeadPermissions, WaysToDie } = require("./deathHelper");
 const { fetchMember } = require("./discordHelpers");
+
+function buildVotersForMessage(votes, members) {
+  const votedForMap = new Map();
+  const usersIdsOnVoterBoard = [];
+
+  _.forEach(votes, (vote) => {
+    const voter = { member: members.get(vote.user_id), weight: vote.weight || 1 };
+    let votedFor = votedForMap.get(vote.voted_user_id);
+    if (votedFor) {
+      votedForMap.set(vote.voted_user_id, [...votedFor, voter]);
+    } else {
+      votedForMap.set(vote.voted_user_id, [voter]);
+      usersIdsOnVoterBoard.push(vote.voted_user_id);
+    }
+  });
+
+  let message = "";
+
+  _.forEach(usersIdsOnVoterBoard, (userId) => {
+    message += `Players voting for ${members.get(userId)}\n`;
+    _.forEach(votedForMap.get(userId), (voter) => {
+      const mayorTag = voter.weight >= 2 ? " 🎩 (Mayor, counts as 2)" : "";
+      message += `  ${voter.member}${mayorTag}\n`;
+    });
+  });
+
+  return message;
+}
+
+async function getAllVotersMessage(guildId, members) {
+  const cursor = await findManyVotes({ guild_id: guildId });
+  const votes = await cursor.toArray();
+  return buildVotersForMessage(votes, members) || "No Votes Found";
+}
 
 async function findVoteWinners(guildId, votingOutAmount) {
   // getCountedVotes will return the votes in descending order
@@ -139,4 +173,6 @@ async function hangPlayer(interaction, userVoted, isRandom) {
 
 module.exports = {
   handleHangingVotes,
+  buildVotersForMessage,
+  getAllVotersMessage,
 };

@@ -17,6 +17,7 @@ const SettingCommands = {
   WEREWOLF_CREATES_HENCHMAN: "werewolf_creates_henchman",
   MAYOR_ELECTION: "mayor_election",
   ANONYMOUS_VOTING: "anonymous_voting",
+  REVEAL_VOTES_BEFORE_HANGING: "reveal_votes_before_hanging",
 };
 
 function formatTime(timeStr) {
@@ -37,15 +38,16 @@ function buildSettingsView(settings) {
     `**BASIC SETTINGS:**`,
     `Admin(s) choose Roles (& amounts)?: ${b(settings.admin_controls_cards)}`,
     `All players start game with Powerup?: ${b(settings.enable_power_ups)}`,
+    `Anonymous Voting?: ${b(settings.anonymous_voting)}`,
     `Bot includes Roles randomly?: ${b(settings.random_cards)}`,
     `Day begins: ${formatTime(settings.day_time)}`,
     `Emoji reactions allowed?: ${b(settings.allow_reactions)}`,
     `Hard Mode?: ${b(settings.hard_mode)}`,
+    `Mayor Election?: ${b(settings.mayor_election)}`,
     `Night begins: ${formatTime(settings.night_time)}`,
+    `Reveal Voters Before Hanging?: ${b(settings.reveal_votes_before_hanging)}`,
     `Top 2 voted-for players get hanged?: ${b(settings.double_hanging)}`,
     `Whispering allowed?: ${b(settings.can_whisper)}`,
-    `Mayor Election?: ${b(settings.mayor_election)}`,
-    `Anonymous Voting?: ${b(settings.anonymous_voting)}`,
     ``,
     `**MISC. ROLES:**`,
     `Bodyguard is a Mason after guarding one?: ${b(settings.bodyguard_joins_masons)}`,
@@ -222,6 +224,14 @@ If this setting is on, players vote for a Mayor on the first night using \`/vote
       emoji: '🕵️',
       description: `### Anonymous Voting
 If this setting is on, hanging votes are anonymous: \`/vote\` won't be announced publicly, and \`/show votes\`/\`/show voters_for\` will only show how many votes have been cast, not who voted or who they voted for.
+`,
+    },
+    {
+      id: SettingCommands.REVEAL_VOTES_BEFORE_HANGING,
+      label: 'Reveal Voters Before Hanging',
+      emoji: '📣',
+      description: `### Reveal Voters Before Hanging
+If this setting is on, right before the votes are counted and the hanging happens, the bot will post in town-square who voted for who — the same breakdown \`/show voters_for\` gives with no target. This works even if Anonymous Voting keeps votes hidden during the day, so votes can stay secret all day and only be revealed at the moment of the hanging.
 `,
     },
   ],

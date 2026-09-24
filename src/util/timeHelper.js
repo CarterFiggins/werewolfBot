@@ -28,7 +28,7 @@ const { votingDeathMessage } = require("./botMessages/deathMessages");
 const { markChaosTarget, getChaosWinIds } = require("./characterHelpers/chaosDemonHelpers");
 const { givePower } = require("./characterHelpers/monarchHelper");
 const { characters } = require("./commandHelpers");
-const { handleHangingVotes } = require("./voteHelpers");
+const { handleHangingVotes, getAllVotersMessage } = require("./voteHelpers");
 const { removeStunnedUsers } = require("./powerUp/stunHelper");
 const { shootCupidsArrows } = require("./characterHelpers/cupidHelper");
 const { electMayor } = require("./mayorHelper");
@@ -293,6 +293,13 @@ async function nightTimeJob(interaction) {
     await resetUserWhisperCount(guildId)
   }
   await removeStunnedUsers(interaction)
+
+  if (settings.reveal_votes_before_hanging) {
+    const votersMessage = await getAllVotersMessage(guildId, interaction.guild.members.cache);
+    await organizedChannels.townSquare.send(
+      `## 📣 The votes are in!\n${votersMessage}`
+    );
+  }
 
   const chaosWinsIds = await handleVotingDeath(interaction)
   await checkGame(interaction, chaosWinsIds);

@@ -62,6 +62,7 @@ module.exports = {
         werewolf_creates_henchman: false,
         mayor_election: false,
         anonymous_voting: false,
+        reveal_votes_before_hanging: true,
       });
     }
 
