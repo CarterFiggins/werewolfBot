@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { findUser, updateUser, findManyUsers } = require("../../werewolf_db");
 const { giveChannelPermissions } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
-const { randomUser } = require("../userHelpers");
+const { randomUser, getPlayersCharacter } = require("../userHelpers");
 const { fetchMember } = require("../discordHelpers");
 
 async function copyCharacters(interaction) {
@@ -81,7 +81,7 @@ async function copy(interaction, doppelgangerUserId, copyUserId) {
   }
 
   await organizedChannels.afterLife.send(
-    `${doppelgangerMember} has copied ${copiedMember} and has become a ${isVampire}${copiedCharacter}`
+    `${doppelgangerMember} has copied ${copiedMember} and has become a ${getPlayersCharacter(copiedUserDb)}`
   );
 
   try {
