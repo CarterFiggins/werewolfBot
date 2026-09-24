@@ -198,11 +198,13 @@ async function dayTimeJob(interaction) {
     guardedIds
   );
 
-  message += await killPlayers(interaction, deathIds);
-  message += await executeSerialKillerKill(interaction, guardedIds, deathIds, electedMayorId);
+  const { message: werewolfKillMessage, savedIds } = await killPlayers(interaction, deathIds);
+  message += werewolfKillMessage;
+  const confirmedDeathIds = _.difference(deathIds, savedIds);
+  message += await executeSerialKillerKill(interaction, guardedIds, confirmedDeathIds, electedMayorId);
   let starveMessage = ""
   if (game.is_baker_dead) {
-    starveMessage = await starveUser(interaction, deathIds);
+    starveMessage = await starveUser(interaction, confirmedDeathIds);
   }
 
   if (game.bot_has_gun) {

@@ -53,6 +53,7 @@ async function killPlayers(interaction, deathIds) {
   const deadUsers = await cursor.toArray();
   const settings = await findSettings(guildId);
   let message = [];
+  const savedIds = [];
 
   await Promise.all(
     _.map(deadUsers, async (deadUser) => {
@@ -117,11 +118,13 @@ You do not count as a villager or a werewolf for victory.`
 
       if (isDead) {
         message.push(`* ${await werewolfKillDeathMessage({ interaction, deadMember, deadUser })}`)
+      } else {
+        savedIds.push(deadUser.user_id);
       }
     })
   );
 
-  return message.join("\n");
+  return { message: message.join("\n"), savedIds };
 }
 
 module.exports = {
