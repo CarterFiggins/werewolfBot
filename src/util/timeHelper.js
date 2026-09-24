@@ -21,7 +21,7 @@ const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers
 const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
-const { killPlayers, getKillTargetedUsers } = require("./characterHelpers/werewolfHelper");
+const { killPlayers, getKillTargetedUsers, getWerewolfLoveProtectedIds } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
 const { votingDeathMessage } = require("./botMessages/deathMessages");
@@ -30,7 +30,7 @@ const { givePower } = require("./characterHelpers/monarchHelper");
 const { characters } = require("./commandHelpers");
 const { handleHangingVotes, getAllVotersMessage } = require("./voteHelpers");
 const { removeStunnedUsers } = require("./powerUp/stunHelper");
-const { shootCupidsArrows } = require("./characterHelpers/cupidHelper");
+const { shootCupidsArrows, sendLoveProtectedMessage } = require("./characterHelpers/cupidHelper");
 const { electMayor } = require("./mayorHelper");
 const { executeSerialKillerKill, getAliveSerialKillerIds } = require("./characterHelpers/serialKillerHelper");
 const { getRandomGif } = require("./botMessages/randomGif");
@@ -178,10 +178,16 @@ async function dayTimeJob(interaction) {
   const guardedIds = await guardPlayers(interaction);
   // serial killers can't be killed by werewolves. Message will send as being blocked by guard.
   const serialKillerIds = await getAliveSerialKillerIds(guildId);
+  // a wolf's love protects their target from the whole pack, same as a guard.
+  const werewolfLoveProtectedIds = await getWerewolfLoveProtectedIds(guildId);
   const werewolfKills = await getKillTargetedUsers(interaction);
-  const blockedIds = [...guardedIds, ...serialKillerIds];
-  const successfulGuardIds = _.intersection(werewolfKills, blockedIds);
+  const blockedIds = [...guardedIds, ...serialKillerIds, ...werewolfLoveProtectedIds];
+  const loveProtectedTargetIds = _.intersection(werewolfKills, werewolfLoveProtectedIds);
+  // Love gets its own explicit reveal in the werewolves channel, so keep it out of the vague guard message.
+  const successfulGuardIds = _.difference(_.intersection(werewolfKills, blockedIds), loveProtectedTargetIds);
   await sendSuccessfulGuardMessage(interaction, successfulGuardIds);
+
+  await sendLoveProtectedMessage(interaction, loveProtectedTargetIds);
 
   if (electedMayorId && werewolfKills.includes(electedMayorId)) {
     blockedIds.push(electedMayorId);

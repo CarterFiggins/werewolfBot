@@ -92,6 +92,13 @@ module.exports = {
       });
       return;
     }
+    if (userWhoShot.in_love_with_ids?.includes(targetDbUser.user_id)) {
+      await interaction.reply({
+        content: `You are in love with ${targetedUser} and cannot bring yourself to kill them.`,
+        ephemeral: true,
+      });
+      return;
+    }
     if (targetDbUser.is_injured) {
       await interaction.reply({
         content: `${targetedUser} is injured Try again.\nhttps://tenor.com/xewo.gif`,

@@ -89,6 +89,13 @@ module.exports = {
         });
         return;
       }
+      if (dbUser.in_love_with_ids?.includes(targetedUser.id)) {
+        await interaction.reply({
+          content: `You are in love with ${targetedUser} and cannot bring yourself to kill them.`,
+          ephemeral: true,
+        });
+        return;
+      }
       if (dbTargetUser.is_muted) {
         await interaction.reply({
           content: `${targetedUser} is safely locked away in the Granny's house. Try again.`,
@@ -149,6 +156,13 @@ module.exports = {
       await interaction.reply({
         content: `${targetedUser} is a werewolf... try again?\nhttps://tenor.com/bPmzV.gif`,
         ephemeral: false,
+      });
+      return;
+    }
+    if (dbUser.in_love_with_ids?.includes(targetedUser.id)) {
+      await interaction.reply({
+        content: `You are in love with ${targetedUser} and cannot bring yourself to kill them.`,
+        ephemeral: true,
       });
       return;
     }

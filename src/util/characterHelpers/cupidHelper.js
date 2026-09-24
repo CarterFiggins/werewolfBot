@@ -57,6 +57,14 @@ async function shootArrows(interaction, cupid) {
 
   const loversChanel = await addLoversInChannel(interaction, usersInLove)
 
+  await Promise.all(
+    usersInLove.map((user) =>
+      updateUser(user.user_id, interaction.guild.id, {
+        lovers_channel_id: loversChanel.id,
+      })
+    )
+  )
+
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const members = interaction.guild.members.cache;
@@ -68,6 +76,46 @@ async function shootArrows(interaction, cupid) {
   await updateUser(cupid.user_id, interaction.guild.id, {
     cupid_success_hits: true
   })
+}
+
+async function sendLoveProtectedMessage(interaction, protectedUserIds) {
+  if (_.isEmpty(protectedUserIds)) return;
+
+  const guildId = interaction.guild.id;
+  const channels = interaction.guild.channels.cache;
+  const organizedChannels = organizeChannels(channels);
+  const members = interaction.guild.members.cache;
+
+  const cursor = await findManyUsers({
+    guild_id: guildId,
+    user_id: { $in: protectedUserIds },
+  });
+  const protectedUsers = await cursor.toArray();
+
+  await Promise.all(
+    protectedUsers.map(async (user) => {
+      const loversChannel = channels.get(user.lovers_channel_id?.toString());
+      const member = members.get(user.user_id);
+      await loversChannel?.send(
+        `💘 The werewolves came for ${member} last night, but love got in the way — their attack was blocked.`
+      );
+
+      const cursorWolfLovers = await findManyUsers({
+        guild_id: guildId,
+        user_id: { $in: user.in_love_with_ids },
+        character: characters.WEREWOLF,
+        is_dead: false,
+      });
+      const wolfLovers = await cursorWolfLovers.toArray();
+      const wolfMembers = wolfLovers
+        .map((wolf) => `${members.get(wolf.user_id)}`)
+        .join(" and ");
+
+      await organizedChannels?.werewolves?.send(
+        `💘 ${wolfMembers} fell in love with ${member} and is now protecting them from harm — the pack's attack on ${member} failed and is now protected by ${wolfMembers}.`
+      );
+    })
+  );
 }
 
 function buildCoupleTeam(cupid, allDbUsers) {
@@ -100,4 +148,5 @@ function buildCoupleTeam(cupid, allDbUsers) {
 module.exports = {
   shootCupidsArrows,
   buildCoupleTeam,
+  sendLoveProtectedMessage,
 };

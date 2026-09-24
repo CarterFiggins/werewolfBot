@@ -52,6 +52,11 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
 
       const targetMember = await fetchMember(interaction, targetId);
 
+      if (sk.in_love_with_ids?.includes(targetId)) {
+        await skChannel?.send(`You tried to kill ${targetMember}, but you were immobilized by love! 💘`);
+        return;
+      }
+
       const deathCharacter = await removesDeadPermissions(
         interaction,
         targetDbUser,

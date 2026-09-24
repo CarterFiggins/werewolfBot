@@ -44,6 +44,19 @@ async function getKillTargetedUsers(interaction) {
   return usersIdsToBeKilled
 }
 
+// A werewolf can't bring themselves to kill their own lover, and the pack
+// won't kill someone one of their own loves - so the whole pack is blocked
+// from killing them that night, same as if they were guarded.
+async function getWerewolfLoveProtectedIds(guildId) {
+  const cursorWerewolves = await findManyUsers({
+    guild_id: guildId,
+    is_dead: false,
+    character: characters.WEREWOLF,
+  });
+  const werewolves = await cursorWerewolves.toArray();
+  return _.uniq(_.flatMap(werewolves, (wolf) => wolf.in_love_with_ids || []));
+}
+
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;
   const game = await findGame(guildId);
@@ -130,4 +143,5 @@ You do not count as a villager or a werewolf for victory.`
 module.exports = {
   killPlayers,
   getKillTargetedUsers,
+  getWerewolfLoveProtectedIds,
 };
