@@ -26,7 +26,8 @@ async function starveUser(interaction, deathIds) {
       (user) =>
         user.character !== characters.WEREWOLF &&
         !user.is_vampire &&
-        user.character !== characters.HUNTER
+        user.character !== characters.HUNTER &&
+        user.character !== characters.SERIAL_KILLER
     );
   }
 
