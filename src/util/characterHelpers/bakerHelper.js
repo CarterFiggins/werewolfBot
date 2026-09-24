@@ -18,7 +18,8 @@ async function starveUser(interaction, deathIds) {
         !deathIds.includes(user.user_id) &&
         user.character !== characters.WEREWOLF &&
         !user.is_vampire &&
-        user.character !== characters.HUNTER
+        user.character !== characters.HUNTER &&
+        user.character !== characters.SERIAL_KILLER
     );
   } else {
     aliveUsers = _.filter(
