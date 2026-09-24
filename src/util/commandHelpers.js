@@ -102,7 +102,7 @@ async function sendGreeting(interaction, user) {
     }
 
     const villagerMessage = `You are a **Villager!**\nYour job is to find out who is a werewolf and hang them for their crimes.\n${voteText}\nBe careful at night, the werewolves are hungry.\n`;
-    const bakerMessage = `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die, then the villagers will start to die from starvation one by one every day.\nWith the knowledge to make bread comes great responsibility.`;
+    const bakerMessage = `You are the **Baker**.\nYou make all the bread for the village.\n${voteText}\nIf you die, then the villagers will start to die from starvation one by one every day.\nWerewolves, vampires, hunter(s), and the serial killer will not starve.\nWith the knowledge to make bread comes great responsibility.`;
     const hunterMessage = `You are the **Hunter**.\n${voteText}\nWhen you die, you will be able to shoot one player using the \`/shoot\` command in town-square.\nTry and hit a werewolf to help out the villagers.`;
 
     switch (user.info.assigned_identity) {

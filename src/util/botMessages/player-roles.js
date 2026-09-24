@@ -68,7 +68,7 @@ roles = [
     emoji: "🧑‍🍳",
     team: "villager",
     description: `### Baker
-* The baker makes bread for the village. If the baker dies, the villagers start to starve to death. After the death of the baker, one villager will die every morning. The werewolves, the vampires, and the hunter(s) will not starve.
+* The baker makes bread for the village. If the baker dies, the villagers start to starve to death. After the death of the baker, one villager will die every morning. Werewolves, vampires, hunter(s), and the serial killer will not starve.
 * Channels: none
 * Commands: none`,
   },
@@ -211,7 +211,7 @@ roles = [
 * The werewolves cannot kill the serial killer at night. The bodyguard can block their attack.
 * Multiple serial killers cannot kill each other.
 * The seer sees them as a villager.
-* The serial killer dies from the witch's curse and can starve if the baker dies.
+* The serial killer dies from the witch's curse, but will not starve if the baker dies.
 * If struck by Cupid's arrow, their win condition changes to surviving alongside their lover.
 * Channels: serial-killer
 * Commands: \`/kill\``,
