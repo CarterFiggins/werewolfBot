@@ -7,12 +7,14 @@ const {
   isDead,
 } = require("./rolesHelpers");
 
-async function alreadyPlayingReplay(interaction, member, message, editReply) {
+async function alreadyPlayingReplay(interaction, member, message) {
   if (isAlive(member) || isPlaying(member) || isDead(member)) {
-    await interaction.reply({
-      content: message,
-      ephemeral: true,
-    });
+    const reply = { content: message, ephemeral: true };
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply(reply);
+    } else {
+      await interaction.reply(reply);
+    }
     return true;
   }
   return false;
