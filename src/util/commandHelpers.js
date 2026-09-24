@@ -172,7 +172,7 @@ async function sendGreeting(interaction, user) {
         break;
       case characters.CUPID:
         await member.send(
-          `You are **Cupid**\n${voteText}\nOn the first night, use \`/cupids_arrows\` to pick two users that will fall in love and be on the same team. Cupid will not be able to whisper to the couple (They think it's true love, don't ruin it!) If one of them dies, the other will die from a broken heart. As Cupid, you will win with the cupid couple. Help them survive to the end. Cupid counts as a villager.`
+          `You are **Cupid**\n${voteText}\nOn the first night, use \`/cupids_arrows\` to pick two users that will fall in love and be on the same team. Cupid will not be able to whisper to the couple (They think it's true love, don't ruin it!) If one of them dies, the other will die from a broken heart. As Cupid, you will win with the cupid couple. Help them survive to the end. Cupid counts as a villager. If one of the couple is a werewolf, neither they nor the rest of the pack can bring themselves to kill their partner. If one of the couple is a serial killer, they can't bring themselves to kill their partner either.`
         );
         break;
       case characters.SERIAL_KILLER:
