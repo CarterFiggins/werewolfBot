@@ -148,7 +148,7 @@ async function sendBittenUsersMessage(interaction, vampireChannel) {
   const members = interaction.guild.members.cache;
   const bittenMessage = _.map(
     bittenDbUsers,
-    (dbUser) => `* ${members.get(dbUser.user_id)}`
+    (dbUser) => `* ${members.get(dbUser.user_id) || dbUser.nickname || dbUser.name}`
   ).join("\n");
   await vampireChannel.send(`### Players bitten\n${bittenMessage}`);
 }

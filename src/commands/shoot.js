@@ -8,6 +8,7 @@ const { permissionCheck } = require("../util/permissionCheck");
 const { PowerUpNames } = require("../util/powerUpHelpers");
 const { channelNames } = require("../util/channelHelpers");
 const { gunFire } = require("../util/deathHelper");
+const { fetchMember } = require("../util/discordHelpers");
 
 
 module.exports = {
@@ -40,7 +41,7 @@ module.exports = {
     const game = await findGame(interaction.guild.id);
     const targetedUser = await interaction.options.getUser("target");
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
-    const targetedMember = interaction.guild.members.cache.get(targetedUser.id);
+    const targetedMember = await fetchMember(interaction, targetedUser.id);
     const targetDbUser = await findUser(targetedUser.id, interaction.guild.id);
     const userWhoShot = await findUser(
       interaction.user.id,

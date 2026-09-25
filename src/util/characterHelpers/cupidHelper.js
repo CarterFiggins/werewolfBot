@@ -68,10 +68,10 @@ async function shootArrows(interaction, cupid) {
   const channels = interaction.guild.channels.cache;
   const organizedChannels = organizeChannels(channels);
   const members = interaction.guild.members.cache;
-  const membersInLove = _.map(usersInLove, (u) => `${members.get(u.user_id)}`)
+  const membersInLove = _.map(usersInLove, (u) => `${members.get(u.user_id) || u.nickname || u.name}`)
   organizedChannels.afterLife.send(`${membersInLove.join(" and ")} are in love.`)
 
-  await loversChanel.send(`${membersInLove.join(" and ")} you are now in love. Use this chanel to plan out how to stay alive together.`)
+  await loversChanel.send(`${membersInLove.join(" and ")} you are now in love. Use this channel to plan out how to stay alive together.`)
 
   await updateUser(cupid.user_id, interaction.guild.id, {
     cupid_success_hits: true
@@ -97,7 +97,7 @@ async function sendLoveProtectedMessage(interaction, protectedUserIds) {
       const loversChannel = channels.get(user.lovers_channel_id?.toString());
       const member = members.get(user.user_id);
       await loversChannel?.send(
-        `💘 The werewolves came for ${member} last night, but love got in the way — their attack was blocked.`
+        `💘 The werewolves came for ${member || user.nickname || user.name} last night, but love got in the way — their attack was blocked.`
       );
 
       const cursorWolfLovers = await findManyUsers({
@@ -108,11 +108,11 @@ async function sendLoveProtectedMessage(interaction, protectedUserIds) {
       });
       const wolfLovers = await cursorWolfLovers.toArray();
       const wolfMembers = wolfLovers
-        .map((wolf) => `${members.get(wolf.user_id)}`)
+        .map((wolf) => `${members.get(wolf.user_id) || wolf.nickname || wolf.name}`)
         .join(" and ");
 
       await organizedChannels?.werewolves?.send(
-        `💘 ${wolfMembers} fell in love with ${member} and is now protecting them from harm — the pack's attack on ${member} failed and is now protected by ${wolfMembers}.`
+        `💘 ${wolfMembers} fell in love with ${member || user.nickname || user.name} and is now protecting them from harm — the pack's attack on ${member || user.nickname || user.name} failed and is now protected by ${wolfMembers}.`
       );
     })
   );

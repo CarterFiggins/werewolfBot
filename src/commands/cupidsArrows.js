@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const _ = require("lodash");
 const { getRandomSadBotGif } = require("../util/channelHelpers");
 const { commandNames } = require("../util/commandHelpers");
 const { characters } = require("../util/characterHelpers/characterUtil");
@@ -43,8 +42,6 @@ module.exports = {
       return;
     }
 
-    const members = interaction.guild.members.cache
-
     const targetedOneUser = await interaction.options.getUser("target1");
     const targetedTwoUser = await interaction.options.getUser("target2");
     const targetedOneMember = await fetchMember(interaction, targetedOneUser.id);
@@ -58,9 +55,9 @@ module.exports = {
       return;
     }
     if (dbUser.cupid_success_hits) {
-      const CoupleMembers = _.map(dbUser.cupid_hit_ids, (id) => {
-        return `${members.get(id)}`
-      })
+      const CoupleMembers = await Promise.all(
+        dbUser.cupid_hit_ids.map((id) => fetchMember(interaction, id))
+      )
       await interaction.editReply({
         content: `${CoupleMembers.join(", ")} are already in love. You are out of arrows`,
         ephemeral: true,

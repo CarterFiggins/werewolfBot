@@ -35,6 +35,7 @@ const { electMayor } = require("./mayorHelper");
 const { executeSerialKillerKill, getAliveSerialKillerIds } = require("./characterHelpers/serialKillerHelper");
 const { getRandomGif } = require("./botMessages/randomGif");
 const { buildAlivePlayersMessage } = require("./userHelpers");
+const { fetchMember } = require("./discordHelpers");
 
 async function timeScheduling(interaction) {
   await endGuildJobs(interaction);
@@ -159,7 +160,7 @@ async function dayTimeJob(interaction) {
 
     if (settings.mayor_election) {
       electedMayorId = await electMayor(guildId);
-      const mayorMember = electedMayorId && interaction.guild.members.cache.get(electedMayorId);
+      const mayorMember = electedMayorId && await fetchMember(interaction, electedMayorId);
       if (mayorMember) {
         await organizedChannels.townSquare.send(
           `## 🎩 ${mayorMember} has been elected Mayor! Their vote will now count as 2 during hangings.`
@@ -191,7 +192,7 @@ async function dayTimeJob(interaction) {
 
   if (electedMayorId && werewolfKills.includes(electedMayorId)) {
     blockedIds.push(electedMayorId);
-    const mayorMember = interaction.guild.members.cache.get(electedMayorId);
+    const mayorMember = await fetchMember(interaction, electedMayorId);
     await organizedChannels?.werewolves?.send(
       `Your attack on ${mayorMember} failed last night. They were protected because they were just elected Mayor!`
     );

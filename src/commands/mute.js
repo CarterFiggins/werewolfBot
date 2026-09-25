@@ -5,6 +5,7 @@ const { getRandomBotGif, channelNames } = require("../util/channelHelpers");
 const { roleNames, isAlive } = require("../util/rolesHelpers");
 const { findGame, findUser, updateUser } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
+const { fetchMember } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -37,7 +38,16 @@ module.exports = {
     const mutedDbUser = await findUser(muteUser.id, interaction.guild.id);
     const game = await findGame(interaction.guild.id);
     const channel = interaction.guild.channels.cache.get(interaction.channelId);
-    const votedMember = interaction.guild.members.cache.get(muteUser.id);
+    const votedMember = await fetchMember(interaction, muteUser.id);
+
+    if (!votedMember) {
+      await interaction.reply({
+        content: "Could not find that player in the server. Try again.",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const mapRoles = votedMember.roles.cache;
     const roles = mapRoles.map((role) => {
       return role.name;

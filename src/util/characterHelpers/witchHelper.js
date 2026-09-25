@@ -27,7 +27,7 @@ async function cursePlayers(interaction) {
             is_cursed: false,
           });
           await organizedChannels.witch.send(
-            `${members.get(witch.user_id)} Your dark magic has failed. ${members.get(witch.target_cursed_user_id)} has died and this curse works on the living.`
+            `${members.get(witch.user_id) || witch.nickname || witch.name} Your dark magic has failed. ${members.get(targetDbUser.user_id) || targetDbUser.nickname || targetDbUser.name} has died and this curse works on the living.`
           );
           return;
         }
@@ -38,7 +38,7 @@ async function cursePlayers(interaction) {
           target_cursed_user_id: null,
         });
         await organizedChannels.witch.send(
-          `${members.get(witch.user_id)} Your dark magic has taken effect. You have successfully cursed ${members.get(witch.target_cursed_user_id)}. The power of your curse now looms over them.`
+          `${members.get(witch.user_id) || witch.nickname || witch.name} Your dark magic has taken effect. You have successfully cursed ${members.get(targetDbUser.user_id) || targetDbUser.nickname || targetDbUser.name}. The power of your curse now looms over them.`
         );
       }
     })
@@ -52,7 +52,7 @@ async function cursePlayers(interaction) {
   const cursedUser = await cursorCursed.toArray();
   if (!_.isEmpty(cursedUser)) {
     await organizedChannels.witch.send(
-      `Current players cursed\n${_.map(cursedUser, (user) => `* ${members.get(user.user_id)}`).join("\n")}`
+      `Current players cursed\n${_.map(cursedUser, (user) => `* ${members.get(user.user_id) || user.nickname || user.name}`).join("\n")}`
     );
   }
 }
