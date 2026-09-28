@@ -375,14 +375,18 @@ async function joinMasons({
   roleName,
 }) {
   if (targetUser.character === characters.MASON && !player.on_mason_channel) {
-    await updateUser(player.user_id, interaction.guild.id, {
-      on_mason_channel: true,
-    });
+    if (!playerMember) {
+      console.warn(`joinMasons: no member found for player ${player.user_id}, skipping.`);
+      return;
+    }
     await giveChannelPermissions({
       interaction,
       user: playerMember,
       character: characters.MASON,
       message: `The ${roleName} ${playerMember} has joined!`,
+    });
+    await updateUser(player.user_id, interaction.guild.id, {
+      on_mason_channel: true,
     });
   }
 }

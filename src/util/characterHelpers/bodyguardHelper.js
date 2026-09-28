@@ -7,6 +7,7 @@ const {
 } = require("../../werewolf_db");
 const { organizeChannels, joinMasons } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
+const { fetchMember } = require("../discordHelpers");
 
 async function guardPlayers(interaction) {
   const guildId = interaction.guild.id;
@@ -34,7 +35,7 @@ async function guardPlayers(interaction) {
           interaction,
           targetUser: guardedUser,
           player: bodyguard,
-          playerMember: members.get(bodyguard.user_id),
+          playerMember: await fetchMember(interaction, bodyguard.user_id),
           roleName: "bodyguard",
         });
       }
