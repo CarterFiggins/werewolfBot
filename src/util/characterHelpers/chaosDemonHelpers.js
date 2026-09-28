@@ -37,7 +37,7 @@ async function markChaosTarget(interaction) {
       console.warn(`markChaosTarget: could not find target member ${selectedChaosUserId}, skipping.`);
       continue;
     }
-    const targetUsername = targetMember.nickname || targetMember.username
+    const targetUsername = targetMember.nickname || targetMember.user.username
     organizedChannels.afterLife.send(`${demonMember} the chaos demon has chosen ${targetMember}`)
     await updateUser(selectedChaosUserId, interaction.guild.id, {
       is_chaos_target: true,

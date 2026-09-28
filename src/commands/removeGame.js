@@ -4,6 +4,7 @@ const { channelNames } = require("../util/channelHelpers");
 const { commandNames } = require("../util/commandHelpers");
 const { permissionCheck } = require("../util/permissionCheck");
 const { endGame } = require("../util/endGameHelper");
+const { fetchMembers } = require("../util/discordHelpers");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -27,7 +28,7 @@ module.exports = {
     // stop scheduling day and night
     await interaction.deferReply({ ephemeral: true });
     const roles = await interaction.guild.roles.fetch();
-    const currentMembers = await interaction.guild.members.fetch();
+    const currentMembers = await fetchMembers(interaction);
     await endGame(interaction, roles, currentMembers, true);
     await interaction.editReply({ content: "Game Ended", ephemeral: true });
   },

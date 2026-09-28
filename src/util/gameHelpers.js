@@ -10,6 +10,7 @@ const computeCharacters = require("./computeCharacters");
 const { sendGreeting, characters } = require("./commandHelpers");
 const { getRole, roleNames } = require("./rolesHelpers");
 const { crateUserData } = require("./userHelpers");
+const { fetchMembers } = require("./discordHelpers");
 
 async function startGame(interaction) {
   const playingDiscordUsers = await getPlayingDiscordUsers(interaction);
@@ -54,14 +55,8 @@ async function getPlayingDiscordUsers(interaction) {
     throw new Error("No playing role created");
   }
 
-  const members = interaction.guild.members.cache;
-  const playingDiscordUsers = members
-    .map((member) => {
-      if (member._roles.includes(playingRole.id)) {
-        return member.user;
-      }
-    })
-    .filter((m) => m);
+  const playingMembers = await fetchMembers(interaction, playingRole.id);
+  const playingDiscordUsers = playingMembers.map((member) => member.user);
 
   if (_.isEmpty(playingDiscordUsers)) {
     throw new Error(`No Players`)

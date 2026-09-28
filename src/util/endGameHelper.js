@@ -9,6 +9,7 @@ const {
 } = require("../werewolf_db");
 const { characters, teams } = require("./characterHelpers/characterUtil");
 const { removeGameRolesFromMembers } = require("./rolesHelpers");
+const { fetchMembers } = require("./discordHelpers");
 const { endGuildJobs } = require("./schedulHelper");
 const { organizeChannels } = require("./channelHelpers");
 const { buildCoupleTeam } = require("./characterHelpers/cupidHelper");
@@ -29,7 +30,7 @@ async function checkGame(interaction, chaosWinsIds) {
     // fetch the full member/role lists so dead/alive roles get cleared
     // from every player, not just the ones Discord.js already has cached
     const roles = await interaction.guild.roles.fetch();
-    const members = await interaction.guild.members.fetch();
+    const members = await fetchMembers(interaction);
     await endGame(interaction, roles, members);
   }
 }

@@ -4,57 +4,14 @@ const { characters } = require("./commandHelpers");
 const { createUsers, findSettings, findManyUsers, findAllUsers } = require("../werewolf_db");
 const { randomWeightPowerUp } = require("./powerUpHelpers");
 const { possibleCharactersInGame, channelNames } = require("./channelHelpers");
-const { getAliveUsersIds, fetchMember } = require("./discordHelpers");
+const { fetchMember, fetchMembers } = require("./discordHelpers");
 require("dotenv").config();
 
-let playingMembersCache = new Map();
-
 async function getPlayingCount(interaction) {
-  let playingRole = await getRole(interaction, roleNames.PLAYING);
-  const guildId = interaction.guild.id;
-  const now = Date.now();
-  
-  // Get cache for this specific guild
-  const guildCache = playingMembersCache.get(guildId) || {
-    data: null,
-    timestamp: 0,
-    roleId: null
-  };
-  
-  const cacheAge = now - guildCache.timestamp;
-  const cacheIsValid = cacheAge < 60000 && guildCache.roleId === playingRole.id;
-  let members = interaction.guild.members.cache
-
-  if (!cacheIsValid) {
-    try {
-      members = await interaction.guild.members.fetch({ 
-        role: playingRole.id 
-      }).catch(() => {
-        return interaction.guild.members.cache.filter(member =>
-          member._roles.includes(playingRole.id)
-        );
-      });
-      // Update cache for this specific guild
-      playingMembersCache.set(interaction.guild.id, {
-        timestamp: now,
-        roleId: playingRole.id
-      });
-    } catch (error) {
-      console.error('Error fetching playing members:', error);
-      members = interaction.guild.members.cache
-    }
-  }
-  
-  
-  let playersCount = 0;
-  const playingMembers = [];
-  members.forEach((member) => {
-    if (member._roles.includes(playingRole.id)) {
-      playersCount += 1;
-      playingMembers.push(member)
-    }
-  });
-  return {playersCount, playingMembers};
+  const playingRole = await getRole(interaction, roleNames.PLAYING);
+  const members = await fetchMembers(interaction, playingRole.id);
+  const playingMembers = members.map((member) => member);
+  return { playersCount: playingMembers.length, playingMembers };
 }
 
 

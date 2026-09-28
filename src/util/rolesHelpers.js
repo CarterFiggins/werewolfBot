@@ -82,13 +82,12 @@ async function setupRoles(interaction) {
 
 async function removeGameRolesFromMembers(members, roles, reset) {
   const organizedRoles = organizeRoles(roles);
+  const gameMembers = members.filter((member) => isAlive(member) || isDead(member));
   await Promise.all(
-    members.map(async (member) => {
-      const markAsPlaying = reset && (isAlive(member) || isDead(member))
-      await member.roles.remove(organizedRoles.dead);
-      await member.roles.remove(organizedRoles.alive);
+    gameMembers.map(async (member) => {
+      await member.roles.remove([organizedRoles.dead, organizedRoles.alive]);
 
-      if (markAsPlaying) {
+      if (reset) {
         await member.roles.add(organizedRoles.playing);
       }
     })
