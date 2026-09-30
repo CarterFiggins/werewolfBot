@@ -5,13 +5,19 @@ const { settingsList } = require("./botMessages/settings");
 const { commandList } = require("./botMessages/commandsDescriptions");
 const { powerUpList } = require("./botMessages/powerUpMessages");
 
+// Sorts options alphabetically by label, keeping "Select All" / "View All" at the top.
+function sortByLabel(list) {
+  const [pinned, rest] = _.partition(list, (item) => item.tag === "select-all" || item.label === "View All");
+  return [...pinned, ..._.sortBy(rest, (item) => item.label.toLowerCase())];
+}
+
 function selectCharacterActionRow() {
   const selectMenuCharacterSelection = new StringSelectMenuBuilder()
     .setCustomId("character-selection")
     .setPlaceholder("Select characters")
     .setMinValues(1)
     .setMaxValues(selectCharacterList.length)  
-    .addOptions(_.map(selectCharacterList, (character) => new StringSelectMenuOptionBuilder()
+    .addOptions(_.map(sortByLabel(selectCharacterList), (character) => new StringSelectMenuOptionBuilder()
       .setLabel(character.label)
       .setDescription(`team ${character.team}`)
       .setValue(character.tag)
@@ -42,7 +48,7 @@ function selectPowerUpActionRow() {
   .setPlaceholder("Select power up")
   .setMinValues(1)
   .setMaxValues(powerUpList.length)  
-  .addOptions(_.map(powerUpList, (powerUp) => new StringSelectMenuOptionBuilder()
+  .addOptions(_.map(sortByLabel(powerUpList), (powerUp) => new StringSelectMenuOptionBuilder()
     .setLabel(powerUp.label)
     .setDescription(powerUp.shortDescription)
     .setValue(powerUp.tag)
@@ -58,7 +64,7 @@ function selectPowerUpDescriptionActionRow() {
   .setPlaceholder("Select power up")
   .setMinValues(1)
   .setMaxValues(1)
-  .addOptions(_.map(powerUpList, (powerUp) => new StringSelectMenuOptionBuilder()
+  .addOptions(_.map(sortByLabel(powerUpList), (powerUp) => new StringSelectMenuOptionBuilder()
     .setLabel(powerUp.label)
     .setDescription(powerUp.shortDescription)
     .setValue(powerUp.tag)
@@ -74,7 +80,7 @@ function selectSettingsActionRow() {
     .setPlaceholder("Select Setting")
     .setMinValues(1)
     .setMaxValues(1)
-    .addOptions(_.map(settingsList, (setting) => {
+    .addOptions(_.map(sortByLabel(settingsList), (setting) => {
       return new StringSelectMenuOptionBuilder()
         .setLabel(setting.label)
         .setValue(setting.label)
@@ -91,7 +97,7 @@ function selectCommandsActionRow() {
   .setPlaceholder("Select command")
   .setMinValues(1)
   .setMaxValues(1)
-  .addOptions(_.map(commandList, (command) => new StringSelectMenuOptionBuilder()
+  .addOptions(_.map(sortByLabel(commandList), (command) => new StringSelectMenuOptionBuilder()
     .setLabel(command.label)
     .setDescription(command.role)
     .setValue(command.label)
@@ -107,7 +113,7 @@ function selectRolesActionRow() {
   .setPlaceholder("Select Role")
   .setMinValues(1)
   .setMaxValues(1)
-  .addOptions(_.map(roleList, (role) => new StringSelectMenuOptionBuilder()
+  .addOptions(_.map(sortByLabel(roleList), (role) => new StringSelectMenuOptionBuilder()
     .setLabel(role.label)
     .setDescription(`team ${role.team}`)
     .setValue(role.label)
