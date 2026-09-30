@@ -38,6 +38,16 @@ module.exports = {
     const isAnonymousVote = settings.anonymous_voting && !isMayorElection;
     const isSecretVote = isMayorElection || isAnonymousVote;
     const votedUser = interaction.options.getUser("voted");
+    const channel = interaction.guild.channels.cache.get(interaction.channelId);
+    
+    if (channel.name !== channelNames.TOWN_SQUARE) {
+      await interaction.reply({
+        content:
+          "Use vote in the town-square so everyone can see\nhttps://tenor.com/3LlN.gif",
+        ephemeral: true,
+      });
+      return;
+    }
 
     if (!votedUser) {
       await deleteManyVotes({
@@ -51,7 +61,6 @@ module.exports = {
       return;
     }
 
-    const channel = interaction.guild.channels.cache.get(interaction.channelId);
     const votedMember = await fetchMember(interaction, votedUser.id);
 
     if (!votedMember) {
@@ -68,15 +77,6 @@ module.exports = {
     });
 
     const votedDbUser = await findUser(votedUser.id, interaction.guild.id);
-
-    if (channel.name !== channelNames.TOWN_SQUARE) {
-      await interaction.reply({
-        content:
-          "Use vote in the town-square so everyone can see\nhttps://tenor.com/3LlN.gif",
-        ephemeral: true,
-      });
-      return;
-    }
     if (dbUser.is_injured) {
       await interaction.reply({
         content: "You can't vote because you are injured",
