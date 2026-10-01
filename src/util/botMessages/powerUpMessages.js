@@ -57,6 +57,13 @@ powerUpList = [
     shortDescription: "/smoke_bomb",
     description: `Activate at night to disappear until morning, or set it up during the day so it goes off when night falls. No character power will work on you that night (werewolf and serial killer attacks, vampire bites, seer investigations, bodyguard guards, witch curses, granny mutes, monarch gifts) and gun shots will miss. Other power ups still work on you.`,
   },
+  {
+    label: "Blackmail",
+    tag: PowerUpNames.BLACKMAIL,
+    emoji: "📜",
+    shortDescription: "/blackmail",
+    description: `Once per game, blackmail a player during the day. For the rest of that day their vote will follow yours and they can't change it. If you are not voting, they are not voting. They won't know who is blackmailing them. The blackmail ends at the hanging or if you die.`,
+  },
 ]
 
 module.exports = {

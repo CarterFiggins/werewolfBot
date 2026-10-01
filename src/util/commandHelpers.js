@@ -53,6 +53,7 @@ const commandNames = {
   STUN: "stun",
   STEAL: "steal",
   SMOKE_BOMB: "smoke_bomb",
+  BLACKMAIL: "blackmail",
 };
 
 const voteText =
@@ -82,6 +83,10 @@ const powerUpMessages = new Map([
   [
     PowerUpNames.STUN,
     "You can stun a player removing their ability to vote or use their night ability. Use command `/stun` to stun a player.",
+  ],
+  [
+    PowerUpNames.BLACKMAIL,
+    "You have dirt on someone. Once per game, use `/blackmail` during the day on a player. For the rest of that day their vote will follow yours and they can't change it. They won't know who is blackmailing them.",
   ],
   [
     PowerUpNames.SMOKE_BOMB,

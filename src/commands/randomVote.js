@@ -6,6 +6,7 @@ const { roleNames, isAlive } = require("../util/rolesHelpers");
 const { findGame, upsertVote, findUser, findManyUsers } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { getAliveMembers, fetchMember } = require("../util/discordHelpers");
+const { syncBlackmailedVotes } = require("../util/powerUp/blackmailHelper");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -24,6 +25,14 @@ module.exports = {
     if (deniedMessage) {
       await interaction.reply({
         content: deniedMessage,
+        ephemeral: true,
+      });
+      return;
+    }
+
+    if (dbUser.blackmailed_by_user_id) {
+      await interaction.reply({
+        content: "📜 You are being blackmailed by an anonymous player and can't change your vote. Your vote follows theirs until the hanging.",
         ephemeral: true,
       });
       return;
@@ -110,6 +119,7 @@ module.exports = {
       voted_user_id: votedMember.id,
       voted_username: votedMember.user.username,
     });
+    await syncBlackmailedVotes(guildId, interaction.user.id);
 
     await interaction.reply(`${interaction.user} has decided to let me vote. I voted for ${votedMember}`);
   },

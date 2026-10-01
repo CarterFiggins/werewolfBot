@@ -23,6 +23,7 @@ const { getAliveUsersIds, fetchMember } = require("./discordHelpers");
 const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
 const { getRandomGif } = require("./botMessages/randomGif");
 const { isSmokeBombed } = require("./powerUp/smokeBombHelper");
+const { releaseBlackmailedBy } = require("./powerUp/blackmailHelper");
 
 const WaysToDie = {
   HANGED: 'Hanged',
@@ -154,7 +155,8 @@ async function removePlayer(
 ) {
   const guildId = interaction.guild.id;
   await removeUserVotes(guildId, deadUser.user_id);
-  await updateUser(deadUser.user_id, guildId, { is_dead: true, cause_of_death: causeOfDeath });
+  await updateUser(deadUser.user_id, guildId, { is_dead: true, cause_of_death: causeOfDeath, blackmailed_by_user_id: null });
+  await releaseBlackmailedBy(interaction, deadUser.user_id);
 
   if (!deadMember) {
     console.warn(`removePlayer: no Discord member found for ${deadUser.user_id}, skipping role/channel updates.`);

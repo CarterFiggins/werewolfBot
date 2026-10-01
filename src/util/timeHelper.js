@@ -31,6 +31,7 @@ const { characters } = require("./commandHelpers");
 const { handleHangingVotes, getAllVotersMessage } = require("./voteHelpers");
 const { removeStunnedUsers } = require("./powerUp/stunHelper");
 const { getSmokeBombedIds, removeSmokeBombs, activateArmedSmokeBombs } = require("./powerUp/smokeBombHelper");
+const { removeBlackmails } = require("./powerUp/blackmailHelper");
 const { shootCupidsArrows, sendLoveProtectedMessage } = require("./characterHelpers/cupidHelper");
 const { electMayor } = require("./mayorHelper");
 const { executeSerialKillerKill, getAliveSerialKillerIds } = require("./characterHelpers/serialKillerHelper");
@@ -315,6 +316,7 @@ async function nightTimeJob(interaction) {
   }
 
   const chaosWinsIds = await handleVotingDeath(interaction)
+  await removeBlackmails(guildId)
   await activateArmedSmokeBombs(interaction)
   await checkGame(interaction, chaosWinsIds);
 }

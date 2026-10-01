@@ -5,6 +5,7 @@ const { roleNames, isAlive } = require("../util/rolesHelpers");
 const { findGame, findSettings, upsertVote, findUser, deleteManyVotes } = require("../werewolf_db");
 const { permissionCheck } = require("../util/permissionCheck");
 const { fetchMember } = require("../util/discordHelpers");
+const { syncBlackmailedVotes } = require("../util/powerUp/blackmailHelper");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -32,6 +33,14 @@ module.exports = {
       return;
     }
 
+    if (dbUser.blackmailed_by_user_id) {
+      await interaction.reply({
+        content: "📜 You are being blackmailed by an anonymous player and can't change your vote. Your vote follows theirs until the hanging.",
+        ephemeral: true,
+      });
+      return;
+    }
+
     const game = await findGame(interaction.guild.id);
     const settings = await findSettings(interaction.guild.id);
     const isMayorElection = settings.mayor_election && game.first_night;
@@ -54,6 +63,7 @@ module.exports = {
         guild_id: interaction.guild.id,
         user_id: interaction.user.id,
       });
+      await syncBlackmailedVotes(interaction.guild.id, interaction.user.id);
       await interaction.reply({
         content: `${interaction.user} has removed their vote.`,
         ephemeral: isSecretVote,
@@ -130,6 +140,7 @@ module.exports = {
       voted_username: votedUser.username,
       weight: dbUser.is_mayor ? 2 : 1,
     });
+    await syncBlackmailedVotes(interaction.guild.id, interaction.user.id);
 
     if (isMayorElection) {
       await interaction.reply({

@@ -9,6 +9,7 @@ const PowerUpNames = {
   STUN: "stun",
   STEAL: "steal",
   SMOKE_BOMB: "smoke_bomb",
+  BLACKMAIL: "blackmail",
 }
 
 const PowersWithWeightsVillagers = {
@@ -18,6 +19,7 @@ const PowersWithWeightsVillagers = {
   [PowerUpNames.STUN]: 4,
   [PowerUpNames.STEAL]: 3,
   [PowerUpNames.SMOKE_BOMB]: 4,
+  [PowerUpNames.BLACKMAIL]: 2,
   [PowerUpNames.ALLIANCE_DETECTOR]: 1,
 };
 
@@ -28,6 +30,7 @@ const PowersWithWeightsWerewolves = {
   [PowerUpNames.STUN]: 4,
   [PowerUpNames.STEAL]: 3,
   [PowerUpNames.SMOKE_BOMB]: 4,
+  [PowerUpNames.BLACKMAIL]: 2,
   [PowerUpNames.PREDATOR_VISION]: 1,
 };
 

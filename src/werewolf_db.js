@@ -61,7 +61,7 @@ async function createUsers(newUsers) {
 }
 
 async function upsertVote(user_id, guild_id, updatedVote) {
-  db.collection("votes").updateOne(
+  await db.collection("votes").updateOne(
     { user_id, guild_id },
     { $set: updatedVote },
     { upsert: true }
