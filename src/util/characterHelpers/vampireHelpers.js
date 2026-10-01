@@ -14,6 +14,7 @@ const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
 const { vampireDeathMessage } = require("../botMessages/deathMessages");
 const { PowerUpNames } = require("../powerUpHelpers");
 const { fetchMember } = require("../discordHelpers");
+const { isSmokeBombed } = require("../powerUp/smokeBombHelper");
 
 async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
   const channels = interaction.guild.channels.cache;
@@ -43,6 +44,13 @@ async function vampiresAttack(interaction, werewolfKillIds, guardedIds) {
 
       const guarded = _.includes(guardedIds, vampire.bite_user_id);
       const protectedMemberMessage = `${vampireMember} you were not able to bite ${victimMember}. They must have been protected or are able to defend your attacks.`;
+
+      if (isSmokeBombed(victim)) {
+        await organizedChannels.vampires.send(
+          `💨 ${vampireMember} you were not able to bite ${victimMember}. They threw down a smoke bomb and vanished before you could sink your teeth in! 💨`
+        );
+        return null;
+      }
 
       if (
         victim.character === characters.WITCH ||

@@ -2,6 +2,7 @@ const _ = require("lodash");
 const { updateUser, findManyUsers, findUser } = require("../../werewolf_db");
 const { organizeChannels } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
+const { isSmokeBombed } = require("../powerUp/smokeBombHelper");
 
 async function cursePlayers(interaction) {
   const guildId = interaction.guild.id;
@@ -28,6 +29,15 @@ async function cursePlayers(interaction) {
           });
           await organizedChannels.witch.send(
             `${members.get(witch.user_id) || witch.nickname || witch.name} Your dark magic has failed. ${members.get(targetDbUser.user_id) || targetDbUser.nickname || targetDbUser.name} has died and this curse works on the living.`
+          );
+          return;
+        }
+        if (isSmokeBombed(targetDbUser)) {
+          await updateUser(witch.user_id, guildId, {
+            target_cursed_user_id: null,
+          });
+          await organizedChannels.witch.send(
+            `💨 ${members.get(witch.user_id) || witch.nickname || witch.name} Your dark magic has failed. ${members.get(targetDbUser.user_id) || targetDbUser.nickname || targetDbUser.name} threw down a smoke bomb and your curse could not find them. 💨`
           );
           return;
         }

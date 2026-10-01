@@ -3,6 +3,7 @@ const { updateUser, findManyUsers, findUser, findSettings } = require("../../wer
 const { giveChannelPermissions, organizeChannels, joinMasons } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
 const { fetchMember } = require("../discordHelpers");
+const { isSmokeBombed } = require("../powerUp/smokeBombHelper");
 
 async function handleApprenticeSeer(interaction, deadDbSeer) {
   const guildId = interaction.guild.id;
@@ -49,6 +50,11 @@ async function sendInvestigateMessage(interaction, seer) {
   const seerMember = await fetchMember(interaction, seer.user_id)
   const targetDbUser = await findUser(seer.investigateUserId, interaction.guild?.id);
   const guildSettings = await findSettings(interaction.guild.id);
+  if (isSmokeBombed(targetDbUser)) {
+    const smokeSeerChannel = channels.get(seer.channel_id.toString());
+    await smokeSeerChannel.send(`💨 ${seerMember}! Your vision of ${member} is clouded by smoke. They used a smoke bomb and the spirits could not see them. 💨`)
+    return;
+  }
   let revealedCharacter = "villager!"
   if (seer.character === characters.FOOL) {
     const randomNumber = _.random(1, 3);

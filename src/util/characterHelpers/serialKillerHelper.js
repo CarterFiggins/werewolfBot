@@ -5,6 +5,7 @@ const { removesDeadPermissions, WaysToDie } = require("../deathHelper");
 const { PowerUpNames } = require("../powerUpHelpers");
 const { getRandomGif } = require("../botMessages/randomGif");
 const { fetchMember } = require("../discordHelpers");
+const { isSmokeBombed } = require("../powerUp/smokeBombHelper");
 
 async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds = [], mayorId = null) {
   const guildId = interaction.guild.id;
@@ -35,6 +36,14 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
         return;
       }
 
+      const targetDbUser = await findUser(targetId, guildId);
+
+      if (isSmokeBombed(targetDbUser)) {
+        const targetMember = await fetchMember(interaction, targetId);
+        await skChannel?.send(`💨 You went after ${targetMember} last night, but they threw down a smoke bomb and vanished. Your kill failed. 💨`);
+        return;
+      }
+
       if (guardedIds.includes(targetId)) {
         const guardGif = await getRandomGif("bodyguard");
         await skChannel?.send(`Your target was protected by a bodyguard last night. Your kill was [blocked](${guardGif || ""})`);
@@ -47,7 +56,6 @@ async function executeSerialKillerKill(interaction, guardedIds, existingDeathIds
         return;
       }
 
-      const targetDbUser = await findUser(targetId, guildId);
       if (!targetDbUser || targetDbUser.is_dead) return;
 
       const targetMember = await fetchMember(interaction, targetId);

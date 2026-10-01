@@ -57,6 +57,19 @@ async function getWerewolfLoveProtectedIds(guildId) {
   return _.uniq(_.flatMap(werewolves, (wolf) => wolf.in_love_with_ids || []));
 }
 
+async function sendSmokeBombedKillMessage(interaction, smokeBombedTargetIds) {
+  if (_.isEmpty(smokeBombedTargetIds)) {
+    return;
+  }
+  const organizedChannels = organizeChannels(interaction.guild.channels.cache);
+  const smokeBombedMembers = await Promise.all(
+    _.map(smokeBombedTargetIds, (id) => fetchMember(interaction, id))
+  );
+  await organizedChannels?.werewolves?.send(
+    `💨 Your attack on ${_.compact(smokeBombedMembers).join(", ")} failed last night. They threw down a smoke bomb and vanished before you could catch them! 💨`
+  );
+}
+
 async function killPlayers(interaction, deathIds) {
   const guildId = interaction.guild.id;
   const game = await findGame(guildId);
@@ -144,4 +157,5 @@ module.exports = {
   killPlayers,
   getKillTargetedUsers,
   getWerewolfLoveProtectedIds,
+  sendSmokeBombedKillMessage,
 };

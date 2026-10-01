@@ -8,6 +8,7 @@ const {
 const { organizeChannels, joinMasons } = require("../channelHelpers");
 const { characters } = require("./characterUtil");
 const { fetchMember } = require("../discordHelpers");
+const { isSmokeBombed } = require("../powerUp/smokeBombHelper");
 
 async function guardPlayers(interaction) {
   const guildId = interaction.guild.id;
@@ -30,6 +31,18 @@ async function guardPlayers(interaction) {
       }
 
       const guardedUser = await findUser(guardedUserId, guildId);
+      if (isSmokeBombed(guardedUser)) {
+        const organizedChannels = organizeChannels(interaction.guild.channels.cache);
+        await organizedChannels.bodyguard.send(
+          `💨 You went to guard ${members.get(guardedUserId) || guardedUser.nickname || guardedUser.name} last night, but they threw down a smoke bomb and vanished. You were not able to guard them. 💨`
+        );
+        // The guard failed, so they are free to guard this player again tonight.
+        await updateUser(bodyguard.user_id, guildId, {
+          last_guarded_user_id: null,
+          guarded_user_id: null,
+        });
+        return;
+      }
       if (settings.bodyguard_joins_masons) {
         await joinMasons({
           interaction,

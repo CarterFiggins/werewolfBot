@@ -22,6 +22,7 @@ const { PowerUpNames, usePowerUp} = require("./powerUpHelpers");
 const { getAliveUsersIds, fetchMember } = require("./discordHelpers");
 const { sendMemberMessage } = require("./botMessages/sendMemberMessages");
 const { getRandomGif } = require("./botMessages/randomGif");
+const { isSmokeBombed } = require("./powerUp/smokeBombHelper");
 
 const WaysToDie = {
   HANGED: 'Hanged',
@@ -248,7 +249,9 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
   const deadTargetMember = await fetchMember(interaction, targetDbUser.user_id);
   const memberWhoShot = await fetchMember(interaction, userWhoShot.user_id);
 
-  const deadCharacter = await removesDeadPermissions(
+  // A smoke bombed player can't be hit. The bullet is still used up.
+  const smokeBombed = isSmokeBombed(targetDbUser);
+  const deadCharacter = smokeBombed ? null : await removesDeadPermissions(
     interaction,
     targetDbUser,
     deadTargetMember,
@@ -269,7 +272,11 @@ async function gunFire(interaction, targetDbUser, userWhoShot, randomFire = fals
     await usePowerUp(userWhoShot, interaction, PowerUpNames.GUN)
   }
 
-  await sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire })
+  if (smokeBombed) {
+    await sendGunMissMessage({ interaction, deadTargetMember, memberWhoShot, randomFire })
+  } else {
+    await sendGunDeathMessage({ interaction, deadCharacter, deadTargetMember, targetDbUser, memberWhoShot, randomFire })
+  }
   await checkGame(interaction);
 }
 
@@ -372,6 +379,15 @@ async function sendGunDeathMessage({ interaction, deadCharacter, deadTargetMembe
   }
 }
 
+async function sendGunMissMessage({ interaction, deadTargetMember, memberWhoShot, randomFire }) {
+  const smokeMessage = `💨 The bullet flew straight through a cloud of smoke and missed! ${deadTargetMember} used a smoke bomb and vanished for the night. 💨`
+  if (randomFire) {
+    interaction.townAnnouncements.push(`## * ${memberWhoShot} didn't have time to shoot and died. They dropped their gun and it fired at ${deadTargetMember}. ${smokeMessage}`);
+  } else {
+    await interaction.editReply(`${memberWhoShot} took aim at ${deadTargetMember}. ${smokeMessage}`);
+  }
+}
+
 async function witchCurseDeathMessage({ villager, deadVillager, villagerMember }) {
   if (deadVillager === PowerUpNames.SHIELD) {
     return `* 🛡️A villager's shield absorbed the curse, turning it into a puff of smoke.🛡️\n`
@@ -391,6 +407,11 @@ async function botShoots(interaction) {
   const unluckyDbUser = _.sample(aliveUsers)
 
   const unluckyMember = await fetchMember(interaction, unluckyDbUser.user_id);
+
+  if (isSmokeBombed(unluckyDbUser)) {
+    interaction.townAnnouncements.push(`## * 💨 Guess what? I've got a gun! I took aim at ${unluckyMember}, but they threw down a smoke bomb and my bullet hit nothing but smoke. Next time, I won't miss! 💨`)
+    return
+  }
 
   const botShotCharacter = await removesDeadPermissions(
     interaction,

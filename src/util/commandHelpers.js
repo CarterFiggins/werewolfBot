@@ -52,6 +52,7 @@ const commandNames = {
   PREDATOR_VISION: "predator_vision",
   STUN: "stun",
   STEAL: "steal",
+  SMOKE_BOMB: "smoke_bomb",
 };
 
 const voteText =
@@ -81,6 +82,10 @@ const powerUpMessages = new Map([
   [
     PowerUpNames.STUN,
     "You can stun a player removing their ability to vote or use their night ability. Use command `/stun` to stun a player.",
+  ],
+  [
+    PowerUpNames.SMOKE_BOMB,
+    "You have a smoke bomb. Use `/smoke_bomb` at night to disappear until morning, or use it during the day to set it up so it goes off when night falls. No character power will work on you that night (werewolves, vampires, serial killer, seer, bodyguard, witch, granny, monarch) and gun shots will miss. Other power ups still work on you.",
   ],
 ]);
 

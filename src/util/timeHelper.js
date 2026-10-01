@@ -21,7 +21,7 @@ const { guardPlayers, sendSuccessfulGuardMessage } = require("./characterHelpers
 const {
   cursePlayers,
 } = require("./characterHelpers/witchHelper");
-const { killPlayers, getKillTargetedUsers, getWerewolfLoveProtectedIds } = require("./characterHelpers/werewolfHelper");
+const { killPlayers, getKillTargetedUsers, getWerewolfLoveProtectedIds, sendSmokeBombedKillMessage } = require("./characterHelpers/werewolfHelper");
 const { returnMutedPlayers, mutePlayers } = require("./characterHelpers/grouchyGranny");
 const { investigatePlayers } = require("./characterHelpers/seerHelper");
 const { votingDeathMessage } = require("./botMessages/deathMessages");
@@ -30,6 +30,7 @@ const { givePower } = require("./characterHelpers/monarchHelper");
 const { characters } = require("./commandHelpers");
 const { handleHangingVotes, getAllVotersMessage } = require("./voteHelpers");
 const { removeStunnedUsers } = require("./powerUp/stunHelper");
+const { getSmokeBombedIds, removeSmokeBombs, activateArmedSmokeBombs } = require("./powerUp/smokeBombHelper");
 const { shootCupidsArrows, sendLoveProtectedMessage } = require("./characterHelpers/cupidHelper");
 const { electMayor } = require("./mayorHelper");
 const { executeSerialKillerKill, getAliveSerialKillerIds } = require("./characterHelpers/serialKillerHelper");
@@ -181,14 +182,18 @@ async function dayTimeJob(interaction) {
   const serialKillerIds = await getAliveSerialKillerIds(guildId);
   // a wolf's love protects their target from the whole pack, same as a guard.
   const werewolfLoveProtectedIds = await getWerewolfLoveProtectedIds(guildId);
+  // smoke bombed players can't be targeted by any character power tonight.
+  const smokeBombedIds = await getSmokeBombedIds(guildId);
   const werewolfKills = await getKillTargetedUsers(interaction);
-  const blockedIds = [...guardedIds, ...serialKillerIds, ...werewolfLoveProtectedIds];
-  const loveProtectedTargetIds = _.intersection(werewolfKills, werewolfLoveProtectedIds);
-  // Love gets its own explicit reveal in the werewolves channel, so keep it out of the vague guard message.
-  const successfulGuardIds = _.difference(_.intersection(werewolfKills, blockedIds), loveProtectedTargetIds);
+  const blockedIds = [...guardedIds, ...serialKillerIds, ...werewolfLoveProtectedIds, ...smokeBombedIds];
+  const smokeBombedTargetIds = _.intersection(werewolfKills, smokeBombedIds);
+  const loveProtectedTargetIds = _.difference(_.intersection(werewolfKills, werewolfLoveProtectedIds), smokeBombedTargetIds);
+  // Love and smoke bombs get their own explicit reveal in the werewolves channel, so keep them out of the vague guard message.
+  const successfulGuardIds = _.difference(_.intersection(werewolfKills, blockedIds), [...loveProtectedTargetIds, ...smokeBombedTargetIds]);
   await sendSuccessfulGuardMessage(interaction, successfulGuardIds);
 
   await sendLoveProtectedMessage(interaction, loveProtectedTargetIds);
+  await sendSmokeBombedKillMessage(interaction, smokeBombedTargetIds);
 
   if (electedMayorId && werewolfKills.includes(electedMayorId)) {
     blockedIds.push(electedMayorId);
@@ -224,6 +229,7 @@ async function dayTimeJob(interaction) {
   await givePower(interaction)
   await mutePlayers(interaction, guildId)
   await removeStunnedUsers(interaction)
+  await removeSmokeBombs(interaction)
 
   await updateGame(guildId, {
     wolf_double_kill: false,
@@ -309,6 +315,7 @@ async function nightTimeJob(interaction) {
   }
 
   const chaosWinsIds = await handleVotingDeath(interaction)
+  await activateArmedSmokeBombs(interaction)
   await checkGame(interaction, chaosWinsIds);
 }
 

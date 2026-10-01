@@ -6,6 +6,7 @@ const { powerUpMessages } = require("../commandHelpers");
 const { organizeChannels } = require("../channelHelpers");
 const {grantPowerUp} = require("../powerUpHelpers");
 const { fetchMember } = require("../discordHelpers");
+const { isSmokeBombed } = require("../powerUp/smokeBombHelper");
 
 async function givePower(interaction) {
   const cursorMonarchs = await findManyUsers({
@@ -37,7 +38,14 @@ async function givePower(interaction) {
     } else if (monarch.giving_user_id) {
       const targetDbUser = await findUser(monarch.giving_user_id, interaction.guild.id)
       const targetMember = await fetchMember(interaction, monarch.giving_user_id)
-      if (!targetDbUser.is_dead) {
+      if (isSmokeBombed(targetDbUser)) {
+        // The gift never reached them, so the monarch keeps this power to give later.
+        await updateUser(monarch.user_id, interaction.guild.id, {
+          giving_user_id: null,
+          giving_power: null,
+        });
+        organizedChannels.monarch.send(`💨 ${monarchMember} you tried to give ${targetMember} the power ${monarch.giving_power}, but they threw down a smoke bomb and vanished. You still have the power to give. 💨`)
+      } else if (!targetDbUser.is_dead) {
         await grantPowerUp(targetDbUser, interaction, monarch.giving_power);
         await sendMemberMessage(targetMember, `You have been given a Power Up! ${powerUpMessages.get(monarch.giving_power)}`)
         organizedChannels.monarch.send(`${monarchMember} you have successfully given ${targetMember} the power ${monarch.giving_power}`)

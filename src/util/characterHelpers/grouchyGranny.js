@@ -3,6 +3,7 @@ const { updateUser, findAllUsers, findManyUsers, findUser } = require("../../wer
 const { characters } = require("./characterUtil");
 const { organizeChannels, channelNames, giveChannelPermissions, flatOrganizedChannels } = require("../channelHelpers");
 const { fetchMember } = require("../discordHelpers");
+const { isSmokeBombed } = require("../powerUp/smokeBombHelper");
 
 async function mutePlayers(interaction) {
   const cursorGrannies = await findManyUsers({
@@ -17,12 +18,17 @@ async function mutePlayers(interaction) {
     }
     try {
       const muteMember = await fetchMember(interaction, granny.muteUserId)
-      const muteUserDb = findUser(granny.muteUserId, interaction.guild.id)
+      const muteUserDb = await findUser(granny.muteUserId, interaction.guild.id)
       if (!muteMember) {
         console.warn(`mutePlayers: could not find member ${granny.muteUserId} in guild, skipping.`);
         continue;
       }
-      if (!muteUserDb.is_dead) {
+      if (isSmokeBombed(muteUserDb)) {
+        const organizedChannels = organizeChannels(interaction.guild.channels.cache);
+        await organizedChannels?.outCasts?.send(
+          `💨 You tried to drag ${muteMember} to your house, but they threw down a smoke bomb and vanished. They were not muted. 💨`
+        );
+      } else if (!muteUserDb.is_dead) {
         await castOutUser(interaction, muteMember)
       }
       await updateUser(granny.user_id, interaction.guild.id, {
