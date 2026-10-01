@@ -54,6 +54,7 @@ const commandNames = {
   STEAL: "steal",
   SMOKE_BOMB: "smoke_bomb",
   BLACKMAIL: "blackmail",
+  RUMOR: "rumor",
 };
 
 const voteText =
@@ -91,6 +92,10 @@ const powerUpMessages = new Map([
   [
     PowerUpNames.SMOKE_BOMB,
     "You have a smoke bomb. Use `/smoke_bomb` at night to disappear until morning, or use it during the day to set it up so it goes off when night falls. No character power will work on you that night (werewolves, vampires, serial killer, seer, bodyguard, witch, granny, monarch) and gun shots will miss. Other power ups still work on you.",
+  ],
+  [
+    PowerUpNames.RUMOR,
+    "You have heard a rumor. Use `/rumor` to pick three other players. You will learn the true role of one of them, but not which one.",
   ],
 ]);
 

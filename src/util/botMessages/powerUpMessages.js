@@ -64,6 +64,13 @@ powerUpList = [
     shortDescription: "/blackmail",
     description: `Once per game, blackmail a player during the day. For the rest of that day their vote will follow yours and they can't change it. If you are not voting, they are not voting. They won't know who is blackmailing them. The blackmail ends at the hanging or if you die.`,
   },
+  {
+    label: "Rumor",
+    tag: PowerUpNames.RUMOR,
+    emoji: "🗣️",
+    shortDescription: "/rumor",
+    description: `Pick three other alive players. You will learn the true role of one of them, but not which one. e.g. "One of these players is the seer."`,
+  },
 ]
 
 module.exports = {

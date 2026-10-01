@@ -10,27 +10,30 @@ const PowerUpNames = {
   STEAL: "steal",
   SMOKE_BOMB: "smoke_bomb",
   BLACKMAIL: "blackmail",
+  RUMOR: "rumor",
 }
 
 const PowersWithWeightsVillagers = {
   [PowerUpNames.PREDATOR_VISION]: 1,
-  [PowerUpNames.GUN]: 3,
-  [PowerUpNames.SHIELD]: 3,
+  [PowerUpNames.GUN]: 2,
+  [PowerUpNames.SHIELD]: 2,
   [PowerUpNames.STUN]: 4,
   [PowerUpNames.STEAL]: 3,
   [PowerUpNames.SMOKE_BOMB]: 4,
   [PowerUpNames.BLACKMAIL]: 2,
+  [PowerUpNames.RUMOR]: 3,
   [PowerUpNames.ALLIANCE_DETECTOR]: 1,
 };
 
 const PowersWithWeightsWerewolves = {
   [PowerUpNames.ALLIANCE_DETECTOR]: 1,
-  [PowerUpNames.GUN]: 3,
-  [PowerUpNames.SHIELD]: 3,
+  [PowerUpNames.GUN]: 2,
+  [PowerUpNames.SHIELD]: 2,
   [PowerUpNames.STUN]: 4,
   [PowerUpNames.STEAL]: 3,
   [PowerUpNames.SMOKE_BOMB]: 4,
   [PowerUpNames.BLACKMAIL]: 2,
+  [PowerUpNames.RUMOR]: 3,
   [PowerUpNames.PREDATOR_VISION]: 1,
 };
 
