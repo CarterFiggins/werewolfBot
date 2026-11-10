@@ -163,6 +163,7 @@ function showUsersCharacter(users) {
 function organizeChannels(channels) {
   const channelObject = {seerChannels: [], serialKillerChannels: [], littleGirlChannels: []};
   channels.forEach((channel) => {
+    if (!channel) return;
     switch (channel.name) {
       case channelNames.TOWN_SQUARE:
         channelObject.townSquare = channel;
@@ -210,7 +211,7 @@ async function createSerialKillerChannel(interaction, member) {
   const guildSettings = await findSettings(interaction.guild.id);
   const aliveRole = await getRole(interaction, roleNames.ALIVE);
   const deadRole = await getRole(interaction, roleNames.DEAD);
-  const category = channels.find((c) => c.name === channelNames.THE_TOWN);
+  const category = channels.find((c) => c?.name === channelNames.THE_TOWN);
   const defaultPermissions = getDefaultPermissions(interaction, aliveRole, deadRole);
   const userPermissions = createPermissions(
     [{ id: member.id, info: { character: characters.SERIAL_KILLER } }],
@@ -238,7 +239,7 @@ async function addLoversInChannel(interaction, usersInLove) {
     }
   })
 
-  const category = channels.find((c) => c.name === channelNames.THE_TOWN)
+  const category = channels.find((c) => c?.name === channelNames.THE_TOWN)
 
   const defaultPermissions = getDefaultPermissions(interaction, aliveRole, deadRole);
   const userPermissions = createPermissions(usersForPermissions, charactersForPermissions, guildSettings)
@@ -402,6 +403,7 @@ function getRandomSadBotGif() {
 async function removeAllGameChannels(channels) {
   await Promise.all(
     channels.map(async (channel) => {
+      if (!channel) return;
       switch (channel.name) {
         case channelNames.TOWN_SQUARE:
         case channelNames.WEREWOLVES:

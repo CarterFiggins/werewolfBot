@@ -104,6 +104,7 @@ module.exports = {
     };
 
     channels.map(async (channel) => {
+      if (!channel) return;
       switch (channel.name) {
         case setupChannelNames.HOW_TO_PLAY:
         case setupChannelNames.COMMANDS:
